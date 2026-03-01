@@ -101,7 +101,9 @@ export default function ScoreboardTab() {
     : recentEvents;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      <div className="absolute inset-0 masi-pattern-bingo opacity-[0.15] pointer-events-none rounded-lg" aria-hidden />
+      <div className="relative z-10">
       {/* Hero header — Stitch style */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-stone-700 pb-6 bg-stone-800/40 p-6 rounded-lg backdrop-blur-sm">
         <div>
@@ -224,7 +226,7 @@ export default function ScoreboardTab() {
                       <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity" aria-hidden />
                       <Icon name={EVENT_ICONS[ev.key]} className={`text-3xl drop-shadow-md group-hover:scale-110 transition-transform ${EVENT_ICON_COLORS[ev.key] || 'text-torch'}`} />
                       <div className="text-center leading-tight">
-                        <span className="block text-sm font-display tracking-widest text-torch">{ev.label}</span>
+                        <span className="block text-sm font-display tracking-widest text-[#fcd34d]">{ev.label}</span>
                         {EVENT_FIJIAN[ev.key] && (
                           <span className="block text-[10px] text-stone-400 font-bold uppercase">({EVENT_FIJIAN[ev.key]})</span>
                         )}
@@ -258,7 +260,7 @@ export default function ScoreboardTab() {
           </section>
         </div>
 
-        {/* Right: Tribal Log */}
+        {/* Right: Tribal Log — Stitch 04 corner accents */}
         <div className="lg:col-span-1">
           <section>
             <div className="flex items-center justify-between mb-4">
@@ -270,7 +272,7 @@ export default function ScoreboardTab() {
                 <Icon name="filter_list" className="text-lg" />
               </button>
             </div>
-            <div className="bg-stone-800 border-2 border-stone-600 min-h-[400px] overflow-hidden flex flex-col shadow-2xl rounded">
+            <div className="corner-accents bg-stone-800 border-2 border-stone-600 min-h-[400px] overflow-hidden flex flex-col shadow-2xl rounded">
               <div className="p-4 border-b border-stone-600 bg-stone-950">
                 <div className="relative">
                   <Icon name="search" className="absolute left-3 top-2.5 text-stone-500 text-lg" aria-hidden />
@@ -313,6 +315,7 @@ export default function ScoreboardTab() {
             </div>
           </section>
         </div>
+      </div>
       </div>
     </div>
   );

@@ -85,6 +85,12 @@
   border: 12px solid transparent;
   border-image: repeating-linear-gradient(45deg, #7a331e, #7a331e 10px, #d4b483 10px, #d4b483 20px) 20;
 }
+
+/* Stitch 02 Rules — scroll container with gradient sides */
+.scroll-container {
+  background: linear-gradient(to right, #24211e 0%, #2a2621 5%, #2a2621 95%, #24211e 100%);
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+}
 .voka-overlay {
   background-image: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(179, 93, 51, 0.03) 20px, rgba(179, 93, 51, 0.03) 40px);
   pointer-events: none;
@@ -105,14 +111,57 @@
   padding: 8px 4px;
   border: 1px solid var(--color-wood-mid);
 }
+/* Stitch 04 — wood strip at top of tribal card */
 .tribal-card-outer::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 16px;
-  background: linear-gradient(90deg, transparent 0%, rgba(139, 90, 43, 0.4) 50%, transparent 100%);
-  opacity: 0.3;
+  height: 8px;
+  background: var(--color-amber);
+  clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
   pointer-events: none;
+  z-index: 1;
+}
+.tribal-card-outer::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: var(--color-amber);
+  clip-path: polygon(5% 0, 95% 0, 100% 100%, 0 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Stitch 04 — corner accents for panels (Tribal Log, etc.) */
+.corner-accents {
+  position: relative;
+}
+.corner-accents::before,
+.corner-accents::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: var(--color-sand-warm);
+  border-style: solid;
+  border-width: 0;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.corner-accents::before {
+  top: 0;
+  left: 0;
+  border-top-width: 3px;
+  border-left-width: 3px;
+}
+.corner-accents::after {
+  top: 0;
+  right: 0;
+  border-top-width: 3px;
+  border-right-width: 3px;
 }

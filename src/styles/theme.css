@@ -11,6 +11,7 @@
   --font-serif: 'Lora', Georgia, serif;
   --font-carving: 'Fondamento', serif;
   --font-wood: 'Rye', serif;
+  --font-wood-serif: 'Cormorant Garamond', serif;
 
   /* Amber — subtle accent (Stitch scoreboard #d97706) */
   --color-amber: #d97706;
@@ -89,6 +90,12 @@
 
   /* Stitch 04 Scoreboard — card frame */
   --color-card-frame: #3d342b;
+
+  /* Stitch 02 Rules — terracotta palette */
+  --color-terracotta: #a64d32;
+  --color-deep-terracotta: #7a331e;
+  --color-bleached-sand: #e5d3b3;
+  --color-masi-dark: #2a2621;
 
   /* RGB values for rgba() — no hardcoded colors in components */
   --color-fire-400-rgb: 232, 114, 42;
