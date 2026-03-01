@@ -6,19 +6,23 @@ React component architecture and conventions.
 
 ```
 src/components/
-├── ui/           # Reusable primitives (Button, Card, Input)
+├── fijian/       # Shared Fijian UI (FijianCard, FijianInput, BingoSquare, Icon)
 ├── layout/       # App shell (AppShell, UserBar, Header, TabNav, Footer)
 └── screens/      # App views (AuthScreen, DraftTab, etc.)
 ```
 
-## UI Components
+## Fijian Components
 
-| Component | Props | Usage |
-|-----------|-------|-------|
-| **Button** | `variant` (primary|secondary|ghost), `disabled`, `className` | `type="submit"` for forms |
-| **Card** | `title`, `accentColor` (hex), `className` | Containers with optional border accent |
-| **Input** | spread to `<input>` | Themed text inputs |
-| **ScreenHeader** | `title`, `subtitle` (string or JSX) | Screen title + subtitle |
+Use these for all screens. See `src/components/fijian/` and `docs/STYLE_GUIDE.md`.
+
+| Component | Usage |
+|-----------|-------|
+| **FijianCard** | Containers, sections |
+| **FijianInput** | Text inputs with optional label |
+| **FijianPrimaryButton** | Primary CTAs |
+| **FijianSectionHeader** | Section titles |
+| **BingoSquare** | Bingo cells |
+| **Icon** | Material Symbols Outlined |
 
 ## Layout Components
 
@@ -62,7 +66,7 @@ src/components/
 
 When integrating Stitch designs:
 
-1. **Map to UI components** — Stitch buttons → `<Button>`, cards → `<Card>`
+1. **Map to Fijian components** — Stitch buttons → `FijianPrimaryButton`, cards → `FijianCard`
 2. **Preserve structure** — Keep semantic HTML from Stitch
 3. **Use theme classes** — Replace Stitch hex with `text-fire-400`, `bg-stone-900`, etc.
-4. **Add to stitch-overrides.css** — Screen-specific tweaks that don't fit the theme
+4. **Add to theme.css / fijian.css** — New tokens or patterns as needed

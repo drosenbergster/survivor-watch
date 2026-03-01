@@ -45,7 +45,7 @@ Tailwind theme utilities: `shadow-fire`, `shadow-fire-lg`, `drop-shadow-text`, `
 ## No hardcoded values
 
 - Use theme tokens for colors — never hex/rgba in components
-- For JS (e.g. inline styles): import from `src/theme.js` (`COLORS`)
+- For JS (e.g. inline styles, player colors): import from `src/theme.js` (`COLORS`)
 - For CSS: use `var(--color-*)` or Tailwind classes (`text-ochre`, `bg-fire-400`)
 
 ## Reference

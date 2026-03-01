@@ -1,10 +1,9 @@
 /**
  * Component exports — barrel import
  *
- * import { Button, Card, AppShell } from './components';
+ * import { AppShell, FijianCard } from './components';
  */
 
-export * from './ui';
 export * from './layout';
 export * from './fijian';
 export * from './screens';

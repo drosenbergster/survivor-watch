@@ -1,9 +1,5 @@
 import { SCORE_EVENTS } from '../../data';
-import {
-  FijianCard,
-  FijianSectionHeader,
-  Icon,
-} from '../fijian';
+import { FijianSectionHeader, Icon } from '../fijian';
 
 const EVENT_ICONS = {
   survived: 'check_circle',

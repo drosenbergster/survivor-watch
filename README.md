@@ -31,4 +31,15 @@ Without `.env`, the app runs in UI-only mode (no auth, no sync).
 
 ## Stack
 
-React 19, Vite 7, Tailwind 4, Firebase (Auth + Realtime DB). See `docs/STYLE_GUIDE.md` for design system and conventions.
+React 19, Vite 7, Tailwind 4, Firebase (Auth + Realtime DB).
+
+## Project structure
+
+| Path | Purpose |
+|------|---------|
+| `src/components/fijian/` | Shared Fijian UI (MasiBackground, FijianCard, FijianInput, BingoSquare, Icon) |
+| `src/components/layout/` | AppShell, AppHeader, TabNav, UserBar, AppFooter |
+| `src/components/screens/` | AuthScreen, DraftTab, BingoTab, ScoreboardTab, RulesTab |
+| `src/styles/` | theme.css (tokens), fijian.css (patterns), base.css |
+
+Design tokens and Stitch-inspired patterns live in `theme.css` and `fijian.css`. See `docs/STYLE_GUIDE.md` for conventions.

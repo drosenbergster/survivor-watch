@@ -1,12 +1,10 @@
 /**
  * Survivor 50 Watch Party HQ — Main Stylesheet
  *
- * Architecture:
  * 1. Tailwind — base layer + utilities
  * 2. theme.css — design tokens (colors, fonts)
  * 3. base.css — resets, accessibility
- * 4. animations.css — keyframes
- * 5. utilities.css — custom utilities
+ * 4. fijian.css — masi patterns, wood texture, tribal motifs
  *
  * @see docs/STYLE_GUIDE.md
  */
@@ -14,6 +12,4 @@
 @import "tailwindcss";
 @import "./styles/theme.css";
 @import "./styles/base.css";
-@import "./styles/utilities.css";
 @import "./styles/fijian.css";
-@import "./styles/stitch-overrides.css";

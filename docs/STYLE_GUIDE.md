@@ -10,11 +10,9 @@ src/
 ├── styles/
 │   ├── theme.css      # design tokens (colors, fonts)
 │   ├── base.css       # resets, accessibility
-│   ├── fijian.css     # masi pattern, wood-texture, bure-silhouette
-│   └── utilities.css  # custom utilities (glow, shadow)
+│   └── fijian.css     # masi pattern, wood-texture, tribal motifs
 └── components/
     ├── fijian/        # Shared Fijian components — use for all new pages
-    ├── ui/             # Button, Card, Input, ScreenHeader
     ├── layout/        # AppShell, UserBar, Header, TabNav, Footer
     └── screens/       # AuthScreen, DraftTab, BingoTab, etc.
 ```
@@ -41,7 +39,7 @@ Import from `../fijian`:
 
 **Patterns:** `.masi-pattern`, `.wood-texture` (see `fijian.css`). Use `border border-sand-warm/20` for bamboo-style, `clip-[ellipse(50%_40%_at_50%_50%)]` for tabua shape.
 
-**No hardcoded values:** Use theme tokens only. For JS (inline styles), import from `src/theme.js`. For CSS, use `var(--color-*)` or Tailwind classes.
+**No hardcoded values:** Use theme tokens only. For JS (inline styles, e.g. player colors), import from `src/theme.js`. For CSS, use `var(--color-*)` or Tailwind classes.
 
 ## Design Tokens
 
