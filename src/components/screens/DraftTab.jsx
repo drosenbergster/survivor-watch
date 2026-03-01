@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useApp } from './AppContext';
-import { TRIBES, PLAYER_COLORS } from './data';
+import { useApp } from '../../AppContext';
+import { TRIBES, PLAYER_COLORS } from '../../data';
+import { ScreenHeader, Button, Input, Card } from '../ui';
 
 // Snake draft order for 4 players, 6 rounds: 1-2-3-4-4-3-2-1-1-2-3-4...
 function getSnakeDraftOrder(numPlayers, numRounds) {
@@ -65,22 +66,16 @@ export default function DraftTab() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="text-center">
-                <h2 className="font-display text-4xl tracking-wider text-torch text-glow-torch">Season 50 Draft</h2>
-                <p className="text-stone-400 text-sm mt-1">Each player drafts 6 castaways. Their fate is your fortune!</p>
-            </div>
+            <ScreenHeader title="Season 50 Draft" subtitle="Each player drafts 6 castaways. Their fate is your fortune!" />
 
             {/* Setup or active draft indicator */}
             {!draft.started ? (
-                <div className="bg-stone-900 border border-stone-800 rounded-xl p-6 max-w-md mx-auto">
-                    <h3 className="text-sm font-semibold mb-4 text-stone-300">👥 Your Crew</h3>
+                <Card title="👥 Your Crew" className="p-6 max-w-md mx-auto">
                     <div className="space-y-2 mb-4">
                         {names.map((name, i) => (
                             <div key={i} className="flex items-center gap-3">
                                 <div className="w-3 h-3 rounded-full shrink-0" style={{ background: PLAYER_COLORS[i].hex }} />
-                                <input
-                                    type="text"
+                                <Input
                                     value={name}
                                     onChange={(e) => {
                                         const updated = [...names];
@@ -89,18 +84,16 @@ export default function DraftTab() {
                                     }}
                                     placeholder={`Player ${i + 1}`}
                                     maxLength={20}
-                                    className="flex-1 px-3 py-2 rounded-lg border border-stone-700 bg-stone-800/50 text-stone-100 placeholder-stone-500 outline-none focus:border-fire-400 transition-colors text-sm"
+                                    className="flex-1"
+                                    aria-label={`Player ${i + 1} name`}
                                 />
                             </div>
                         ))}
                     </div>
-                    <button
-                        onClick={handleStartDraft}
-                        className="w-full py-3 rounded-lg bg-gradient-to-r from-fire-400 to-fire-600 text-white font-semibold hover:shadow-fire-lg transition-all cursor-pointer text-sm"
-                    >
+                    <Button onClick={handleStartDraft} variant="primary" className="w-full py-3">
                         🔥 Start Draft
-                    </button>
-                </div>
+                    </Button>
+                </Card>
             ) : !draft.completed ? (
                 <div className="bg-stone-900 border border-fire-400/30 rounded-xl p-5 max-w-md mx-auto text-center shadow-fire">
                     <div className="font-display text-3xl tracking-wider" style={{ color: PLAYER_COLORS[currentDrafter].hex }}>
@@ -163,7 +156,7 @@ export default function DraftTab() {
 
             {/* Draft results */}
             {draft.completed && (
-                <div>
+                <section>
                     <h3 className="font-display text-2xl tracking-wider text-center text-torch text-glow-torch mb-4">
                         🔥 Draft Results
                     </h3>
@@ -194,7 +187,7 @@ export default function DraftTab() {
                             );
                         })}
                     </div>
-                </div>
+                </section>
             )}
         </div>
     );

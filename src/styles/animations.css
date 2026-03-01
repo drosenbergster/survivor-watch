@@ -1,0 +1,81 @@
+/**
+ * Animations — Survivor 50 Fiji Theme
+ */
+
+@keyframes flicker {
+  0%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 12px rgba(232, 114, 42, 0.5));
+  }
+  50% {
+    opacity: 0.85;
+    filter: drop-shadow(0 0 8px rgba(232, 114, 42, 0.3));
+  }
+}
+
+@keyframes float-up {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(1);
+  }
+  20% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100vh) scale(0.2);
+  }
+}
+
+@keyframes pulse-win {
+  from {
+    box-shadow: 0 0 10px rgba(232, 114, 42, 0.3);
+  }
+  to {
+    box-shadow: 0 0 25px rgba(232, 114, 42, 0.7);
+    transform: scale(1.05);
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-sync {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@utility animate-flicker {
+  animation: flicker 2s ease-in-out infinite alternate;
+}
+
+@utility animate-float-up {
+  animation: float-up 4s ease-in infinite;
+}
+
+@utility animate-pulse-win {
+  animation: pulse-win 0.6s ease-in-out infinite alternate;
+}
+
+@utility animate-bounce-in {
+  animation: bounce-in 0.5s ease;
+}
+
+@utility animate-pulse-sync {
+  animation: pulse-sync 1s ease-in-out infinite;
+}

@@ -1,12 +1,13 @@
-import { SCORE_EVENTS } from './data';
+import { SCORE_EVENTS } from '../../data';
+import { ScreenHeader } from '../ui';
 
 export default function RulesTab() {
     return (
-        <div className="max-w-2xl mx-auto space-y-4">
-            <h2 className="font-display text-4xl tracking-wider text-torch text-glow-torch text-center">How to Play</h2>
+        <article className="max-w-2xl mx-auto space-y-4">
+            <ScreenHeader title="How to Play" />
 
             {/* Draft rules */}
-            <div className="bg-stone-900 border border-stone-800 rounded-xl p-5">
+            <section className="bg-stone-900 border border-stone-800 rounded-xl p-5">
                 <h3 className="font-display text-xl tracking-wider text-fire-400 mb-3">🏆 Bracket Draft</h3>
                 <ol className="text-stone-400 text-sm space-y-2 list-decimal pl-5 leading-relaxed">
                     <li>Enter your <strong className="text-stone-200">4 player names</strong> and hit Start Draft.</li>
@@ -15,17 +16,17 @@ export default function RulesTab() {
                     <li>Click a castaway's name when it's your turn to draft them.</li>
                     <li>Your drafted castaways earn you points all season long!</li>
                 </ol>
-            </div>
+            </section>
 
             {/* Scoring */}
-            <div className="bg-stone-900 border border-stone-800 rounded-xl p-5">
+            <section className="bg-stone-900 border border-stone-800 rounded-xl p-5">
                 <h3 className="font-display text-xl tracking-wider text-fire-400 mb-3">📊 Scoring</h3>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b-2 border-stone-700">
-                                <th className="text-left py-2 px-2 text-stone-300 font-medium">Event</th>
-                                <th className="text-right py-2 px-2 text-stone-300 font-medium">Points</th>
+                                <th className="text-left py-2 px-2 text-stone-300 font-medium" scope="col">Event</th>
+                                <th className="text-right py-2 px-2 text-stone-300 font-medium" scope="col">Points</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -40,10 +41,10 @@ export default function RulesTab() {
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </section>
 
             {/* Bingo rules */}
-            <div className="bg-stone-900 border border-stone-800 rounded-xl p-5">
+            <section className="bg-stone-900 border border-stone-800 rounded-xl p-5">
                 <h3 className="font-display text-xl tracking-wider text-fire-400 mb-3">🎯 Bingo</h3>
                 <ol className="text-stone-400 text-sm space-y-2 list-decimal pl-5 leading-relaxed">
                     <li>Each player gets a unique <strong className="text-stone-200">5×5 bingo card</strong> with Survivor moments.</li>
@@ -52,17 +53,17 @@ export default function RulesTab() {
                     <li>Center square is a <strong className="text-jungle-400">free space</strong>.</li>
                     <li>Generate new cards each episode for fresh fun.</li>
                 </ol>
-            </div>
+            </section>
 
             {/* Jeff Probst rule */}
-            <div className="bg-gradient-to-br from-fire-400/10 to-fire-600/5 border border-fire-400/30 rounded-xl p-6 text-center">
+            <section className="bg-gradient-to-br from-fire-400/10 to-fire-600/5 border border-fire-400/30 rounded-xl p-6 text-center">
                 <h3 className="font-display text-xl tracking-wider text-fire-400 mb-2">🍻 The Jeff Probst Rule</h3>
                 <p className="text-stone-400 text-sm mb-3">Whenever someone gets Bingo, <em>everyone</em> raises their glass and yells:</p>
-                <div className="font-display text-5xl tracking-wider text-torch text-glow-torch animate-flicker py-2">
+                <p className="font-display text-5xl tracking-wider text-torch text-glow-torch animate-flicker py-2">
                     "JEFF PROBST!"
-                </div>
+                </p>
                 <p className="text-stone-500 text-sm mt-3">It's the law of the island. 🏝️</p>
-            </div>
-        </div>
+            </section>
+        </article>
     );
 }

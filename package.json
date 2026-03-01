@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "~/.cursor/skills/deploying-previews/run.sh --build --branch main-preview"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",

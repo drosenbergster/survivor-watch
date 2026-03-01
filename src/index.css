@@ -1,160 +1,19 @@
+/**
+ * Survivor 50 Watch Party HQ — Main Stylesheet
+ *
+ * Architecture:
+ * 1. Tailwind — base layer + utilities
+ * 2. theme.css — design tokens (colors, fonts)
+ * 3. base.css — resets, accessibility
+ * 4. animations.css — keyframes
+ * 5. utilities.css — custom utilities
+ *
+ * @see docs/STYLE_GUIDE.md
+ */
+
 @import "tailwindcss";
-
-@theme {
-  --font-display: 'Bebas Neue', sans-serif;
-  --font-sans: 'Inter', -apple-system, sans-serif;
-
-  /* Survivor palette */
-  --color-fire-50: #fef3e2;
-  --color-fire-100: #fde4bf;
-  --color-fire-200: #fbc87f;
-  --color-fire-300: #f5a73f;
-  --color-fire-400: #e8722a;
-  --color-fire-500: #d4571a;
-  --color-fire-600: #c43e1c;
-  --color-fire-700: #a02e15;
-  --color-fire-800: #7a2314;
-  --color-fire-900: #5e1c12;
-
-  --color-jungle-50: #e8fbef;
-  --color-jungle-100: #c4f5d4;
-  --color-jungle-200: #7fe8a8;
-  --color-jungle-300: #3dd67c;
-  --color-jungle-400: #1db954;
-  --color-jungle-500: #0d9a3d;
-  --color-jungle-600: #0d7a34;
-  --color-jungle-700: #0c5f2a;
-  --color-jungle-800: #0b4a22;
-  --color-jungle-900: #093b1c;
-
-  --color-ocean-50: #e6f5fb;
-  --color-ocean-100: #bfe6f5;
-  --color-ocean-200: #80cce8;
-  --color-ocean-300: #40b0d8;
-  --color-ocean-400: #1a8cbb;
-  --color-ocean-500: #12709a;
-  --color-ocean-600: #105a7c;
-  --color-ocean-700: #0e4560;
-  --color-ocean-800: #0b3348;
-  --color-ocean-900: #092530;
-
-  --color-sand: #d4b483;
-  --color-torch: #f5b731;
-
-  /* Tribe colors */
-  --color-cila: #e0a030;
-  --color-vatu: #c43e1c;
-  --color-kalo: #1a8cbb;
-
-  /* Player colors */
-  --color-player-1: #e8722a;
-  --color-player-2: #1db954;
-  --color-player-3: #1a8cbb;
-  --color-player-4: #c77dff;
-}
-
-/* Custom utilities */
-@utility text-glow-fire {
-  text-shadow: 0 0 30px rgba(232, 114, 42, 0.3);
-}
-
-@utility text-glow-torch {
-  text-shadow: 0 0 30px rgba(245, 183, 49, 0.4);
-}
-
-@utility shadow-fire {
-  box-shadow: 0 0 20px rgba(232, 114, 42, 0.15);
-}
-
-@utility shadow-fire-lg {
-  box-shadow: 0 0 30px rgba(232, 114, 42, 0.3);
-}
-
-@keyframes flicker {
-
-  0%,
-  100% {
-    opacity: 1;
-    filter: drop-shadow(0 0 12px rgba(232, 114, 42, 0.5));
-  }
-
-  50% {
-    opacity: 0.85;
-    filter: drop-shadow(0 0 8px rgba(232, 114, 42, 0.3));
-  }
-}
-
-@keyframes float-up {
-  0% {
-    opacity: 0;
-    transform: translateY(0) scale(1);
-  }
-
-  20% {
-    opacity: 0.7;
-  }
-
-  100% {
-    opacity: 0;
-    transform: translateY(-100vh) scale(0.2);
-  }
-}
-
-@keyframes pulse-win {
-  from {
-    box-shadow: 0 0 10px rgba(232, 114, 42, 0.3);
-  }
-
-  to {
-    box-shadow: 0 0 25px rgba(232, 114, 42, 0.7);
-    transform: scale(1.05);
-  }
-}
-
-@keyframes bounce-in {
-  0% {
-    transform: scale(0.5);
-    opacity: 0;
-  }
-
-  60% {
-    transform: scale(1.1);
-  }
-
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes pulse-sync {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.3;
-  }
-}
-
-@utility animate-flicker {
-  animation: flicker 2s ease-in-out infinite alternate;
-}
-
-@utility animate-float-up {
-  animation: float-up 4s ease-in infinite;
-}
-
-@utility animate-pulse-win {
-  animation: pulse-win 0.6s ease-in-out infinite alternate;
-}
-
-@utility animate-bounce-in {
-  animation: bounce-in 0.5s ease;
-}
-
-@utility animate-pulse-sync {
-  animation: pulse-sync 1s ease-in-out infinite;
-}
+@import "./styles/theme.css";
+@import "./styles/base.css";
+@import "./styles/animations.css";
+@import "./styles/utilities.css";
+@import "./styles/stitch-overrides.css";

@@ -69,6 +69,7 @@ export function AppProvider({ children }) {
     // Realtime DB sync
     useEffect(() => {
         if (!user || !gameId) return;
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional loading state before async subscription
         setSyncStatus('syncing');
         const gameRef = ref(db, `games/${gameId}`);
         const unsub = onValue(gameRef, (snapshot) => {

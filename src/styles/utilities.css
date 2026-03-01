@@ -1,0 +1,20 @@
+/**
+ * Custom Utilities — Survivor 50 Fiji Theme
+ * Glow, shadow, and other design-specific utilities.
+ */
+
+@utility text-glow-fire {
+  text-shadow: 0 0 30px rgba(232, 114, 42, 0.3);
+}
+
+@utility text-glow-torch {
+  text-shadow: 0 0 30px rgba(245, 183, 49, 0.4);
+}
+
+@utility shadow-fire {
+  box-shadow: 0 0 20px rgba(232, 114, 42, 0.15);
+}
+
+@utility shadow-fire-lg {
+  box-shadow: 0 0 30px rgba(232, 114, 42, 0.3);
+}

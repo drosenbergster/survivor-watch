@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useApp } from './AppContext';
-import { ALL_CASTAWAYS, SCORE_EVENTS, PLAYER_COLORS } from './data';
+import { useApp } from '../../AppContext';
+import { ALL_CASTAWAYS, SCORE_EVENTS, PLAYER_COLORS } from '../../data';
+import { ScreenHeader } from '../ui';
 
 export default function ScoreboardTab() {
     const { gameState, saveGame } = useApp();
@@ -35,6 +36,7 @@ export default function ScoreboardTab() {
             event: eventKey,
             label: event.label,
             points: event.points,
+            // eslint-disable-next-line react-hooks/purity -- timestamp is set in event handler, not during render
             timestamp: Date.now(),
         };
 
@@ -64,23 +66,19 @@ export default function ScoreboardTab() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="text-center">
-                <h2 className="font-display text-4xl tracking-wider text-torch text-glow-torch">Season Scoreboard</h2>
-                <p className="text-stone-400 text-sm mt-1">Track points across the whole season. Update after each episode!</p>
-            </div>
+            <ScreenHeader title="Season Scoreboard" subtitle="Track points across the whole season. Update after each episode!" />
 
             {/* Score cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {ranked.map(({ name, idx, score }, rank) => (
-                    <div
+                    <article
                         key={idx}
                         className="bg-stone-900 border border-stone-800 rounded-xl p-4 hover:shadow-fire transition-all"
                         style={{ borderTopColor: PLAYER_COLORS[idx].hex, borderTopWidth: '3px' }}
                     >
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-xs text-stone-500">#{rank + 1}</span>
-                            {rank === 0 && score > 0 && <span className="text-xs">👑</span>}
+                            {rank === 0 && score > 0 && <span className="text-xs" aria-hidden="true">👑</span>}
                         </div>
                         <h3 className="font-display text-lg tracking-wider" style={{ color: PLAYER_COLORS[idx].hex }}>
                             {name}
@@ -102,12 +100,12 @@ export default function ScoreboardTab() {
                                 );
                             })}
                         </div>
-                    </div>
+                    </article>
                 ))}
             </div>
 
             {/* Event logger */}
-            <div className="bg-stone-900 border border-stone-800 rounded-xl p-5">
+            <section className="bg-stone-900 border border-stone-800 rounded-xl p-5">
                 <h3 className="font-display text-xl tracking-wider text-torch mb-4">Log Events</h3>
 
                 <div className="flex flex-wrap items-center gap-3 mb-4">
@@ -115,6 +113,7 @@ export default function ScoreboardTab() {
                         value={selectedCastaway}
                         onChange={(e) => setSelectedCastaway(e.target.value)}
                         className="px-3 py-2 rounded-lg border border-stone-700 bg-stone-800 text-stone-100 text-sm outline-none max-w-xs"
+                        aria-label="Select castaway to log event for"
                     >
                         <option value="">Select a castaway...</option>
                         {ALL_CASTAWAYS.map(c => (
@@ -164,7 +163,7 @@ export default function ScoreboardTab() {
                         })}
                     </div>
                 )}
-            </div>
+            </section>
         </div>
     );
 }

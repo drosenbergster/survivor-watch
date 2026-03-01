@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useApp } from './AppContext';
-import { generateBingoCard } from './data';
+import { useApp } from '../../AppContext';
+import { generateBingoCard } from '../../data';
+import { ScreenHeader, Button } from '../ui';
 
 export default function BingoTab() {
     const { gameState, saveGame } = useApp();
@@ -16,6 +17,15 @@ export default function BingoTab() {
     const marks = playerCard?.marks || Array(25).fill(false);
     const card = generateBingoCard(seed);
 
+    const saveBingoState = useCallback(async (s, m) => {
+        const newCards = { ...(bingo?.cards || {}) };
+        newCards[selectedPlayer] = { seed: s, marks: m };
+        await saveGame({
+            ...gameState,
+            bingo: { ...bingo, cards: newCards },
+        });
+    }, [selectedPlayer, gameState, bingo, saveGame]);
+
     // Always mark free space
     useEffect(() => {
         if (!marks[12]) {
@@ -23,16 +33,7 @@ export default function BingoTab() {
             newMarks[12] = true;
             saveBingoState(seed, newMarks);
         }
-    }, [selectedPlayer]);
-
-    const saveBingoState = async (s, m) => {
-        const newCards = { ...(bingo?.cards || {}) };
-        newCards[selectedPlayer] = { seed: s, marks: m };
-        await saveGame({
-            ...gameState,
-            bingo: { ...bingo, cards: newCards },
-        });
-    };
+    }, [selectedPlayer, marks, seed, saveBingoState]);
 
     const toggleMark = async (index) => {
         if (index === 12) return; // Free space always marked
@@ -81,37 +82,36 @@ export default function BingoTab() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="text-center">
-                <h2 className="font-display text-4xl tracking-wider text-torch text-glow-torch">Survivor Bingo</h2>
-                <p className="text-stone-400 text-sm mt-1">
-                    Mark squares as they happen. First to 5 in a row yells{' '}
-                    <span className="text-fire-400 font-bold text-base">"JEFF PROBST!"</span> 🍻
-                </p>
-            </div>
+            <ScreenHeader
+                title="Survivor Bingo"
+                subtitle={
+                    <>
+                        Mark squares as they happen. First to 5 in a row yells{' '}
+                        <span className="text-fire-400 font-bold text-base">"JEFF PROBST!"</span> 🍻
+                    </>
+                }
+            />
 
             {/* Controls */}
             <div className="flex items-center justify-center gap-3 flex-wrap">
-                <label className="text-stone-400 text-sm">Card for:</label>
+                <label htmlFor="player-select" className="text-stone-400 text-sm">Card for:</label>
                 <select
+                    id="player-select"
                     value={selectedPlayer}
                     onChange={(e) => setSelectedPlayer(Number(e.target.value))}
                     className="px-3 py-2 rounded-lg border border-stone-700 bg-stone-800 text-stone-100 text-sm outline-none"
+                    aria-label="Select player for bingo card"
                 >
                     {players.map((name, i) => (
                         <option key={i} value={i}>{name}</option>
                     ))}
                 </select>
-                <button onClick={newCard} className="px-3 py-2 text-sm rounded-lg border border-stone-700 bg-stone-800 text-stone-400 hover:text-stone-200 hover:border-stone-600 transition-all cursor-pointer">
-                    🔀 New Card
-                </button>
-                <button onClick={resetMarks} className="px-3 py-2 text-sm rounded-lg border border-stone-700 bg-stone-800 text-stone-400 hover:text-stone-200 hover:border-stone-600 transition-all cursor-pointer">
-                    🔄 Reset
-                </button>
+                <Button onClick={newCard}>🔀 New Card</Button>
+                <Button onClick={resetMarks}>🔄 Reset</Button>
             </div>
 
             {/* Bingo Board */}
-            <div className="grid grid-cols-5 gap-1.5 max-w-lg mx-auto">
+            <div className="grid grid-cols-5 gap-1.5 max-w-lg mx-auto" role="grid" aria-label="Bingo card">
                 {card.map((item, i) => {
                     const isFree = i === 12;
                     const isMarked = marks[i];
@@ -129,6 +129,8 @@ export default function BingoTab() {
                                         : 'bg-stone-900 border border-stone-700 text-stone-400 hover:bg-stone-800 hover:border-stone-600 hover:text-stone-200'}
                 ${isWinning ? 'animate-pulse-win' : ''}
               `}
+                            aria-pressed={isMarked}
+                            aria-label={isFree ? 'Free space' : `${item}${isMarked ? ', marked' : ''}`}
                         >
                             <span className="line-clamp-4">{item}</span>
                         </button>
@@ -138,7 +140,7 @@ export default function BingoTab() {
 
             {/* Win animation */}
             {winAnimation && (
-                <div className="text-center animate-bounce-in">
+                <div className="text-center animate-bounce-in" role="status" aria-live="polite">
                     <span className="font-display text-5xl tracking-wider text-torch text-glow-torch block">
                         🔥 JEFF PROBST! 🔥
                     </span>
