@@ -1,15 +1,77 @@
 {
   "rules": {
-    "games": {
-      "$gameId": {
-        ".read": "auth != null",
-        ".write": "auth != null"
+    "leagues": {
+      "$leagueId": {
+        ".read": "auth != null && data.child('members').child(auth.uid).exists()",
+        "name": { ".write": "auth != null && data.parent().child('createdBy').val() === auth.uid" },
+        "status": { ".write": "auth != null && data.parent().child('createdBy').val() === auth.uid" },
+        "currentEpisode": { ".write": "auth != null && data.parent().child('createdBy').val() === auth.uid" },
+        "joinCode": { ".write": false },
+        "createdBy": { ".write": false },
+        "createdAt": { ".write": false },
+        "members": {
+          "$uid": {
+            ".write": "auth != null && (auth.uid === $uid || data.parent().parent().child('createdBy').val() === auth.uid)",
+            ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
+          },
+          ".read": "auth != null && data.parent().child('members').child(auth.uid).exists()"
+        },
+        "draft": {
+          ".write": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()",
+          ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
+        },
+        "rideOrDies": {
+          ".write": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()",
+          ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
+        },
+        "passports": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && !data.exists()",
+            ".read": "auth != null && auth.uid === $uid"
+          }
+        },
+        "episodes": {
+          "$epNum": {
+            ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()",
+            "status": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+            "propBets": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+            "picks": {
+              "$uid": {
+                ".write": "auth != null && auth.uid === $uid && data.parent().parent().child('status').val() === 'pre_episode'"
+              }
+            },
+            "predictions": {
+              "$uid": {
+                ".write": "auth != null && auth.uid === $uid && data.parent().parent().child('status').val() === 'pre_episode'"
+              }
+            },
+            "gameEvents": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+            "propBetResults": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+            "boldResults": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+            "eliminatedThisEp": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+            "eliminationMethod": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+            "scored": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+            "scoredAt": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+            ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid && !data.exists()"
+          }
+        },
+        "eliminated": {
+          ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid",
+          ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
+        },
+        ".write": "auth != null && !data.exists()"
       }
     },
     "users": {
       "$userId": {
         ".read": "auth != null && auth.uid === $userId",
         ".write": "auth != null && auth.uid === $userId"
+      }
+    },
+    "leagueCodes": {
+      "$code": {
+        ".read": "auth != null",
+        ".write": "auth != null && !data.exists()"
       }
     }
   }

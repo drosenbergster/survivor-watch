@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Authentic Fijian Sign In Desktop</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&amp;family=Bebas+Neue&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d97736", 
+                        "ochre": "#c19a6b", 
+                        "charcoal": "#1a1614", 
+                        "deep-charcoal": "#120f0d",
+                        "sand": "#e3d5c6",
+                        "sand-dim": "#a89b8c",
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "sans-serif"],
+                        "survivor": ["Bebas Neue", "sans-serif"],
+                    },
+                    backgroundImage: {
+                        'masi-pattern': "repeating-linear-gradient(45deg, #241e1a 0, #241e1a 2px, transparent 2px, transparent 12px), repeating-linear-gradient(-45deg, #241e1a 0, #241e1a 2px, transparent 2px, transparent 12px)",
+                        'wood-texture': "linear-gradient(180deg, rgba(60,40,20,0.8), rgba(40,25,10,0.9)), url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjNDIzMDIwIi8+CjxwYXRoIGQ9Ik0wIDBMNCA0Wk00IDBMMCA0WiIgc3Ryb2tlPSIjNTQzYjJmIiBzdHJva2Utd2lkdGg9IjEiLz4KPC9zdmc+')",
+                        'torch-glow': "radial-gradient(circle, rgba(217,119,54,0.4) 0%, rgba(217,119,54,0) 70%)",
+                    },
+                    boxShadow: {
+                        'glow': '0 0 20px rgba(217, 119, 54, 0.5)',
+                        'inset-wood': 'inset 0 2px 4px rgba(0,0,0,0.5), 0 1px 2px rgba(255,255,255,0.1)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>.text-wood {
+            background: linear-gradient(to bottom, #d4b08c, #8c6a4a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .masi-border {
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 20 L20 0 L40 20 L20 40 Z' fill='none' stroke='%233a2e26' stroke-width='2'/%3E%3C/svg%3E");
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-deep-charcoal font-display antialiased min-h-screen flex flex-col relative overflow-hidden text-sand">
+<div class="absolute inset-0 z-0 bg-deep-charcoal"></div>
+<div class="absolute inset-0 z-0 bg-masi-pattern opacity-30 pointer-events-none"></div>
+<div class="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(10,8,6,0.8)_100%)] pointer-events-none"></div>
+<header class="relative z-20 w-full px-8 py-8 flex justify-between items-center">
+<div class="flex items-center gap-2 opacity-0 md:opacity-100">
+<span class="material-symbols-outlined text-ochre">local_fire_department</span>
+</div>
+<nav class="hidden md:flex items-center justify-center gap-12 bg-charcoal/80 px-8 py-3 rounded-full border border-[#3a2e26] backdrop-blur-sm shadow-xl">
+<a class="text-sand-dim hover:text-primary hover:scale-105 transition-all text-sm font-survivor text-xl tracking-widest" href="#">Sevu</a>
+<div class="w-1 h-1 rounded-full bg-[#3a2e26]"></div>
+<a class="text-sand-dim hover:text-primary hover:scale-105 transition-all text-sm font-survivor text-xl tracking-widest" href="#">Qito</a>
+<div class="w-1 h-1 rounded-full bg-[#3a2e26]"></div>
+<a class="text-sand-dim hover:text-primary hover:scale-105 transition-all text-sm font-survivor text-xl tracking-widest" href="#">Tovo</a>
+<div class="w-1 h-1 rounded-full bg-[#3a2e26]"></div>
+<a class="text-sand-dim hover:text-primary hover:scale-105 transition-all text-sm font-survivor text-xl tracking-widest" href="#">Lawa</a>
+</nav>
+<div class="w-8"></div>
+</header>
+<main class="relative z-10 flex-1 flex flex-col items-center justify-center p-4">
+<div class="mb-6 relative flex justify-center items-center">
+<div class="absolute inset-0 bg-torch-glow blur-2xl transform scale-150"></div>
+<div class="relative z-10 bg-gradient-to-br from-[#3a2e26] to-[#1a1614] border-2 border-primary/30 p-5 rounded-full shadow-[0_0_30px_rgba(217,119,54,0.3)]">
+<span class="material-symbols-outlined text-primary text-6xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">local_fire_department</span>
+</div>
+</div>
+<div class="w-full max-w-[440px] relative">
+<div class="absolute -top-3 -left-3 w-8 h-8 border-t-2 border-l-2 border-ochre/40"></div>
+<div class="absolute -top-3 -right-3 w-8 h-8 border-t-2 border-r-2 border-ochre/40"></div>
+<div class="absolute -bottom-3 -left-3 w-8 h-8 border-b-2 border-l-2 border-ochre/40"></div>
+<div class="absolute -bottom-3 -right-3 w-8 h-8 border-b-2 border-r-2 border-ochre/40"></div>
+<div class="bg-[#1e1915]/90 backdrop-blur-md border border-[#3a2e26] shadow-2xl overflow-hidden relative">
+<div class="pt-10 pb-2 text-center relative z-10">
+<h1 class="font-survivor text-6xl tracking-widest text-wood drop-shadow-lg mb-1">SURVIVOR 50</h1>
+<div class="flex items-center justify-center gap-3 opacity-80">
+<div class="h-[1px] w-8 bg-ochre/50"></div>
+<p class="text-ochre text-xs uppercase tracking-[0.3em] font-bold">Authentic Fijian</p>
+<div class="h-[1px] w-8 bg-ochre/50"></div>
+</div>
+</div>
+<div class="p-8 pt-6">
+<form class="space-y-6">
+<div class="relative group">
+<label class="block text-xs uppercase tracking-wider text-sand-dim mb-2 font-bold ml-1">Email Address</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-ochre/70 text-lg">mail</span>
+</div>
+<input class="w-full bg-[#120f0d] border border-[#3a2e26] text-sand rounded-none py-4 pl-12 pr-4 focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-[#4a3e36] transition-all font-display" placeholder="survivor@example.com" type="email"/>
+<div class="absolute bottom-0 left-0 h-[2px] w-0 bg-primary group-hover:w-full transition-all duration-300"></div>
+</div>
+</div>
+<button class="w-full bg-wood-texture relative overflow-hidden group border border-[#5c4028] shadow-inset-wood hover:brightness-110 active:scale-[0.99] transition-all py-4 mt-2" type="button">
+<div class="absolute inset-0 bg-primary/10 group-hover:bg-primary/20 transition-colors"></div>
+<div class="relative z-10 flex items-center justify-center gap-2">
+<span class="font-survivor text-2xl tracking-widest text-[#ffe4c4] drop-shadow-md">Send Magic Link</span>
+<span class="material-symbols-outlined text-[#ffe4c4] text-lg">arrow_forward</span>
+</div>
+</button>
+</form>
+<div class="mt-8 flex items-center justify-center gap-4">
+<div class="h-px bg-gradient-to-r from-transparent via-[#3a2e26] to-transparent flex-1"></div>
+<p class="text-[#5c4a3d] text-xs font-survivor tracking-widest uppercase">Or join tribe with</p>
+<div class="h-px bg-gradient-to-r from-transparent via-[#3a2e26] to-transparent flex-1"></div>
+</div>
+<div class="mt-6 grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-2 py-3 px-4 bg-[#120f0d] hover:bg-[#1a1614] border border-[#3a2e26] hover:border-ochre/30 transition-all group">
+<svg aria-hidden="true" class="w-5 h-5 text-sand-dim group-hover:text-sand transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"></path></svg>
+<span class="text-sand-dim group-hover:text-sand text-sm font-medium tracking-wide">Google</span>
+</button>
+<button class="flex items-center justify-center gap-2 py-3 px-4 bg-[#120f0d] hover:bg-[#1a1614] border border-[#3a2e26] hover:border-ochre/30 transition-all group">
+<svg aria-hidden="true" class="w-5 h-5 text-sand-dim group-hover:text-sand transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M13.156 17.275V20.6667C13.156 21.403 13.753 22 14.4893 22H20.6666C21.4029 22 22 21.403 22 20.6667V14.4893C22 13.753 21.4029 13.156 20.6666 13.156H17.2749V13.156H15.8055C15.0691 13.156 14.4721 12.559 14.4721 11.8227V10.3532C14.4721 9.6169 15.0691 9.01986 15.8055 9.01986H17.2749V5.62819C17.2749 4.89186 16.6778 4.29486 15.9415 4.29486H11.8227C11.0864 4.29486 10.4893 4.89186 10.4893 5.62819V10.3532C10.4893 11.0895 9.89233 11.6865 9.156 11.6865H7.68653C6.9502 11.6865 6.3532 11.0895 6.3532 10.3532V5.62819C6.3532 4.89186 5.75619 4.29486 5.01986 4.29486H3.33333C2.597 4.29486 2 4.89186 2 5.62819V17.275H13.156Z"></path></svg>
+<span class="text-sand-dim group-hover:text-sand text-sm font-medium tracking-wide">Apple</span>
+</button>
+</div>
+</div>
+<div class="h-2 w-full masi-border opacity-30 mt-4"></div>
+</div>
+</div>
+</main>
+<footer class="w-full relative z-10 px-8 py-6 flex justify-between items-end text-[#5c4a3d] text-xs">
+<div class="flex flex-col gap-1">
+<p>© 2024 Survivor 50. All rights reserved.</p>
+<div class="flex gap-4">
+<a class="hover:text-ochre transition-colors" href="#">Privacy</a>
+<a class="hover:text-ochre transition-colors" href="#">Terms</a>
+</div>
+</div>
+</footer>
+
+</body></html>

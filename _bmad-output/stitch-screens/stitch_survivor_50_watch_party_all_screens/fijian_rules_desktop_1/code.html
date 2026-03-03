@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Authentic Fijian Rules Desktop</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "terracotta": "#c05832",
+                        "terracotta-dark": "#8a3a1b",
+                        "sand": "#e6dccd",
+                        "sand-light": "#f4efe9",
+                        "wood-dark": "#3d2b1f",
+                        "wood-medium": "#5c4030",
+                        "tapa-brown": "#4a3728",
+                        "ocean-deep": "#1a4c5e",
+                    },
+                    fontFamily: {
+                        "wood": ["Bebas Neue", "sans-serif"],
+                        "body": ["Space Grotesk", "sans-serif"]
+                    },
+                    backgroundImage: {
+                        'masi-pattern': "url('https://images.unsplash.com/photo-1595350280962-d452097e3c92?q=80&w=2070&auto=format&fit=crop')",
+                    }
+                },
+            },
+        }
+    </script>
+<style>.magimagi-border {
+    border: 12px solid #5c4030;
+    border-image: repeating-linear-gradient(45deg, #3d2b1f, #3d2b1f 10px, #8a3a1b 10px, #8a3a1b 20px) 20;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5), 0 10px 25px -5px rgba(0, 0, 0, 0.5)
+    }
+.magimagi-frame {
+    border: 16px solid #5c4030;
+    border-image: repeating-linear-gradient(45deg, #2a1d15, #2a1d15 15px, #a05a2c 15px, #a05a2c 30px) 30
+    }::-webkit-scrollbar {
+    width: 10px;
+    height: 10px
+    }
+::-webkit-scrollbar-track {
+    background: #3d2b1f
+    }
+::-webkit-scrollbar-thumb {
+    background: #c05832;
+    border: 2px solid #3d2b1f
+    }
+.wood-text {
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.05em
+    }
+.masi-bg {
+    background-color: #e6dccd;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuAupLEVXQgSYG1YU2BDkIJ_5yxYmy81PrcmWoIh36HvMZ7iLNwOqzu3lvUbN9hbOoV9FyZmG1o16tvqrQlu8PPN3wlntSK5lFyhV8ZrqAcQaygA2cYm56lKF1YuDRTz2W6S4-8H8Y03iymnkC9wjuZrDzYRDek1hF2H9y6mnDxDR_or9oWmTmIOPXjYfEo7irIDh_tOA0rzrpujmYl4NFP4WSrjKSBAQPWO2J9SrmjOZWPRa7Ur8FwJfkel_Y5SU6HuklH3YWy47YSq);background-blend-mode: multiply
+    }</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-wood-dark font-body text-wood-dark min-h-screen flex flex-col overflow-x-hidden selection:bg-terracotta selection:text-sand">
+<div class="w-full bg-wood-dark border-b-4 border-terracotta sticky top-0 z-50 shadow-2xl">
+<div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<button class="text-sand/80 hover:text-terracotta transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="flex flex-col">
+<h2 class="text-2xl font-wood tracking-widest text-sand uppercase">Fijian Rules</h2>
+<span class="text-xs text-terracotta font-bold tracking-widest uppercase opacity-80">Lawa &amp; Qito</span>
+</div>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-sand/70 hover:text-terracotta text-sm font-medium transition-colors flex items-center gap-2 uppercase tracking-wide" href="#">
+<span class="material-symbols-outlined text-[20px]">home</span> Home
+            </a>
+<a class="text-terracotta text-sm font-bold flex items-center gap-2 uppercase tracking-wide border-b-2 border-terracotta pb-1" href="#">
+<span class="material-symbols-outlined text-[20px] fill-1">gavel</span> Rules
+            </a>
+<a class="text-sand/70 hover:text-terracotta text-sm font-medium transition-colors flex items-center gap-2 uppercase tracking-wide" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span> Draft
+            </a>
+<a class="text-sand/70 hover:text-terracotta text-sm font-medium transition-colors flex items-center gap-2 uppercase tracking-wide" href="#">
+<span class="material-symbols-outlined text-[20px]">account_circle</span> Profile
+            </a>
+</div>
+<button class="md:hidden text-sand/80">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</div>
+<main class="flex-grow relative w-full bg-[#d4c5b0] p-4 md:p-8">
+<div class="magimagi-frame relative w-full min-h-full bg-sand shadow-2xl overflow-hidden">
+<div class="absolute inset-0 opacity-40 pointer-events-none z-0 mix-blend-multiply">
+<img alt="Textured paper background representing masi cloth" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPHgT_UlW5hSVFEoEx9ZpvSLFlonAA0W24eG6PrSANSgcU9SXB_EHhsRerukFiW3jKAmJjW3ufFvHbYOk6u8BVUM2FLQcT8WISP56P9TevwIjXLMaSLIbHqYb2wJOwAAppikZU8m6o9FJL7zEvAnpRnuyQLbnui-kyNcLDQd5Wtk6IiFw0J0dRmXva0UdQPlhJIVtLqg_gcnQ9hVOEfji_HtpSZitVi-V0k3NTyjIsEYsZAnrl0Y8sZ1kTZSBwJvRZB_daPYouwjxn"/>
+</div>
+<div class="absolute inset-0 opacity-10 pointer-events-none z-0" style="background-image: radial-gradient(#3d2b1f 1px, transparent 1px); background-size: 20px 20px;"></div>
+<div class="relative z-10 max-w-7xl mx-auto px-6 py-10 md:py-16">
+<div class="text-center mb-16 relative">
+<div class="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-64 h-64 bg-terracotta/10 rounded-full blur-3xl -z-10"></div>
+<h1 class="text-6xl md:text-8xl font-wood text-wood-dark mb-2 drop-shadow-sm tracking-widest uppercase wood-text">The Grand Lawa Scroll</h1>
+<div class="flex items-center justify-center gap-4 mb-4">
+<span class="h-px w-12 bg-terracotta"></span>
+<span class="text-terracotta font-bold tracking-[0.2em] uppercase text-sm">Sacred Rules of the Game</span>
+<span class="h-px w-12 bg-terracotta"></span>
+</div>
+<p class="text-lg md:text-xl text-wood-medium max-w-2xl mx-auto font-body italic">"Welcome to the Sevu. Review the sacred laws of the game below as written by the elders."</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+<div class="lg:col-span-4 flex flex-col gap-6">
+<div class="magimagi-border bg-[#eaddcf] p-6 relative shadow-xl">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-terracotta to-transparent opacity-50"></div>
+<div class="flex items-center gap-3 mb-6 pb-4 border-b-2 border-wood-dark/10 border-dashed">
+<span class="material-symbols-outlined text-terracotta text-4xl">token</span>
+<div>
+<h3 class="text-3xl font-wood text-wood-dark tracking-wide uppercase">Bracket Draft</h3>
+<p class="text-xs text-terracotta font-bold uppercase tracking-widest">Sevu Rules</p>
+</div>
+</div>
+<div class="space-y-6 text-wood-dark">
+<div class="group bg-wood-dark/5 hover:bg-terracotta/10 p-4 rounded-sm transition-colors border-l-4 border-wood-medium hover:border-terracotta">
+<h4 class="text-wood-dark font-wood tracking-wide text-xl mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-terracotta text-lg">check_circle</span> Selection Order
+                                </h4>
+<p class="text-sm leading-relaxed opacity-90">Draft order is determined by random draw of bamboo sticks. The tribe speaks, and the order is final.</p>
+</div>
+<div class="group bg-wood-dark/5 hover:bg-terracotta/10 p-4 rounded-sm transition-colors border-l-4 border-wood-medium hover:border-terracotta">
+<h4 class="text-wood-dark font-wood tracking-wide text-xl mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-terracotta text-lg">groups</span> Tribe Allocation
+                                </h4>
+<p class="text-sm leading-relaxed opacity-90">Each player must select 2 castaways from each tribe. No one can hoard a single alliance.</p>
+</div>
+<div class="group bg-wood-dark/5 hover:bg-terracotta/10 p-4 rounded-sm transition-colors border-l-4 border-wood-medium hover:border-terracotta">
+<h4 class="text-wood-dark font-wood tracking-wide text-xl mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-terracotta text-lg">swap_horiz</span> The Swap Clause
+                                </h4>
+<p class="text-sm leading-relaxed opacity-90">If a tribe swap occurs, your roster remains locked. You play the hand you are dealt by the island gods.</p>
+</div>
+<div class="mt-6 p-4 bg-terracotta/10 border border-terracotta/30 rounded-sm relative">
+<span class="material-symbols-outlined absolute -top-3 -left-2 text-terracotta bg-[#eaddcf] px-1">format_quote</span>
+<p class="text-xs text-terracotta font-bold uppercase tracking-wider mb-1 mt-1">Elders Note</p>
+<p class="text-sm italic text-wood-dark/80 font-serif">"Trust no one, not even your draft picks."</p>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-4 flex flex-col gap-6">
+<div class="magimagi-border bg-[#eaddcf] p-6 relative shadow-xl overflow-hidden h-full">
+<span class="material-symbols-outlined absolute -right-8 -bottom-8 text-[10rem] text-wood-dark/5 rotate-12 select-none">sports_score</span>
+<div class="flex items-center gap-3 mb-6 pb-4 border-b-2 border-wood-dark/10 border-dashed relative z-10">
+<span class="material-symbols-outlined text-terracotta text-4xl">leaderboard</span>
+<div>
+<h3 class="text-3xl font-wood text-wood-dark tracking-wide uppercase">Scoring System</h3>
+<p class="text-xs text-terracotta font-bold uppercase tracking-widest">Lawa ni Qito</p>
+</div>
+</div>
+<div class="overflow-x-auto relative z-10">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b-2 border-wood-dark/20">
+<th class="py-3 px-2 text-wood-dark font-wood text-lg tracking-wider">Action</th>
+<th class="py-3 px-2 text-right text-wood-dark font-wood text-lg tracking-wider">Points</th>
+</tr>
+</thead>
+<tbody class="text-wood-dark text-sm font-medium">
+<tr class="border-b border-wood-dark/10 hover:bg-terracotta/5 transition-colors group">
+<td class="py-4 px-2 flex items-center gap-3">
+<span class="material-symbols-outlined text-terracotta text-xl group-hover:scale-110 transition-transform">water_drop</span>
+<span>Immunity Win (Indiv.)</span>
+</td>
+<td class="py-4 px-2 text-right font-wood text-xl text-terracotta">+10</td>
+</tr>
+<tr class="border-b border-wood-dark/10 hover:bg-terracotta/5 transition-colors group">
+<td class="py-4 px-2 flex items-center gap-3">
+<span class="material-symbols-outlined text-terracotta text-xl group-hover:scale-110 transition-transform">local_fire_department</span>
+<span>Idol Found</span>
+</td>
+<td class="py-4 px-2 text-right font-wood text-xl text-terracotta">+5</td>
+</tr>
+<tr class="border-b border-wood-dark/10 hover:bg-terracotta/5 transition-colors group">
+<td class="py-4 px-2 flex items-center gap-3">
+<span class="material-symbols-outlined text-terracotta text-xl group-hover:scale-110 transition-transform">local_fire_department</span>
+<span>Idol Played Correctly</span>
+</td>
+<td class="py-4 px-2 text-right font-wood text-xl text-terracotta">+15</td>
+</tr>
+<tr class="border-b border-wood-dark/10 hover:bg-terracotta/5 transition-colors group">
+<td class="py-4 px-2 flex items-center gap-3">
+<span class="material-symbols-outlined text-terracotta text-xl group-hover:scale-110 transition-transform">water_drop</span>
+<span>Survive Tribal</span>
+</td>
+<td class="py-4 px-2 text-right font-wood text-xl text-terracotta">+2</td>
+</tr>
+<tr class="border-b border-wood-dark/10 hover:bg-terracotta/5 transition-colors group">
+<td class="py-4 px-2 flex items-center gap-3">
+<span class="material-symbols-outlined text-terracotta text-xl group-hover:scale-110 transition-transform">water_drop</span>
+<span>Confessional (First)</span>
+</td>
+<td class="py-4 px-2 text-right font-wood text-xl text-terracotta">+3</td>
+</tr>
+<tr class="border-b border-wood-dark/10 hover:bg-terracotta/5 transition-colors group">
+<td class="py-4 px-2 flex items-center gap-3">
+<span class="material-symbols-outlined text-wood-medium text-xl group-hover:scale-110 transition-transform">thumb_down</span>
+<span>Vote Cast Against</span>
+</td>
+<td class="py-4 px-2 text-right font-wood text-xl text-wood-medium">-1</td>
+</tr>
+<tr class="hover:bg-terracotta/5 transition-colors group">
+<td class="py-4 px-2 flex items-center gap-3">
+<span class="material-symbols-outlined text-red-800 text-xl group-hover:scale-110 transition-transform">logout</span>
+<span>Voted Out</span>
+</td>
+<td class="py-4 px-2 text-right font-wood text-xl text-red-800">ELIM</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-8 text-center relative z-10">
+<button class="text-sm font-bold uppercase tracking-widest text-wood-dark border-b-2 border-terracotta hover:text-terracotta hover:border-wood-dark transition-all pb-1">View Complete Scoring Matrix</button>
+</div>
+</div>
+</div>
+<div class="lg:col-span-4 flex flex-col gap-8">
+<div class="magimagi-border bg-[#eaddcf] p-6 relative shadow-xl">
+<div class="flex items-center gap-3 mb-6 pb-4 border-b-2 border-wood-dark/10 border-dashed">
+<span class="material-symbols-outlined text-terracotta text-4xl">grid_on</span>
+<div>
+<h3 class="text-3xl font-wood text-wood-dark tracking-wide uppercase">Bingo</h3>
+<p class="text-xs text-terracotta font-bold uppercase tracking-widest">Qito</p>
+</div>
+</div>
+<p class="text-sm text-wood-medium mb-6 italic">Complete a row, column, or diagonal to win weekly immunity.</p>
+<div class="grid grid-cols-3 gap-2 aspect-square mb-2 bg-wood-dark p-2 rounded-sm shadow-inner">
+<div class="bg-[#eaddcf] border-2 border-transparent rounded-sm flex items-center justify-center p-1 text-center text-[10px] md:text-xs font-bold text-wood-dark leading-tight hover:bg-terracotta hover:text-white transition-all cursor-pointer shadow-sm">
+                                "Come on in guys!"
+                            </div>
+<div class="bg-[#eaddcf] border-2 border-transparent rounded-sm flex items-center justify-center p-1 text-center text-[10px] md:text-xs font-bold text-wood-dark leading-tight hover:bg-terracotta hover:text-white transition-all cursor-pointer shadow-sm">
+                                Crying Confessional
+                            </div>
+<div class="bg-[#eaddcf] border-2 border-transparent rounded-sm flex items-center justify-center p-1 text-center text-[10px] md:text-xs font-bold text-wood-dark leading-tight hover:bg-terracotta hover:text-white transition-all cursor-pointer shadow-sm">
+                                Blindside Face
+                            </div>
+<div class="bg-[#eaddcf] border-2 border-transparent rounded-sm flex items-center justify-center p-1 text-center text-[10px] md:text-xs font-bold text-wood-dark leading-tight hover:bg-terracotta hover:text-white transition-all cursor-pointer shadow-sm">
+                                Challenge Beast
+                            </div>
+<div class="bg-terracotta border-2 border-terracotta rounded-sm flex items-center justify-center p-1 text-center text-[10px] md:text-xs text-white font-wood tracking-widest shadow-sm">
+                                FREE
+                            </div>
+<div class="bg-[#eaddcf] border-2 border-transparent rounded-sm flex items-center justify-center p-1 text-center text-[10px] md:text-xs font-bold text-wood-dark leading-tight hover:bg-terracotta hover:text-white transition-all cursor-pointer shadow-sm">
+                                Idol Flushed
+                            </div>
+<div class="bg-[#eaddcf] border-2 border-transparent rounded-sm flex items-center justify-center p-1 text-center text-[10px] md:text-xs font-bold text-wood-dark leading-tight hover:bg-terracotta hover:text-white transition-all cursor-pointer shadow-sm">
+                                Spy Shack
+                            </div>
+<div class="bg-[#eaddcf] border-2 border-transparent rounded-sm flex items-center justify-center p-1 text-center text-[10px] md:text-xs font-bold text-wood-dark leading-tight hover:bg-terracotta hover:text-white transition-all cursor-pointer shadow-sm">
+                                Food Reward
+                            </div>
+<div class="bg-[#eaddcf] border-2 border-transparent rounded-sm flex items-center justify-center p-1 text-center text-[10px] md:text-xs font-bold text-wood-dark leading-tight hover:bg-terracotta hover:text-white transition-all cursor-pointer shadow-sm">
+                                "Dig Deep!"
+                            </div>
+</div>
+</div>
+<div class="bg-terracotta p-6 rounded-sm shadow-xl border-4 border-wood-dark relative overflow-hidden group">
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-[8rem] text-black/10 rotate-[-15deg]">coffee</span>
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-4 border-b border-white/20 pb-2">
+<span class="material-symbols-outlined text-white text-3xl">coffee</span>
+<div>
+<h3 class="text-2xl font-wood text-white tracking-wide uppercase shadow-black drop-shadow-md">The Probst Rule</h3>
+<p class="text-xs text-white/80 font-bold uppercase tracking-widest">Vaka-Viti</p>
+</div>
+</div>
+<p class="text-white text-sm font-medium leading-relaxed mb-6 drop-shadow-sm">
+                                If Jeff says "Dig Deep" more than 3 times in a challenge, all point values for that episode are <strong class="text-wood-dark bg-white/30 px-1 rounded">DOUBLED</strong>.
+                            </p>
+<div class="flex items-center justify-between text-white/90 text-xs font-bold uppercase tracking-wider mb-2">
+<span>Progress</span>
+<span>1 / 3</span>
+</div>
+<div class="w-full bg-black/20 h-3 rounded-full overflow-hidden border border-white/10">
+<div class="bg-white h-full w-1/3 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<div class="md:hidden sticky bottom-0 z-50">
+<div class="flex gap-2 border-t-4 border-terracotta bg-wood-dark px-4 pb-3 pt-2 w-full shadow-[0_-5px_15px_rgba(0,0,0,0.3)]">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-sand/60 hover:text-terracotta" href="#">
+<span class="material-symbols-outlined text-2xl">home</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 rounded-full text-terracotta" href="#">
+<span class="material-symbols-outlined fill-1 text-2xl">gavel</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Rules</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-sand/60 hover:text-terracotta" href="#">
+<span class="material-symbols-outlined text-2xl">group</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Draft</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-sand/60 hover:text-terracotta" href="#">
+<span class="material-symbols-outlined text-2xl">account_circle</span>
+<p class="text-[10px] font-bold uppercase tracking-wider">Profile</p>
+</a>
+</div>
+</div>
+
+</body></html>

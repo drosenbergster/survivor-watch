@@ -1,0 +1,260 @@
+<html class="dark"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Inter:wght@400;500;600;700;800&amp;family=Fondamento&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "masi-ochre": "#b35d33",
+            "masi-red": "#7d211a",
+            "masi-black": "#1a1a1a",
+            "masi-cream": "#d6c9b0",
+            "flame-orange": "#ff5f1f",
+            "fijian-stone": "#0f0f0f",
+          },
+          fontFamily: {
+            "bebas": ["Bebas Neue", "sans-serif"],
+            "carving": ["Fondamento", "serif"],
+            "sans": ["Inter", "sans-serif"]
+          },
+          borderRadius: {"DEFAULT": "0.375rem", "lg": "0.75rem", "xl": "1rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style type="text/tailwindcss">
+:root {
+    --bg-charcoal: #0f0f0f;
+    --magimagi-color: #8b5a2b;
+}
+.masi-pattern {
+    background-color: #1a1a1a;
+    background-image: 
+        linear-gradient(rgba(26, 26, 26, 0.85), rgba(26, 26, 26, 0.85)), 
+        url("https://lh3.googleusercontent.com/aida-public/AB6AXuCusH1VkXcOk3CvJVO9G6VBWTCdw8FitJCLhXlBs7JC0F7wTyfwQMoIPyEnMgR8sV7Wz-72UiwtfPkJ0mMPFKbHJBD4eDuAXDZhdH5S2BrPCg_WzsF6lT-ILRVIeOsnkLLO0DOEBp0gHNcXQPsL2ODHq9BEhYDd18orJo7PpKTO39jSkyzQaPvRdSm7tXxNCFcQLi5bS5EQKhEFf2jJ6rZcfeMo9LYKOeZWwUFXoZVOxjxsfMpRcQUrAqE7NgT0h3xEXb6qiMRbGl3C");background-repeat: repeat;
+}.voka-overlay {
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(179, 93, 51, 0.03) 20px, rgba(179, 93, 51, 0.03) 40px);
+    pointer-events: none;
+}
+.bamboo-border {
+    position: relative;
+    border: 1px solid rgba(214, 201, 176, 0.2);
+}
+.bamboo-border::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border: 1.5px solid #d6c9b0;
+    opacity: 0.15;
+    pointer-events: none;
+    border-radius: 4px;
+    mask-image: radial-gradient(circle at center, black 80%, transparent 100%);
+}
+.magimagi-edge {
+    border: 4px solid transparent;
+    border-image: repeating-linear-gradient(-45deg, #8b5a2b, #8b5a2b 2px, #5d3a1d 2px, #5d3a1d 4px) 4;
+}
+.text-carving {
+    font-family: "Fondamento", serif;
+    letter-spacing: 0.02em;
+}
+.tabua-icon {
+    font-size: 2.5rem;
+    color: #f5d393;
+    filter: drop-shadow(0 0 5px rgba(245, 211, 147, 0.5));
+}
+.win-glow {
+    text-shadow: 0 0 10px rgba(255, 95, 31, 0.8), 0 0 20px rgba(255, 95, 31, 0.4);
+}
+</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+      background-color: #1a1a1a;
+    }
+    .safe-bottom {
+      padding-bottom: env(safe-area-inset-bottom, 24px);
+    }
+</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="masi-pattern font-sans text-masi-cream min-h-screen relative overflow-x-hidden">
+<div class="voka-overlay absolute inset-0 z-0"></div>
+<div class="relative flex h-auto min-h-screen w-full flex-col z-10">
+<div class="flex items-center bg-masi-black/95 backdrop-blur-md p-4 pb-3 justify-between sticky top-0 z-50 border-b border-masi-ochre/20 shadow-lg">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-masi-red shadow-[0_0_8px_#7d211a]"></div>
+<h2 class="text-masi-cream/70 text-[11px] font-bold tracking-wider uppercase">bula_hq@survivor.com</h2>
+</div>
+<button class="text-masi-ochre text-xs font-black uppercase tracking-widest hover:text-masi-cream transition-all">Sere (Exit)</button>
+</div>
+<div class="px-4 py-8 text-center bg-gradient-to-b from-masi-red/30 via-transparent to-transparent">
+<div class="mb-1 text-3xl opacity-80">🔱</div>
+<h1 class="text-5xl text-carving font-normal leading-none text-masi-cream drop-shadow-md">
+            FIJIAN <span class="text-masi-ochre">BINGO</span>
+</h1>
+<p class="text-[10px] font-black tracking-[0.4em] text-masi-ochre/80 uppercase mt-2">Season 50 Watch Party</p>
+</div>
+<div class="px-2">
+<div class="flex justify-between gap-1">
+<a class="flex flex-col items-center justify-center text-masi-cream/40 pb-3 pt-2 flex-1 rounded-t-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl mb-1">waves</span>
+<p class="text-[9px] font-black uppercase tracking-widest">Sevu</p>
+</a>
+<a class="flex flex-col items-center justify-center text-masi-ochre pb-3 pt-2 flex-1 bg-masi-black/40 rounded-t-lg border-b-2 border-masi-ochre shadow-[0_-4px_12px_rgba(179,93,51,0.15)]" href="#">
+<span class="material-symbols-outlined text-xl mb-1 fill-1">casino</span>
+<p class="text-[9px] font-black uppercase tracking-widest font-carving">Qito</p>
+</a>
+<a class="flex flex-col items-center justify-center text-masi-cream/40 pb-3 pt-2 flex-1 transition-colors" href="#">
+<span class="material-symbols-outlined text-xl mb-1">vape_free</span>
+<p class="text-[9px] font-black uppercase tracking-widest">Tovo</p>
+</a>
+<a class="flex flex-col items-center justify-center text-masi-cream/40 pb-3 pt-2 flex-1 transition-colors" href="#">
+<span class="material-symbols-outlined text-xl mb-1">gavel</span>
+<p class="text-[9px] font-black uppercase tracking-widest">Lawa</p>
+</a>
+</div>
+</div>
+<div class="p-6 text-center">
+<h2 class="text-masi-cream text-4xl text-carving mb-2">Authentic Fijian Bingo</h2>
+<p class="text-masi-cream/60 text-sm leading-snug px-6 max-w-sm mx-auto font-medium">
+            Mark your card as the season unfolds. First to five in a row shouts <span class="text-flame-orange font-bold">"BULA!"</span>
+</p>
+</div>
+<div class="px-4 flex flex-wrap gap-3 items-center justify-between mb-8">
+<div class="flex-1 min-w-[140px]">
+<select class="w-full bg-masi-black border border-masi-ochre/30 rounded-lg text-sm text-masi-cream font-bold py-2.5 px-4 focus:ring-masi-ochre focus:border-masi-ochre">
+<option>Survivor: Jeff</option>
+<option>Survivor: Parvati</option>
+</select>
+</div>
+<div class="flex gap-2">
+<button class="bg-masi-ochre/20 hover:bg-masi-ochre/30 text-masi-cream border border-masi-ochre/30 py-2.5 px-4 rounded-lg text-xs font-black flex items-center gap-2 transition-all">
+<span class="material-symbols-outlined text-sm">auto_stories</span> NEW
+            </button>
+</div>
+</div>
+<div class="px-4 mb-10">
+<div class="magimagi-edge p-1 bg-masi-black shadow-2xl">
+<div class="grid grid-cols-5 gap-1.5 aspect-square w-full max-w-md mx-auto p-1 bg-masi-black">
+<div class="bg-masi-red aspect-square flex items-center justify-center p-2 text-center bamboo-border shadow-inner">
+<p class="text-[9px] font-bold text-masi-cream uppercase leading-tight">The tribe has spoken</p>
+</div>
+<div class="bg-masi-red aspect-square flex items-center justify-center p-2 text-center bamboo-border shadow-inner">
+<p class="text-[9px] font-bold text-masi-cream uppercase leading-tight">Someone cries</p>
+</div>
+<div class="bg-masi-ochre/40 aspect-square flex items-center justify-center p-2 text-center bamboo-border">
+<p class="text-[9px] font-medium text-masi-cream/80 uppercase leading-tight">Idol is found</p>
+</div>
+<div class="bg-masi-ochre/40 aspect-square flex items-center justify-center p-2 text-center bamboo-border">
+<p class="text-[9px] font-medium text-masi-cream/80 uppercase leading-tight">Jeff snuffs torch</p>
+</div>
+<div class="bg-masi-red aspect-square flex items-center justify-center p-2 text-center bamboo-border shadow-inner">
+<p class="text-[9px] font-bold text-masi-cream uppercase leading-tight">Rain at camp</p>
+</div>
+<div class="bg-masi-black aspect-square flex items-center justify-center p-2 text-center bamboo-border border-masi-ochre/10">
+<p class="text-[9px] font-medium text-masi-cream/50 uppercase leading-tight">"Dig deep!"</p>
+</div>
+<div class="bg-masi-red aspect-square flex items-center justify-center p-2 text-center bamboo-border shadow-inner">
+<p class="text-[9px] font-bold text-masi-cream uppercase leading-tight">Alliance betrayed</p>
+</div>
+<div class="bg-masi-black aspect-square flex items-center justify-center p-2 text-center bamboo-border border-masi-ochre/10">
+<p class="text-[9px] font-medium text-masi-cream/50 uppercase leading-tight">Challenge water</p>
+</div>
+<div class="bg-masi-black aspect-square flex items-center justify-center p-2 text-center bamboo-border border-masi-ochre/10">
+<p class="text-[9px] font-medium text-masi-cream/50 uppercase leading-tight">Flashback Montage</p>
+</div>
+<div class="bg-masi-black aspect-square flex items-center justify-center p-2 text-center bamboo-border border-masi-ochre/10">
+<p class="text-[9px] font-medium text-masi-cream/50 uppercase leading-tight">Monster mentioned</p>
+</div>
+<div class="bg-masi-black aspect-square flex items-center justify-center p-2 text-center bamboo-border border-masi-ochre/10">
+<p class="text-[9px] font-medium text-masi-cream/50 uppercase leading-tight">Hideous Shirt</p>
+</div>
+<div class="bg-masi-black aspect-square flex items-center justify-center p-2 text-center bamboo-border border-masi-ochre/10">
+<p class="text-[9px] font-medium text-masi-cream/50 uppercase leading-tight">Hidden Idol Clue</p>
+</div>
+<div class="bg-masi-black aspect-square flex flex-col items-center justify-center p-2 text-center bamboo-border border-masi-ochre/30">
+<span class="material-symbols-outlined tabua-icon fill-1">data_saver_on</span>
+<p class="text-[8px] font-black text-masi-ochre uppercase mt-0.5 font-carving">TABUA</p>
+</div>
+<div class="bg-masi-black aspect-square flex items-center justify-center p-2 text-center bamboo-border border-masi-ochre/10">
+<p class="text-[9px] font-medium text-masi-cream/50 uppercase leading-tight">Spider on screen</p>
+</div>
+<div class="bg-masi-ochre/40 aspect-square flex items-center justify-center p-2 text-center bamboo-border">
+<p class="text-[9px] font-medium text-masi-cream/80 uppercase leading-tight">"C'mon in!"</p>
+</div>
+<div class="bg-masi-black aspect-square flex items-center justify-center p-2 text-center bamboo-border border-masi-ochre/10">
+<p class="text-[9px] font-medium text-masi-cream/50 uppercase leading-tight">Blindside</p>
+</div>
+<div class="bg-masi-black aspect-square flex items-center justify-center p-2 text-center bamboo-border border-masi-ochre/10">
+<p class="text-[9px] font-medium text-masi-cream/50 uppercase leading-tight">Boat arrival</p>
+</div>
+<div class="bg-masi-black aspect-square flex items-center justify-center p-2 text-center bamboo-border border-masi-ochre/10">
+<p class="text-[9px] font-medium text-masi-cream/50 uppercase leading-tight">Ponderosa clip</p>
+</div>
+<div class="bg-masi-red aspect-square flex items-center justify-center p-2 text-center bamboo-border shadow-inner">
+<p class="text-[9px] font-bold text-masi-cream uppercase leading-tight">Puzzle Struggle</p>
+</div>
+<div class="bg-masi-black aspect-square flex items-center justify-center p-2 text-center bamboo-border border-masi-ochre/10">
+<p class="text-[9px] font-medium text-masi-cream/50 uppercase leading-tight">Fire making</p>
+</div>
+<div class="bg-masi-black aspect-square flex items-center justify-center p-2 text-center bamboo-border border-masi-ochre/10">
+<p class="text-[9px] font-medium text-masi-cream/50 uppercase leading-tight">Eat Rice</p>
+</div>
+<div class="bg-masi-black aspect-square flex items-center justify-center p-2 text-center bamboo-border border-masi-ochre/10">
+<p class="text-[9px] font-medium text-masi-cream/50 uppercase leading-tight">Bird Squawk</p>
+</div>
+<div class="bg-masi-black aspect-square flex items-center justify-center p-2 text-center bamboo-border border-masi-ochre/10">
+<p class="text-[9px] font-medium text-masi-cream/50 uppercase leading-tight">Immunity win</p>
+</div>
+<div class="bg-masi-black aspect-square flex items-center justify-center p-2 text-center bamboo-border border-masi-ochre/10">
+<p class="text-[9px] font-medium text-masi-cream/50 uppercase leading-tight">Shot in Dark</p>
+</div>
+<div class="bg-masi-black aspect-square flex items-center justify-center p-2 text-center bamboo-border border-masi-ochre/10">
+<p class="text-[9px] font-medium text-masi-cream/50 uppercase leading-tight">Jeff wears blue</p>
+</div>
+</div>
+</div>
+</div>
+<div class="px-6 pb-24 text-center">
+<h3 class="text-6xl text-carving text-flame-orange win-glow mb-2">
+            BULA!
+        </h3>
+<h4 class="text-4xl text-carving text-flame-orange/80 mb-4">
+            JEFF PROBST!
+        </h4>
+<p class="text-masi-cream text-lg font-bold tracking-tighter drop-shadow-md">
+            VINAKA! THE TRIBE HAS SPOKEN! 🐚
+        </p>
+</div>
+<div class="mt-auto border-t border-masi-ochre/20 bg-masi-black/95 backdrop-blur-xl px-4 pt-3 pb-2 flex gap-1 safe-bottom">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-masi-cream/40 py-2" href="#">
+<span class="material-symbols-outlined text-2xl">temple_hindu</span>
+<p class="text-[10px] font-black uppercase tracking-tight">Vure</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-flame-orange py-2 relative" href="#">
+<div class="absolute -top-1 w-8 h-0.5 bg-flame-orange rounded-full"></div>
+<span class="material-symbols-outlined text-2xl fill-1">apps</span>
+<p class="text-[10px] font-black uppercase tracking-tight">Qito</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-masi-cream/40 py-2" href="#">
+<span class="material-symbols-outlined text-2xl">diversity_3</span>
+<p class="text-[10px] font-black uppercase tracking-tight">Yavu</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-masi-cream/40 py-2" href="#">
+<span class="material-symbols-outlined text-2xl">history_edu</span>
+<p class="text-[10px] font-black uppercase tracking-tight">Tukutuku</p>
+</a>
+</div>
+</div>
+
+</body></html>

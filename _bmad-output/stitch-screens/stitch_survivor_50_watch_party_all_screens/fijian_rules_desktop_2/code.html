@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fijian Rules &amp; Lawa</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e9742b",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#211711",
+                        "wood-dark": "#3d2b1f",
+                        "wood-light": "#5c4030",
+                        "parchment": "#d9cbb8",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                    backgroundImage: {
+                        'masi-pattern': "url('https://images.unsplash.com/photo-1595350280962-d452097e3c92?q=80&w=2070&auto=format&fit=crop')",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .magimagi-border {
+            border: 8px solid #5c4030;
+            border-image: repeating-linear-gradient(45deg, #3d2b1f, #3d2b1f 10px, #5c4030 10px, #5c4030 20px) 20;
+        }
+        
+        /* Custom scrollbar for the table */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #211711; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #5c4030; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e9742b; 
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col overflow-x-hidden selection:bg-primary selection:text-white">
+<!-- Header / Nav -->
+<div class="w-full bg-wood-dark border-b border-wood-light sticky top-0 z-50 shadow-lg">
+<div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<button class="text-white/80 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h2 class="text-xl font-bold tracking-tight text-white">Fijian Rules &amp; Lawa</h2>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-white/70 hover:text-primary text-sm font-medium transition-colors flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-[20px]">home</span> Home
+                </a>
+<a class="text-primary text-sm font-bold flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-[20px] fill-1">gavel</span> Rules
+                </a>
+<a class="text-white/70 hover:text-primary text-sm font-medium transition-colors flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span> Draft
+                </a>
+<a class="text-white/70 hover:text-primary text-sm font-medium transition-colors flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-[20px]">account_circle</span> Profile
+                </a>
+</div>
+<button class="md:hidden text-white/80">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</div>
+<!-- Main Content Area with Masi Texture Background -->
+<main class="flex-grow relative w-full bg-background-dark">
+<!-- Background Image/Texture -->
+<div class="absolute inset-0 opacity-10 pointer-events-none z-0">
+<img alt="Textured paper background representing masi cloth" class="w-full h-full object-cover" data-alt="Textured woven natural fabric background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPHgT_UlW5hSVFEoEx9ZpvSLFlonAA0W24eG6PrSANSgcU9SXB_EHhsRerukFiW3jKAmJjW3ufFvHbYOk6u8BVUM2FLQcT8WISP56P9TevwIjXLMaSLIbHqYb2wJOwAAppikZU8m6o9FJL7zEvAnpRnuyQLbnui-kyNcLDQd5Wtk6IiFw0J0dRmXva0UdQPlhJIVtLqg_gcnQ9hVOEfji_HtpSZitVi-V0k3NTyjIsEYsZAnrl0Y8sZ1kTZSBwJvRZB_daPYouwjxn"/>
+</div>
+<!-- Palm Shadow Overlay -->
+<div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60 pointer-events-none z-0"></div>
+<div class="relative z-10 max-w-7xl mx-auto px-4 py-8 md:py-12">
+<!-- Page Title -->
+<div class="text-center mb-12">
+<h1 class="text-4xl md:text-6xl font-bold text-primary mb-4 drop-shadow-md tracking-wide uppercase">The Grand Lawa Scroll</h1>
+<p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto font-light">Welcome to the Sevu. Review the sacred laws of the game below as written by the elders.</p>
+</div>
+<!-- Three Column Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+<!-- Left Column: Bracket Draft (Sevu) Rules -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<div class="magimagi-border bg-wood-dark/90 backdrop-blur-sm p-6 rounded-xl shadow-2xl h-full border-t-4 border-primary/50">
+<div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+<span class="material-symbols-outlined text-primary text-3xl">token</span>
+<h3 class="text-2xl font-bold text-white">Bracket Draft (Sevu)</h3>
+</div>
+<div class="space-y-6 text-slate-300">
+<div class="group hover:bg-white/5 p-3 rounded-lg transition-colors">
+<h4 class="text-primary font-semibold text-lg mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">check_circle</span> Selection Order
+                                </h4>
+<p class="text-sm leading-relaxed">Draft order is determined by random draw of bamboo sticks. The tribe speaks, and the order is final.</p>
+</div>
+<div class="group hover:bg-white/5 p-3 rounded-lg transition-colors">
+<h4 class="text-primary font-semibold text-lg mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">groups</span> Tribe Allocation
+                                </h4>
+<p class="text-sm leading-relaxed">Each player must select 2 castaways from each tribe. No one can hoard a single alliance.</p>
+</div>
+<div class="group hover:bg-white/5 p-3 rounded-lg transition-colors">
+<h4 class="text-primary font-semibold text-lg mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">swap_horiz</span> The Swap Clause
+                                </h4>
+<p class="text-sm leading-relaxed">If a tribe swap occurs, your roster remains locked. You play the hand you are dealt by the island gods.</p>
+</div>
+<div class="mt-4 p-4 bg-primary/10 border border-primary/20 rounded-lg">
+<p class="text-xs text-primary font-bold uppercase tracking-wider mb-1">Elders Note</p>
+<p class="text-sm italic text-primary/80">"Trust no one, not even your draft picks."</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Center Column: Scoring System (Lawa ni Qito) -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<div class="magimagi-border bg-wood-dark/90 backdrop-blur-sm p-6 rounded-xl shadow-2xl h-full border-t-4 border-primary/50 relative overflow-hidden">
+<!-- Decorative bg icon -->
+<span class="material-symbols-outlined absolute -right-6 -bottom-6 text-9xl text-white/5 rotate-12 select-none">sports_score</span>
+<div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+<span class="material-symbols-outlined text-primary text-3xl">leaderboard</span>
+<h3 class="text-2xl font-bold text-white">Scoring (Lawa ni Qito)</h3>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-white/20">
+<th class="py-3 px-2 text-primary font-bold uppercase text-xs tracking-wider">Action</th>
+<th class="py-3 px-2 text-right text-primary font-bold uppercase text-xs tracking-wider">Points</th>
+</tr>
+</thead>
+<tbody class="text-slate-300 text-sm">
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="py-3 px-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-yellow-500 text-lg">workspace_premium</span>
+                                            Immunity Win (Indiv.)
+                                        </td>
+<td class="py-3 px-2 text-right font-mono text-primary font-bold">+10</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="py-3 px-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-500 text-lg">search</span>
+                                            Idol Found
+                                        </td>
+<td class="py-3 px-2 text-right font-mono text-primary font-bold">+5</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="py-3 px-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-400 text-lg">verified</span>
+                                            Idol Played Correctly
+                                        </td>
+<td class="py-3 px-2 text-right font-mono text-primary font-bold">+15</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="py-3 px-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-orange-400 text-lg">local_fire_department</span>
+                                            Survive Tribal
+                                        </td>
+<td class="py-3 px-2 text-right font-mono text-primary font-bold">+2</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="py-3 px-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-purple-400 text-lg">handshake</span>
+                                            Confessional (First)
+                                        </td>
+<td class="py-3 px-2 text-right font-mono text-primary font-bold">+3</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+<td class="py-3 px-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-red-400 text-lg">thumb_down</span>
+                                            Vote Cast Against
+                                        </td>
+<td class="py-3 px-2 text-right font-mono text-red-400 font-bold">-1</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors">
+<td class="py-3 px-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-gray-400 text-lg">logout</span>
+                                            Voted Out
+                                        </td>
+<td class="py-3 px-2 text-right font-mono text-red-500 font-bold">ELIM</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-6 text-center">
+<button class="text-xs text-primary/80 hover:text-primary underline decoration-primary/50 underline-offset-4">View Complete Scoring Matrix</button>
+</div>
+</div>
+</div>
+<!-- Right Column: Bingo & Jeff Probst Rule -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Bingo Card -->
+<div class="magimagi-border bg-wood-dark/90 backdrop-blur-sm p-6 rounded-xl shadow-2xl flex-1 border-t-4 border-primary/50">
+<div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+<span class="material-symbols-outlined text-primary text-3xl">grid_on</span>
+<h3 class="text-2xl font-bold text-white">Bingo (Qito)</h3>
+</div>
+<p class="text-sm text-slate-300 mb-4">Complete a row, column, or diagonal to win weekly immunity.</p>
+<div class="grid grid-cols-3 gap-2 aspect-square mb-4">
+<div class="bg-white/5 border border-white/10 rounded flex items-center justify-center p-2 text-center text-[10px] text-slate-400 hover:bg-primary/20 hover:text-white hover:border-primary transition-all cursor-pointer">
+                                "Come on in guys!"
+                            </div>
+<div class="bg-white/5 border border-white/10 rounded flex items-center justify-center p-2 text-center text-[10px] text-slate-400 hover:bg-primary/20 hover:text-white hover:border-primary transition-all cursor-pointer">
+                                Crying Confessional
+                            </div>
+<div class="bg-white/5 border border-white/10 rounded flex items-center justify-center p-2 text-center text-[10px] text-slate-400 hover:bg-primary/20 hover:text-white hover:border-primary transition-all cursor-pointer">
+                                Blindside Face
+                            </div>
+<div class="bg-white/5 border border-white/10 rounded flex items-center justify-center p-2 text-center text-[10px] text-slate-400 hover:bg-primary/20 hover:text-white hover:border-primary transition-all cursor-pointer">
+                                Challenge Beast
+                            </div>
+<div class="bg-primary/20 border border-primary rounded flex items-center justify-center p-2 text-center text-[10px] text-primary font-bold">
+                                FREE SPACE
+                            </div>
+<div class="bg-white/5 border border-white/10 rounded flex items-center justify-center p-2 text-center text-[10px] text-slate-400 hover:bg-primary/20 hover:text-white hover:border-primary transition-all cursor-pointer">
+                                Idol Flushed
+                            </div>
+<div class="bg-white/5 border border-white/10 rounded flex items-center justify-center p-2 text-center text-[10px] text-slate-400 hover:bg-primary/20 hover:text-white hover:border-primary transition-all cursor-pointer">
+                                Spy Shack
+                            </div>
+<div class="bg-white/5 border border-white/10 rounded flex items-center justify-center p-2 text-center text-[10px] text-slate-400 hover:bg-primary/20 hover:text-white hover:border-primary transition-all cursor-pointer">
+                                Food Reward
+                            </div>
+<div class="bg-white/5 border border-white/10 rounded flex items-center justify-center p-2 text-center text-[10px] text-slate-400 hover:bg-primary/20 hover:text-white hover:border-primary transition-all cursor-pointer">
+                                "Dig Deep!"
+                            </div>
+</div>
+</div>
+<!-- Jeff Probst Rule -->
+<div class="bg-primary p-6 rounded-xl shadow-2xl border-t-4 border-orange-300 relative overflow-hidden group">
+<div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-3">
+<span class="material-symbols-outlined text-white text-3xl">mic_external_on</span>
+<h3 class="text-xl font-bold text-white">The Probst Rule (Vaka-Viti)</h3>
+</div>
+<p class="text-white/90 text-sm leading-relaxed mb-4">
+                                If Jeff says "Dig Deep" more than 3 times in a challenge, all point values for that episode are <strong>doubled</strong>.
+                            </p>
+<div class="w-full bg-white/20 h-1 rounded-full overflow-hidden">
+<div class="bg-white h-full w-1/3"></div>
+</div>
+<p class="text-right text-xs text-white/70 mt-1">Current Count: 1/3</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Mobile Nav (Visible only on small screens) -->
+<div class="md:hidden sticky bottom-0 z-50">
+<div class="flex gap-2 border-t border-[#382f29] bg-[#26201c] px-4 pb-3 pt-2 w-full">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#b8a89d]" href="#">
+<span class="material-symbols-outlined text-[#b8a89d] text-2xl">home</span>
+<p class="text-[#b8a89d] text-xs font-medium leading-normal tracking-[0.015em]">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 rounded-full text-white" href="#">
+<span class="material-symbols-outlined text-white fill-1 text-2xl">gavel</span>
+<p class="text-white text-xs font-medium leading-normal tracking-[0.015em]">Rules</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#b8a89d]" href="#">
+<span class="material-symbols-outlined text-[#b8a89d] text-2xl">group</span>
+<p class="text-[#b8a89d] text-xs font-medium leading-normal tracking-[0.015em]">Draft</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#b8a89d]" href="#">
+<span class="material-symbols-outlined text-[#b8a89d] text-2xl">account_circle</span>
+<p class="text-[#b8a89d] text-xs font-medium leading-normal tracking-[0.015em]">Profile</p>
+</a>
+</div>
+</div>
+</body></html>

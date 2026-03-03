@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Authentic Fijian Sign In</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Inter:wght@400;500;700&amp;family=Lora:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "earth": "#2b1d12",
+                        "ochre": "#8B4513",
+                        "sienna": "#a0522d",
+                        "clay": "#d2691e",
+                        "stone-dark": "#0f0f0f",
+                        "sand-warm": "#d4b483",
+                    },
+                    fontFamily: {
+                        "display": ["Bebas Neue", "cursive"],
+                        "serif": ["Lora", "serif"],
+                        "sans": ["Inter", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        :root {
+            --ochre: #8B4513;
+            --clay: #d2691e;
+            --sienna: #a0522d;
+        }
+        .masi-pattern {
+            background-color: #0f0f0f;
+            background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%238B4513' fill-opacity='0.1'%3E%3Cpath d='M0 0h40v40H0V0zm40 40h40v40H40V40zm0-40l20 20-20 20-20-20 20-20zm0 40l20 20-20 20-20-20 20-20zM0 40l10-10 10 10-10 10L0 40zm40 0l10-10 10 10-10 10L40 40zm20-20l10-10 10 10-10 10-10-10zM20 60l10-10 10 10-10 10-10-10z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        .wood-texture {
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.2'/%3E%3C/svg%3E");
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+        .cina-glow {
+            filter: drop-shadow(0 0 20px rgba(210, 105, 30, 0.5));
+        }
+        .tabua-shape {
+            clip-path: ellipse(50% 40% at 50% 50%);
+        }
+        .bure-silhouette {
+            mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 80 L50 20 L90 80 Z M20 80 L20 60 L80 60 L80 80' fill='black'/%3E%3C/svg%3E");
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            background-color: #8B4513;
+            opacity: 0.05;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-stone-dark font-sans text-slate-100 min-h-screen antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden masi-pattern">
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-earth/20 to-stone-dark pointer-events-none"></div>
+<div class="bure-silhouette absolute -left-10 bottom-20 w-64 h-64 rotate-12"></div>
+<div class="bure-silhouette absolute -right-16 top-10 w-80 h-80 -rotate-12"></div>
+<nav class="flex items-center px-4 py-6 justify-between z-30 overflow-x-auto no-scrollbar">
+<div class="flex gap-4 items-center">
+<div class="flex flex-col items-center">
+<span class="text-[9px] uppercase tracking-tighter text-ochre font-bold italic leading-none">Sevu</span>
+<span class="text-[10px] text-sand-warm/60 uppercase tracking-widest leading-none">Draft</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] uppercase tracking-tighter text-ochre font-bold italic leading-none">Qito</span>
+<span class="text-[10px] text-sand-warm/60 uppercase tracking-widest leading-none">Bingo</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] uppercase tracking-tighter text-ochre font-bold italic leading-none">Tovo</span>
+<span class="text-[10px] text-sand-warm/60 uppercase tracking-widest leading-none">Scores</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="text-[9px] uppercase tracking-tighter text-ochre font-bold italic leading-none">Lawa</span>
+<span class="text-[10px] text-sand-warm/60 uppercase tracking-widest leading-none">Rules</span>
+</div>
+</div>
+<div class="text-clay/60 hover:text-clay transition-colors ml-4">
+<span class="material-symbols-outlined text-2xl">close</span>
+</div>
+</nav>
+<div class="flex flex-col flex-1 items-center justify-center px-8 z-20 pb-16">
+<div class="mb-6 cina-glow relative flex items-center justify-center">
+<div class="relative">
+<div class="w-10 h-24 bg-gradient-to-b from-ochre to-earth rounded-b-full rounded-t-lg relative">
+<div class="absolute top-4 w-full h-1 bg-stone-dark opacity-40"></div>
+<div class="absolute top-8 w-full h-1 bg-stone-dark opacity-40"></div>
+</div>
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 w-12 h-16 bg-clay blur-[2px] rounded-full opacity-80 mix-blend-screen"></div>
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 w-6 h-10 bg-sand-warm rounded-full"></div>
+</div>
+</div>
+<div class="text-center mb-10 relative">
+<div class="absolute -inset-10 tabua-shape bg-ochre/5 -z-10 blur-xl"></div>
+<h1 class="text-6xl font-display tracking-tight text-transparent bg-gradient-to-b from-clay via-ochre to-earth wood-texture bg-clip-text leading-[0.85] drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
+                    SURVIVOR
+                </h1>
+<h1 class="text-8xl font-display tracking-tighter text-transparent bg-gradient-to-b from-sand-warm via-clay to-ochre wood-texture bg-clip-text leading-[0.85] mt-1 drop-shadow-[0_3px_3px_rgba(0,0,0,0.8)]">
+                    50
+                </h1>
+<div class="flex items-center justify-center gap-2 mt-8">
+<div class="h-[1px] w-8 bg-ochre/40"></div>
+<p class="text-[10px] font-bold tracking-[0.4em] text-sand-warm uppercase opacity-80">
+                        WATCH PARTY HQ
+                    </p>
+<div class="h-[1px] w-8 bg-ochre/40"></div>
+</div>
+</div>
+<div class="w-full max-w-[320px] space-y-6">
+<div class="space-y-2">
+<label class="block text-ochre text-[10px] font-bold uppercase tracking-widest px-1">Island Access Email</label>
+<div class="relative">
+<input class="w-full bg-stone-dark/80 border-2 border-earth/30 focus:border-clay/50 focus:ring-0 rounded-lg h-14 px-5 text-sand-warm placeholder:text-earth italic transition-all outline-none" placeholder="Messenger bird address..." type="email"/>
+</div>
+</div>
+<div class="pt-2">
+<button class="w-full h-14 rounded-lg bg-gradient-to-br from-clay via-sienna to-ochre text-stone-dark text-base font-black tracking-widest uppercase shadow-2xl shadow-stone-dark/50 active:scale-[0.98] transition-all border-b-4 border-earth/40 flex items-center justify-center gap-3">
+<span>Send Magic Link</span>
+</button>
+<div class="mt-8 text-center space-y-4">
+<p class="text-earth font-serif italic text-sm leading-relaxed">
+                            "A link will be cast into the waters <br/>to guide your way."
+                        </p>
+<div class="flex justify-center opacity-30">
+<span class="material-symbols-outlined text-ochre text-2xl">scuba_diving</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-stone-dark to-transparent pointer-events-none z-10"></div>
+</div>
+
+</body></html>

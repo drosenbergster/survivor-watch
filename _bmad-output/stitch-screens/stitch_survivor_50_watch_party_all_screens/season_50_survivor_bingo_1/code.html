@@ -1,0 +1,232 @@
+<html class="dark"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#e9742b",
+            "torch-yellow": "#f5b731",
+            "jungle-green": "#1db954",
+            "background-light": "#f8f7f6",
+            "background-dark": "#0a0f0d",
+          },
+          fontFamily: {
+            "display": ["Be Vietnam Pro", "sans-serif"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    .bingo-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+    }
+    .glow-border {
+      box-shadow: 0 0 15px rgba(233, 116, 43, 0.6);
+      border: 2px solid #e9742b;
+    }
+    .embers {
+      background-image: radial-gradient(circle, rgba(233,116,43,0.15) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden embers">
+<!-- Top Bar -->
+<div class="flex items-center bg-background-dark/80 backdrop-blur-md p-4 pb-2 justify-between sticky top-0 z-50 border-b border-white/10">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-jungle-green shadow-[0_0_8px_#1db954]"></div>
+<h2 class="text-slate-100 text-sm font-medium leading-tight tracking-tight">survivor_fan@outplay.com</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-primary text-sm font-bold uppercase tracking-wider">Sign Out</button>
+</div>
+</div>
+<!-- Hero Header -->
+<div class="px-4 py-6 text-center bg-gradient-to-b from-primary/10 to-transparent">
+<div class="mb-1 text-3xl">🔥</div>
+<h1 class="text-4xl font-extrabold tracking-tighter italic uppercase text-primary">
+        SURVIVOR <span class="text-torch-yellow">50</span>
+</h1>
+<p class="text-xs font-bold tracking-[0.3em] text-slate-400 uppercase">Watch Party HQ</p>
+</div>
+<!-- Navigation Tabs -->
+<div class="px-4 border-b border-white/5 bg-background-dark">
+<div class="flex justify-between">
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 pb-3 pt-2 flex-1" href="#">
+<span class="material-symbols-outlined text-lg mb-1">trophy</span>
+<p class="text-[10px] font-bold uppercase">Draft</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-primary text-primary pb-3 pt-2 flex-1 bg-gradient-to-t from-primary/10 to-transparent" href="#">
+<span class="material-symbols-outlined text-lg mb-1 fill-1">target</span>
+<p class="text-[10px] font-bold uppercase">Bingo</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 pb-3 pt-2 flex-1" href="#">
+<span class="material-symbols-outlined text-lg mb-1">leaderboard</span>
+<p class="text-[10px] font-bold uppercase">Scores</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 pb-3 pt-2 flex-1" href="#">
+<span class="material-symbols-outlined text-lg mb-1">menu_book</span>
+<p class="text-[10px] font-bold uppercase">Rules</p>
+</a>
+</div>
+</div>
+<!-- Page Title & Instructions -->
+<div class="p-6 text-center">
+<h2 class="text-torch-yellow text-3xl font-black italic uppercase tracking-tight mb-2">Survivor Bingo</h2>
+<p class="text-slate-400 text-sm leading-snug px-4">
+        Mark squares as they happen. First to 5 in a row yells <span class="text-primary font-bold">"JEFF PROBST!"</span> 🍻
+      </p>
+</div>
+<!-- Controls -->
+<div class="px-4 flex flex-wrap gap-2 items-center justify-between mb-6">
+<div class="flex-1 min-w-[140px]">
+<select class="w-full bg-white/5 border border-white/10 rounded-lg text-sm text-slate-200 py-2 px-3 focus:ring-primary focus:border-primary">
+<option>Card for: Jeff</option>
+<option>Card for: Parvati</option>
+<option>Card for: Boston Rob</option>
+</select>
+</div>
+<div class="flex gap-2">
+<button class="bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 py-2 px-3 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-sm">shuffle</span> New Card
+        </button>
+<button class="bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 py-2 px-3 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-sm">refresh</span> Reset
+        </button>
+</div>
+</div>
+<!-- Bingo Grid -->
+<div class="px-2 mb-8">
+<div class="bingo-grid aspect-square w-full max-w-md mx-auto">
+<!-- Row 1 (Winner Highlighted Row) -->
+<div class="bg-primary bg-gradient-to-br from-primary to-orange-700 aspect-square rounded flex items-center justify-center p-1 text-center glow-border">
+<p class="text-[9px] font-bold text-white uppercase leading-tight italic">"The tribe has spoken"</p>
+</div>
+<div class="bg-primary bg-gradient-to-br from-primary to-orange-700 aspect-square rounded flex items-center justify-center p-1 text-center glow-border">
+<p class="text-[9px] font-bold text-white uppercase leading-tight italic">Someone cries</p>
+</div>
+<div class="bg-primary bg-gradient-to-br from-primary to-orange-700 aspect-square rounded flex items-center justify-center p-1 text-center glow-border">
+<p class="text-[9px] font-bold text-white uppercase leading-tight italic">Idol is found</p>
+</div>
+<div class="bg-primary bg-gradient-to-br from-primary to-orange-700 aspect-square rounded flex items-center justify-center p-1 text-center glow-border">
+<p class="text-[9px] font-bold text-white uppercase leading-tight italic">Jeff snuffs a torch</p>
+</div>
+<div class="bg-primary bg-gradient-to-br from-primary to-orange-700 aspect-square rounded flex items-center justify-center p-1 text-center glow-border">
+<p class="text-[9px] font-bold text-white uppercase leading-tight italic">Rain at camp</p>
+</div>
+<!-- Row 2 -->
+<div class="bg-white/5 border border-white/10 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-medium text-slate-300 uppercase leading-tight">"Dig deep!"</p>
+</div>
+<div class="bg-primary/40 border border-primary/50 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-bold text-white uppercase leading-tight">Alliance betrayed</p>
+</div>
+<div class="bg-white/5 border border-white/10 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-medium text-slate-300 uppercase leading-tight">Challenge water</p>
+</div>
+<div class="bg-white/5 border border-white/10 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-medium text-slate-300 uppercase leading-tight">Flashback Montage</p>
+</div>
+<div class="bg-white/5 border border-white/10 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-medium text-slate-300 uppercase leading-tight">Monster mentioned</p>
+</div>
+<!-- Row 3 -->
+<div class="bg-white/5 border border-white/10 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-medium text-slate-300 uppercase leading-tight">Hideous Shirt</p>
+</div>
+<div class="bg-white/5 border border-white/10 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-medium text-slate-300 uppercase leading-tight">Hidden Idol Clue</p>
+</div>
+<!-- Free Space -->
+<div class="bg-gradient-to-br from-jungle-green to-green-900 aspect-square rounded flex flex-col items-center justify-center p-1 text-center border border-green-400/30">
+<p class="text-[8px] font-black text-white uppercase tracking-tighter">FREE</p>
+<p class="text-[8px] font-black text-white uppercase tracking-tighter">SPACE</p>
+</div>
+<div class="bg-white/5 border border-white/10 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-medium text-slate-300 uppercase leading-tight">Spider on screen</p>
+</div>
+<div class="bg-primary/40 border border-primary/50 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-bold text-white uppercase leading-tight">"C'mon in!"</p>
+</div>
+<!-- Row 4 -->
+<div class="bg-white/5 border border-white/10 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-medium text-slate-300 uppercase leading-tight">Blindside</p>
+</div>
+<div class="bg-white/5 border border-white/10 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-medium text-slate-300 uppercase leading-tight">Boat arrival</p>
+</div>
+<div class="bg-white/5 border border-white/10 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-medium text-slate-300 uppercase leading-tight">Ponderosa clip</p>
+</div>
+<div class="bg-primary/40 border border-primary/50 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-bold text-white uppercase leading-tight">Puzzle Struggle</p>
+</div>
+<div class="bg-white/5 border border-white/10 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-medium text-slate-300 uppercase leading-tight">Fire making</p>
+</div>
+<!-- Row 5 -->
+<div class="bg-white/5 border border-white/10 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-medium text-slate-300 uppercase leading-tight">Eat Rice</p>
+</div>
+<div class="bg-white/5 border border-white/10 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-medium text-slate-300 uppercase leading-tight">Bird Squawk</p>
+</div>
+<div class="bg-white/5 border border-white/10 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-medium text-slate-300 uppercase leading-tight">Immunity win</p>
+</div>
+<div class="bg-white/5 border border-white/10 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-medium text-slate-300 uppercase leading-tight">Shot in Dark</p>
+</div>
+<div class="bg-white/5 border border-white/10 aspect-square rounded flex items-center justify-center p-1 text-center">
+<p class="text-[9px] font-medium text-slate-300 uppercase leading-tight">Jeff wears blue</p>
+</div>
+</div>
+</div>
+<!-- Celebration Banner -->
+<div class="px-6 pb-12 text-center animate-pulse">
+<h3 class="text-4xl font-black italic uppercase tracking-tighter text-torch-yellow drop-shadow-[0_0_12px_rgba(245,183,49,0.8)] mb-2">
+        🔥 JEFF PROBST! 🔥
+      </h3>
+<p class="text-white text-lg font-bold tracking-tight">
+        BINGO! The tribe has spoken! 🍻
+      </p>
+</div>
+<!-- Bottom Nav Bar -->
+<div class="mt-auto border-t border-white/10 bg-background-dark/95 backdrop-blur-md px-4 pb-8 pt-3 flex gap-2">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined">explore</span>
+<p class="text-[10px] font-medium">Islands</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined fill-1">grid_view</span>
+<p class="text-[10px] font-medium">Bingo</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined">group</span>
+<p class="text-[10px] font-medium">Tribes</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-[10px] font-medium">Settings</p>
+</a>
+</div>
+</div>
+
+```</body></html>

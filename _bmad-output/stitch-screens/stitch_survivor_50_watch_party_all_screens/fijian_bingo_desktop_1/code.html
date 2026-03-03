@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fijian Bingo Desktop</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e9742b",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#211711",
+                        "surface-dark": "#2d231e",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .masi-pattern {
+            background-color: #211711;
+            background-image: 
+                linear-gradient(45deg, #2d231e 25%, transparent 25%, transparent 75%, #2d231e 75%, #2d231e),
+                linear-gradient(45deg, #2d231e 25%, transparent 25%, transparent 75%, #2d231e 75%, #2d231e);
+            background-position: 0 0, 10px 10px;
+            background-size: 20px 20px;
+            opacity: 0.1;
+        }
+        
+        .bamboo-border {
+            border: 4px solid #5d4037;
+            border-image: repeating-linear-gradient(45deg, #5d4037, #8d6e63 5px, #5d4037 10px) 1;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #211711; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3e2f26; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e9742b; 
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col relative overflow-hidden">
+<!-- Background Pattern -->
+<div class="absolute inset-0 masi-pattern pointer-events-none z-0"></div>
+<!-- Header / Navigation -->
+<header class="relative z-10 w-full border-b border-surface-dark bg-background-dark/95 backdrop-blur-sm px-6 py-4 flex items-center justify-between sticky top-0">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center w-10 h-10 rounded-full bg-primary/20 text-primary">
+<span class="material-symbols-outlined text-2xl">grid_view</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight text-white">Fijian Bingo</h1>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="flex items-center gap-2 text-primary font-medium transition-colors" href="#">
+<span class="material-symbols-outlined filled">home</span>
+<span>Sevu</span>
+</a>
+<a class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">sports_esports</span>
+<span>Qito</span>
+</a>
+<a class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span>Tovo</span>
+</a>
+<a class="flex items-center gap-2 text-slate-400 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">gavel</span>
+<span>Lawa</span>
+</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-dark border border-slate-700">
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+<span class="text-xs font-medium text-slate-300">Live Game</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-dark hover:bg-primary/20 text-slate-300 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-slate-700 overflow-hidden border-2 border-primary">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="Portrait of a smiling user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAP_E6twYrQFvmjiJy3RJLYbBQdxmnjPPNtEEOJmdh1PxhUDIDUGIWx0xr9iwrMBVUPZIVzfH5suh775w3tUglmsnM_PuY1H8E7F1WrC0I9xAoNFTplMCgyHuM6QzMbJWSlJU1a1Y_pHjck9XB-0hgAAsDuL9_t68ayIBLvoyCkt80FwHI9lEGnwHgBEDWWdMPl3FFNifDusfxAP2jUSYtmg4o3Ll7we7HaSQxaj-8Z6MpkGvecz6EAqubNYBk1NYbCiguD4FB_X0xT"/>
+</div>
+</div>
+</header>
+<!-- Main Content Grid -->
+<main class="relative z-10 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 lg:p-8 max-w-[1600px] mx-auto w-full h-[calc(100vh-80px)] overflow-hidden">
+<!-- Left Panel: Card Controls -->
+<aside class="col-span-1 lg:col-span-3 flex flex-col gap-6 h-full overflow-y-auto pr-2">
+<!-- Game Status Card -->
+<div class="bg-surface-dark rounded-xl p-5 border border-slate-700/50 shadow-lg">
+<h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">playing_cards</span>
+                    Card Controls
+                </h2>
+<div class="space-y-4">
+<div>
+<label class="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Current Room</label>
+<div class="relative">
+<select class="w-full bg-[#181411] border border-slate-700 text-white text-sm rounded-lg focus:ring-primary focus:border-primary block p-3 pr-10 appearance-none">
+<option>Turtle Island Room</option>
+<option>Suva Market Hall</option>
+<option>Nadi Airport Lounge</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+</div>
+<div>
+<label class="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Pattern to Match</label>
+<div class="flex items-center gap-3 bg-[#181411] p-3 rounded-lg border border-slate-700">
+<div class="w-10 h-10 grid grid-cols-3 gap-0.5 p-0.5 bg-slate-800 rounded">
+<div class="bg-primary rounded-[1px]"></div><div class="bg-slate-700 rounded-[1px]"></div><div class="bg-primary rounded-[1px]"></div>
+<div class="bg-slate-700 rounded-[1px]"></div><div class="bg-primary rounded-[1px]"></div><div class="bg-slate-700 rounded-[1px]"></div>
+<div class="bg-primary rounded-[1px]"></div><div class="bg-slate-700 rounded-[1px]"></div><div class="bg-primary rounded-[1px]"></div>
+</div>
+<div>
+<p class="text-sm font-bold text-white">X Marks the Spot</p>
+<p class="text-xs text-slate-400">Prize: $500 FJD</p>
+</div>
+</div>
+</div>
+</div>
+<button class="mt-6 w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-3 px-4 rounded-lg transition-all shadow-lg shadow-primary/20 group">
+<span class="material-symbols-outlined group-hover:rotate-180 transition-transform">refresh</span>
+                    Generate New Card
+                </button>
+</div>
+<!-- Mini Chat / Social -->
+<div class="flex-1 bg-surface-dark rounded-xl p-5 border border-slate-700/50 shadow-lg flex flex-col min-h-[300px]">
+<h3 class="text-sm font-bold text-slate-300 mb-4 uppercase tracking-wider">Tanoa Chat</h3>
+<div class="flex-1 overflow-y-auto space-y-3 mb-4 pr-1">
+<div class="flex gap-2">
+<img alt="Player 1" class="w-8 h-8 rounded-full object-cover shrink-0" data-alt="Small portrait of a man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAobrl-mprhT5nZi4yfkwNNRZkMeNwxxuG8mX3YIe8eNsSdXlgKcO1CtHOrjxBFUmtMAaJJruQJH3iB_4PfFAurceTNoyuDPF5La3776tQXNzI7U6L3Xo4WeDdhvY1N1p7vjTBEHNwraUQm1SfaK7GYx5kyPnbtFb5ij7BMmrx0oCuOjQ18tv7gyjZMnhtokqQXU_LB_AfK6bfK9ifIQLA5_6pk6Pd2UB6-hKi3UWWWDYRsRB4cHTRLoASQCoJ8uqMpd101jDXFxh_6"/>
+<div class="bg-[#181411] p-2 rounded-lg rounded-tl-none">
+<p class="text-xs font-bold text-primary">Ratu</p>
+<p class="text-xs text-slate-300">Just need one more for the X!</p>
+</div>
+</div>
+<div class="flex gap-2 flex-row-reverse">
+<img alt="You" class="w-8 h-8 rounded-full object-cover shrink-0" data-alt="Small portrait of a woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPc7Key7o5ffkMluyxaPrAEWG3Zpd-aOunSFGJ2gU68ucgNUVzm_zPJ2zk1xuDef0hlb7EYiBp_1UryOnPI79CXfq_PJs2MJLBpfTz6mH5ICpH4E4l7DnIZPhePdlNyg6vXy3P6b73pn81LZQpSONHulDLy6zucrIXZ4D_LwbC3Pj_TY_XUsWWqAIB8t5SdGGpqH7uj2bKl0TuaWiIMBWPtRy5W5A9ulg2Dj-5lEq3egjXfCGWsjmXYhh7EBfnkR1_7ZbPbNkn32b6"/>
+<div class="bg-primary/20 p-2 rounded-lg rounded-tr-none">
+<p class="text-xs font-bold text-primary text-right">Me</p>
+<p class="text-xs text-slate-300">Bula vinaka! Good luck everyone.</p>
+</div>
+</div>
+<div class="flex gap-2">
+<img alt="Player 3" class="w-8 h-8 rounded-full object-cover shrink-0" data-alt="Small portrait of a woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGY_qOo7gQ3cevKkfqu-bI1YOp563MOSBizdK8OEUI7vsMEz0X_IMuTv41x4Vsq255LLRiF75b9Z5yoNkGtgLElEwsLrpQ7_w0bULiSwKGntOZ9sAl0FlO8qrRPPhjrJPY95Sm8QpsWDoNzGPe2sJ8WxUmhi_Roa9fFpw8ec7m8YWQgVQYqUSBunBxVVCoFpahgAWLmKqM5QzQ7gFiV-6J3eoSo6a_O10jzwh000j_eysxSAd7xvgMPFrYTXDa7y-25UDsjCuIorxt"/>
+<div class="bg-[#181411] p-2 rounded-lg rounded-tl-none">
+<p class="text-xs font-bold text-primary">Sereana</p>
+<p class="text-xs text-slate-300">Has I-22 been called yet?</p>
+</div>
+</div>
+</div>
+<div class="relative">
+<input class="w-full bg-[#181411] border border-slate-700 rounded-lg py-2 px-3 text-sm text-white focus:outline-none focus:border-primary pr-10" placeholder="Say something..." type="text"/>
+<button class="absolute right-2 top-1.5 text-primary hover:text-white">
+<span class="material-symbols-outlined text-xl">send</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Center Panel: The Bingo Grid -->
+<div class="col-span-1 lg:col-span-6 flex flex-col justify-center h-full relative">
+<!-- Grid Container -->
+<div class="relative bg-[#3e2723] p-1 rounded-xl shadow-2xl bamboo-border mx-auto max-w-2xl w-full aspect-square">
+<!-- Inner texture -->
+<div class="absolute inset-0 bg-[#3e2723] opacity-50 rounded-lg pointer-events-none"></div>
+<!-- Bingo Letters Header -->
+<div class="grid grid-cols-5 mb-2 relative z-10 pt-2">
+<div class="text-center font-black text-3xl md:text-5xl text-primary drop-shadow-md">B</div>
+<div class="text-center font-black text-3xl md:text-5xl text-primary drop-shadow-md">I</div>
+<div class="text-center font-black text-3xl md:text-5xl text-white drop-shadow-md">N</div>
+<div class="text-center font-black text-3xl md:text-5xl text-primary drop-shadow-md">G</div>
+<div class="text-center font-black text-3xl md:text-5xl text-primary drop-shadow-md">O</div>
+</div>
+<!-- The 5x5 Grid -->
+<div class="grid grid-cols-5 gap-2 md:gap-3 p-2 md:p-4 h-[calc(100%-60px)] relative z-10">
+<!-- Row 1 -->
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">4</span>
+<div class="absolute inset-0 bg-primary/80 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-10 transition-opacity"></div>
+</div>
+<div class="aspect-square bg-primary rounded-lg flex items-center justify-center relative cursor-pointer shadow-lg border-2 border-primary ring-2 ring-primary/30">
+<span class="text-xl md:text-3xl font-bold text-white">22</span>
+<div class="absolute top-1 right-1 text-white">
+<span class="material-symbols-outlined text-sm md:text-base font-bold">check</span>
+</div>
+</div>
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">38</span>
+</div>
+<div class="aspect-square bg-primary rounded-lg flex items-center justify-center relative cursor-pointer shadow-lg border-2 border-primary ring-2 ring-primary/30">
+<span class="text-xl md:text-3xl font-bold text-white">51</span>
+<div class="absolute top-1 right-1 text-white">
+<span class="material-symbols-outlined text-sm md:text-base font-bold">check</span>
+</div>
+</div>
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">67</span>
+</div>
+<!-- Row 2 -->
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">12</span>
+</div>
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">19</span>
+</div>
+<div class="aspect-square bg-primary rounded-lg flex items-center justify-center relative cursor-pointer shadow-lg border-2 border-primary ring-2 ring-primary/30">
+<span class="text-xl md:text-3xl font-bold text-white">45</span>
+<div class="absolute top-1 right-1 text-white">
+<span class="material-symbols-outlined text-sm md:text-base font-bold">check</span>
+</div>
+</div>
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">56</span>
+</div>
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">72</span>
+</div>
+<!-- Row 3 (Free Space) -->
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">8</span>
+</div>
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">26</span>
+</div>
+<div class="aspect-square bg-surface-dark rounded-lg flex flex-col items-center justify-center relative cursor-default border-2 border-primary shadow-[0_0_15px_rgba(233,116,43,0.3)]">
+<span class="material-symbols-outlined text-primary text-3xl md:text-5xl animate-pulse">star</span>
+<span class="text-[10px] md:text-xs font-bold text-primary uppercase mt-1">Free</span>
+</div>
+<div class="aspect-square bg-primary rounded-lg flex items-center justify-center relative cursor-pointer shadow-lg border-2 border-primary ring-2 ring-primary/30">
+<span class="text-xl md:text-3xl font-bold text-white">59</span>
+<div class="absolute top-1 right-1 text-white">
+<span class="material-symbols-outlined text-sm md:text-base font-bold">check</span>
+</div>
+</div>
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">61</span>
+</div>
+<!-- Row 4 -->
+<div class="aspect-square bg-primary rounded-lg flex items-center justify-center relative cursor-pointer shadow-lg border-2 border-primary ring-2 ring-primary/30">
+<span class="text-xl md:text-3xl font-bold text-white">14</span>
+<div class="absolute top-1 right-1 text-white">
+<span class="material-symbols-outlined text-sm md:text-base font-bold">check</span>
+</div>
+</div>
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">30</span>
+</div>
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">42</span>
+</div>
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">55</span>
+</div>
+<div class="aspect-square bg-primary rounded-lg flex items-center justify-center relative cursor-pointer shadow-lg border-2 border-primary ring-2 ring-primary/30">
+<span class="text-xl md:text-3xl font-bold text-white">68</span>
+<div class="absolute top-1 right-1 text-white">
+<span class="material-symbols-outlined text-sm md:text-base font-bold">check</span>
+</div>
+</div>
+<!-- Row 5 -->
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">2</span>
+</div>
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">17</span>
+</div>
+<div class="aspect-square bg-primary rounded-lg flex items-center justify-center relative cursor-pointer shadow-lg border-2 border-primary ring-2 ring-primary/30">
+<span class="text-xl md:text-3xl font-bold text-white">33</span>
+<div class="absolute top-1 right-1 text-white">
+<span class="material-symbols-outlined text-sm md:text-base font-bold">check</span>
+</div>
+</div>
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">49</span>
+</div>
+<div class="aspect-square bg-[#f3e5f5] rounded-lg flex items-center justify-center relative cursor-pointer group shadow-inner transform transition-transform active:scale-95 border-2 border-[#5d4037]">
+<span class="text-xl md:text-3xl font-bold text-slate-800">75</span>
+</div>
+</div>
+</div>
+<!-- Victory Banner Overlay -->
+<div class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[90%] md:w-3/4 bg-gradient-to-r from-primary via-orange-500 to-primary text-white py-4 px-8 rounded-xl shadow-2xl border-4 border-yellow-400 z-50 transform hover:scale-105 transition-transform cursor-pointer animate-bounce">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="bg-white/20 p-2 rounded-full">
+<span class="material-symbols-outlined text-3xl">trophy</span>
+</div>
+<div>
+<p class="text-xs uppercase font-bold tracking-widest text-yellow-100">Winner!</p>
+<h2 class="text-2xl md:text-3xl font-black italic">BULA! JEFF PROBST!</h2>
+</div>
+</div>
+<div class="hidden sm:block">
+<button class="bg-white text-primary px-4 py-2 rounded-full font-bold text-sm shadow hover:bg-yellow-50 transition-colors">Claim Prize</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Panel: Logs & Combinations -->
+<aside class="col-span-1 lg:col-span-3 flex flex-col gap-6 h-full overflow-y-auto pl-2">
+<!-- Current Call -->
+<div class="bg-gradient-to-br from-surface-dark to-[#211711] rounded-xl p-6 border border-slate-700/50 shadow-lg text-center relative overflow-hidden">
+<div class="absolute top-0 right-0 p-2 opacity-10">
+<span class="material-symbols-outlined text-8xl">campaign</span>
+</div>
+<h3 class="text-sm text-slate-400 uppercase tracking-widest mb-2">Last Called</h3>
+<div class="flex items-center justify-center gap-1 mb-2">
+<span class="text-6xl font-black text-primary drop-shadow-sm">G-59</span>
+</div>
+<div class="h-1 w-24 bg-primary/20 mx-auto rounded-full overflow-hidden">
+<div class="h-full bg-primary w-2/3"></div>
+</div>
+<p class="text-xs text-slate-500 mt-2">Next call in 3s...</p>
+</div>
+<!-- Recent Log -->
+<div class="flex-1 bg-surface-dark rounded-xl p-5 border border-slate-700/50 shadow-lg flex flex-col">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-sm font-bold text-white uppercase tracking-wider">Call History</h3>
+<button class="text-xs text-primary hover:text-white transition-colors">View All</button>
+</div>
+<div class="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+<div class="flex items-center justify-between p-3 bg-[#181411] rounded-lg border-l-4 border-primary">
+<span class="font-bold text-xl text-white">G-59</span>
+<span class="text-xs text-slate-400">Just Now</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-[#181411] rounded-lg border-l-4 border-slate-600 opacity-80">
+<span class="font-bold text-xl text-slate-300">B-14</span>
+<span class="text-xs text-slate-500">10s ago</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-[#181411] rounded-lg border-l-4 border-slate-600 opacity-70">
+<span class="font-bold text-xl text-slate-300">N-33</span>
+<span class="text-xs text-slate-500">22s ago</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-[#181411] rounded-lg border-l-4 border-slate-600 opacity-60">
+<span class="font-bold text-xl text-slate-300">I-22</span>
+<span class="text-xs text-slate-500">35s ago</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-[#181411] rounded-lg border-l-4 border-slate-600 opacity-50">
+<span class="font-bold text-xl text-slate-300">O-68</span>
+<span class="text-xs text-slate-500">48s ago</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-[#181411] rounded-lg border-l-4 border-slate-600 opacity-40">
+<span class="font-bold text-xl text-slate-300">I-29</span>
+<span class="text-xs text-slate-500">1m ago</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-[#181411] rounded-lg border-l-4 border-slate-600 opacity-30">
+<span class="font-bold text-xl text-slate-300">N-40</span>
+<span class="text-xs text-slate-500">1m ago</span>
+</div>
+</div>
+</div>
+<!-- Mini Leaderboard -->
+<div class="bg-surface-dark rounded-xl p-5 border border-slate-700/50 shadow-lg">
+<h3 class="text-sm font-bold text-white uppercase tracking-wider mb-3">Top Winners</h3>
+<ul class="space-y-3">
+<li class="flex items-center gap-3">
+<span class="text-primary font-bold w-4">1</span>
+<img alt="Winner 1" class="w-8 h-8 rounded-full object-cover" data-alt="Portrait of a smiling man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvqYIUVnv5JscizlhoOMuH1xzvyunb5BGXeg_vcy2Q2Z4VuzZHRKQfyheiPs_122AvzI0vkRxqyiWRABHACIuHhgb2LQaOrKR0YxuXndtWBhws_7_kIdkPHyBGR92KVzjIPcLyG1WJPDOP8hvWUaDZbbteenrpBdoT0oUX2rDgj5wJICxFaHsO2gyYKnbcRYm8QEbvCJh222CA4nmPHCv8URjIWKiyyR2172yjjEaZpivTeSdUL4T86Cx7wWnQ87SADE2lWyrYd_AU"/>
+<div class="flex-1">
+<p class="text-xs font-bold text-white">Jone D.</p>
+<p class="text-[10px] text-slate-400">3 Wins today</p>
+</div>
+<span class="material-symbols-outlined text-yellow-500 text-sm">emoji_events</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="text-slate-400 font-bold w-4">2</span>
+<img alt="Winner 2" class="w-8 h-8 rounded-full object-cover" data-alt="Portrait of a serious woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZ47_e7p1nu_I1fb2h6-l6CnuEa6u9BYdEei8L2Z2y20n-hzyc6xa8Rin9qFFT-jmkUUtob_GsqK1D2AT3MGeWKTtOlbZ-r_GOyfXDaagMNgnpYsfwAzF195X0TpmWa3TqrEzA5bd7Ktb7sE436UrJGpnTzVY7ASF_L0hxP08kqP7oD-wpYI-Uww2gwNDjWDsRgLCIMSw7102c-EzFzGU-MQhGwENThtitKg6yx2c5ks3KG5KVJOy-U9ifBe9vuZtwcJS8NJdvwKp4"/>
+<div class="flex-1">
+<p class="text-xs font-bold text-white">Laisa V.</p>
+<p class="text-[10px] text-slate-400">2 Wins today</p>
+</div>
+</li>
+</ul>
+</div>
+</aside>
+</main>
+</body></html>

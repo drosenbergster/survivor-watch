@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Survivor Season 50 Sign In</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e9742b",
+                        "accent-yellow": "#f5b731",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#0a0f0d",
+                        "neutral-dark": "#141e19",
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>.jungle-texture {
+    background-image: linear-gradient(to bottom, rgba(10, 15, 13, 0.8), rgba(10, 15, 13, 0.95)), url(https://lh3.googleusercontent.com/aida-public/AB6AXuBOWqjwSf5FtvY9ZfGqgSf5hxK6K92DcN8PVIAJXK0gp52uXjYVtdOH6MlWE7H5xnvW6_kzJNpij71ig8oqGv4l52kYB0cdRMDYratPUissN-PHOx5ZE7e_dJqZs0cAty-Hz5g8XtxxT8GV7J8wAQRgbeamPTKa0n-MyAOfO0DieD7a5bM7env-eBtCwjt0wAvnBpOiT8rDp3b2JgUeXffRsKVwDhm7XfyFv-L8DKaI88U4F2lEu0BWB-p6-rS6k4vkkuYzmYcGiQvK);
+    background-size: cover;
+    background-position: center
+    }
+.ember-effect {
+    background-image: radial-gradient(circle at 50% 50%, rgba(233, 116, 43, 0.1) 0%, transparent 70%)
+    }
+.fire-glow {
+    text-shadow: 0 0 20px rgba(233, 116, 43, 0.6)
+    }</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex h-screen w-full flex-col overflow-hidden jungle-texture">
+<!-- Floating Ember Decorative Overlay -->
+<div class="absolute inset-0 pointer-events-none ember-effect"></div>
+<!-- Top App Bar Area -->
+<div class="flex items-center p-4 justify-between z-10">
+<div class="text-slate-100 flex size-12 shrink-0 items-center justify-center cursor-pointer">
+<span class="material-symbols-outlined">close</span>
+</div>
+<div class="w-12"></div> <!-- Spacer for centering -->
+</div>
+<!-- Main Content -->
+<div class="flex flex-col flex-1 items-center justify-center px-6 z-10 pb-20">
+<!-- Icon/Logo -->
+<div class="mb-6">
+<span class="text-6xl drop-shadow-[0_0_15px_rgba(233,116,43,0.8)]">🔥</span>
+</div>
+<!-- Title -->
+<div class="text-center mb-8">
+<h1 class="text-5xl font-black tracking-tighter text-primary fire-glow uppercase leading-none">
+                    Survivor
+                </h1>
+<h1 class="text-7xl font-black tracking-tighter text-accent-yellow fire-glow uppercase leading-none mt-1">
+                    50
+                </h1>
+<p class="text-xs font-bold tracking-[0.3em] text-slate-400 uppercase mt-4 opacity-70">
+                    WATCH PARTY HQ
+                </p>
+</div>
+<!-- Form Container -->
+<div class="w-full max-w-sm space-y-6">
+<div class="space-y-2">
+<label class="block text-slate-300 text-sm font-medium px-1">Email</label>
+<input class="w-full bg-background-dark/60 border border-neutral-dark focus:border-primary focus:ring-1 focus:ring-primary rounded-xl h-16 px-5 text-slate-100 placeholder:text-slate-600 transition-all outline-none" placeholder="Enter your survivor email" type="email"/>
+</div>
+<div class="pt-2">
+<button class="w-full h-14 rounded-full bg-gradient-to-r from-primary to-[#ff4d2d] text-white text-lg font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+<span>🔥</span> Send Magic Link
+                    </button>
+<p class="text-center text-slate-500 text-sm mt-6">
+                        Enter your email and we'll send you a magic link <span class="text-accent-yellow/80">✨</span>
+</p>
+</div>
+</div>
+</div>
+<!-- Decorative Bottom Elements -->
+<div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background-dark to-transparent pointer-events-none"></div>
+</div>
+<!-- Background Image Alt Reference -->
+<div class="hidden" data-alt="Dense dark tropical jungle foliage background"></div>
+</body></html>

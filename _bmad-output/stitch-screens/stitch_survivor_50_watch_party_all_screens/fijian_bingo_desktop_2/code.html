@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Authentic Fijian Bingo Desktop</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Rye&amp;family=Be+Vietnam+Pro:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "fijian-clay": "#8D6E63",
+                        "fijian-dark": "#3E2723",
+                        "fijian-red": "#5D4037",
+                        "fijian-tan": "#D7CCC8",
+                        "fijian-gold": "#FFB300",
+                        "primary": "#D84315", 
+                        "background-dark": "#2a1e16",
+                        "surface-dark": "#3e2723",
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "sans-serif"],
+                        "wood": ["Rye", "serif"]
+                    },
+                    backgroundImage: {
+                        'masi-texture': "url('data:image/svg+xml,%3Csvg width=\\'100\\' height=\\'100\\' viewBox=\\'0 0 100 100\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cpath d=\\'M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z\\' fill=\\'%235d4037\\' fill-opacity=\\'0.2\\' fill-rule=\\'evenodd\\'/%3E%3C/svg%3E')",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #2a1e16;
+            color: #efebe9;
+        }
+        .masi-pattern-overlay {
+            background-image: radial-gradient(#5d4037 1px, transparent 1px), radial-gradient(#5d4037 1px, transparent 1px);
+            background-position: 0 0, 25px 25px;
+            background-size: 50px 50px;
+            opacity: 0.15;
+        }.bamboo-cell {
+            border: 3px solid #8d6e63;
+            border-radius: 8px;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.4), 1px 1px 0px rgba(255,255,255,0.1);
+            background-image: linear-gradient(135deg, #efebe9 0%, #d7ccc8 100%);
+            position: relative;
+        }
+        .bamboo-cell::after {
+            content: '';
+            position: absolute;
+            top: 2px; left: 2px; right: 2px; bottom: 2px;
+            border: 1px dashed #a1887f;
+            border-radius: 6px;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .bamboo-cell-active {
+            background-image: linear-gradient(135deg, #d84315 0%, #bf360c 100%);
+            border-color: #ffccbc;
+        }
+        .wood-text {
+            font-family: 'Rye', serif;
+            text-shadow: 2px 2px 0px #3e2723;
+        }
+        .flame-glow {
+            box-shadow: 0 0 20px #ff6d00, 0 0 40px #ff3d00, inset 0 0 20px #ff9e80;
+            animation: flame-pulse 2s infinite alternate;
+        }
+        @keyframes flame-pulse {
+            0% { box-shadow: 0 0 20px #ff6d00, 0 0 40px #ff3d00, inset 0 0 20px #ff9e80; }
+            100% { box-shadow: 0 0 25px #ff9100, 0 0 50px #ff6d00, inset 0 0 30px #ffccbc; }
+        }::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #3e2723; 
+            border-left: 1px solid #5d4037;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8d6e63; 
+            border: 2px solid #3e2723;
+            border-radius: 6px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1887f; 
+        }
+        .tabua-icon {filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.5));
+        }
+        .voka-pattern-border {
+             background: 
+                linear-gradient(135deg, #3e2723 25%, transparent 25%) -50px 0,
+                linear-gradient(225deg, #3e2723 25%, transparent 25%) -50px 0,
+                linear-gradient(315deg, #3e2723 25%, transparent 25%),
+                linear-gradient(45deg, #3e2723 25%, transparent 25%);
+            background-size: 20px 20px;
+            background-color: #5d4037;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-fijian-tan font-display min-h-screen flex flex-col relative overflow-hidden bg-masi-texture">
+<div class="absolute inset-0 masi-pattern-overlay pointer-events-none z-0 mix-blend-multiply"></div>
+<div class="absolute inset-0 bg-gradient-to-b from-[#2a1e16]/80 via-transparent to-[#2a1e16]/90 pointer-events-none z-0"></div>
+<header class="relative z-10 w-full border-b-4 border-[#5d4037] bg-[#3e2723] px-6 py-4 flex items-center justify-between sticky top-0 shadow-xl">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center w-12 h-12 rounded-lg bg-[#5d4037] text-[#ffccbc] border-2 border-[#8d6e63] shadow-inner">
+<span class="material-symbols-outlined text-3xl">grid_view</span>
+</div>
+<h1 class="text-2xl md:text-3xl wood-text tracking-wide text-[#ffccbc]">Authentic Fijian Bingo</h1>
+</div>
+<nav class="hidden md:flex items-center gap-8 bg-[#2a1e16]/50 px-6 py-2 rounded-full border border-[#5d4037]">
+<a class="flex items-center gap-2 text-[#ffccbc] font-bold transition-colors border-b-2 border-[#ffccbc] pb-0.5" href="#">
+<span class="material-symbols-outlined filled">home</span>
+<span class="tracking-wide uppercase text-sm">Sevu</span>
+</a>
+<a class="flex items-center gap-2 text-[#a1887f] hover:text-[#ffccbc] transition-colors pb-0.5 hover:border-b-2 hover:border-[#a1887f]" href="#">
+<span class="material-symbols-outlined">sports_esports</span>
+<span class="tracking-wide uppercase text-sm">Qito</span>
+</a>
+<a class="flex items-center gap-2 text-[#a1887f] hover:text-[#ffccbc] transition-colors pb-0.5 hover:border-b-2 hover:border-[#a1887f]" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="tracking-wide uppercase text-sm">Tovo</span>
+</a>
+<a class="flex items-center gap-2 text-[#a1887f] hover:text-[#ffccbc] transition-colors pb-0.5 hover:border-b-2 hover:border-[#a1887f]" href="#">
+<span class="material-symbols-outlined">gavel</span>
+<span class="tracking-wide uppercase text-sm">Lawa</span>
+</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#2a1e16] border border-[#5d4037]">
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_#4caf50]"></span>
+<span class="text-xs font-medium text-[#d7ccc8] uppercase tracking-wider">Live</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-[#5d4037] hover:bg-[#6d4c41] text-[#ffccbc] transition-colors border border-[#8d6e63]">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-12 h-12 rounded-full bg-[#2a1e16] overflow-hidden border-2 border-[#ffccbc] ring-2 ring-[#5d4037]">
+<img alt="User Avatar" class="w-full h-full object-cover sepia-[.2]" data-alt="Portrait of a smiling user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAP_E6twYrQFvmjiJy3RJLYbBQdxmnjPPNtEEOJmdh1PxhUDIDUGIWx0xr9iwrMBVUPZIVzfH5suh775w3tUglmsnM_PuY1H8E7F1WrC0I9xAoNFTplMCgyHuM6QzMbJWSlJU1a1Y_pHjck9XB-0hgAAsDuL9_t68ayIBLvoyCkt80FwHI9lEGnwHgBEDWWdMPl3FFNifDusfxAP2jUSYtmg4o3Ll7we7HaSQxaj-8Z6MpkGvecz6EAqubNYBk1NYbCiguD4FB_X0xT"/>
+</div>
+</div>
+</header>
+<main class="relative z-10 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 lg:p-8 max-w-[1600px] mx-auto w-full h-[calc(100vh-90px)] overflow-hidden">
+<aside class="col-span-1 lg:col-span-3 flex flex-col gap-6 h-full overflow-y-auto pr-2 pb-20">
+<div class="bg-[#3e2723] rounded-sm p-1 border-2 border-[#5d4037] shadow-lg relative">
+<div class="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-[#ffccbc]"></div>
+<div class="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-[#ffccbc]"></div>
+<div class="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-[#ffccbc]"></div>
+<div class="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-[#ffccbc]"></div>
+<div class="bg-[#2a1e16] p-5 border border-[#5d4037]">
+<h2 class="text-xl font-bold text-[#ffccbc] mb-6 flex items-center gap-2 font-wood tracking-wider border-b border-[#5d4037] pb-2">
+<span class="material-symbols-outlined text-[#d84315]">playing_cards</span>
+                        Card Controls
+                    </h2>
+<div class="space-y-5">
+<div>
+<label class="block text-xs font-bold text-[#a1887f] mb-1.5 uppercase tracking-widest">Current Room</label>
+<div class="relative group">
+<select class="w-full bg-[#3e2723] border-2 border-[#5d4037] text-[#efebe9] text-sm rounded-none focus:ring-[#d84315] focus:border-[#d84315] block p-3 pr-10 appearance-none font-medium cursor-pointer transition-colors group-hover:border-[#8d6e63]">
+<option>Turtle Island Room</option>
+<option>Suva Market Hall</option>
+<option>Nadi Airport Lounge</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#d84315] bg-[#2a1e16] border-l-2 border-[#5d4037]">
+<span class="material-symbols-outlined text-lg">expand_more</span>
+</div>
+</div>
+</div>
+<div>
+<label class="block text-xs font-bold text-[#a1887f] mb-1.5 uppercase tracking-widest">Pattern to Match</label>
+<div class="flex items-center gap-4 bg-[#3e2723] p-3 border-2 border-[#5d4037] relative overflow-hidden">
+<div class="absolute top-0 right-0 w-8 h-8 bg-[#d84315] opacity-10 rounded-bl-xl"></div>
+<div class="w-12 h-12 grid grid-cols-3 gap-1 p-1 bg-[#2a1e16] border border-[#5d4037]">
+<div class="bg-[#d84315]"></div><div class="bg-[#4e342e]"></div><div class="bg-[#d84315]"></div>
+<div class="bg-[#4e342e]"></div><div class="bg-[#d84315]"></div><div class="bg-[#4e342e]"></div>
+<div class="bg-[#d84315]"></div><div class="bg-[#4e342e]"></div><div class="bg-[#d84315]"></div>
+</div>
+<div>
+<p class="text-sm font-bold text-[#ffccbc] uppercase tracking-wide">X Marks the Spot</p>
+<p class="text-xs text-[#a1887f] mt-1 font-mono text-fijian-gold">Prize: $500 FJD</p>
+</div>
+</div>
+</div>
+</div>
+<button class="mt-8 w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#d84315] to-[#bf360c] hover:from-[#f4511e] hover:to-[#d84315] text-white font-bold py-3 px-4 transition-all shadow-lg border-y-2 border-[#ffccbc]/30 group uppercase tracking-widest text-sm transform active:scale-95">
+<span class="material-symbols-outlined group-hover:rotate-180 transition-transform">refresh</span>
+                        New Card
+                    </button>
+</div>
+</div>
+<div class="flex-1 bg-[#3e2723] rounded-sm p-1 border-2 border-[#5d4037] shadow-lg flex flex-col min-h-[300px] relative">
+<div class="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-[#ffccbc]"></div>
+<div class="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-[#ffccbc]"></div>
+<div class="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-[#ffccbc]"></div>
+<div class="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-[#ffccbc]"></div>
+<div class="flex-1 bg-[#2a1e16] p-5 flex flex-col border border-[#5d4037]">
+<h3 class="text-sm font-bold text-[#ffccbc] mb-4 uppercase tracking-widest border-b border-[#5d4037] pb-2">Tanoa Chat</h3>
+<div class="flex-1 overflow-y-auto space-y-4 mb-4 pr-1">
+<div class="flex gap-3">
+<img alt="Player 1" class="w-8 h-8 rounded-full object-cover shrink-0 border border-[#8d6e63]" data-alt="Small portrait of a man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAobrl-mprhT5nZi4yfkwNNRZkMeNwxxuG8mX3YIe8eNsSdXlgKcO1CtHOrjxBFUmtMAaJJruQJH3iB_4PfFAurceTNoyuDPF5La3776tQXNzI7U6L3Xo4WeDdhvY1N1p7vjTBEHNwraUQm1SfaK7GYx5kyPnbtFb5ij7BMmrx0oCuOjQ18tv7gyjZMnhtokqQXU_LB_AfK6bfK9ifIQLA5_6pk6Pd2UB6-hKi3UWWWDYRsRB4cHTRLoASQCoJ8uqMpd101jDXFxh_6"/>
+<div class="bg-[#3e2723] p-2.5 rounded-r-lg rounded-bl-lg border border-[#5d4037]">
+<p class="text-[10px] font-bold text-[#ffccbc] mb-0.5">Ratu</p>
+<p class="text-xs text-[#d7ccc8]">Just need one more for the X!</p>
+</div>
+</div>
+<div class="flex gap-3 flex-row-reverse">
+<img alt="You" class="w-8 h-8 rounded-full object-cover shrink-0 border border-[#d84315]" data-alt="Small portrait of a woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPc7Key7o5ffkMluyxaPrAEWG3Zpd-aOunSFGJ2gU68ucgNUVzm_zPJ2zk1xuDef0hlb7EYiBp_1UryOnPI79CXfq_PJs2MJLBpfTz6mH5ICpH4E4l7DnIZPhePdlNyg6vXy3P6b73pn81LZQpSONHulDLy6zucrIXZ4D_LwbC3Pj_TY_XUsWWqAIB8t5SdGGpqH7uj2bKl0TuaWiIMBWPtRy5W5A9ulg2Dj-5lEq3egjXfCGWsjmXYhh7EBfnkR1_7ZbPbNkn32b6"/>
+<div class="bg-[#d84315]/20 p-2.5 rounded-l-lg rounded-br-lg border border-[#d84315]/40">
+<p class="text-[10px] font-bold text-[#ffccbc] text-right mb-0.5">Me</p>
+<p class="text-xs text-[#d7ccc8]">Bula vinaka! Good luck everyone.</p>
+</div>
+</div>
+<div class="flex gap-3">
+<img alt="Player 3" class="w-8 h-8 rounded-full object-cover shrink-0 border border-[#8d6e63]" data-alt="Small portrait of a woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGY_qOo7gQ3cevKkfqu-bI1YOp563MOSBizdK8OEUI7vsMEz0X_IMuTv41x4Vsq255LLRiF75b9Z5yoNkGtgLElEwsLrpQ7_w0bULiSwKGntOZ9sAl0FlO8qrRPPhjrJPY95Sm8QpsWDoNzGPe2sJ8WxUmhi_Roa9fFpw8ec7m8YWQgVQYqUSBunBxVVCoFpahgAWLmKqM5QzQ7gFiV-6J3eoSo6a_O10jzwh000j_eysxSAd7xvgMPFrYTXDa7y-25UDsjCuIorxt"/>
+<div class="bg-[#3e2723] p-2.5 rounded-r-lg rounded-bl-lg border border-[#5d4037]">
+<p class="text-[10px] font-bold text-[#ffccbc] mb-0.5">Sereana</p>
+<p class="text-xs text-[#d7ccc8]">Has I-22 been called yet?</p>
+</div>
+</div>
+</div>
+<div class="relative mt-auto">
+<input class="w-full bg-[#3e2723] border-2 border-[#5d4037] rounded-none py-2 px-3 text-sm text-white focus:outline-none focus:border-[#d84315] placeholder-[#8d6e63]" placeholder="Say something..." type="text"/>
+<button class="absolute right-2 top-1.5 text-[#d84315] hover:text-[#ff7043]">
+<span class="material-symbols-outlined text-xl">send</span>
+</button>
+</div>
+</div>
+</div>
+</aside>
+<div class="col-span-1 lg:col-span-6 flex flex-col justify-center h-full relative">
+<div class="relative bg-[#5d4037] p-2 rounded shadow-2xl mx-auto max-w-2xl w-full aspect-square border-4 border-[#3e2723] ring-4 ring-[#2a1e16]">
+<div class="absolute inset-0 border-[16px] border-[#3e2723] pointer-events-none z-0 opacity-50 voka-pattern-border"></div>
+<div class="relative bg-[#3e2723] h-full w-full p-2 md:p-6 shadow-inner flex flex-col">
+<div class="grid grid-cols-5 mb-4 relative z-10 pt-2 gap-2 md:gap-3">
+<div class="text-center font-wood text-3xl md:text-5xl text-[#d84315] drop-shadow-[2px_2px_0_rgba(0,0,0,0.5)]">B</div>
+<div class="text-center font-wood text-3xl md:text-5xl text-[#d84315] drop-shadow-[2px_2px_0_rgba(0,0,0,0.5)]">I</div>
+<div class="text-center font-wood text-3xl md:text-5xl text-[#ffccbc] drop-shadow-[2px_2px_0_rgba(0,0,0,0.5)]">N</div>
+<div class="text-center font-wood text-3xl md:text-5xl text-[#d84315] drop-shadow-[2px_2px_0_rgba(0,0,0,0.5)]">G</div>
+<div class="text-center font-wood text-3xl md:text-5xl text-[#d84315] drop-shadow-[2px_2px_0_rgba(0,0,0,0.5)]">O</div>
+</div>
+<div class="grid grid-cols-5 gap-2 md:gap-3 flex-1 relative z-10">
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">4</span>
+</div>
+<div class="aspect-square bamboo-cell bamboo-cell-active flex items-center justify-center cursor-pointer shadow-lg transform scale-[1.02]">
+<span class="text-xl md:text-3xl font-black text-[#ffccbc] drop-shadow-md">22</span>
+</div>
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">38</span>
+</div>
+<div class="aspect-square bamboo-cell bamboo-cell-active flex items-center justify-center cursor-pointer shadow-lg transform scale-[1.02]">
+<span class="text-xl md:text-3xl font-black text-[#ffccbc] drop-shadow-md">51</span>
+</div>
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">67</span>
+</div>
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">12</span>
+</div>
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">19</span>
+</div>
+<div class="aspect-square bamboo-cell bamboo-cell-active flex items-center justify-center cursor-pointer shadow-lg transform scale-[1.02]">
+<span class="text-xl md:text-3xl font-black text-[#ffccbc] drop-shadow-md">45</span>
+</div>
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">56</span>
+</div>
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">72</span>
+</div>
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">8</span>
+</div>
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">26</span>
+</div>
+<div class="aspect-square bamboo-cell bg-gradient-to-br from-[#3e2723] to-[#2a1e16] flex flex-col items-center justify-center cursor-default border-[#d84315] shadow-inner">
+<div class="tabua-icon relative w-10 h-10 md:w-14 md:h-14">
+<svg class="w-full h-full fill-[#ffecb3] drop-shadow-md" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<path d="M20,30 Q40,10 70,20 T90,60 Q80,90 50,80 T20,30 Z"></path>
+<path d="M20,30 Q10,25 5,35" fill="none" stroke="#5d4037" stroke-width="4"></path>
+<path d="M90,60 Q95,65 98,55" fill="none" stroke="#5d4037" stroke-width="4"></path>
+</svg>
+</div>
+<span class="text-[8px] md:text-[10px] font-bold text-[#ffccbc] uppercase mt-1 tracking-widest">Tabua</span>
+</div>
+<div class="aspect-square bamboo-cell bamboo-cell-active flex items-center justify-center cursor-pointer shadow-lg transform scale-[1.02]">
+<span class="text-xl md:text-3xl font-black text-[#ffccbc] drop-shadow-md">59</span>
+</div>
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">61</span>
+</div>
+<div class="aspect-square bamboo-cell bamboo-cell-active flex items-center justify-center cursor-pointer shadow-lg transform scale-[1.02]">
+<span class="text-xl md:text-3xl font-black text-[#ffccbc] drop-shadow-md">14</span>
+</div>
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">30</span>
+</div>
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">42</span>
+</div>
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">55</span>
+</div>
+<div class="aspect-square bamboo-cell bamboo-cell-active flex items-center justify-center cursor-pointer shadow-lg transform scale-[1.02]">
+<span class="text-xl md:text-3xl font-black text-[#ffccbc] drop-shadow-md">68</span>
+</div>
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">2</span>
+</div>
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">17</span>
+</div>
+<div class="aspect-square bamboo-cell bamboo-cell-active flex items-center justify-center cursor-pointer shadow-lg transform scale-[1.02]">
+<span class="text-xl md:text-3xl font-black text-[#ffccbc] drop-shadow-md">33</span>
+</div>
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">49</span>
+</div>
+<div class="aspect-square bamboo-cell flex items-center justify-center cursor-pointer group transform transition-transform active:scale-95">
+<span class="text-xl md:text-3xl font-black text-[#3e2723]">75</span>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[95%] md:w-4/5 bg-gradient-to-r from-[#bf360c] via-[#d84315] to-[#bf360c] text-white py-4 px-8 rounded-lg shadow-2xl border-4 border-[#ffb74d] z-50 transform hover:scale-105 transition-transform cursor-pointer flame-glow">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="bg-[#ffccbc]/20 p-2 rounded-full border border-[#ffccbc]">
+<span class="material-symbols-outlined text-3xl text-[#ffccbc]">trophy</span>
+</div>
+<div>
+<p class="text-xs uppercase font-bold tracking-[0.2em] text-[#ffccbc] mb-1">Winner!</p>
+<h2 class="text-2xl md:text-4xl font-wood italic text-[#ffe0b2] drop-shadow-md tracking-wide">BULA! JEFF PROBST!</h2>
+</div>
+</div>
+<div class="hidden sm:block">
+<button class="bg-[#ffe0b2] text-[#bf360c] px-6 py-2 rounded-full font-black uppercase tracking-wider text-sm shadow-lg hover:bg-white transition-colors">Claim Prize</button>
+</div>
+</div>
+</div>
+</div>
+<aside class="col-span-1 lg:col-span-3 flex flex-col gap-6 h-full overflow-y-auto pl-2 pb-20">
+<div class="relative bg-gradient-to-br from-[#3e2723] to-[#211711] rounded-sm p-1 border-2 border-[#5d4037] shadow-lg">
+<div class="bg-[#2a1e16] p-6 text-center relative overflow-hidden border border-[#5d4037]">
+<div class="absolute top-0 right-0 p-2 opacity-10">
+<span class="material-symbols-outlined text-8xl text-[#d84315]">campaign</span>
+</div>
+<h3 class="text-sm text-[#a1887f] uppercase tracking-[0.2em] mb-4 font-bold">Last Called</h3>
+<div class="flex items-center justify-center gap-1 mb-4 relative z-10">
+<span class="text-6xl font-wood text-[#ffccbc] drop-shadow-[2px_2px_0_#d84315]">G-59</span>
+</div>
+<div class="h-1.5 w-32 bg-[#3e2723] mx-auto rounded-full overflow-hidden border border-[#5d4037]">
+<div class="h-full bg-[#d84315] w-2/3"></div>
+</div>
+<p class="text-xs text-[#a1887f] mt-3 font-mono">Next call in 3s...</p>
+</div>
+</div>
+<div class="flex-1 bg-[#3e2723] rounded-sm p-1 border-2 border-[#5d4037] shadow-lg flex flex-col min-h-[250px] relative">
+<div class="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-[#ffccbc]"></div>
+<div class="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-[#ffccbc]"></div>
+<div class="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-[#ffccbc]"></div>
+<div class="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-[#ffccbc]"></div>
+<div class="flex-1 bg-[#2a1e16] p-5 flex flex-col border border-[#5d4037]">
+<div class="flex items-center justify-between mb-4 border-b border-[#5d4037] pb-2">
+<h3 class="text-sm font-bold text-[#ffccbc] uppercase tracking-widest">Call History</h3>
+<button class="text-xs text-[#d84315] hover:text-[#ffccbc] transition-colors font-bold uppercase">View All</button>
+</div>
+<div class="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+<div class="flex items-center justify-between p-3 bg-[#3e2723] border border-[#5d4037] border-l-4 border-l-[#d84315]">
+<span class="font-bold text-xl text-white font-wood">G-59</span>
+<span class="text-[10px] uppercase tracking-wide text-[#a1887f]">Just Now</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-[#2a1e16] border border-[#3e2723] border-l-4 border-l-[#5d4037] opacity-80">
+<span class="font-bold text-xl text-[#a1887f] font-wood">B-14</span>
+<span class="text-[10px] uppercase tracking-wide text-[#5d4037]">10s ago</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-[#2a1e16] border border-[#3e2723] border-l-4 border-l-[#5d4037] opacity-60">
+<span class="font-bold text-xl text-[#a1887f] font-wood">N-33</span>
+<span class="text-[10px] uppercase tracking-wide text-[#5d4037]">22s ago</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-[#2a1e16] border border-[#3e2723] border-l-4 border-l-[#5d4037] opacity-40">
+<span class="font-bold text-xl text-[#a1887f] font-wood">I-22</span>
+<span class="text-[10px] uppercase tracking-wide text-[#5d4037]">35s ago</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-[#3e2723] rounded-sm p-1 border-2 border-[#5d4037] shadow-lg">
+<div class="bg-[#2a1e16] p-5 border border-[#5d4037]">
+<h3 class="text-sm font-bold text-[#ffccbc] uppercase tracking-widest mb-4 border-b border-[#5d4037] pb-2">Top Winners</h3>
+<ul class="space-y-4">
+<li class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full bg-[#d84315] text-[#2a1e16] font-black flex items-center justify-center text-xs">1</div>
+<img alt="Winner 1" class="w-10 h-10 rounded-full object-cover border-2 border-[#d84315]" data-alt="Portrait of a smiling man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvqYIUVnv5JscizlhoOMuH1xzvyunb5BGXeg_vcy2Q2Z4VuzZHRKQfyheiPs_122AvzI0vkRxqyiWRABHACIuHhgb2LQaOrKR0YxuXndtWBhws_7_kIdkPHyBGR92KVzjIPcLyG1WJPDOP8hvWUaDZbbteenrpBdoT0oUX2rDgj5wJICxFaHsO2gyYKnbcRYm8QEbvCJh222CA4nmPHCv8URjIWKiyyR2172yjjEaZpivTeSdUL4T86Cx7wWnQ87SADE2lWyrYd_AU"/>
+<div class="flex-1">
+<p class="text-sm font-bold text-[#ffccbc]">Jone D.</p>
+<p class="text-[10px] text-[#a1887f] uppercase tracking-wider">3 Wins today</p>
+</div>
+<span class="material-symbols-outlined text-[#ffb300] text-lg drop-shadow-md">emoji_events</span>
+</li>
+<li class="flex items-center gap-3 opacity-80">
+<div class="w-6 h-6 rounded-full bg-[#5d4037] text-[#a1887f] font-bold flex items-center justify-center text-xs">2</div>
+<img alt="Winner 2" class="w-10 h-10 rounded-full object-cover border-2 border-[#5d4037]" data-alt="Portrait of a serious woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZ47_e7p1nu_I1fb2h6-l6CnuEa6u9BYdEei8L2Z2y20n-hzyc6xa8Rin9qFFT-jmkUUtob_GsqK1D2AT3MGeWKTtOlbZ-r_GOyfXDaagMNgnpYsfwAzF195X0TpmWa3TqrEzA5bd7Ktb7sE436UrJGpnTzVY7ASF_L0hxP08kqP7oD-wpYI-Uww2gwNDjWDsRgLCIMSw7102c-EzFzGU-MQhGwENThtitKg6yx2c5ks3KG5KVJOy-U9ifBe9vuZtwcJS8NJdvwKp4"/>
+<div class="flex-1">
+<p class="text-sm font-bold text-[#d7ccc8]">Laisa V.</p>
+<p class="text-[10px] text-[#a1887f] uppercase tracking-wider">2 Wins today</p>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</aside>
+</main>
+
+</body></html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Authentic Fijian Scoreboard Tovo</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Rye&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d97706",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#1c1917",
+                        "surface-dark": "#292524",
+                        "accent-wood": "#78350f",
+                        "accent-stone": "#44403c",
+                        "sand": "#d4b483",
+                        "clay": "#3d342b",
+                        "charcoal": "#1a1816"
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "sans-serif"],
+                        "wood": ["Rye", "serif"],
+                        "fijian": ["Bebas Neue", "sans-serif"]
+                    },
+                    backgroundImage: {
+                        'wood-texture': "url('https://www.transparenttextures.com/patterns/wood-pattern.png')",
+                        'stone-texture': "url('https://www.transparenttextures.com/patterns/asfalt-dark.png')",
+                        'tapa-pattern': "url('https://www.transparenttextures.com/patterns/diagmonds-light.png')",
+                        'masi-pattern': "url('https://www.transparenttextures.com/patterns/black-scales.png')"
+                    }
+                },
+            },
+        }
+    </script>
+<style>body {
+    min-height: max(884px, 100dvh)
+    }
+.text-shadow-wood {
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5), -1px -1px 0 rgba(255, 255, 255, 0.1)
+    }
+.wood-btn {
+    background: linear-gradient(to bottom, #5d4037, #3e2723);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 4px 0 #270f05, 0 5px 5px rgba(0, 0, 0, 0.5);
+    border: 1px solid #3e2723;
+    position: relative;
+    overflow: hidden
+    }
+.wood-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuDCZihA-FZ2G2L-nEc4K-_RMrcQyP8JiZM4KPxrT9goQ-gxwXPjec29uzW_oKp9MJSiRkxUNNWxC9gkMKgxTUtDSikMoLt5TYybLgpaFZsBborMT8v4yEt4PbxXjqI_vTXO5Yo0UuqKJ_roH58la72KmHr-bxeuR5U9LjEoCoewazoJLpkYgJjNOhoCjQLUWHUmjASTy8askqGQWnUOSZAsHz_XpzbIDMtjD9P086uh0qEIGXNIVkHyUlPTMwfSEXkpXctAHSWwqN_b);
+    opacity: 0.4;
+    pointer-events: none
+    }
+.wood-btn:active {
+    transform: translatey(4px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 0 #270f05, 0 1px 2px rgba(0, 0, 0, 0.5)
+    }
+.tribal-border {
+    border: 4px solid #d4b483;
+    border-image: repeating-linear-gradient(45deg, #78350f, #d4b483 10px, #78350f 20px) 1
+    }
+.magimagi-border {
+    border: 12px solid #3e2723;
+    border-image: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h30v30H0z' fill='%233e2723'/%3E%3Cpath d='M0 15l15-15 15 15-15 15z' fill='%235d4037' opacity='.5'/%3E%3C/svg%3E") 30 repeat
+    }
+.masi-bg {
+    background-color: #1a1816;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23292524' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")
+    }
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px
+    }
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #1c1917;
+    border-left: 1px solid #44403c
+    }
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #57534e;
+    border-radius: 2px;
+    border: 2px solid #1c1917
+    }
+.pb-safe {
+    padding-bottom: env(safe-area-inset-bottom)
+    }</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-charcoal text-sand font-display min-h-screen flex flex-col relative overflow-x-hidden magimagi-border bg-stone-texture">
+<div class="fixed inset-0 pointer-events-none opacity-5 z-0 masi-bg"></div>
+<div class="fixed inset-0 pointer-events-none opacity-10 z-0 flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-[40rem] text-stone-600 transform rotate-12 drop-shadow-2xl">forest</span>
+</div>
+<nav class="sticky top-0 z-50 w-full border-b-4 border-accent-wood bg-[#292524] shadow-2xl relative">
+<div class="absolute inset-0 bg-wood-texture opacity-30 pointer-events-none"></div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+<div class="flex items-center justify-between h-20">
+<div class="flex items-center gap-3">
+<div class="bg-accent-wood p-2 rounded border border-[#d4b483] shadow-lg">
+<span class="material-symbols-outlined text-[#d4b483] text-3xl drop-shadow-md">local_fire_department</span>
+</div>
+<span class="text-2xl font-fijian tracking-widest text-[#d4b483] text-shadow-wood">SURVIVOR<span class="text-white ml-1">50 HQ</span></span>
+</div>
+<div class="hidden md:flex items-center space-x-12">
+<a class="flex flex-col items-center group opacity-70 hover:opacity-100 transition-all" href="#">
+<span class="material-symbols-outlined text-stone-300 group-hover:text-[#d4b483] transition-colors mb-1">home</span>
+<span class="text-xs font-bold tracking-widest uppercase text-stone-400 group-hover:text-white">Vure</span>
+</a>
+<a class="flex flex-col items-center group opacity-70 hover:opacity-100 transition-all" href="#">
+<span class="material-symbols-outlined text-stone-300 group-hover:text-[#d4b483] transition-colors mb-1">grid_on</span>
+<span class="text-xs font-bold tracking-widest uppercase text-stone-400 group-hover:text-white">Qito</span>
+</a>
+<a class="flex flex-col items-center group relative" href="#">
+<div class="absolute -inset-4 bg-accent-wood opacity-20 rounded-full blur-md"></div>
+<span class="material-symbols-outlined text-[#d4b483] text-3xl drop-shadow-lg transform -translate-y-1">leaderboard</span>
+<span class="text-xs font-bold tracking-widest uppercase text-[#d4b483] mt-1 border-b-2 border-[#d4b483] pb-0.5">Yavu</span>
+</a>
+<a class="flex flex-col items-center group opacity-70 hover:opacity-100 transition-all" href="#">
+<span class="material-symbols-outlined text-stone-300 group-hover:text-[#d4b483] transition-colors mb-1">description</span>
+<span class="text-xs font-bold tracking-widest uppercase text-stone-400 group-hover:text-white">Tukutuku</span>
+</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-stone-400 hover:text-[#d4b483] transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-accent-wood flex items-center justify-center border-2 border-[#d4b483] cursor-pointer overflow-hidden relative shadow-md">
+<img alt="User Profile" class="h-full w-full object-cover sepia-[.4]" data-alt="Portrait of a user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhSRCvZZwmybzsN9TgF6krqf3HxTlQf-uNWTEn-e-K9Rl0gAOInRYSxx4T8JZr-Z6JtQ955Qkrl5W7aWKEmXK3IlmoCO37PAgLZiEQWK8XfxYjQIq1204KA1R-ITWbSx3ViJGeooVNgZ5aDsg9pqSN5fUFGkGt74idkyfQ7V669xqhcH1bsi_x__YQBSZsoKryluKDHWFnn6mY0VYxUqz_vTmYni4phu9Ou9hlEns0L_s1xpw73rs2aVpdKVijgk0RKCXKC0KDjT6_"/>
+</div>
+</div>
+</div>
+</div>
+</nav>
+<main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6 border-b border-stone-700 pb-6 bg-[#292524]/40 p-6 rounded-lg backdrop-blur-sm border border-stone-700">
+<div>
+<h1 class="text-4xl md:text-6xl font-fijian text-[#d4b483] tracking-widest text-shadow-wood uppercase">Tovo Dashboard</h1>
+<p class="text-stone-400 mt-2 font-medium tracking-wide">Live Tribal Council &amp; Challenge Statistics</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 bg-surface-dark border border-stone-600 hover:border-[#d4b483] rounded-sm text-sm font-bold tracking-wider text-stone-300 transition-colors uppercase">
+<span class="material-symbols-outlined text-lg">calendar_today</span>
+                    Season 50
+                </button>
+<button class="wood-btn flex items-center gap-2 px-5 py-2.5 rounded-sm text-sm font-bold text-sand tracking-wider uppercase transition-all">
+<span class="material-symbols-outlined text-lg">add</span>
+                    New Tribal
+                </button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 space-y-8">
+<section>
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-xl font-bold text-[#d4b483] flex items-center gap-2 font-fijian tracking-wide text-2xl">
+<span class="material-symbols-outlined text-[#d97706]">stars</span>
+                            Top Survivors
+                        </h2>
+<a class="text-sm text-[#d97706] hover:text-[#d4b483] font-bold tracking-wide uppercase transition-colors" href="#">View Tribe</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+<div class="relative bg-clay pt-2 pb-2 px-1 shadow-2xl group border border-stone-700">
+<div class="absolute top-0 left-0 w-full h-4 bg-repeat-x opacity-30" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCg-57rRV6RiP4BAkEjFs3EiGiEqGeDqjlpCCWVW1z2tsV_cU8-qq7o6k1ySyqOMusguQJcsAUZQuSO8IPASYU4Sm7wOBe5HMz_bmkCXhQgTelxnducdHOfJSwActZ37EDQu3K6Iw4bZTH7BWC_XP5qB8fOedpy10TOwmupJK3TPpFXJ9X-mPSGAb_71g9Oqp40yCrUah-OBiEnUVduEzzO1F-jtSOMgK8msCFTuHNGIrr_gSaH9sne4cPu49UBDU7_klcNXV412azp');"></div>
+<div class="bg-gradient-to-b from-[#4a4036] to-[#292524] h-full mx-1 border-x border-[#5d4037] p-4 flex flex-col items-center relative z-0">
+<div class="absolute top-2 right-2">
+<span class="material-symbols-outlined text-[#d4b483] drop-shadow-md">workspace_premium</span>
+</div>
+<div class="w-20 h-20 rounded-full border-4 border-[#d4b483] p-1 mb-3 relative bg-[#1c1917]">
+<img alt="Top Player Jone" class="rounded-full w-full h-full object-cover sepia-[.3]" data-alt="Portrait of top player" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2qn4BBIMWWf_HaPy413Pi8uXWvYnJJgVilr-_cC9_G2ayNAZOF_d2izz0Ovy3yizRCn0nmZ7aumMlct5V-Ms-3EX6GuG9KYAgzsGpn6HRkW5ijCB3M7fIv28J3CCp53l_G0Fe7Nhmy4hiG6dyqOBreKBGiWJntu62Tg4Vtqvu4LtaPIaECjCjjlILoHCjeRh_uC0uO3Uh08XkTVnNTkqHbA0gknXeUw9Sk1peGwNG_KRkrgGqU38QAleLPy2a8L4jD80LBXvCg5NL"/>
+<div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-[#d4b483] text-[10px] font-bold px-2 py-0.5 rounded text-black shadow-md">#1</div>
+</div>
+<h3 class="text-lg font-bold text-[#d4b483] font-fijian tracking-widest text-xl">Jone R.</h3>
+<p class="text-stone-400 text-xs uppercase tracking-widest mb-3">Mana Tribe</p>
+<div class="flex items-baseline gap-1 bg-[#1c1917] px-4 py-1 rounded-sm border border-[#5d4037]">
+<span class="text-2xl font-bold text-[#d4b483] font-wood">150</span>
+<span class="text-[10px] text-stone-500 uppercase font-bold">Pts</span>
+</div>
+</div>
+</div>
+<div class="relative bg-clay pt-2 pb-2 px-1 shadow-xl group opacity-90 hover:opacity-100 transition-opacity border border-stone-700">
+<div class="absolute top-0 left-0 w-full h-4 bg-repeat-x opacity-30" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAbrltm7lwVXdE6VtMSYSZmDqQW7Kt_rhQxHUfclkLFgAhcwLWd6N7RtGxLGwja1LiZua1EtoQGjXiQw7wS_3WfHkf_bmAWD0hZ7aTAjTXyOiwz_bNgu0Ef_nITw9WubvHoX-O3WRQdLeSMHkoQgsmVd4US40vfj-x-R46BIPt78n4PDEiaema8tyjde0CISaVN8IcuhoBiz-8oKAmq1aZk1PvyC4-RIiY85Y7yS-dOrcJP_zCSP5CXkU5ln0QBKL4F59wkSM_lywOB');"></div>
+<div class="bg-gradient-to-b from-[#4a4036] to-[#292524] h-full mx-1 border-x border-[#5d4037] p-4 flex flex-col items-center relative z-0">
+<div class="absolute top-2 right-2">
+<span class="material-symbols-outlined text-stone-400 drop-shadow-md">workspace_premium</span>
+</div>
+<div class="w-16 h-16 rounded-full border-4 border-stone-500 p-1 mb-3 bg-[#1c1917]">
+<img alt="Second Place Peni" class="rounded-full w-full h-full object-cover sepia-[.3]" data-alt="Portrait of second player" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcUPF2zm7HDBOkM2mhTJJfDeUgHh5aiuEN5y6B4JN_v8-yk8idca17FpfeP3ZuOz8G-GXDcH3a7bba7sDcuGMJDoxIO_GaLqg7DaQhq71PA7YNL2jqtA2yVWmzl_VIEnJyKunTW4WCXeUdWia6zb0xy3nnXKBQuKZjun-RYABKqOgfQ8S1mlu885b9yqGhJVRyTfdvNvAIlOQxjZR-7ODb05IN7hF-Y398rtbwMycVqDZGMgUUqbhzFUnUBbAI2xDQdRLsQYf3nZNV"/>
+</div>
+<h3 class="text-lg font-bold text-stone-300 font-fijian tracking-widest text-xl">Peni T.</h3>
+<p class="text-stone-500 text-xs uppercase tracking-widest mb-3">Yawa Tribe</p>
+<div class="flex items-baseline gap-1 bg-[#1c1917] px-3 py-1 rounded-sm border border-[#5d4037]">
+<span class="text-xl font-bold text-stone-300 font-wood">120</span>
+<span class="text-[10px] text-stone-500 uppercase font-bold">Pts</span>
+</div>
+</div>
+</div>
+<div class="relative bg-clay pt-2 pb-2 px-1 shadow-xl group opacity-90 hover:opacity-100 transition-opacity border border-stone-700">
+<div class="absolute top-0 left-0 w-full h-4 bg-repeat-x opacity-30" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCi0OocamcxybP2gmVKVdT4TjUFbQte4AgV1rjsDZMyMkI2OS4tu1Qt4UhyLjs0uOZasoztlJ157T6QD5_egHCWhARzSk4hS-jXlyXrD_e931-xyLETFcE11pt3Irf40xR5rfa_rFJ_bWdw5mjSv3z-Dn_udvuiIIrD6yVLpSEp2pwWQPaDWjEpK3-8Ad2tWMf9WxnAUseJz-PQZwyeJETJJdfEfMS4BhATJQ-NX3BdS-ErlTcayfLdlJ71Ff4ITq4y1mFn2v5Be_dS');"></div>
+<div class="bg-gradient-to-b from-[#4a4036] to-[#292524] h-full mx-1 border-x border-[#5d4037] p-4 flex flex-col items-center relative z-0">
+<div class="absolute top-2 right-2">
+<span class="material-symbols-outlined text-[#a16207] drop-shadow-md">workspace_premium</span>
+</div>
+<div class="w-16 h-16 rounded-full border-4 border-[#a16207] p-1 mb-3 bg-[#1c1917]">
+<img alt="Third Place Saki" class="rounded-full w-full h-full object-cover sepia-[.3]" data-alt="Portrait of third player" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKuDe5jZK1Ucq4a3ByNsZuGIARmE46xPJAyy5Gntzn6x5gSruJs-ErcCZzB6sTeuD3bydqg51YTHau4nxIVv9NNqOOjmh2rCdrsp3G8yV4kh41krriLkLfzh7MrEAm37jTdI2JmNSd_678CmdShhzge8fpxQ-GsDoPWyBh9V_3nYgD9rnsfDm8HvMkDdKEHINnY97bA0iezS-dkmn_oiMOuDd7HN2RGGlPhGC8jeTtgE-2tDvJq9X8EJfUFtFu12KU3B8dwZvvN8Oy"/>
+</div>
+<h3 class="text-lg font-bold text-[#d4b483] font-fijian tracking-widest text-xl">Saki V.</h3>
+<p class="text-stone-500 text-xs uppercase tracking-widest mb-3">Vata Tribe</p>
+<div class="flex items-baseline gap-1 bg-[#1c1917] px-3 py-1 rounded-sm border border-[#5d4037]">
+<span class="text-xl font-bold text-[#d4b483] font-wood">95</span>
+<span class="text-[10px] text-stone-500 uppercase font-bold">Pts</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-xl font-bold text-[#d4b483] mb-4 flex items-center gap-2 font-fijian tracking-wide text-2xl">
+<span class="material-symbols-outlined text-[#d97706]">edit_note</span>
+                        Score Events
+                    </h2>
+<div class="bg-[#292524] p-6 border-2 border-[#57534e] relative overflow-hidden shadow-2xl rounded-sm">
+<div class="absolute inset-0 opacity-[0.1] pointer-events-none bg-masi-pattern"></div>
+<div class="relative z-10">
+<div class="mb-6 bg-[#1c1917] p-4 border border-[#44403c] shadow-inner rounded-sm">
+<label class="block text-xs font-bold text-[#d4b483] uppercase tracking-widest mb-2">Castaway Action</label>
+<div class="flex gap-2">
+<input class="flex-1 bg-[#292524] border border-[#57534e] rounded-sm px-4 py-3 text-[#d4b483] placeholder-stone-600 focus:outline-none focus:border-[#d97706] focus:ring-1 focus:ring-[#d97706] transition-all font-mono" placeholder="Select castaway or enter event..." type="text"/>
+<button class="wood-btn text-[#d4b483] px-6 py-3 rounded-sm font-bold tracking-wider transition-all uppercase text-sm shadow-lg border-l border-white/10">
+                                        LOG
+                                    </button>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<button class="h-24 wood-btn rounded-sm flex flex-col items-center justify-center gap-2 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity"></div>
+<span class="material-symbols-outlined text-[#84cc16] drop-shadow-md text-3xl group-hover:scale-110 transition-transform">shield</span>
+<div class="text-center leading-tight">
+<span class="block text-sm font-fijian tracking-widest text-[#fcd34d] text-shadow-wood">Immunity Win</span>
+<span class="block text-[10px] text-stone-400 font-bold uppercase">(Uwa)</span>
+</div>
+</button>
+<button class="h-24 wood-btn rounded-sm flex flex-col items-center justify-center gap-2 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity"></div>
+<span class="material-symbols-outlined text-[#facc15] drop-shadow-md text-3xl group-hover:scale-110 transition-transform">diamond</span>
+<div class="text-center leading-tight">
+<span class="block text-sm font-fijian tracking-widest text-[#fcd34d] text-shadow-wood">Finds Idol</span>
+<span class="block text-[10px] text-stone-400 font-bold uppercase">(Cina)</span>
+</div>
+</button>
+<button class="h-24 wood-btn rounded-sm flex flex-col items-center justify-center gap-2 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity"></div>
+<span class="material-symbols-outlined text-[#fbbf24] drop-shadow-md text-3xl group-hover:scale-110 transition-transform">restaurant</span>
+<div class="text-center leading-tight">
+<span class="block text-sm font-fijian tracking-widest text-[#fcd34d] text-shadow-wood">Reward Win</span>
+<span class="block text-[10px] text-stone-400 font-bold uppercase">(Kakana)</span>
+</div>
+</button>
+<button class="h-24 wood-btn rounded-sm flex flex-col items-center justify-center gap-2 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity"></div>
+<span class="material-symbols-outlined text-[#f97316] drop-shadow-md text-3xl group-hover:scale-110 transition-transform">local_fire_department</span>
+<div class="text-center leading-tight">
+<span class="block text-sm font-fijian tracking-widest text-[#fcd34d] text-shadow-wood">Fire Win</span>
+<span class="block text-[10px] text-stone-400 font-bold uppercase">(Buka)</span>
+</div>
+</button>
+<button class="h-24 bg-[#1c1917] hover:bg-[#292524] border border-[#44403c] active:translate-y-1 rounded-sm flex flex-col items-center justify-center gap-2 transition-all group">
+<span class="material-symbols-outlined text-stone-500 group-hover:text-red-500 group-hover:scale-110 transition-all text-3xl">close</span>
+<span class="text-xs font-bold text-stone-400 uppercase tracking-wider group-hover:text-red-400">Voted Out</span>
+</button>
+<button class="h-24 bg-[#1c1917] hover:bg-[#292524] border border-[#44403c] active:translate-y-1 rounded-sm flex flex-col items-center justify-center gap-2 transition-all group">
+<span class="material-symbols-outlined text-stone-500 group-hover:text-blue-400 group-hover:scale-110 transition-all text-3xl">videocam</span>
+<span class="text-xs font-bold text-stone-400 uppercase tracking-wider group-hover:text-blue-300">Confessional</span>
+</button>
+<button class="col-span-2 h-24 wood-btn border-2 border-[#fbbf24] active:translate-y-1 rounded-sm flex flex-row items-center justify-center gap-3 transition-all group shadow-md">
+<span class="material-symbols-outlined text-[#fcd34d] text-4xl group-hover:scale-110 transition-transform animate-pulse">trophy</span>
+<div class="text-left">
+<span class="block text-2xl font-fijian font-bold text-[#fcd34d] uppercase tracking-widest text-shadow-wood">Sole Survivor</span>
+<span class="block text-xs text-[#d4b483] uppercase tracking-wider">The Winner</span>
+</div>
+</button>
+</div>
+</div>
+</div>
+</section>
+<section>
+<div class="bg-[#292524] rounded-sm p-6 border-2 border-[#44403c] shadow-lg relative">
+<div class="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[#d4b483]"></div>
+<div class="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-[#d4b483]"></div>
+<div class="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-[#d4b483]"></div>
+<div class="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[#d4b483]"></div>
+<div class="flex justify-between items-start mb-6">
+<div>
+<p class="text-stone-400 text-xs font-bold uppercase tracking-widest mb-1">Tribe Status</p>
+<p class="text-[#d4b483] tracking-wide text-2xl font-fijian leading-tight">Strongest: MANA</p>
+</div>
+<select class="bg-[#1c1917] text-[#d4b483] text-xs font-bold uppercase tracking-wide border border-[#57534e] rounded-sm px-3 py-1 outline-none focus:border-[#d97706]">
+<option>Pre-Merge</option>
+<option>Merge</option>
+</select>
+</div>
+<div class="grid h-[200px] grid-flow-col gap-8 grid-rows-[1fr_auto] items-end justify-items-center px-4 w-full border-b border-stone-700 pb-2">
+<div class="w-full flex flex-col justify-end items-center h-full group cursor-pointer">
+<div class="bg-gradient-to-t from-[#5d4037] to-[#d4b483] w-full max-w-[40px] opacity-40 group-hover:opacity-100 transition-all relative border-t-2 border-[#fbbf24]" style="height: 30%;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity text-xs">3/10</div>
+</div>
+</div>
+<div class="w-full flex flex-col justify-end items-center h-full group cursor-pointer">
+<div class="bg-gradient-to-t from-[#5d4037] to-[#d4b483] w-full max-w-[40px] relative shadow-lg border-t-2 border-[#fbbf24]" style="height: 70%;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-white font-bold text-xs">7/10</div>
+</div>
+</div>
+<div class="w-full flex flex-col justify-end items-center h-full group cursor-pointer">
+<div class="bg-gradient-to-t from-[#5d4037] to-[#d4b483] w-full max-w-[40px] opacity-60 group-hover:opacity-100 transition-all relative border-t-2 border-[#fbbf24]" style="height: 50%;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity text-xs">5/10</div>
+</div>
+</div>
+<p class="text-stone-500 text-[10px] font-bold uppercase tracking-widest mt-2">Vata</p>
+<p class="text-[#d4b483] text-[10px] font-bold uppercase tracking-widest mt-2">Mana</p>
+<p class="text-stone-500 text-[10px] font-bold uppercase tracking-widest mt-2">Yawa</p>
+</div>
+</div>
+</section>
+</div>
+<div class="lg:col-span-1">
+<section class="h-full">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-xl font-bold text-[#d4b483] flex items-center gap-2 font-fijian tracking-wide text-2xl">
+<span class="material-symbols-outlined text-[#d97706]">history</span>
+                            Tribal Log
+                        </h2>
+<button class="p-1 hover:bg-[#292524] rounded text-stone-400 transition-colors">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+</button>
+</div>
+<div class="bg-[#292524] border-2 border-[#44403c] h-[calc(100vh-280px)] min-h-[600px] overflow-hidden flex flex-col shadow-2xl rounded-sm">
+<div class="p-4 border-b border-[#44403c] bg-[#1c1917]">
+<div class="relative">
+<span class="absolute left-3 top-2.5 material-symbols-outlined text-stone-500 text-lg">search</span>
+<input class="w-full bg-[#292524] border border-[#57534e] rounded-sm py-2 pl-10 pr-4 text-sm text-[#d4b483] focus:outline-none focus:border-[#d97706] placeholder-stone-600" placeholder="Search events..." type="text"/>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-stone-texture">
+<div class="flex gap-3 items-start pb-4 border-b border-stone-800 last:border-0 last:pb-0 group hover:bg-white/5 p-2 rounded transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-[#84cc16] bg-[#365314]/30 p-1.5 rounded border border-[#365314] text-lg">shield</span>
+</div>
+<div>
+<p class="text-sm font-bold text-[#d4b483]">Mana wins Immunity</p>
+<p class="text-xs text-stone-400">Tribe safe from Tribal Council.</p>
+<p class="text-[10px] text-stone-600 mt-1 uppercase tracking-wide font-bold">2 mins ago</p>
+</div>
+</div>
+<div class="flex gap-3 items-start pb-4 border-b border-stone-800 last:border-0 last:pb-0 group hover:bg-white/5 p-2 rounded transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-[#facc15] bg-yellow-900/30 p-1.5 rounded border border-yellow-800 text-lg">diamond</span>
+</div>
+<div>
+<p class="text-sm font-bold text-stone-200">Idol Found</p>
+<p class="text-xs text-stone-400">Jone R. found Hidden Idol.</p>
+<p class="text-[10px] text-stone-600 mt-1 uppercase tracking-wide font-bold">15 mins ago</p>
+</div>
+</div>
+<div class="flex gap-3 items-start pb-4 border-b border-stone-800 last:border-0 last:pb-0 group hover:bg-white/5 p-2 rounded transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-red-400 bg-red-900/30 p-1.5 rounded border border-red-800 text-lg">visibility_off</span>
+</div>
+<div>
+<p class="text-sm font-bold text-red-300">Blindside!</p>
+<p class="text-xs text-stone-400">Sarah voted out (4-3 vote).</p>
+<p class="text-[10px] text-stone-600 mt-1 uppercase tracking-wide font-bold">45 mins ago</p>
+</div>
+</div>
+<div class="flex gap-3 items-start pb-4 border-b border-stone-800 last:border-0 last:pb-0 group hover:bg-white/5 p-2 rounded transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-stone-400 bg-stone-700/30 p-1.5 rounded border border-stone-600 text-lg">handshake</span>
+</div>
+<div>
+<p class="text-sm font-bold text-stone-300">Alliance Formed</p>
+<p class="text-xs text-stone-400">Vata Tribe: Core Four</p>
+<p class="text-[10px] text-stone-600 mt-1 uppercase tracking-wide font-bold">1 hour ago</p>
+</div>
+</div>
+<div class="flex gap-3 items-start pb-4 border-b border-stone-800 last:border-0 last:pb-0 group hover:bg-white/5 p-2 rounded transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-[#d97706] bg-orange-900/30 p-1.5 rounded border border-orange-800 text-lg">restaurant</span>
+</div>
+<div>
+<p class="text-sm font-bold text-[#d4b483]">Reward Challenge</p>
+<p class="text-xs text-stone-400">Yawa wins fishing gear.</p>
+<p class="text-[10px] text-stone-600 mt-1 uppercase tracking-wide font-bold">2 hours ago</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<div class="md:hidden fixed bottom-0 left-0 right-0 border-t-2 border-[#d4b483] bg-[#1c1917] z-[70] pb-safe">
+<div class="flex gap-2 px-4 pb-3 pt-2 justify-around">
+<a class="flex flex-col items-center justify-end gap-1 text-stone-400 hover:text-[#d4b483]" href="#">
+<span class="material-symbols-outlined text-2xl">home</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Vure</p>
+</a>
+<a class="flex flex-col items-center justify-end gap-1 text-stone-400 hover:text-[#d4b483]" href="#">
+<span class="material-symbols-outlined text-2xl">grid_on</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Qito</p>
+</a>
+<a class="flex flex-col items-center justify-end gap-1 text-[#d4b483]" href="#">
+<span class="material-symbols-outlined text-2xl fill-current">leaderboard</span>
+<p class="text-[10px] font-bold uppercase tracking-widest border-b border-[#d4b483]">Yavu</p>
+</a>
+<a class="flex flex-col items-center justify-end gap-1 text-stone-400 hover:text-[#d4b483]" href="#">
+<span class="material-symbols-outlined text-2xl">description</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Tukutuku</p>
+</a>
+</div>
+</div>
+
+</body></html>

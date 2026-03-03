@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Minimal Tiki Sign In</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e8722a",
+                        "accent-yellow": "#f5b731",
+                        "stone-muted": "#78716c",
+                        "background-dark": "#0a0f0d",
+                        "green-gradient": "#0a1a10",
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        :root {
+            --bg-base: #0a0f0d;
+            --bg-accent: #0a1a10;
+        }
+        body {
+            background-color: var(--bg-base);
+            min-height: 100dvh;
+        }
+        .tiki-bg {
+            background: radial-gradient(circle at top right, var(--bg-accent) 0%, var(--bg-base) 60%),
+                        radial-gradient(circle at bottom left, var(--bg-accent) 0%, var(--bg-base) 60%);
+        }
+        .leaf-silhouette-tl {
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            width: 200px;
+            height: 200px;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8.12,20C11,20 14,15.75 14,11C14,10.25 13.9,9.5 13.73,8.83C14.73,8.3 15.84,8 17,8M12,2C4.5,2 2,12 2,12C2,12 4.17,10 7.5,10C8.5,10 9.42,10.18 10.28,10.5C10.1,11.3 10,12.13 10,13C10,17 12.33,20 15,20C15.53,20 16.05,19.88 16.55,19.65L17.5,22L19.39,21.34C17.31,16.17 15.2,10 6.2,8C7.36,8 8.47,8.3 9.47,8.83C9.3,9.5 9.2,10.25 9.2,11C9.2,15.75 12.2,20 15.08,20C15.56,20 16.06,19.87 16.54,19.7L17.5,22L19.39,21.34C17.31,16.17 15.2,10 6.2,8C15.2,10 17.31,16.17 19.39,21.34L17.5,22L16.55,19.65C17.05,19.88 17.57,20 18.1,20C21,20 22,12 22,12C22,12 19.5,2 12,2Z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            transform: rotate(-15deg);
+        }
+        .leaf-silhouette-br {
+            position: absolute;
+            bottom: -40px;
+            right: -40px;
+            width: 250px;
+            height: 250px;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8.12,20C11,20 14,15.75 14,11C14,10.25 13.9,9.5 13.73,8.83C14.73,8.3 15.84,8 17,8M12,2C4.5,2 2,12 2,12C2,12 4.17,10 7.5,10C8.5,10 9.42,10.18 10.28,10.5C10.1,11.3 10,12.13 10,13C10,17 12.33,20 15,20C15.53,20 16.05,19.88 16.55,19.65L17.5,22L19.39,21.34C17.31,16.17 15.2,10 6.2,8C7.36,8 8.47,8.3 9.47,8.83C9.3,9.5 9.2,10.25 9.2,11C9.2,15.75 12.2,20 15.08,20C15.56,20 16.06,19.87 16.54,19.7L17.5,22L19.39,21.34C17.31,16.17 15.2,10 6.2,8C15.2,10 17.31,16.17 19.39,21.34L17.5,22L16.55,19.65C17.05,19.88 17.57,20 18.1,20C21,20 22,12 22,12C22,12 19.5,2 12,2Z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            transform: rotate(165deg);
+        }
+        .bamboo-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(161, 152, 118, 0.2), transparent);
+            position: relative;
+        }
+        .bamboo-divider::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: rgba(161, 152, 118, 0.1);
+            border-radius: 2px;
+        }
+        .torch-glow {
+            filter: drop-shadow(0 0 12px rgba(245, 183, 49, 0.4));
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display text-slate-100 flex items-center justify-center p-6 tiki-bg relative overflow-hidden">
+<div class="leaf-silhouette-tl"></div>
+<div class="leaf-silhouette-br"></div>
+<div class="w-full max-w-sm z-10 flex flex-col items-center">
+<header class="w-full text-center space-y-6 mb-12">
+<div class="torch-glow inline-flex items-center justify-center text-accent-yellow">
+<span class="material-symbols-outlined !text-5xl" style="font-variation-settings: 'FILL' 1">skillet</span>
+</div>
+<div class="space-y-1">
+<h1 class="text-4xl font-black tracking-tight text-primary uppercase leading-none">
+                    Survivor
+                </h1>
+<h2 class="text-6xl font-black tracking-tighter text-accent-yellow uppercase leading-none">
+                    50
+                </h2>
+<p class="text-[10px] font-bold tracking-[0.4em] text-stone-muted uppercase pt-4">
+                    Watch Party HQ
+                </p>
+</div>
+</header>
+<div class="w-full mb-12">
+<div class="bamboo-divider"></div>
+</div>
+<div class="w-full space-y-4">
+<div class="group">
+<input class="w-full bg-white/5 border-none focus:ring-1 focus:ring-primary/50 rounded-2xl h-16 px-6 text-slate-100 placeholder:text-slate-600 transition-all outline-none" placeholder="Email address" type="email"/>
+</div>
+<button class="w-full h-16 rounded-2xl bg-gradient-to-r from-[#e8722a] to-[#d94a28] text-white text-base font-bold shadow-xl shadow-orange-950/20 hover:brightness-105 active:scale-[0.98] transition-all flex items-center justify-center">
+                Send Magic Link
+            </button>
+</div>
+<footer class="mt-10">
+<p class="text-center text-stone-muted/60 text-sm font-medium">
+                Simple and secure sign-in.
+            </p>
+</footer>
+</div>
+<div class="hidden" data-alt="Refined dark tropical island night aesthetic with minimal UI components"></div>
+
+</body></html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Authentic Fijian Scoreboard Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Rye&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d97706","background-light": "#f8f7f6",
+                        "background-dark": "#1c1917","surface-dark": "#292524","accent-wood": "#78350f","accent-stone": "#44403c",},
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "sans-serif"],
+                        "wood": ["Rye", "serif"]
+                    },
+                    backgroundImage: {
+                        'tribal-pattern': "url('https://www.transparenttextures.com/patterns/wood-pattern.png')",
+                        'wood-texture': "url('https://www.transparenttextures.com/patterns/wood-pattern.png')",
+                        'stone-texture': "url('https://www.transparenttextures.com/patterns/asfalt-dark.png')",
+                        'tapa-pattern': "url('https://www.transparenttextures.com/patterns/diagmonds-light.png')"
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+        .text-shadow-wood {
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.5), -1px -1px 0px rgba(255,255,255,0.1);
+        }
+        .wood-btn {
+            background: linear-gradient(to bottom, #78350f, #451a03);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 0 #270f05, 0 5px 5px rgba(0,0,0,0.5);
+        }
+        .wood-btn:active {
+            transform: translateY(4px);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 0 0 #270f05, 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .tribal-border {
+            border: 8px solid transparent;
+            border-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png') 30 stretch;border-image-source: linear-gradient(45deg, #78350f, #d97706, #78350f);
+            border-image-slice: 1;
+        }
+        .masi-border-top {
+            background-image: linear-gradient(90deg, transparent 50%, #d97706 50%), linear-gradient(90deg, #d97706 50%, transparent 50%);
+            background-size: 20px 4px;
+            background-repeat: repeat-x;
+            background-position: 0 0, 10px 4px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-stone-200 font-display min-h-screen flex flex-col relative overflow-x-hidden border-[12px] border-surface-dark bg-stone-texture">
+<div class="fixed top-0 left-0 right-0 h-3 bg-repeat-x z-[60] opacity-60 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'40\' height=\'12\' viewBox=\'0 0 40 12\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M0 12 L20 0 L40 12\' fill=\'none\' stroke=\'%23d97706\' stroke-width=\'2\'/%3E%3C/svg%3E');"></div>
+<div class="fixed bottom-0 left-0 right-0 h-3 bg-repeat-x z-[60] opacity-60 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'40\' height=\'12\' viewBox=\'0 0 40 12\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M0 0 L20 12 L40 0\' fill=\'none\' stroke=\'%23d97706\' stroke-width=\'2\'/%3E%3C/svg%3E');"></div>
+<div class="fixed inset-0 pointer-events-none opacity-10 z-0 flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-[50rem] text-stone-500 transform -rotate-12 translate-x-20 translate-y-20 drop-shadow-2xl">eco</span>
+</div>
+<nav class="sticky top-0 z-50 w-full border-b-4 border-accent-wood bg-[#292524] shadow-2xl relative">
+<div class="absolute inset-0 bg-wood-texture opacity-30 pointer-events-none"></div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+<div class="flex items-center justify-between h-20">
+<div class="flex items-center gap-3">
+<div class="bg-accent-wood p-2 rounded border border-[#d97706] shadow-lg">
+<span class="material-symbols-outlined text-[#fbbf24] text-3xl drop-shadow-md">sports_rugby</span>
+</div>
+<span class="text-2xl font-wood tracking-wider text-[#fbbf24] text-shadow-wood">Viti<span class="text-white">Scores</span></span>
+</div>
+<div class="hidden md:flex items-center space-x-12">
+<a class="flex flex-col items-center group opacity-70 hover:opacity-100 transition-all" href="#">
+<span class="material-symbols-outlined text-stone-300 group-hover:text-[#fbbf24] transition-colors mb-1">home</span>
+<span class="text-xs font-bold tracking-widest uppercase text-stone-400 group-hover:text-white">Sevu</span>
+</a>
+<a class="flex flex-col items-center group opacity-70 hover:opacity-100 transition-all" href="#">
+<span class="material-symbols-outlined text-stone-300 group-hover:text-[#fbbf24] transition-colors mb-1">sports_soccer</span>
+<span class="text-xs font-bold tracking-widest uppercase text-stone-400 group-hover:text-white">Qito</span>
+</a>
+<a class="flex flex-col items-center group relative" href="#">
+<div class="absolute -inset-4 bg-accent-wood opacity-20 rounded-full blur-md"></div>
+<span class="material-symbols-outlined text-[#fbbf24] text-3xl drop-shadow-lg transform -translate-y-1">speed</span>
+<span class="text-xs font-bold tracking-widest uppercase text-[#fbbf24] mt-1 border-b-2 border-[#fbbf24] pb-0.5">Tovo</span>
+</a>
+<a class="flex flex-col items-center group opacity-70 hover:opacity-100 transition-all" href="#">
+<span class="material-symbols-outlined text-stone-300 group-hover:text-[#fbbf24] transition-colors mb-1">gavel</span>
+<span class="text-xs font-bold tracking-widest uppercase text-stone-400 group-hover:text-white">Lawa</span>
+</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-stone-400 hover:text-[#fbbf24] transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-accent-wood flex items-center justify-center border-2 border-[#fbbf24] cursor-pointer overflow-hidden relative shadow-md">
+<img alt="User Profile" class="h-full w-full object-cover sepia-[.2]" data-alt="Portrait of a user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhSRCvZZwmybzsN9TgF6krqf3HxTlQf-uNWTEn-e-K9Rl0gAOInRYSxx4T8JZr-Z6JtQ955Qkrl5W7aWKEmXK3IlmoCO37PAgLZiEQWK8XfxYjQIq1204KA1R-ITWbSx3ViJGeooVNgZ5aDsg9pqSN5fUFGkGt74idkyfQ7V669xqhcH1bsi_x__YQBSZsoKryluKDHWFnn6mY0VYxUqz_vTmYni4phu9Ou9hlEns0L_s1xpw73rs2aVpdKVijgk0RKCXKC0KDjT6_"/>
+</div>
+</div>
+</div>
+</div>
+</nav>
+<main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6 border-b border-stone-700 pb-6">
+<div>
+<h1 class="text-4xl md:text-5xl font-wood text-[#fbbf24] tracking-wide text-shadow-wood">Tovo Dashboard</h1>
+<p class="text-stone-400 mt-2 font-medium tracking-wide">Real-time match statistics and player performance.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-5 py-2.5 bg-surface-dark border border-stone-600 hover:border-[#d97706] rounded-sm text-sm font-bold tracking-wider text-stone-300 transition-colors uppercase">
+<span class="material-symbols-outlined text-lg">calendar_today</span>
+                    Season 2023
+                </button>
+<button class="wood-btn flex items-center gap-2 px-5 py-2.5 rounded-sm text-sm font-bold text-white tracking-wider uppercase transition-all">
+<span class="material-symbols-outlined text-lg">add</span>
+                    New Match
+                </button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 space-y-8">
+<section>
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-xl font-bold text-stone-200 flex items-center gap-2 font-wood tracking-wide">
+<span class="material-symbols-outlined text-[#d97706]">leaderboard</span>
+                            Top Players
+                        </h2>
+<a class="text-sm text-[#d97706] hover:text-[#fbbf24] font-bold tracking-wide uppercase transition-colors" href="#">View All</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+<div class="relative bg-[#292524] pt-2 pb-2 px-1 shadow-2xl group">
+<div class="absolute top-0 left-0 w-full h-2 bg-[#d97706]" style="clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);"></div>
+<div class="absolute bottom-0 left-0 w-full h-2 bg-[#d97706]" style="clip-path: polygon(5% 0, 95% 0, 100% 100%, 0 100%);"></div>
+<div class="bg-gradient-to-b from-[#3a3530] to-[#292524] h-full mx-1 border-x border-stone-700 p-4 flex flex-col items-center relative z-0">
+<div class="absolute top-2 right-2">
+<span class="material-symbols-outlined text-yellow-500 drop-shadow-md">emoji_events</span>
+</div>
+<div class="w-20 h-20 rounded-full border-4 border-[#78350f] p-1 mb-3 relative bg-[#1c1917]">
+<img alt="Top Player Jone" class="rounded-full w-full h-full object-cover sepia-[.15]" data-alt="Portrait of top player" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2qn4BBIMWWf_HaPy413Pi8uXWvYnJJgVilr-_cC9_G2ayNAZOF_d2izz0Ovy3yizRCn0nmZ7aumMlct5V-Ms-3EX6GuG9KYAgzsGpn6HRkW5ijCB3M7fIv28J3CCp53l_G0Fe7Nhmy4hiG6dyqOBreKBGiWJntu62Tg4Vtqvu4LtaPIaECjCjjlILoHCjeRh_uC0uO3Uh08XkTVnNTkqHbA0gknXeUw9Sk1peGwNG_KRkrgGqU38QAleLPy2a8L4jD80LBXvCg5NL"/>
+<div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-yellow-600 text-[10px] font-bold px-2 py-0.5 rounded text-black">#1</div>
+</div>
+<h3 class="text-lg font-bold text-[#fbbf24] font-wood tracking-wide">Jone R.</h3>
+<p class="text-stone-400 text-xs uppercase tracking-widest mb-3">Suva Team</p>
+<div class="flex items-baseline gap-1 bg-[#1c1917] px-4 py-1 rounded-full border border-stone-700">
+<span class="text-2xl font-bold text-white">150</span>
+<span class="text-[10px] text-stone-500 uppercase font-bold">Pts</span>
+</div>
+</div>
+</div>
+<div class="relative bg-[#292524] pt-2 pb-2 px-1 shadow-xl group opacity-90 hover:opacity-100 transition-opacity">
+<div class="absolute top-0 left-0 w-full h-2 bg-stone-500" style="clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);"></div>
+<div class="absolute bottom-0 left-0 w-full h-2 bg-stone-500" style="clip-path: polygon(5% 0, 95% 0, 100% 100%, 0 100%);"></div>
+<div class="bg-gradient-to-b from-[#3a3530] to-[#292524] h-full mx-1 border-x border-stone-700 p-4 flex flex-col items-center relative z-0">
+<div class="absolute top-2 right-2">
+<span class="material-symbols-outlined text-stone-400 drop-shadow-md">emoji_events</span>
+</div>
+<div class="w-16 h-16 rounded-full border-4 border-stone-600 p-1 mb-3 bg-[#1c1917]">
+<img alt="Second Place Peni" class="rounded-full w-full h-full object-cover sepia-[.15]" data-alt="Portrait of second player" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcUPF2zm7HDBOkM2mhTJJfDeUgHh5aiuEN5y6B4JN_v8-yk8idca17FpfeP3ZuOz8G-GXDcH3a7bba7sDcuGMJDoxIO_GaLqg7DaQhq71PA7YNL2jqtA2yVWmzl_VIEnJyKunTW4WCXeUdWia6zb0xy3nnXKBQuKZjun-RYABKqOgfQ8S1mlu885b9yqGhJVRyTfdvNvAIlOQxjZR-7ODb05IN7hF-Y398rtbwMycVqDZGMgUUqbhzFUnUBbAI2xDQdRLsQYf3nZNV"/>
+</div>
+<h3 class="text-lg font-bold text-stone-300 font-wood tracking-wide">Peni T.</h3>
+<p class="text-stone-500 text-xs uppercase tracking-widest mb-3">Nadi Team</p>
+<div class="flex items-baseline gap-1 bg-[#1c1917] px-3 py-1 rounded-full border border-stone-700">
+<span class="text-xl font-bold text-white">120</span>
+<span class="text-[10px] text-stone-500 uppercase font-bold">Pts</span>
+</div>
+</div>
+</div>
+<div class="relative bg-[#292524] pt-2 pb-2 px-1 shadow-xl group opacity-90 hover:opacity-100 transition-opacity">
+<div class="absolute top-0 left-0 w-full h-2 bg-[#92400e]" style="clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);"></div>
+<div class="absolute bottom-0 left-0 w-full h-2 bg-[#92400e]" style="clip-path: polygon(5% 0, 95% 0, 100% 100%, 0 100%);"></div>
+<div class="bg-gradient-to-b from-[#3a3530] to-[#292524] h-full mx-1 border-x border-stone-700 p-4 flex flex-col items-center relative z-0">
+<div class="absolute top-2 right-2">
+<span class="material-symbols-outlined text-orange-800 drop-shadow-md">emoji_events</span>
+</div>
+<div class="w-16 h-16 rounded-full border-4 border-[#7c2d12] p-1 mb-3 bg-[#1c1917]">
+<img alt="Third Place Saki" class="rounded-full w-full h-full object-cover sepia-[.15]" data-alt="Portrait of third player" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKuDe5jZK1Ucq4a3ByNsZuGIARmE46xPJAyy5Gntzn6x5gSruJs-ErcCZzB6sTeuD3bydqg51YTHau4nxIVv9NNqOOjmh2rCdrsp3G8yV4kh41krriLkLfzh7MrEAm37jTdI2JmNSd_678CmdShhzge8fpxQ-GsDoPWyBh9V_3nYgD9rnsfDm8HvMkDdKEHINnY97bA0iezS-dkmn_oiMOuDd7HN2RGGlPhGC8jeTtgE-2tDvJq9X8EJfUFtFu12KU3B8dwZvvN8Oy"/>
+</div>
+<h3 class="text-lg font-bold text-[#d97706] font-wood tracking-wide">Saki V.</h3>
+<p class="text-stone-500 text-xs uppercase tracking-widest mb-3">Lautoka Team</p>
+<div class="flex items-baseline gap-1 bg-[#1c1917] px-3 py-1 rounded-full border border-stone-700">
+<span class="text-xl font-bold text-white">95</span>
+<span class="text-[10px] text-stone-500 uppercase font-bold">Pts</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-xl font-bold text-stone-200 mb-4 flex items-center gap-2 font-wood tracking-wide">
+<span class="material-symbols-outlined text-[#d97706]">edit_note</span>
+                        Log Events
+                    </h2>
+<div class="bg-[#292524] p-6 border-2 border-[#57534e] relative overflow-hidden shadow-2xl rounded-sm">
+<div class="absolute inset-0 opacity-[0.05] pointer-events-none bg-tapa-pattern"></div>
+<div class="absolute top-0 left-0 w-full h-1 bg-repeat-x" style="background-image: linear-gradient(to right, #78350f 50%, transparent 50%); background-size: 10px 100%;"></div>
+<div class="relative z-10">
+<div class="mb-6 bg-[#1c1917] p-4 border border-[#44403c] shadow-inner rounded-sm">
+<label class="block text-xs font-bold text-[#d97706] uppercase tracking-widest mb-2">Current Action</label>
+<div class="flex gap-2">
+<input class="flex-1 bg-[#292524] border border-[#57534e] rounded-sm px-4 py-3 text-white placeholder-stone-600 focus:outline-none focus:border-[#d97706] focus:ring-1 focus:ring-[#d97706] transition-all font-mono" placeholder="Select player or enter note..." type="text"/>
+<button class="wood-btn text-white px-6 py-3 rounded-sm font-bold tracking-wider transition-all uppercase text-sm shadow-lg">
+                                        SUBMIT
+                                    </button>
+</div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<button class="h-20 wood-btn rounded-sm flex flex-col items-center justify-center gap-1 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
+<span class="material-symbols-outlined text-green-400 drop-shadow-md group-hover:scale-110 transition-transform">add_circle</span>
+<span class="text-sm font-bold text-[#fcd34d] uppercase tracking-wider text-shadow-wood">Try (+5)</span>
+</button>
+<button class="h-20 wood-btn rounded-sm flex flex-col items-center justify-center gap-1 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
+<span class="material-symbols-outlined text-blue-300 drop-shadow-md group-hover:scale-110 transition-transform">add_circle</span>
+<span class="text-sm font-bold text-[#fcd34d] uppercase tracking-wider text-shadow-wood">Conv (+2)</span>
+</button>
+<button class="h-20 wood-btn rounded-sm flex flex-col items-center justify-center gap-1 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
+<span class="material-symbols-outlined text-[#fbbf24] drop-shadow-md group-hover:scale-110 transition-transform">add_circle</span>
+<span class="text-sm font-bold text-[#fcd34d] uppercase tracking-wider text-shadow-wood">Pen (+3)</span>
+</button>
+<button class="h-20 bg-[#1c1917] hover:bg-[#292524] border border-red-900/50 hover:border-red-700 active:translate-y-1 rounded-sm flex flex-col items-center justify-center gap-1 transition-all group">
+<span class="material-symbols-outlined text-red-500 group-hover:scale-110 transition-transform">warning</span>
+<span class="text-sm font-bold text-red-400 uppercase tracking-wider">Foul</span>
+</button>
+<button class="h-20 bg-[#1c1917] hover:bg-[#292524] border border-[#44403c] active:translate-y-1 rounded-sm flex flex-col items-center justify-center gap-1 transition-all group">
+<span class="material-symbols-outlined text-stone-400 group-hover:scale-110 transition-transform">cached</span>
+<span class="text-sm font-bold text-stone-400 uppercase tracking-wider">Sub</span>
+</button>
+<button class="h-20 bg-[#1c1917] hover:bg-[#292524] border border-[#44403c] active:translate-y-1 rounded-sm flex flex-col items-center justify-center gap-1 transition-all group">
+<span class="material-symbols-outlined text-stone-400 group-hover:scale-110 transition-transform">timer_pause</span>
+<span class="text-sm font-bold text-stone-400 uppercase tracking-wider">Timeout</span>
+</button>
+<button class="col-span-2 h-20 bg-[#292524] hover:bg-[#35302b] border border-[#d97706] active:translate-y-1 rounded-sm flex flex-col items-center justify-center gap-1 transition-all group shadow-md">
+<span class="material-symbols-outlined text-[#d97706] group-hover:scale-110 transition-transform">flag</span>
+<span class="text-sm font-bold text-white uppercase tracking-wider">End Half</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<section>
+<div class="bg-[#292524] rounded-sm p-6 border-2 border-[#44403c] shadow-lg relative">
+<div class="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[#d97706]"></div>
+<div class="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-[#d97706]"></div>
+<div class="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-[#d97706]"></div>
+<div class="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[#d97706]"></div>
+<div class="flex justify-between items-start mb-6">
+<div>
+<p class="text-stone-400 text-xs font-bold uppercase tracking-widest mb-1">Team Statistics</p>
+<p class="text-[#fbbf24] tracking-wide text-2xl font-wood leading-tight">Top: Warriors</p>
+</div>
+<select class="bg-[#1c1917] text-stone-300 text-xs font-bold uppercase tracking-wide border border-[#57534e] rounded-sm px-3 py-1 outline-none focus:border-[#d97706]">
+<option>This Week</option>
+<option>Last Week</option>
+</select>
+</div>
+<div class="grid h-[200px] grid-flow-col gap-8 grid-rows-[1fr_auto] items-end justify-items-center px-4 w-full border-b border-stone-700 pb-2">
+<div class="w-full flex flex-col justify-end items-center h-full group cursor-pointer">
+<div class="bg-gradient-to-t from-[#78350f] to-[#d97706] w-full max-w-[40px] opacity-40 group-hover:opacity-100 transition-all relative border-t-2 border-[#fbbf24]" style="height: 30%;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity text-xs">30%</div>
+</div>
+</div>
+<div class="w-full flex flex-col justify-end items-center h-full group cursor-pointer">
+<div class="bg-gradient-to-t from-[#78350f] to-[#d97706] w-full max-w-[40px] relative shadow-lg border-t-2 border-[#fbbf24]" style="height: 70%;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-white font-bold text-xs">70%</div>
+</div>
+</div>
+<div class="w-full flex flex-col justify-end items-center h-full group cursor-pointer">
+<div class="bg-gradient-to-t from-[#78350f] to-[#d97706] w-full max-w-[40px] opacity-60 group-hover:opacity-100 transition-all relative border-t-2 border-[#fbbf24]" style="height: 50%;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity text-xs">50%</div>
+</div>
+</div>
+<div class="w-full flex flex-col justify-end items-center h-full group cursor-pointer">
+<div class="bg-gradient-to-t from-[#78350f] to-[#d97706] w-full max-w-[40px] opacity-40 group-hover:opacity-100 transition-all relative border-t-2 border-[#fbbf24]" style="height: 30%;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity text-xs">30%</div>
+</div>
+</div>
+<p class="text-stone-500 text-[10px] font-bold uppercase tracking-widest mt-2">Tigers</p>
+<p class="text-[#fbbf24] text-[10px] font-bold uppercase tracking-widest mt-2">Warriors</p>
+<p class="text-stone-500 text-[10px] font-bold uppercase tracking-widest mt-2">Eagles</p>
+<p class="text-stone-500 text-[10px] font-bold uppercase tracking-widest mt-2">Sharks</p>
+</div>
+</div>
+</section>
+</div>
+<div class="lg:col-span-1">
+<section class="h-full">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-xl font-bold text-stone-200 flex items-center gap-2 font-wood tracking-wide">
+<span class="material-symbols-outlined text-[#d97706]">history</span>
+                            Recent Feed
+                        </h2>
+<button class="p-1 hover:bg-[#292524] rounded text-stone-400 transition-colors">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+</button>
+</div>
+<div class="bg-[#292524] border-2 border-[#44403c] h-[calc(100vh-280px)] min-h-[600px] overflow-hidden flex flex-col shadow-2xl rounded-sm">
+<div class="p-4 border-b border-[#44403c] bg-[#1c1917]">
+<div class="relative">
+<span class="absolute left-3 top-2.5 material-symbols-outlined text-stone-500 text-lg">search</span>
+<input class="w-full bg-[#292524] border border-[#57534e] rounded-sm py-2 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-[#d97706]" placeholder="Search events..." type="text"/>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-stone-texture">
+<div class="flex gap-3 items-start pb-4 border-b border-stone-800 last:border-0 last:pb-0 group hover:bg-white/5 p-2 rounded transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-green-400 bg-green-900/30 p-1.5 rounded border border-green-800 text-lg">sports_rugby</span>
+</div>
+<div>
+<p class="text-sm font-bold text-[#fbbf24]">Warriors scored a Try</p>
+<p class="text-xs text-stone-400">Player: Jone R. (+5 pts)</p>
+<p class="text-[10px] text-stone-600 mt-1 uppercase tracking-wide font-bold">2 mins ago</p>
+</div>
+</div>
+<div class="flex gap-3 items-start pb-4 border-b border-stone-800 last:border-0 last:pb-0 group hover:bg-white/5 p-2 rounded transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-blue-400 bg-blue-900/30 p-1.5 rounded border border-blue-800 text-lg">check_circle</span>
+</div>
+<div>
+<p class="text-sm font-bold text-stone-200">Conversion Successful</p>
+<p class="text-xs text-stone-400">Warriors (+2 pts)</p>
+<p class="text-[10px] text-stone-600 mt-1 uppercase tracking-wide font-bold">4 mins ago</p>
+</div>
+</div>
+<div class="flex gap-3 items-start pb-4 border-b border-stone-800 last:border-0 last:pb-0 group hover:bg-white/5 p-2 rounded transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-red-400 bg-red-900/30 p-1.5 rounded border border-red-800 text-lg">front_hand</span>
+</div>
+<div>
+<p class="text-sm font-bold text-red-300">Foul Committed</p>
+<p class="text-xs text-stone-400">Eagles: High Tackle</p>
+<p class="text-[10px] text-stone-600 mt-1 uppercase tracking-wide font-bold">12 mins ago</p>
+</div>
+</div>
+<div class="flex gap-3 items-start pb-4 border-b border-stone-800 last:border-0 last:pb-0 group hover:bg-white/5 p-2 rounded transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-stone-400 bg-stone-700/30 p-1.5 rounded border border-stone-600 text-lg">swap_horiz</span>
+</div>
+<div>
+<p class="text-sm font-bold text-stone-300">Substitution</p>
+<p class="text-xs text-stone-400">Eagles: #10 out, #21 in</p>
+<p class="text-[10px] text-stone-600 mt-1 uppercase tracking-wide font-bold">15 mins ago</p>
+</div>
+</div>
+<div class="flex gap-3 items-start pb-4 border-b border-stone-800 last:border-0 last:pb-0 group hover:bg-white/5 p-2 rounded transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-yellow-500 bg-yellow-900/30 p-1.5 rounded border border-yellow-800 text-lg">star</span>
+</div>
+<div>
+<p class="text-sm font-bold text-[#fbbf24]">Penalty Kick Scored</p>
+<p class="text-xs text-stone-400">Sharks (+3 pts)</p>
+<p class="text-[10px] text-stone-600 mt-1 uppercase tracking-wide font-bold">22 mins ago</p>
+</div>
+</div>
+<div class="flex gap-3 items-start pb-4 border-b border-stone-800 last:border-0 last:pb-0 group hover:bg-white/5 p-2 rounded transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-[#d97706] bg-orange-900/30 p-1.5 rounded border border-orange-800 text-lg">sports_rugby</span>
+</div>
+<div>
+<p class="text-sm font-bold text-[#fbbf24]">Warriors scored a Try</p>
+<p class="text-xs text-stone-400">Player: Saki V. (+5 pts)</p>
+<p class="text-[10px] text-stone-600 mt-1 uppercase tracking-wide font-bold">35 mins ago</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<div class="md:hidden fixed bottom-0 left-0 right-0 border-t-2 border-[#d97706] bg-[#1c1917] z-[70] pb-safe">
+<div class="flex gap-2 px-4 pb-3 pt-2 justify-around">
+<a class="flex flex-col items-center justify-end gap-1 text-stone-400 hover:text-[#fbbf24]" href="#">
+<span class="material-symbols-outlined text-2xl">home</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Sevu</p>
+</a>
+<a class="flex flex-col items-center justify-end gap-1 text-stone-400 hover:text-[#fbbf24]" href="#">
+<span class="material-symbols-outlined text-2xl">sports_soccer</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Qito</p>
+</a>
+<a class="flex flex-col items-center justify-end gap-1 text-[#fbbf24]" href="#">
+<span class="material-symbols-outlined text-2xl fill-current">speed</span>
+<p class="text-[10px] font-bold uppercase tracking-widest border-b border-[#fbbf24]">Tovo</p>
+</a>
+<a class="flex flex-col items-center justify-end gap-1 text-stone-400 hover:text-[#fbbf24]" href="#">
+<span class="material-symbols-outlined text-2xl">gavel</span>
+<p class="text-[10px] font-bold uppercase tracking-widest">Lawa</p>
+</a>
+</div>
+</div>
+<style>.custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1c1917;
+            border-left: 1px solid #44403c;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #57534e;
+            border-radius: 2px;
+            border: 2px solid #1c1917;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #d97706;
+        }.pb-safe {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
+
+</body></html>

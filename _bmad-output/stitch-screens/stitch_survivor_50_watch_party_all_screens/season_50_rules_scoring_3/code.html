@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Season 50 Rules &amp; Scoring</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e9742b",
+                        "accent-yellow": "#f5b731",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#0a0f0d",
+                        "card-dark": "#161b19",
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .ember-bg {
+            background-image: radial-gradient(circle at 20% 30%, rgba(233, 116, 43, 0.05) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 70%, rgba(245, 183, 49, 0.05) 0%, transparent 50%);
+        }
+        .text-gradient-fire {
+            background: linear-gradient(to right, #e9742b, #f5b731);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen ember-bg">
+<div class="relative flex h-full w-full max-w-[430px] mx-auto flex-col overflow-x-hidden shadow-2xl bg-background-light dark:bg-background-dark">
+<div class="flex items-center bg-background-light dark:bg-card-dark p-4 pb-3 justify-between border-b border-primary/10">
+<div class="flex items-center gap-2">
+<div class="relative">
+<span class="material-symbols-outlined text-primary text-3xl">account_circle</span>
+<div class="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full border-2 border-card-dark"></div>
+</div>
+<h2 class="text-slate-900 dark:text-slate-100 text-sm font-bold leading-tight tracking-tight">user@survivorhq.com</h2>
+</div>
+<button class="text-primary/80 text-xs font-bold uppercase tracking-widest hover:text-primary transition-colors">Sign Out</button>
+</div>
+<div class="p-4">
+<div class="relative overflow-hidden rounded-xl bg-slate-900 aspect-[16/7] flex flex-col justify-center items-center border border-primary/20" data-alt="Dark jungle background with glowing embers">
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+<div class="relative z-10 flex flex-col items-center">
+<span class="text-4xl mb-1">🔥</span>
+<h1 class="text-gradient-fire text-4xl font-extrabold tracking-tighter italic uppercase">Survivor 50</h1>
+<p class="text-accent-yellow/80 text-[10px] font-bold tracking-[0.3em] uppercase">Watch Party HQ</p>
+</div>
+</div>
+</div>
+<nav class="sticky top-0 z-20 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
+<div class="flex border-b border-primary/10 px-2 justify-between">
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-4 flex-1 group" href="#">
+<span class="material-symbols-outlined text-xl mb-1 group-hover:text-primary transition-colors">trophy</span>
+<p class="text-[10px] font-bold uppercase tracking-tighter">Draft</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-4 flex-1 group" href="#">
+<span class="material-symbols-outlined text-xl mb-1 group-hover:text-primary transition-colors">target</span>
+<p class="text-[10px] font-bold uppercase tracking-tighter">Bingo</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-4 flex-1 group" href="#">
+<span class="material-symbols-outlined text-xl mb-1 group-hover:text-primary transition-colors">leaderboard</span>
+<p class="text-[10px] font-bold uppercase tracking-tighter">Scores</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-primary text-primary pb-3 pt-4 flex-1 bg-primary/5" href="#">
+<span class="material-symbols-outlined text-xl mb-1">description</span>
+<p class="text-[10px] font-bold uppercase tracking-tighter">Rules</p>
+</a>
+</div>
+</nav>
+<main class="flex-1 px-4 pb-24">
+<h2 class="text-accent-yellow tracking-tight text-2xl font-extrabold italic uppercase py-6">Official Rules</h2>
+<section class="mb-8 bg-card-dark rounded-xl p-5 border border-primary/10 shadow-lg">
+<div class="flex items-center gap-3 mb-4">
+<span class="text-2xl">🏆</span>
+<h3 class="text-lg font-bold text-slate-100 uppercase tracking-tight">Bracket Draft</h3>
+</div>
+<div class="space-y-3 text-sm text-slate-300 leading-relaxed">
+<p class="flex gap-3"><span class="text-primary font-bold">01.</span> Standard 10-round snake draft format (1-8, then 8-1).</p>
+<p class="flex gap-3"><span class="text-primary font-bold">02.</span> Draft closes 1 hour before the season premiere.</p>
+<p class="flex gap-3"><span class="text-primary font-bold">03.</span> If a contestant quits, all points earned to date remain, but the seat becomes vacant.</p>
+</div>
+</section>
+<section class="mb-8">
+<div class="flex items-center gap-3 mb-4">
+<span class="text-2xl">📊</span>
+<h3 class="text-lg font-bold text-slate-100 uppercase tracking-tight">Scoring System</h3>
+</div>
+<div class="overflow-hidden rounded-xl border border-primary/10 bg-card-dark">
+<table class="w-full text-sm text-left">
+<thead class="bg-primary/10 text-primary uppercase text-[10px] font-bold">
+<tr>
+<th class="px-4 py-3">In-Game Event</th>
+<th class="px-4 py-3 text-right">Points</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-primary/5 text-slate-300">
+<tr><td class="px-4 py-3">Sole Survivor</td><td class="px-4 py-3 text-right font-bold text-green-400">+10</td></tr>
+<tr><td class="px-4 py-3">Individual Immunity Win</td><td class="px-4 py-3 text-right font-bold text-green-400">+5</td></tr>
+<tr><td class="px-4 py-3">Finds Hidden Idol</td><td class="px-4 py-3 text-right font-bold text-green-400">+4</td></tr>
+<tr><td class="px-4 py-3">Survived Episode</td><td class="px-4 py-3 text-right font-bold text-green-400">+2</td></tr>
+<tr><td class="px-4 py-3">Wins Reward Challenge</td><td class="px-4 py-3 text-right font-bold text-green-400">+2</td></tr>
+<tr><td class="px-4 py-3">Makes the Merge</td><td class="px-4 py-3 text-right font-bold text-green-400">+3</td></tr>
+<tr><td class="px-4 py-3">Plays Idol Successfully</td><td class="px-4 py-3 text-right font-bold text-green-400">+5</td></tr>
+<tr><td class="px-4 py-3">Wins Fire Making</td><td class="px-4 py-3 text-right font-bold text-green-400">+4</td></tr>
+<tr><td class="px-4 py-3">Voted Out (No Idol)</td><td class="px-4 py-3 text-right font-bold text-red-400">-2</td></tr>
+<tr><td class="px-4 py-3">Voted Out With Idol</td><td class="px-4 py-3 text-right font-bold text-red-400">-5</td></tr>
+<tr><td class="px-4 py-3">Quits Game</td><td class="px-4 py-3 text-right font-bold text-red-500">-10</td></tr>
+<tr><td class="px-4 py-3">Medical Evacuation</td><td class="px-4 py-3 text-right font-bold text-slate-400">0</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="mb-8 bg-card-dark rounded-xl p-5 border border-primary/10">
+<div class="flex items-center gap-3 mb-4">
+<span class="text-2xl">🎯</span>
+<h3 class="text-lg font-bold text-slate-100 uppercase tracking-tight">Bingo</h3>
+</div>
+<div class="space-y-4 text-sm text-slate-300 leading-relaxed">
+<div class="flex items-start gap-4">
+<div class="size-10 shrink-0 bg-primary/20 rounded flex items-center justify-center text-primary font-bold">5x5</div>
+<p>Every viewer receives a unique 5x5 grid of common Survivor tropes (e.g., 'Jeff wears blue', 'Blindside', 'Sob story').</p>
+</div>
+<div class="p-4 bg-background-dark rounded border border-dashed border-primary/30 text-center">
+<p class="text-accent-yellow font-bold text-lg italic">"JEFF PROBST!"</p>
+<p class="text-xs uppercase mt-1">Must be yelled at full volume to claim a horizontal, vertical, or diagonal victory.</p>
+</div>
+</div>
+</section>
+<section class="mb-12 relative">
+<div class="absolute -inset-1 bg-gradient-to-r from-primary to-accent-yellow rounded-xl blur opacity-25"></div>
+<div class="relative bg-card-dark rounded-xl p-6 border-2 border-accent-yellow shadow-[0_0_15px_rgba(245,183,49,0.2)]">
+<div class="flex items-center gap-3 mb-3">
+<span class="text-2xl">🍻</span>
+<h3 class="text-xl font-black text-accent-yellow italic uppercase">The Jeff Probst Rule</h3>
+</div>
+<p class="text-slate-200 font-medium leading-relaxed">
+                        Whenever Jeff Probst says <span class="text-primary font-bold italic underline">"C'mon in guys!"</span> or mentions <span class="text-primary font-bold italic underline">"Dig Deep"</span>, 
+                        the mandatory custom replacement for 'Cheers!' is a synchronous tribe-wide salute.
+                    </p>
+<div class="mt-4 pt-4 border-t border-accent-yellow/20 flex justify-between items-center">
+<span class="text-[10px] font-bold uppercase tracking-widest text-accent-yellow/60 italic">Official Watch Party Decree</span>
+<span class="material-symbols-outlined text-accent-yellow">verified</span>
+</div>
+</div>
+</section>
+</main>
+<nav class="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto z-30 flex gap-2 border-t border-primary/20 bg-card-dark px-4 pb-6 pt-2 shadow-2xl">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined">emoji_events</span>
+<p class="text-[10px] font-medium leading-normal tracking-tight">Draft</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined">ads_click</span>
+<p class="text-[10px] font-medium leading-normal tracking-tight">Bingo</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+<p class="text-[10px] font-medium leading-normal tracking-tight">Scores</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+<span class="material-symbols-outlined fill-[1]">article</span>
+<p class="text-[10px] font-medium leading-normal tracking-tight">Rules</p>
+</a>
+</nav>
+</div>
+</body></html>

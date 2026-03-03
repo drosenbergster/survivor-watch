@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fijian Sign In Desktop</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&amp;family=Bebas+Neue&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e9742b",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#211711",
+                        "surface-dark": "#2a201a", 
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "sans-serif"],
+                        "survivor": ["Bebas Neue", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                    backgroundImage: {
+                        'masi-pattern': "radial-gradient(circle at center, #2a201a 0%, #211711 100%)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #211711; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3e322b; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e9742b; 
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased min-h-screen flex flex-col relative overflow-hidden">
+<!-- Subtle Masi-like Background Texture/Gradient -->
+<div class="absolute inset-0 z-0 bg-masi-pattern opacity-90 pointer-events-none"></div>
+<!-- Bure House Silhouettes (Abstract representation via CSS shapes or placement) -->
+<!-- Top Left -->
+<div class="absolute top-0 left-0 w-64 h-64 bg-surface-dark/30 rounded-br-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+<!-- Bottom Right -->
+<div class="absolute bottom-0 right-0 w-96 h-96 bg-primary/10 rounded-tl-full blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+<!-- Main Content Wrapper -->
+<div class="relative z-10 flex flex-col min-h-screen w-full">
+<!-- Header / Navigation -->
+<header class="w-full px-8 py-6 flex justify-between items-center">
+<!-- Left: Brand / Torch Icon -->
+<div class="flex items-center gap-3">
+<div class="text-primary flex size-10 shrink-0 items-center justify-center bg-primary/20 rounded-full shadow-[0_0_15px_rgba(233,116,43,0.3)]">
+<span class="material-symbols-outlined text-[24px]">spark_off</span>
+</div>
+<span class="text-slate-900 dark:text-slate-100 font-bold text-xl tracking-wide hidden sm:block">SURVIVOR 50</span>
+</div>
+<!-- Right: Navigation Menu -->
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-slate-500 dark:text-[#b8a89d] hover:text-primary transition-colors text-sm font-bold uppercase tracking-widest" href="#">Sevu</a>
+<a class="text-slate-500 dark:text-[#b8a89d] hover:text-primary transition-colors text-sm font-bold uppercase tracking-widest" href="#">Qito</a>
+<a class="text-slate-500 dark:text-[#b8a89d] hover:text-primary transition-colors text-sm font-bold uppercase tracking-widest" href="#">Tovo</a>
+<a class="text-slate-500 dark:text-[#b8a89d] hover:text-primary transition-colors text-sm font-bold uppercase tracking-widest" href="#">Lawa</a>
+</nav>
+<!-- Mobile Menu Icon -->
+<button class="md:hidden text-slate-100">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</header>
+<!-- Centered Card Container -->
+<main class="flex-1 flex items-center justify-center p-4">
+<div class="w-full max-w-md bg-surface-dark border border-[#3e322b] rounded-2xl shadow-2xl overflow-hidden relative group">
+<!-- Card Header Image Area -->
+<div class="h-48 w-full relative overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Tropical Fijian jungle texture with palm leaves" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuASRbrE2M76jFUSfuOM4SAlJKJedu-tLq9Jd3SGDAGi_2LsOpg8GcAuplg0SPMj5Au1A1pl5smbVL2BUMoJvQnzqTxuYEsC0pSrRTELo6FoA6dTjA-8aphF1mfSBRibKqdXcF8YXMdLj0yYQAlUo7JZ5aQnwKmqsmaLLlwgt7Cw3NdJc7ww-c0WOmZWjhf5i0LD5_JOOLr44bPB3imcUUbkwTVrYrFNkMyo-AuoBJCNQ0N1Rx57cZ2e1VT2I8vb-ueGcU3AZQvp4dfY');">
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dark via-surface-dark/60 to-transparent"></div>
+</div>
+<div class="absolute bottom-4 left-0 right-0 text-center z-10">
+<div class="flex justify-center mb-2">
+<!-- Glowing Torch Icon -->
+<span class="material-symbols-outlined text-primary text-5xl drop-shadow-[0_0_10px_rgba(233,116,43,0.8)]">local_fire_department</span>
+</div>
+<h1 class="text-white font-survivor text-5xl tracking-widest drop-shadow-md">SURVIVOR 50</h1>
+<p class="text-[#b8a89d] text-sm uppercase tracking-[0.2em] font-bold mt-1">Authentic Fijian Experience</p>
+</div>
+</div>
+<!-- Form Section -->
+<div class="p-8 pt-6 bg-surface-dark">
+<div class="text-center mb-8">
+<h2 class="text-slate-100 text-2xl font-bold mb-2">Sign In</h2>
+<p class="text-[#b8a89d] text-sm">Enter your email to receive a magic link to access the island.</p>
+</div>
+<form class="space-y-6">
+<label class="block">
+<span class="text-slate-300 text-sm font-medium mb-2 block ml-1">Email Address</span>
+<div class="relative group/input">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-[#b8a89d] group-focus-within/input:text-primary transition-colors">mail</span>
+</div>
+<input class="form-input w-full bg-[#181411] border border-[#3e322b] text-white rounded-xl py-3.5 pl-11 pr-4 focus:ring-2 focus:ring-primary/50 focus:border-primary placeholder:text-[#53453c] transition-all" placeholder="survivor@example.com" type="email"/>
+</div>
+</label>
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all hover:shadow-primary/40 active:scale-[0.98] flex items-center justify-center gap-2" type="button">
+<span>Send Magic Link</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</form>
+<div class="mt-8 flex items-center justify-center gap-4">
+<div class="h-px bg-[#3e322b] flex-1"></div>
+<p class="text-[#53453c] text-xs font-medium uppercase tracking-wider">Or continue with</p>
+<div class="h-px bg-[#3e322b] flex-1"></div>
+</div>
+<div class="mt-6 grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-[#26201c] hover:bg-[#322a25] border border-[#3e322b] transition-colors text-slate-300 text-sm font-medium">
+<svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24"><path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"></path></svg>
+                            Google
+                        </button>
+<button class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-[#26201c] hover:bg-[#322a25] border border-[#3e322b] transition-colors text-slate-300 text-sm font-medium">
+<svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24"><path d="M13.156 17.275V20.6667C13.156 21.403 13.753 22 14.4893 22H20.6666C21.4029 22 22 21.403 22 20.6667V14.4893C22 13.753 21.4029 13.156 20.6666 13.156H17.2749V13.156H15.8055C15.0691 13.156 14.4721 12.559 14.4721 11.8227V10.3532C14.4721 9.6169 15.0691 9.01986 15.8055 9.01986H17.2749V5.62819C17.2749 4.89186 16.6778 4.29486 15.9415 4.29486H11.8227C11.0864 4.29486 10.4893 4.89186 10.4893 5.62819V10.3532C10.4893 11.0895 9.89233 11.6865 9.156 11.6865H7.68653C6.9502 11.6865 6.3532 11.0895 6.3532 10.3532V5.62819C6.3532 4.89186 5.75619 4.29486 5.01986 4.29486H3.33333C2.597 4.29486 2 4.89186 2 5.62819V17.275H13.156Z"></path></svg>
+                            Apple
+                        </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full px-8 py-6 flex justify-between items-end text-[#53453c] text-xs">
+<div class="flex flex-col gap-1">
+<p>© 2024 Survivor 50. All rights reserved.</p>
+<div class="flex gap-4">
+<a class="hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms</a>
+</div>
+</div>
+<!-- Bottom Right Corner Abstract "Bure" shape hint -->
+<div class="hidden md:block">
+<span class="material-symbols-outlined text-[#26201c] text-6xl opacity-50">cottage</span>
+</div>
+</footer>
+</div>
+</body></html>

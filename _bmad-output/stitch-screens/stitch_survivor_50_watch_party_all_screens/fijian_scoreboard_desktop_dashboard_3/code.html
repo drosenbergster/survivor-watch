@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fijian Scoreboard Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e9742b",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#211711",
+                        "surface-dark": "#2d241e",
+                        "accent-wood": "#53453c",
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "sans-serif"]
+                    },
+                    backgroundImage: {
+                        'tribal-pattern': "url('https://www.transparenttextures.com/patterns/wood-pattern.png')",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col relative overflow-x-hidden">
+<!-- Background Watermark/Pattern -->
+<div class="fixed inset-0 pointer-events-none opacity-5 z-0 flex items-center justify-center">
+<!-- Abstract Tabua (Whale's Tooth) shape representation using a large icon as watermark -->
+<span class="material-symbols-outlined text-[40rem] text-primary transform rotate-45">verified</span>
+</div>
+<!-- Top Navigation Bar -->
+<nav class="sticky top-0 z-50 w-full border-b border-surface-dark bg-background-dark/95 backdrop-blur shadow-md">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-20">
+<!-- Logo Area -->
+<div class="flex items-center gap-3">
+<div class="bg-primary/20 p-2 rounded-lg">
+<span class="material-symbols-outlined text-primary text-3xl">sports_rugby</span>
+</div>
+<span class="text-2xl font-bold tracking-tight text-white">Viti<span class="text-primary">Scores</span></span>
+</div>
+<!-- Desktop Nav Links -->
+<div class="hidden md:flex items-center space-x-8">
+<a class="flex flex-col items-center group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">home</span>
+<span class="text-xs font-medium text-slate-400 group-hover:text-white mt-1">Sevu</span>
+</a>
+<a class="flex flex-col items-center group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">sports_soccer</span>
+<span class="text-xs font-medium text-slate-400 group-hover:text-white mt-1">Qito</span>
+</a>
+<a class="flex flex-col items-center group" href="#">
+<span class="material-symbols-outlined text-primary">speed</span>
+<span class="text-xs font-bold text-white mt-1 border-b-2 border-primary pb-0.5">Tovo</span>
+</a>
+<a class="flex flex-col items-center group" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">gavel</span>
+<span class="text-xs font-medium text-slate-400 group-hover:text-white mt-1">Lawa</span>
+</a>
+</div>
+<!-- User Profile / Settings -->
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center border border-surface-dark cursor-pointer overflow-hidden relative">
+<img alt="User Profile" class="h-full w-full object-cover" data-alt="Portrait of a user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhSRCvZZwmybzsN9TgF6krqf3HxTlQf-uNWTEn-e-K9Rl0gAOInRYSxx4T8JZr-Z6JtQ955Qkrl5W7aWKEmXK3IlmoCO37PAgLZiEQWK8XfxYjQIq1204KA1R-ITWbSx3ViJGeooVNgZ5aDsg9pqSN5fUFGkGt74idkyfQ7V669xqhcH1bsi_x__YQBSZsoKryluKDHWFnn6mY0VYxUqz_vTmYni4phu9Ou9hlEns0L_s1xpw73rs2aVpdKVijgk0RKCXKC0KDjT6_"/>
+</div>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Layout -->
+<main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<h1 class="text-3xl md:text-4xl font-bold text-white tracking-tight">Tovo Dashboard</h1>
+<p class="text-slate-400 mt-1">Real-time match statistics and player performance.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-dark border border-accent-wood hover:border-primary rounded-lg text-sm font-medium text-slate-200 transition-colors">
+<span class="material-symbols-outlined text-lg">calendar_today</span>
+                    Season 2023
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 rounded-lg text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all">
+<span class="material-symbols-outlined text-lg">add</span>
+                    New Match
+                </button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Left Column: Leaderboard & Interactive Log (Span 2 columns) -->
+<div class="lg:col-span-2 space-y-8">
+<!-- Leaderboard Section -->
+<section>
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-xl font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">leaderboard</span>
+                            Top Players
+                        </h2>
+<a class="text-sm text-primary hover:text-white transition-colors" href="#">View All</a>
+</div>
+<!-- Horizontal Cards with Tribal Borders -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+<!-- Player Card 1 (Gold) -->
+<div class="relative bg-surface-dark rounded-xl p-1 overflow-hidden group">
+<div class="absolute inset-0 border-2 border-primary/40 rounded-xl pointer-events-none z-10 bg-[url('https://www.transparenttextures.com/patterns/binding-dark.png')] opacity-20"></div>
+<div class="bg-background-dark h-full rounded-lg p-4 flex flex-col items-center relative z-0">
+<div class="absolute top-2 right-2">
+<span class="material-symbols-outlined text-yellow-500">emoji_events</span>
+</div>
+<div class="w-16 h-16 rounded-full border-2 border-yellow-500 p-0.5 mb-3">
+<img alt="Top Player Jone" class="rounded-full w-full h-full object-cover" data-alt="Portrait of top player" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2qn4BBIMWWf_HaPy413Pi8uXWvYnJJgVilr-_cC9_G2ayNAZOF_d2izz0Ovy3yizRCn0nmZ7aumMlct5V-Ms-3EX6GuG9KYAgzsGpn6HRkW5ijCB3M7fIv28J3CCp53l_G0Fe7Nhmy4hiG6dyqOBreKBGiWJntu62Tg4Vtqvu4LtaPIaECjCjjlILoHCjeRh_uC0uO3Uh08XkTVnNTkqHbA0gknXeUw9Sk1peGwNG_KRkrgGqU38QAleLPy2a8L4jD80LBXvCg5NL"/>
+</div>
+<h3 class="text-lg font-bold text-white">Jone R.</h3>
+<p class="text-slate-400 text-xs uppercase tracking-wider mb-2">Suva Team</p>
+<div class="text-3xl font-bold text-primary">150</div>
+<p class="text-xs text-slate-500 mt-1">Points</p>
+</div>
+</div>
+<!-- Player Card 2 (Silver) -->
+<div class="relative bg-surface-dark rounded-xl p-1 overflow-hidden group">
+<div class="absolute inset-0 border-2 border-slate-600 rounded-xl pointer-events-none z-10 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/binding-dark.png')]"></div>
+<div class="bg-background-dark h-full rounded-lg p-4 flex flex-col items-center relative z-0">
+<div class="absolute top-2 right-2">
+<span class="material-symbols-outlined text-slate-400">emoji_events</span>
+</div>
+<div class="w-16 h-16 rounded-full border-2 border-slate-400 p-0.5 mb-3">
+<img alt="Second Place Peni" class="rounded-full w-full h-full object-cover" data-alt="Portrait of second player" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcUPF2zm7HDBOkM2mhTJJfDeUgHh5aiuEN5y6B4JN_v8-yk8idca17FpfeP3ZuOz8G-GXDcH3a7bba7sDcuGMJDoxIO_GaLqg7DaQhq71PA7YNL2jqtA2yVWmzl_VIEnJyKunTW4WCXeUdWia6zb0xy3nnXKBQuKZjun-RYABKqOgfQ8S1mlu885b9yqGhJVRyTfdvNvAIlOQxjZR-7ODb05IN7hF-Y398rtbwMycVqDZGMgUUqbhzFUnUBbAI2xDQdRLsQYf3nZNV"/>
+</div>
+<h3 class="text-lg font-bold text-white">Peni T.</h3>
+<p class="text-slate-400 text-xs uppercase tracking-wider mb-2">Nadi Team</p>
+<div class="text-3xl font-bold text-primary">120</div>
+<p class="text-xs text-slate-500 mt-1">Points</p>
+</div>
+</div>
+<!-- Player Card 3 (Bronze) -->
+<div class="relative bg-surface-dark rounded-xl p-1 overflow-hidden group">
+<div class="absolute inset-0 border-2 border-orange-700/50 rounded-xl pointer-events-none z-10 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/binding-dark.png')]"></div>
+<div class="bg-background-dark h-full rounded-lg p-4 flex flex-col items-center relative z-0">
+<div class="absolute top-2 right-2">
+<span class="material-symbols-outlined text-orange-700">emoji_events</span>
+</div>
+<div class="w-16 h-16 rounded-full border-2 border-orange-700 p-0.5 mb-3">
+<img alt="Third Place Saki" class="rounded-full w-full h-full object-cover" data-alt="Portrait of third player" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKuDe5jZK1Ucq4a3ByNsZuGIARmE46xPJAyy5Gntzn6x5gSruJs-ErcCZzB6sTeuD3bydqg51YTHau4nxIVv9NNqOOjmh2rCdrsp3G8yV4kh41krriLkLfzh7MrEAm37jTdI2JmNSd_678CmdShhzge8fpxQ-GsDoPWyBh9V_3nYgD9rnsfDm8HvMkDdKEHINnY97bA0iezS-dkmn_oiMOuDd7HN2RGGlPhGC8jeTtgE-2tDvJq9X8EJfUFtFu12KU3B8dwZvvN8Oy"/>
+</div>
+<h3 class="text-lg font-bold text-white">Saki V.</h3>
+<p class="text-slate-400 text-xs uppercase tracking-wider mb-2">Lautoka Team</p>
+<div class="text-3xl font-bold text-primary">95</div>
+<p class="text-xs text-slate-500 mt-1">Points</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Log Events Section -->
+<section>
+<h2 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">edit_note</span>
+                        Log Events
+                    </h2>
+<div class="bg-surface-dark rounded-2xl p-6 border border-accent-wood relative overflow-hidden">
+<!-- Subtle wood texture overlay -->
+<div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')]"></div>
+<div class="relative z-10">
+<!-- Input Area -->
+<div class="mb-6">
+<label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Current Action</label>
+<div class="flex gap-2">
+<input class="flex-1 bg-background-dark border border-accent-wood rounded-lg px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Select player or enter note..." type="text"/>
+<button class="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-bold transition-colors">
+                                        SUBMIT
+                                    </button>
+</div>
+</div>
+<!-- Action Buttons Grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<button class="h-20 bg-[#3e3028] hover:bg-[#4a3b32] border-b-4 border-[#261e19] active:border-b-0 active:translate-y-1 rounded-lg flex flex-col items-center justify-center gap-1 transition-all group">
+<span class="material-symbols-outlined text-green-500 group-hover:scale-110 transition-transform">add_circle</span>
+<span class="text-sm font-bold text-slate-300">Try (+5)</span>
+</button>
+<button class="h-20 bg-[#3e3028] hover:bg-[#4a3b32] border-b-4 border-[#261e19] active:border-b-0 active:translate-y-1 rounded-lg flex flex-col items-center justify-center gap-1 transition-all group">
+<span class="material-symbols-outlined text-blue-500 group-hover:scale-110 transition-transform">add_circle</span>
+<span class="text-sm font-bold text-slate-300">Conv (+2)</span>
+</button>
+<button class="h-20 bg-[#3e3028] hover:bg-[#4a3b32] border-b-4 border-[#261e19] active:border-b-0 active:translate-y-1 rounded-lg flex flex-col items-center justify-center gap-1 transition-all group">
+<span class="material-symbols-outlined text-yellow-500 group-hover:scale-110 transition-transform">add_circle</span>
+<span class="text-sm font-bold text-slate-300">Pen (+3)</span>
+</button>
+<button class="h-20 bg-[#3e3028] hover:bg-[#4a3b32] border-b-4 border-[#261e19] active:border-b-0 active:translate-y-1 rounded-lg flex flex-col items-center justify-center gap-1 transition-all group">
+<span class="material-symbols-outlined text-red-500 group-hover:scale-110 transition-transform">warning</span>
+<span class="text-sm font-bold text-slate-300">Foul</span>
+</button>
+<button class="h-20 bg-[#3e3028] hover:bg-[#4a3b32] border-b-4 border-[#261e19] active:border-b-0 active:translate-y-1 rounded-lg flex flex-col items-center justify-center gap-1 transition-all group">
+<span class="material-symbols-outlined text-slate-400 group-hover:scale-110 transition-transform">cached</span>
+<span class="text-sm font-bold text-slate-300">Sub</span>
+</button>
+<button class="h-20 bg-[#3e3028] hover:bg-[#4a3b32] border-b-4 border-[#261e19] active:border-b-0 active:translate-y-1 rounded-lg flex flex-col items-center justify-center gap-1 transition-all group">
+<span class="material-symbols-outlined text-slate-400 group-hover:scale-110 transition-transform">timer_pause</span>
+<span class="text-sm font-bold text-slate-300">Timeout</span>
+</button>
+<button class="col-span-2 h-20 bg-[#3e3028] hover:bg-[#4a3b32] border-b-4 border-[#261e19] active:border-b-0 active:translate-y-1 rounded-lg flex flex-col items-center justify-center gap-1 transition-all group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">flag</span>
+<span class="text-sm font-bold text-slate-300">End Half</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Team Performance Chart -->
+<section>
+<div class="bg-surface-dark rounded-xl p-6 border border-accent-wood">
+<div class="flex justify-between items-start mb-6">
+<div>
+<p class="text-white text-base font-medium leading-normal">Team Performance</p>
+<p class="text-primary tracking-tight text-3xl font-bold leading-tight mt-1">Top: Warriors</p>
+</div>
+<select class="bg-background-dark text-slate-300 text-sm border-accent-wood rounded-lg px-3 py-1">
+<option>This Week</option>
+<option>Last Week</option>
+</select>
+</div>
+<div class="grid h-[200px] grid-flow-col gap-8 grid-rows-[1fr_auto] items-end justify-items-center px-4 w-full">
+<!-- Bar 1 -->
+<div class="w-full flex flex-col justify-end items-center h-full group cursor-pointer">
+<div class="bg-primary w-full max-w-[60px] rounded-t-lg opacity-30 group-hover:opacity-100 transition-all relative" style="height: 30%;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity">30%</div>
+</div>
+</div>
+<!-- Bar 2 -->
+<div class="w-full flex flex-col justify-end items-center h-full group cursor-pointer">
+<div class="bg-primary w-full max-w-[60px] rounded-t-lg relative" style="height: 70%;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-white font-bold">70%</div>
+</div>
+</div>
+<!-- Bar 3 -->
+<div class="w-full flex flex-col justify-end items-center h-full group cursor-pointer">
+<div class="bg-primary w-full max-w-[60px] rounded-t-lg opacity-50 group-hover:opacity-100 transition-all relative" style="height: 50%;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity">50%</div>
+</div>
+</div>
+<!-- Bar 4 -->
+<div class="w-full flex flex-col justify-end items-center h-full group cursor-pointer">
+<div class="bg-primary w-full max-w-[60px] rounded-t-lg opacity-30 group-hover:opacity-100 transition-all relative" style="height: 30%;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity">30%</div>
+</div>
+</div>
+<!-- Labels -->
+<p class="text-slate-400 text-xs font-bold uppercase tracking-wider mt-2">Tigers</p>
+<p class="text-white text-xs font-bold uppercase tracking-wider mt-2">Warriors</p>
+<p class="text-slate-400 text-xs font-bold uppercase tracking-wider mt-2">Eagles</p>
+<p class="text-slate-400 text-xs font-bold uppercase tracking-wider mt-2">Sharks</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Recent Events Feed -->
+<div class="lg:col-span-1">
+<section class="h-full">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-xl font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">history</span>
+                            Recent Feed
+                        </h2>
+<button class="p-1 hover:bg-surface-dark rounded text-slate-400">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+</button>
+</div>
+<div class="bg-surface-dark rounded-xl border border-accent-wood h-[calc(100vh-280px)] min-h-[500px] overflow-hidden flex flex-col">
+<div class="p-4 border-b border-accent-wood bg-background-dark/50">
+<div class="relative">
+<span class="absolute left-3 top-2.5 material-symbols-outlined text-slate-500 text-lg">search</span>
+<input class="w-full bg-surface-dark border border-accent-wood rounded-lg py-2 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-primary" placeholder="Search events..." type="text"/>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+<!-- Event Item 1 -->
+<div class="flex gap-3 items-start pb-4 border-b border-slate-700/50 last:border-0 last:pb-0">
+<div class="mt-1">
+<span class="material-symbols-outlined text-green-500 bg-green-500/10 p-1.5 rounded-full text-lg">sports_rugby</span>
+</div>
+<div>
+<p class="text-sm font-medium text-white">Warriors scored a Try</p>
+<p class="text-xs text-slate-400">Player: Jone R. (+5 pts)</p>
+<p class="text-[10px] text-slate-500 mt-1">2 mins ago</p>
+</div>
+</div>
+<!-- Event Item 2 -->
+<div class="flex gap-3 items-start pb-4 border-b border-slate-700/50 last:border-0 last:pb-0">
+<div class="mt-1">
+<span class="material-symbols-outlined text-blue-500 bg-blue-500/10 p-1.5 rounded-full text-lg">check_circle</span>
+</div>
+<div>
+<p class="text-sm font-medium text-white">Conversion Successful</p>
+<p class="text-xs text-slate-400">Warriors (+2 pts)</p>
+<p class="text-[10px] text-slate-500 mt-1">4 mins ago</p>
+</div>
+</div>
+<!-- Event Item 3 -->
+<div class="flex gap-3 items-start pb-4 border-b border-slate-700/50 last:border-0 last:pb-0">
+<div class="mt-1">
+<span class="material-symbols-outlined text-red-500 bg-red-500/10 p-1.5 rounded-full text-lg">front_hand</span>
+</div>
+<div>
+<p class="text-sm font-medium text-white">Foul Committed</p>
+<p class="text-xs text-slate-400">Eagles: High Tackle</p>
+<p class="text-[10px] text-slate-500 mt-1">12 mins ago</p>
+</div>
+</div>
+<!-- Event Item 4 -->
+<div class="flex gap-3 items-start pb-4 border-b border-slate-700/50 last:border-0 last:pb-0">
+<div class="mt-1">
+<span class="material-symbols-outlined text-slate-400 bg-slate-700/30 p-1.5 rounded-full text-lg">swap_horiz</span>
+</div>
+<div>
+<p class="text-sm font-medium text-white">Substitution</p>
+<p class="text-xs text-slate-400">Eagles: #10 out, #21 in</p>
+<p class="text-[10px] text-slate-500 mt-1">15 mins ago</p>
+</div>
+</div>
+<!-- Event Item 5 -->
+<div class="flex gap-3 items-start pb-4 border-b border-slate-700/50 last:border-0 last:pb-0">
+<div class="mt-1">
+<span class="material-symbols-outlined text-yellow-500 bg-yellow-500/10 p-1.5 rounded-full text-lg">star</span>
+</div>
+<div>
+<p class="text-sm font-medium text-white">Penalty Kick Scored</p>
+<p class="text-xs text-slate-400">Sharks (+3 pts)</p>
+<p class="text-[10px] text-slate-500 mt-1">22 mins ago</p>
+</div>
+</div>
+<!-- Event Item 6 -->
+<div class="flex gap-3 items-start pb-4 border-b border-slate-700/50 last:border-0 last:pb-0">
+<div class="mt-1">
+<span class="material-symbols-outlined text-primary bg-primary/10 p-1.5 rounded-full text-lg">sports_rugby</span>
+</div>
+<div>
+<p class="text-sm font-medium text-white">Warriors scored a Try</p>
+<p class="text-xs text-slate-400">Player: Saki V. (+5 pts)</p>
+<p class="text-[10px] text-slate-500 mt-1">35 mins ago</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Mobile Bottom Nav (Visible only on small screens) -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 border-t border-accent-wood bg-background-dark z-50">
+<div class="flex gap-2 px-4 pb-3 pt-2">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined text-2xl">home</span>
+<p class="text-xs font-medium">Sevu</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined text-2xl">sports_soccer</span>
+<p class="text-xs font-medium">Qito</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-2xl fill-current">speed</span>
+<p class="text-xs font-medium">Tovo</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined text-2xl">gavel</span>
+<p class="text-xs font-medium">Lawa</p>
+</a>
+</div>
+</div>
+<style>
+        /* Custom Scrollbar for the feed */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #211711;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #53453c;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #e9742b;
+        }
+    </style>
+</body></html>

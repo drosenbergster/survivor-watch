@@ -1,0 +1,254 @@
+<html class="dark"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "fire-orange": "#e8722a",
+            "torch-yellow": "#f5b731",
+            "jungle-green": "#1db954",
+            "fijian-stone": "#0f0f0f",
+            "stone-800": "#1a1a1a",
+            "sand": "#d4b483",
+          },
+          fontFamily: {
+            "bebas": ["Bebas Neue", "sans-serif"],
+            "sans": ["Inter", "sans-serif"]
+          },
+          borderRadius: {"DEFAULT": "0.375rem", "lg": "0.75rem", "xl": "1rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style type="text/tailwindcss">:root {
+    --bg-charcoal: #0f0f0f;
+    --fire-glow: rgba(232, 114, 42, 0.4);
+    --torch-glow: rgba(245, 183, 49, 0.6)
+    }
+.tapa-texture {
+    background-color: #0f0f0f;
+    background-image: linear-gradient(rgba(15, 15, 15, 0.8), rgba(15, 15, 15, 0.8)), url(https://lh3.googleusercontent.com/aida-public/AB6AXuCusH1VkXcOk3CvJVO9G6VBWTCdw8FitJCLhXlBs7JC0F7wTyfwQMoIPyEnMgR8sV7Wz-72UiwtfPkJ0mMPFKbHJBD4eDuAXDZhdH5S2BrPCg_WzsF6lT-ILRVIeOsnkLLO0DOEBp0gHNcXQPsL2ODHq9BEhYDd18orJo7PpKTO39jSkyzQaPvRdSm7tXxNCFcQLi5bS5EQKhEFf2jJ6rZcfeMo9LYKOeZWwUFXoZVOxjxsfMpRcQUrAqE7NgT0h3xEXb6qiMRbGl3C);
+    background-repeat: repeat
+    }
+.palm-silhouette {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuDsOsXpndpAAfsS4wgJuyQHUsT7-4ihLr-SRkzSskp4LSB_kKM3S44AyuqOE0K7WMSJYFEZeFmR2Y0ve6SsbL8D-SZWHox80DwG1O_n5DGsEX_HnJdvg0XBUtIh7vAORpg9EWovpca8GAsEX9xGsSnWWJTG-NofBjV5LCNVq8ojlGX1gtGNGxhRpm7KUZaPRweco9a_Kk-xGk7PLKM1IaafHSN-6BvCLkQw1jEmes10nLlp5fA2DWQ9NQcQ9hY0NwJdfTDQ3ZYoIQXJ);
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 0
+    }
+.bebas-title {
+    font-family: "Bebas Neue", sans-serif;
+    letter-spacing: 0.05em
+    }
+.bingo-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px
+    }
+.winning-glow {
+    box-shadow: 0 0 20px var(--fire-glow);
+    border: 2px solid #e8722a !important;
+    z-index: 10
+    }
+.text-glow-yellow {
+    text-shadow: 0 0 15px var(--torch-glow)
+    }
+.text-shadow-warm {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(232, 114, 42, 0.3)
+    }</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+      background-color: #0f0f0f;
+    }
+    .safe-bottom {
+      padding-bottom: env(safe-area-inset-bottom, 24px);
+    }
+</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="tapa-texture font-sans text-slate-100 min-h-screen relative overflow-x-hidden">
+<div class="palm-silhouette"></div>
+<div class="relative flex h-auto min-h-screen w-full flex-col z-10">
+<div class="flex items-center bg-fijian-stone/90 backdrop-blur-md p-4 pb-3 justify-between sticky top-0 z-50 border-b border-white/5 shadow-lg">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-jungle-green shadow-[0_0_8px_#1db954]"></div>
+<h2 class="text-slate-300 text-[11px] font-bold tracking-wider uppercase">survivor_fan@outplay.com</h2>
+</div>
+<button class="text-fire-orange text-xs font-black uppercase tracking-widest hover:brightness-125 transition-all">Sign Out</button>
+</div>
+<div class="px-4 py-8 text-center bg-gradient-to-b from-fire-orange/20 via-transparent to-transparent">
+<div class="mb-2 text-4xl drop-shadow-lg">🔥</div>
+<h1 class="text-6xl bebas-title font-normal leading-none text-shadow-warm">
+<span class="text-fire-orange">SURVIVOR</span> <span class="text-torch-yellow">50</span>
+</h1>
+<p class="text-[10px] font-black tracking-[0.4em] text-sand/60 uppercase mt-2">Watch Party HQ</p>
+</div>
+<div class="px-2 bg-fijian-stone/40">
+<div class="flex justify-between gap-1">
+<a class="flex flex-col items-center justify-center text-stone-500 pb-3 pt-2 flex-1 rounded-t-lg transition-colors" href="#">
+<span class="material-symbols-outlined text-xl mb-1">trophy</span>
+<p class="text-[9px] font-black uppercase tracking-tighter">Draft</p>
+</a>
+<a class="flex flex-col items-center justify-center text-fire-orange pb-3 pt-2 flex-1 bg-stone-800/50 rounded-t-lg border-b-2 border-fire-orange shadow-[0_-4px_12px_rgba(232,114,42,0.1)]" href="#">
+<span class="material-symbols-outlined text-xl mb-1 fill-1">target</span>
+<p class="text-[9px] font-black uppercase tracking-tighter">Bingo</p>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 pb-3 pt-2 flex-1 transition-colors" href="#">
+<span class="material-symbols-outlined text-xl mb-1">leaderboard</span>
+<p class="text-[9px] font-black uppercase tracking-tighter">Scores</p>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 pb-3 pt-2 flex-1 transition-colors" href="#">
+<span class="material-symbols-outlined text-xl mb-1">menu_book</span>
+<p class="text-[9px] font-black uppercase tracking-tighter">Rules</p>
+</a>
+</div>
+</div>
+<div class="p-6 text-center">
+<h2 class="text-torch-yellow text-5xl bebas-title mb-2 text-shadow-warm">Survivor Bingo</h2>
+<p class="text-sand/80 text-sm leading-snug px-6 max-w-sm mx-auto font-medium">
+            Mark squares as they happen. First to 5 in a row yells <span class="text-fire-orange font-black">"JEFF PROBST!"</span> 🍻
+        </p>
+</div>
+<div class="px-4 flex flex-wrap gap-3 items-center justify-between mb-8">
+<div class="flex-1 min-w-[140px]">
+<select class="w-full bg-stone-800 border border-white/5 rounded-lg text-sm text-sand font-bold py-2.5 px-4 focus:ring-fire-orange focus:border-fire-orange">
+<option>Card for: Jeff</option>
+<option>Card for: Parvati</option>
+<option>Card for: Boston Rob</option>
+</select>
+</div>
+<div class="flex gap-2">
+<button class="bg-stone-800 hover:bg-stone-700 text-sand border border-white/5 py-2.5 px-4 rounded-lg text-xs font-black flex items-center gap-2 transition-all shadow-md">
+<span class="material-symbols-outlined text-sm">shuffle</span> NEW CARD
+            </button>
+<button class="bg-stone-800 hover:bg-stone-700 text-sand border border-white/5 py-2.5 px-4 rounded-lg text-xs font-black flex items-center gap-2 transition-all shadow-md">
+<span class="material-symbols-outlined text-sm">refresh</span> RESET
+            </button>
+</div>
+</div>
+<div class="px-3 mb-10">
+<div class="bingo-grid aspect-square w-full max-w-md mx-auto">
+<div class="bg-gradient-to-br from-fire-orange to-orange-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center winning-glow">
+<p class="text-[10px] font-black text-white uppercase leading-tight">"The tribe has spoken"</p>
+</div>
+<div class="bg-gradient-to-br from-fire-orange to-orange-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center winning-glow">
+<p class="text-[10px] font-black text-white uppercase leading-tight">Someone cries</p>
+</div>
+<div class="bg-gradient-to-br from-fire-orange to-orange-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center winning-glow">
+<p class="text-[10px] font-black text-white uppercase leading-tight">Idol is found</p>
+</div>
+<div class="bg-gradient-to-br from-fire-orange to-orange-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center winning-glow">
+<p class="text-[10px] font-black text-white uppercase leading-tight">Jeff snuffs torch</p>
+</div>
+<div class="bg-gradient-to-br from-fire-orange to-orange-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center winning-glow">
+<p class="text-[10px] font-black text-white uppercase leading-tight">Rain at camp</p>
+</div>
+<div class="bg-stone-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-white/5">
+<p class="text-[10px] font-bold text-sand/70 uppercase leading-tight">"Dig deep!"</p>
+</div>
+<div class="bg-gradient-to-br from-fire-orange to-orange-900/60 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-fire-orange/40">
+<p class="text-[10px] font-black text-white uppercase leading-tight">Alliance betrayed</p>
+</div>
+<div class="bg-stone-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-white/5">
+<p class="text-[10px] font-bold text-sand/70 uppercase leading-tight">Challenge water</p>
+</div>
+<div class="bg-stone-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-white/5">
+<p class="text-[10px] font-bold text-sand/70 uppercase leading-tight">Flashback Montage</p>
+</div>
+<div class="bg-stone-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-white/5">
+<p class="text-[10px] font-bold text-sand/70 uppercase leading-tight">Monster mentioned</p>
+</div>
+<div class="bg-stone-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-white/5">
+<p class="text-[10px] font-bold text-sand/70 uppercase leading-tight">Hideous Shirt</p>
+</div>
+<div class="bg-stone-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-white/5">
+<p class="text-[10px] font-bold text-sand/70 uppercase leading-tight">Hidden Idol Clue</p>
+</div>
+<div class="bg-gradient-to-br from-jungle-green to-green-900 aspect-square rounded-lg flex flex-col items-center justify-center p-2 text-center border border-jungle-green shadow-[inset_0_0_15px_rgba(29,185,84,0.3)]">
+<p class="text-[9px] font-black text-white uppercase tracking-tighter leading-none">FREE</p>
+<p class="text-[9px] font-black text-white uppercase tracking-tighter leading-none">SPACE</p>
+</div>
+<div class="bg-stone-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-white/5">
+<p class="text-[10px] font-bold text-sand/70 uppercase leading-tight">Spider on screen</p>
+</div>
+<div class="bg-gradient-to-br from-fire-orange to-orange-900/60 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-fire-orange/40">
+<p class="text-[10px] font-black text-white uppercase leading-tight">"C'mon in!"</p>
+</div>
+<div class="bg-stone-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-white/5">
+<p class="text-[10px] font-bold text-sand/70 uppercase leading-tight">Blindside</p>
+</div>
+<div class="bg-stone-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-white/5">
+<p class="text-[10px] font-bold text-sand/70 uppercase leading-tight">Boat arrival</p>
+</div>
+<div class="bg-stone-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-white/5">
+<p class="text-[10px] font-bold text-sand/70 uppercase leading-tight">Ponderosa clip</p>
+</div>
+<div class="bg-gradient-to-br from-fire-orange to-orange-900/60 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-fire-orange/40">
+<p class="text-[10px] font-black text-white uppercase leading-tight">Puzzle Struggle</p>
+</div>
+<div class="bg-stone-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-white/5">
+<p class="text-[10px] font-bold text-sand/70 uppercase leading-tight">Fire making</p>
+</div>
+<div class="bg-stone-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-white/5">
+<p class="text-[10px] font-bold text-sand/70 uppercase leading-tight">Eat Rice</p>
+</div>
+<div class="bg-stone-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-white/5">
+<p class="text-[10px] font-bold text-sand/70 uppercase leading-tight">Bird Squawk</p>
+</div>
+<div class="bg-stone-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-white/5">
+<p class="text-[10px] font-bold text-sand/70 uppercase leading-tight">Immunity win</p>
+</div>
+<div class="bg-stone-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-white/5">
+<p class="text-[10px] font-bold text-sand/70 uppercase leading-tight">Shot in Dark</p>
+</div>
+<div class="bg-stone-800 aspect-square rounded-lg flex items-center justify-center p-2 text-center border border-white/5">
+<p class="text-[10px] font-bold text-sand/70 uppercase leading-tight">Jeff wears blue</p>
+</div>
+</div>
+</div>
+<div class="px-6 pb-20 text-center">
+<h3 class="text-7xl bebas-title text-torch-yellow text-glow-yellow mb-2 drop-shadow-2xl">
+            🔥 JEFF PROBST! 🔥
+        </h3>
+<p class="text-sand text-lg font-black tracking-tighter drop-shadow-md">
+            BINGO! THE TRIBE HAS SPOKEN! 🍻
+        </p>
+</div>
+<div class="mt-auto border-t border-white/10 bg-fijian-stone/95 backdrop-blur-xl px-4 pt-3 pb-2 flex gap-1 safe-bottom">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-stone-500 py-2" href="#">
+<span class="material-symbols-outlined text-2xl">explore</span>
+<p class="text-[10px] font-black uppercase tracking-tight">Islands</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-fire-orange py-2 relative" href="#">
+<div class="absolute -top-1 w-8 h-1 bg-fire-orange rounded-full shadow-[0_0_8px_rgba(232,114,42,0.8)]"></div>
+<span class="material-symbols-outlined text-2xl fill-1">grid_view</span>
+<p class="text-[10px] font-black uppercase tracking-tight">Bingo</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-stone-500 py-2" href="#">
+<span class="material-symbols-outlined text-2xl">group</span>
+<p class="text-[10px] font-black uppercase tracking-tight">Tribes</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-stone-500 py-2" href="#">
+<span class="material-symbols-outlined text-2xl">settings</span>
+<p class="text-[10px] font-black uppercase tracking-tight">Settings</p>
+</a>
+</div>
+</div>
+
+</body></html>

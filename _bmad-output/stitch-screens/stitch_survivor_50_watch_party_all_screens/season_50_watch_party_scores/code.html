@@ -1,0 +1,227 @@
+<html class="dark"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e9742b",
+                        "torch-yellow": "#f5b731",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#0a0f0d",
+                        "neutral-dark": "#1a1614",
+                    },
+                    fontFamily: {
+                        "display": ["Be Vietnam Pro", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .embers-bg {
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(233, 116, 43, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(245, 183, 49, 0.05) 0%, transparent 50%);
+        }
+        .fire-text {
+            background: linear-gradient(to bottom, #f5b731, #e9742b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<!-- Top Bar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between border-b border-white/5">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+<h2 class="text-slate-400 text-sm font-medium leading-tight">user@email.com</h2>
+</div>
+<button class="text-primary text-sm font-bold tracking-tight">Sign Out</button>
+</div>
+<!-- Hero Header -->
+<div class="relative overflow-hidden px-4 py-8 text-center embers-bg">
+<div class="flex justify-center mb-1">
+<span class="text-3xl">🔥</span>
+</div>
+<h1 class="text-5xl font-black tracking-tighter italic uppercase fire-text">
+            SURVIVOR 50
+        </h1>
+<p class="text-torch-yellow/80 text-xs font-bold tracking-[0.3em] uppercase mt-1">Watch Party HQ</p>
+</div>
+<!-- Navigation Tabs -->
+<div class="px-4">
+<div class="flex bg-neutral-dark/50 rounded-xl p-1 border border-white/5">
+<a class="flex flex-1 flex-col items-center justify-center py-2 text-slate-500" href="#">
+<span class="material-symbols-outlined text-xl">trophy</span>
+<p class="text-[10px] font-bold uppercase mt-0.5">Draft</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center py-2 text-slate-500" href="#">
+<span class="material-symbols-outlined text-xl">target</span>
+<p class="text-[10px] font-bold uppercase mt-0.5">Bingo</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center py-2 bg-gradient-to-br from-primary to-red-600 text-white rounded-lg shadow-lg" href="#">
+<span class="material-symbols-outlined text-xl">leaderboard</span>
+<p class="text-[10px] font-bold uppercase mt-0.5">Scores</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center py-2 text-slate-500" href="#">
+<span class="material-symbols-outlined text-xl">scrollable_header</span>
+<p class="text-[10px] font-bold uppercase mt-0.5">Rules</p>
+</a>
+</div>
+</div>
+<!-- Season Scoreboard Title -->
+<div class="px-6 pt-8 pb-4">
+<h3 class="text-torch-yellow text-xl font-black uppercase italic tracking-tight">Season Scoreboard</h3>
+<p class="text-slate-400 text-xs leading-relaxed">Track points across the whole season. Update after each episode!</p>
+</div>
+<!-- Score Grid -->
+<div class="grid grid-cols-2 gap-3 px-4">
+<!-- Player 1: Danny -->
+<div class="bg-neutral-dark border-2 border-primary rounded-xl p-3 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-1 bg-primary text-white text-[10px] font-black rounded-bl-lg">#1 👑</div>
+<p class="text-primary text-[10px] font-bold uppercase tracking-wider">Danny</p>
+<p class="text-3xl font-black text-white my-1">47</p>
+<div class="flex flex-wrap gap-1 mt-2">
+<span class="text-[9px] px-1.5 py-0.5 bg-white/10 rounded-full text-slate-300">Cirie</span>
+<span class="text-[9px] px-1.5 py-0.5 bg-white/10 rounded-full text-slate-300">Tony</span>
+<span class="text-[9px] px-1.5 py-0.5 bg-white/5 rounded-full text-slate-500 line-through">Boston Rob</span>
+</div>
+</div>
+<!-- Player 2: Mike -->
+<div class="bg-neutral-dark border-2 border-green-600/50 rounded-xl p-3 relative">
+<div class="absolute top-0 right-0 p-1 bg-green-600/50 text-white text-[10px] font-black rounded-bl-lg">#2</div>
+<p class="text-green-500 text-[10px] font-bold uppercase tracking-wider">Mike</p>
+<p class="text-3xl font-black text-white my-1">38</p>
+<div class="flex flex-wrap gap-1 mt-2">
+<span class="text-[9px] px-1.5 py-0.5 bg-white/10 rounded-full text-slate-300">Parvati</span>
+<span class="text-[9px] px-1.5 py-0.5 bg-white/5 rounded-full text-slate-500 line-through">Sandra</span>
+<span class="text-[9px] px-1.5 py-0.5 bg-white/10 rounded-full text-slate-300">Jeremy</span>
+</div>
+</div>
+<!-- Player 3: Sarah -->
+<div class="bg-neutral-dark border-2 border-blue-600/50 rounded-xl p-3 relative">
+<div class="absolute top-0 right-0 p-1 bg-blue-600/50 text-white text-[10px] font-black rounded-bl-lg">#3</div>
+<p class="text-blue-400 text-[10px] font-bold uppercase tracking-wider">Sarah</p>
+<p class="text-3xl font-black text-white my-1">31</p>
+<div class="flex flex-wrap gap-1 mt-2">
+<span class="text-[9px] px-1.5 py-0.5 bg-white/10 rounded-full text-slate-300">Wentworth</span>
+<span class="text-[9px] px-1.5 py-0.5 bg-white/10 rounded-full text-slate-300">Ozzy</span>
+<span class="text-[9px] px-1.5 py-0.5 bg-white/5 rounded-full text-slate-500 line-through">Cochran</span>
+</div>
+</div>
+<!-- Player 4: Jake -->
+<div class="bg-neutral-dark border-2 border-purple-600/50 rounded-xl p-3 relative">
+<div class="absolute top-0 right-0 p-1 bg-purple-600/50 text-white text-[10px] font-black rounded-bl-lg">#4</div>
+<p class="text-purple-400 text-[10px] font-bold uppercase tracking-wider">Jake</p>
+<p class="text-3xl font-black text-white my-1">24</p>
+<div class="flex flex-wrap gap-1 mt-2">
+<span class="text-[9px] px-1.5 py-0.5 bg-white/5 rounded-full text-slate-500 line-through">Aubry</span>
+<span class="text-[9px] px-1.5 py-0.5 bg-white/10 rounded-full text-slate-300">Tyson</span>
+<span class="text-[9px] px-1.5 py-0.5 bg-white/5 rounded-full text-slate-500 line-through">Kim</span>
+</div>
+</div>
+</div>
+<!-- Log Events Section -->
+<div class="px-4 mt-8">
+<div class="bg-neutral-dark rounded-2xl border border-white/5 p-5">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">edit_calendar</span>
+<h4 class="text-white font-bold uppercase tracking-wide">Log Events</h4>
+</div>
+<!-- Castaway Dropdown -->
+<div class="relative mb-4">
+<label class="block text-[10px] font-bold text-slate-500 uppercase mb-1 ml-1">Select Castaway</label>
+<div class="flex items-center justify-between bg-background-dark border border-white/10 rounded-lg px-4 py-3 text-white">
+<span class="font-medium">Cirie Fields</span>
+<span class="material-symbols-outlined text-slate-500">expand_more</span>
+</div>
+</div>
+<!-- Event Buttons Grid -->
+<div class="grid grid-cols-2 gap-2">
+<button class="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-3 transition-colors">
+<span class="text-green-500 text-sm">✅</span>
+<span class="text-[11px] font-bold text-slate-300">Survived (+2)</span>
+</button>
+<button class="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-3 transition-colors">
+<span class="text-yellow-500 text-sm">🏅</span>
+<span class="text-[11px] font-bold text-slate-300">Immunity (+3)</span>
+</button>
+<button class="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-3 transition-colors">
+<span class="text-orange-500 text-sm">🗿</span>
+<span class="text-[11px] font-bold text-slate-300">Found Idol (+3)</span>
+</button>
+<button class="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-3 transition-colors">
+<span class="text-blue-500 text-sm">💎</span>
+<span class="text-[11px] font-bold text-slate-300">Played Idol (+4)</span>
+</button>
+<button class="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-3 transition-colors">
+<span class="text-red-500 text-sm">🔪</span>
+<span class="text-[11px] font-bold text-slate-300">Blindside (+3)</span>
+</button>
+<button class="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-3 transition-colors">
+<span class="text-yellow-400 text-sm">👑</span>
+<span class="text-[11px] font-bold text-slate-300">Sole Survivor (+10)</span>
+</button>
+<button class="col-span-2 flex items-center justify-center gap-2 bg-red-900/20 hover:bg-red-900/30 border border-red-900/40 rounded-lg p-3 transition-colors mt-2">
+<span class="text-sm">🔥</span>
+<span class="text-[11px] font-bold text-red-200">Voted Out (-2)</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Recent Events Log -->
+<div class="px-6 py-8 mb-20">
+<h5 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-3">Recent Events</h5>
+<div class="flex items-center gap-3 bg-neutral-dark/30 border-l-2 border-primary p-3 rounded-r-lg">
+<span class="text-primary font-black text-sm">+3</span>
+<div class="flex-1">
+<p class="text-white text-xs font-bold">Cirie Fields</p>
+<p class="text-slate-500 text-[10px]">Won Individual Immunity • Ep 8</p>
+</div>
+<span class="material-symbols-outlined text-slate-600 text-lg">history</span>
+</div>
+</div>
+<!-- Bottom Navigation Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-50">
+<div class="flex gap-2 border-t border-white/10 bg-background-dark/95 backdrop-blur-md px-4 pb-6 pt-2">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">description</span>
+</div>
+<p class="text-[10px] font-medium leading-normal tracking-wide uppercase">Draft</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">ads_click</span>
+</div>
+<p class="text-[10px] font-medium leading-normal tracking-wide uppercase">Bingo</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">leaderboard</span>
+</div>
+<p class="text-[10px] font-bold leading-normal tracking-wide uppercase">Scores</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">menu_book</span>
+</div>
+<p class="text-[10px] font-medium leading-normal tracking-wide uppercase">Rules</p>
+</a>
+</div>
+</div>
+</body></html>
