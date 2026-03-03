@@ -1,4 +1,4 @@
-import { SCORE_EVENTS, ALL_CASTAWAYS } from './data';
+import { SCORE_EVENTS, ALL_CASTAWAYS, detectBingoLines, isBingoBlackout } from './data';
 
 const SCORE_MAP = Object.fromEntries(SCORE_EVENTS.map(e => [e.key, e.points]));
 
@@ -9,6 +9,8 @@ const SCARCITY_MULTIPLIER = 1.5;
 const CORRECT_ELIMINATION_POINTS = 5;
 const CORRECT_PROP_BET_POINTS = 3;
 const CORRECT_BOLD_PREDICTION_POINTS = 10;
+const BINGO_LINE_POINTS = 5;
+const BINGO_BLACKOUT_POINTS = 50;
 
 /**
  * Given game events for an episode, compute the raw points each contestant earned.
@@ -59,7 +61,7 @@ export function computeScarcity(picks) {
  *
  * Returns: { [uid]: { weekly, predictions, rideOrDie, total, breakdown } }
  */
-export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUids) {
+export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUids, bingoData) {
     const {
         picks = {},
         predictions = {},
@@ -172,11 +174,29 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
             }
         }
 
+        // --- Bingo scoring ---
+        let bingoTotal = 0;
+        breakdown.bingo = [];
+        const playerBingo = bingoData?.[uid];
+        if (playerBingo && Array.isArray(playerBingo) && playerBingo.length === 25) {
+            const lines = detectBingoLines(playerBingo);
+            if (lines.length > 0) {
+                const linePoints = lines.length * BINGO_LINE_POINTS;
+                bingoTotal += linePoints;
+                breakdown.bingo.push({ type: 'lines', count: lines.length, points: linePoints });
+            }
+            if (isBingoBlackout(playerBingo)) {
+                bingoTotal += BINGO_BLACKOUT_POINTS;
+                breakdown.bingo.push({ type: 'blackout', points: BINGO_BLACKOUT_POINTS });
+            }
+        }
+
         playerScores[uid] = {
             weekly: weeklyTotal,
             predictions: predictionTotal,
             rideOrDie: rideOrDieTotal,
-            total: weeklyTotal + predictionTotal + rideOrDieTotal,
+            bingo: bingoTotal,
+            total: weeklyTotal + predictionTotal + rideOrDieTotal + bingoTotal,
             breakdown,
         };
     }
@@ -193,11 +213,11 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
  *
  * Returns: { standings: [{ uid, total, weekly, predictions, rideOrDie }], perEpisode: { [epNum]: playerScores } }
  */
-export function computeStandings(episodes, rideOrDies, memberUids) {
+export function computeStandings(episodes, rideOrDies, memberUids, bingoAllEpisodes) {
     const perEpisode = {};
     const cumulative = {};
     for (const uid of memberUids) {
-        cumulative[uid] = { weekly: 0, predictions: 0, rideOrDie: 0, total: 0 };
+        cumulative[uid] = { weekly: 0, predictions: 0, rideOrDie: 0, bingo: 0, total: 0 };
     }
 
     const epNums = Object.keys(episodes || {})
@@ -209,14 +229,16 @@ export function computeStandings(episodes, rideOrDies, memberUids) {
 
     for (const epNum of epNums) {
         const ep = episodes[epNum];
-        const epScores = scoreEpisode(ep, rideOrDies, eliminatedSoFar, memberUids);
+        const epBingo = bingoAllEpisodes?.[epNum] || {};
+        const epScores = scoreEpisode(ep, rideOrDies, eliminatedSoFar, memberUids, epBingo);
         perEpisode[epNum] = epScores;
 
         for (const uid of memberUids) {
-            const s = epScores[uid] || { weekly: 0, predictions: 0, rideOrDie: 0, total: 0 };
+            const s = epScores[uid] || { weekly: 0, predictions: 0, rideOrDie: 0, bingo: 0, total: 0 };
             cumulative[uid].weekly += s.weekly;
             cumulative[uid].predictions += s.predictions;
             cumulative[uid].rideOrDie += s.rideOrDie;
+            cumulative[uid].bingo += (s.bingo || 0);
             cumulative[uid].total += s.total;
         }
 

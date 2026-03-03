@@ -126,82 +126,173 @@ export function getMaxPicks(remainingCount) {
     return Math.min(5, Math.floor(remainingCount / 2));
 }
 
-// Bingo squares pool
+// Bingo squares pool (100+ items, Probst-isms mixed in)
 export const BINGO_ITEMS = [
+    // Jeff Probst classics
     '"The tribe has spoken"',
     '"Come on in!"',
     '"Dig deep!"',
     '"Worth playing for?"',
+    '"Outwit, outplay, outlast"',
+    'Jeff says "previously on"',
+    'Jeff says "want to know?"',
+    'Jeff gives life advice',
+    'Jeff raises his eyebrow',
+    'Jeff narrates the challenge',
+    'Jeff says "got nothin\' for ya"',
+    'Jeff says "fire represents life"',
+    'Jeff says "biggest move ever"',
+    'Jeff says "one of the biggest blindsides"',
+    'Jeff dramatically snuffs a torch',
+    'Jeff asks "what happened at camp?"',
+    'Jeff stirs the pot at tribal',
+    'Jeff smirks at an answer',
+    'Jeff does a challenge play-by-play',
+    'Jeff says "I\'ll count the votes"',
+    // Tribal council
     '"Blindside!"',
+    'Someone whispers at tribal',
+    'Vote is split',
+    'Emotional tribal council',
+    'Someone says "trust"',
+    'Someone says "threat"',
+    'Someone says "resume"',
+    'Someone says "at the end of the day"',
+    'Player throws someone under the bus',
+    'Player boasts about themselves',
     'Someone says "million dollars"',
-    'Player cries',
-    'Someone talks about family',
-    'Secret meeting at well',
-    'Shot of wildlife',
-    'Rain at camp',
+    'Someone says "it\'s just a game"',
+    'Someone says "game changer"',
+    'Player defends their game',
+    'Player calls someone out',
+    'Side conversation during tribal',
+    'Someone says "blindside"',
+    'A vote reveal gets a gasp',
+    'Someone says "big move"',
+    'Standing ovation or applause at tribal',
+    // Challenges
     'Challenge involves water',
+    'Puzzle in challenge',
     'Someone falls in challenge',
+    'Immunity necklace closeup',
+    'Challenge involves balance',
+    'Challenge involves endurance',
+    'Challenge has a gross food element',
+    'Someone sits out of a challenge',
+    'Challenge involves digging',
+    'Photo finish in challenge',
+    'Someone dominates a challenge',
+    'Challenge involves knots or ropes',
+    'Comeback win in challenge',
+    // Idols & advantages
     'Idol is found',
     'Idol is played',
-    'Vote is split',
-    'Player complains about hunger',
+    'Player hides an idol',
+    'Player finds a clue',
+    'Advantage is found',
+    'Someone plays Shot in the Dark',
+    'Fake idol or decoy',
+    'Someone searches for an idol alone',
+    'Idol/advantage bluff',
+    // Camp life
+    'Rain at camp',
     'Someone makes fire',
-    'Jeff snuffs a torch',
-    '"Outwit, outplay, outlast"',
-    'Puzzle in challenge',
-    'Player boasts about themselves',
-    'Someone whispers at tribal',
-    'Jeff gives life advice',
-    'Immunity necklace closeup',
-    'Someone says "threat"',
+    'Coconut is cracked open',
+    'Player complains about hunger',
+    'Player gets sunburned',
+    'Secret meeting at well',
+    'Reward has food',
+    'Someone cooks rice',
+    'Shelter building or repair',
+    'Someone goes fishing',
+    'Night vision camp footage',
+    'Player talks to camera at night',
+    'Someone naps in the shelter',
+    'Fireside strategy talk',
+    // Emotional & social
+    'Player cries',
+    'Someone talks about family',
+    'Player fake-cries',
+    'Group hug',
+    'Someone gets emotional in confessional',
+    'Someone says "I love this game"',
+    'Player motivational speech',
+    'Someone misses home',
+    'Heartfelt moment between rivals',
+    'Someone comforts another player',
+    // Strategy
     'Alliance is formed',
     'Alliance is betrayed',
-    'Someone says "resume"',
-    'Player finds a clue',
-    'Reward has food',
     'Someone strategizes in confessional',
-    'Jeff says "previously on"',
+    '"I didn\'t come here to lose"',
+    '"This is my island"',
+    'Someone says "4th time playing"',
+    'A returnee references their past season',
+    'Player lies to someone\'s face',
+    'Two players make a final 2/3 deal',
+    'Someone flips on their alliance',
+    'Voting confessional trash talk',
+    'Someone says "blood on my hands"',
+    'Someone says "under the radar"',
+    'Someone plays both sides',
+    // Production & visuals
+    'Shot of wildlife',
+    'Bug/insect closeup',
+    'Dramatic music sting',
+    'Sunset or sunrise shot',
+    'Aerial island shot',
+    'Someone does a victory dance',
+    'Slow-motion challenge replay',
     'Tree mail arrives',
-    'Someone says "game changer"',
+    'Confessional count: 5+ for one player',
+    // Game milestones
+    'Medical team is called',
+    'Post-merge feast',
+    'Tribe swap happens',
+    // Season 50 specials
     'Coach does Coach things',
     'Ozzy catches fish',
     'Cirie makes a big move',
     'Angelina mentions the jacket',
-    'Someone says "4th time playing"',
-    'Player hides an idol',
-    'Emotional tribal council',
-    'Jeff narrates the challenge',
-    'Post-merge feast',
-    'Someone says "at the end of the day"',
-    'Player throws someone under the bus',
-    'Coconut is cracked open',
-    'Someone says "trust"',
-    'Tribe swap happens',
-    'Medical team is called',
-    'Player gets sunburned',
-    'Jeff says "want to know?"',
-    'Someone does a victory dance',
-    '"I didn\'t come here to lose"',
-    'Player fake-cries',
-    'Bug/insect closeup',
-    'Someone says "it\'s just a game"',
-    'Player talks to camera at night',
-    '"This is my island"',
-    'Jeff raises his eyebrow',
+    'A winner references their winning season',
+    'Two legends strategize together',
+    'Someone mentions "the greatest season"',
 ];
 
+// Hash a string to a numeric seed
+function hashSeed(str) {
+    let hash = 5381;
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) + hash + str.charCodeAt(i)) | 0;
+    }
+    return Math.abs(hash);
+}
+
 // Generate a shuffled bingo card (5x5 with free center)
+// seed should be a string like "{leagueId}-{episodeNum}-{playerId}"
 export function generateBingoCard(seed) {
     const shuffled = [...BINGO_ITEMS];
-    // Seeded shuffle using simple hash
-    let s = seed || Math.random() * 10000;
+    let s = typeof seed === 'string' ? hashSeed(seed) : (seed || Math.floor(Math.random() * 10000));
     for (let i = shuffled.length - 1; i > 0; i--) {
         s = (s * 16807 + 0) % 2147483647;
         const j = s % (i + 1);
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     const items = shuffled.slice(0, 24);
-    // Insert free space at center (index 12)
-    items.splice(12, 0, 'FREE SPACE 🏝️');
+    items.splice(12, 0, '🔥 FREE');
     return items;
+}
+
+export const BINGO_LINES = [
+    [0,1,2,3,4], [5,6,7,8,9], [10,11,12,13,14], [15,16,17,18,19], [20,21,22,23,24],
+    [0,5,10,15,20], [1,6,11,16,21], [2,7,12,17,22], [3,8,13,18,23], [4,9,14,19,24],
+    [0,6,12,18,24], [4,8,12,16,20],
+];
+
+export function detectBingoLines(marked) {
+    return BINGO_LINES.filter(line => line.every(i => marked[i]));
+}
+
+export function isBingoBlackout(marked) {
+    return marked.every(Boolean);
 }

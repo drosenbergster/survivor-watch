@@ -65,6 +65,21 @@ function SeasonOverview() {
 }
 
 function EpisodeScoredBanner({ episodeNum }) {
+    const { hasWatched } = useApp();
+    const watched = hasWatched(episodeNum);
+
+    if (!watched) {
+        return (
+            <FijianCard className="p-5 text-center bg-gradient-to-b from-stone-800/80 to-stone-900/60 space-y-2">
+                <div className="text-3xl">🛡️</div>
+                <p className="text-sand-warm font-display text-lg tracking-wider">Episode {episodeNum} Complete</p>
+                <p className="text-sand-warm/50 text-sm font-sans">
+                    Details hidden until you&apos;ve watched. Head to Qito to light your torch!
+                </p>
+            </FijianCard>
+        );
+    }
+
     return (
         <FijianCard className="p-5 text-center bg-gradient-to-b from-stone-800/80 to-stone-900/60">
             <p className="text-ochre font-display text-xl tracking-wider">Episode {episodeNum} Scored</p>

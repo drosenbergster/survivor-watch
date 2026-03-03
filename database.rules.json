@@ -59,6 +59,23 @@
           ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid",
           ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
         },
+        "watchStatus": {
+          "$epNum": {
+            "$uid": {
+              ".write": "auth != null && auth.uid === $uid",
+              ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
+            },
+            ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
+          }
+        },
+        "bingo": {
+          "$epNum": {
+            "$uid": {
+              ".write": "auth != null && auth.uid === $uid",
+              ".read": "auth != null && auth.uid === $uid"
+            }
+          }
+        },
         ".write": "auth != null && !data.exists()"
       }
     },

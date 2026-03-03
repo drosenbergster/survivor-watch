@@ -69,6 +69,7 @@ export function AppProvider({ children }) {
     const [currentEpisode, setCurrentEpisode] = useState(null);
     const [episodes, setEpisodes] = useState({});
     const [eliminated, setEliminated] = useState([]);
+    const [watchStatus, setWatchStatus] = useState({});
     const [leagueLoading, setLeagueLoading] = useState(true);
     const [syncStatus, setSyncStatus] = useState('offline');
 
@@ -133,6 +134,7 @@ export function AppProvider({ children }) {
             setCurrentEpisode(null);
             setEpisodes({});
             setEliminated([]);
+            setWatchStatus({});
             return;
         }
         if (!db) {
@@ -211,6 +213,10 @@ export function AppProvider({ children }) {
                 },
             });
             setEliminated(['mike_white']);
+            setWatchStatus({
+                1: { demo: { watching: false, watchedAt: Date.now() - 600000 }, bot1: { watchedAt: Date.now() - 500000 }, bot2: { watchedAt: Date.now() - 400000 }, bot3: { watchedAt: Date.now() - 300000 } },
+                2: {},
+            });
             setSyncStatus('online');
             return;
         }
@@ -221,7 +227,7 @@ export function AppProvider({ children }) {
             if (data) {
                 const {
                     members, draft, rideOrDies: rod, passports: pp,
-                    episodes: eps, eliminated: elim, ...meta
+                    episodes: eps, eliminated: elim, watchStatus: ws, ...meta
                 } = data;
                 setLeague(meta);
                 setLeagueMembers(members || {});
@@ -231,6 +237,7 @@ export function AppProvider({ children }) {
                 setEpisodes(eps || {});
                 setCurrentEpisode(meta.currentEpisode || null);
                 setEliminated(elim || []);
+                setWatchStatus(ws || {});
             } else {
                 setLeague(null);
                 setLeagueMembers({});
@@ -240,6 +247,7 @@ export function AppProvider({ children }) {
                 setCurrentEpisode(null);
                 setEpisodes({});
                 setEliminated([]);
+                setWatchStatus({});
             }
             setSyncStatus('online');
         }, () => setSyncStatus('offline'));
@@ -443,6 +451,54 @@ export function AppProvider({ children }) {
         }
     }, [user, leagueId, league, eliminated]);
 
+    const lightTorch = useCallback(async (episodeNum) => {
+        if (!user || !leagueId) return;
+        const path = `leagues/${leagueId}/watchStatus/${episodeNum}/${user.uid}/watching`;
+        if (db) {
+            await set(ref(db, path), true);
+        } else {
+            setWatchStatus(prev => ({
+                ...prev,
+                [episodeNum]: { ...(prev[episodeNum] || {}), [user.uid]: { ...(prev[episodeNum]?.[user.uid] || {}), watching: true } },
+            }));
+        }
+    }, [user, leagueId]);
+
+    const markWatched = useCallback(async (episodeNum) => {
+        if (!user || !leagueId) return;
+        const basePath = `leagues/${leagueId}/watchStatus/${episodeNum}/${user.uid}`;
+        if (db) {
+            await set(ref(db, `${basePath}/watching`), false);
+            await set(ref(db, `${basePath}/watchedAt`), Date.now());
+        } else {
+            setWatchStatus(prev => ({
+                ...prev,
+                [episodeNum]: { ...(prev[episodeNum] || {}), [user.uid]: { watching: false, watchedAt: Date.now() } },
+            }));
+        }
+    }, [user, leagueId]);
+
+    const saveBingoMarks = useCallback(async (episodeNum, marked) => {
+        if (!user || !leagueId) return;
+        const path = `leagues/${leagueId}/bingo/${episodeNum}/${user.uid}`;
+        if (db) {
+            await set(ref(db, path), marked);
+        }
+    }, [user, leagueId]);
+
+    const hasWatched = useCallback((episodeNum, uid) => {
+        const ws = watchStatus[episodeNum];
+        if (!ws) return false;
+        const target = uid || user?.uid;
+        return !!ws[target]?.watchedAt;
+    }, [watchStatus, user]);
+
+    const isWatching = useCallback((episodeNum) => {
+        const ws = watchStatus[episodeNum];
+        if (!ws || !user) return false;
+        return !!ws[user.uid]?.watching;
+    }, [watchStatus, user]);
+
     const episodeData = useMemo(() => {
         if (!currentEpisode || !episodes[currentEpisode]) return null;
         return episodes[currentEpisode];
@@ -461,6 +517,7 @@ export function AppProvider({ children }) {
         league, leagueId, leagueMembers, leagueLoading,
         draftState, rideOrDies, passports,
         currentEpisode, episodeData, episodes, eliminated,
+        watchStatus, lightTorch, markWatched, saveBingoMarks, hasWatched, isWatching,
         syncStatus,
         createLeague, joinLeague, leaveLeague,
         startDraft, makeDraftPick, submitPassport, startSeason,

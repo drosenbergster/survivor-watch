@@ -34,6 +34,7 @@ function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perE
                         <span>W:{entry.weekly}</span>
                         <span>P:{entry.predictions}</span>
                         <span>R:{entry.rideOrDie}</span>
+                        {entry.bingo > 0 && <span>B:{entry.bingo}</span>}
                     </div>
                 </div>
 
@@ -43,17 +44,18 @@ function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perE
                 </div>
 
                 <Icon
-                    name="scoring"
+                    name="expand_more"
                     className={`text-sand-warm/30 transition-transform ${expanded ? 'rotate-180' : ''}`}
                 />
             </button>
 
             {expanded && (
                 <div className="ml-12 mr-3 pb-3 space-y-3">
-                    <div className="grid grid-cols-3 gap-2 text-center">
-                        <ScoreBox label="Weekly Picks" value={entry.weekly} color="text-fire-400" />
+                    <div className="grid grid-cols-4 gap-2 text-center">
+                        <ScoreBox label="Weekly" value={entry.weekly} color="text-fire-400" />
                         <ScoreBox label="Predictions" value={entry.predictions} color="text-green-400" />
                         <ScoreBox label="Ride or Die" value={entry.rideOrDie} color="text-sky-400" />
+                        <ScoreBox label="Bingo" value={entry.bingo || 0} color="text-purple-400" />
                     </div>
 
                     {epNums.length > 0 && (
@@ -101,6 +103,7 @@ function EpisodeBreakdown({ epNum, score }) {
                     <span className="text-fire-400">{score.weekly}</span>
                     <span className="text-green-400">{score.predictions}</span>
                     <span className="text-sky-400">{score.rideOrDie}</span>
+                    {(score.bingo || 0) > 0 && <span className="text-purple-400">{score.bingo}</span>}
                     <span className="text-ochre font-bold">{score.total}</span>
                 </div>
             </button>
@@ -140,7 +143,16 @@ function EpisodeBreakdown({ epNum, score }) {
                             <span className="text-sky-400">+{r.points}</span>
                         </div>
                     ))}
-                    {score.breakdown.weekly.length === 0 && score.breakdown.predictions.length === 0 && score.breakdown.rideOrDie.length === 0 && (
+                    {(score.breakdown.bingo || []).map((b, i) => (
+                        <div key={`b${i}`} className="flex justify-between text-sand-warm/60">
+                            <span>
+                                {b.type === 'lines' && `🎯 Bingo ${b.count} ${b.count === 1 ? 'line' : 'lines'}`}
+                                {b.type === 'blackout' && '🔥 Bingo blackout!'}
+                            </span>
+                            <span className="text-purple-400">+{b.points}</span>
+                        </div>
+                    ))}
+                    {score.breakdown.weekly.length === 0 && score.breakdown.predictions.length === 0 && score.breakdown.rideOrDie.length === 0 && (!score.breakdown.bingo || score.breakdown.bingo.length === 0) && (
                         <p className="text-sand-warm/30 italic">No points this episode</p>
                     )}
                 </div>
@@ -149,18 +161,49 @@ function EpisodeBreakdown({ epNum, score }) {
     );
 }
 
+function SpoilerShield({ unwatchedEps, onGoToBingo }) {
+    return (
+        <FijianCard className="p-6 max-w-md mx-auto text-center space-y-4">
+            <div className="text-4xl">🛡️</div>
+            <h3 className="font-display text-2xl text-sand-warm tracking-wider">Spoiler Shield</h3>
+            <p className="text-sand-warm/60 text-sm font-sans">
+                You haven&apos;t watched {unwatchedEps.length === 1 ? `Episode ${unwatchedEps[0]}` : `Episodes ${unwatchedEps.join(', ')}`} yet.
+                Scores are hidden to keep things fresh.
+            </p>
+            <button
+                onClick={onGoToBingo}
+                className="text-ochre text-sm underline hover:text-ochre/80 transition-colors font-sans"
+            >
+                🔥 Light your torch to watch →
+            </button>
+        </FijianCard>
+    );
+}
+
 export default function ScoreboardTab() {
-    const { episodes, rideOrDies, leagueMembers } = useApp();
+    const { episodes, rideOrDies, leagueMembers, hasWatched } = useApp();
     const [expandedUid, setExpandedUid] = useState(null);
 
     const memberUids = useMemo(() => Object.keys(leagueMembers || {}), [leagueMembers]);
+
+    const scoredEpNums = useMemo(
+        () => Object.entries(episodes || {}).filter(([, ep]) => ep.scored).map(([n]) => Number(n)),
+        [episodes]
+    );
+
+    const unwatchedScoredEps = useMemo(
+        () => scoredEpNums.filter(n => !hasWatched(n)),
+        [scoredEpNums, hasWatched]
+    );
+
+    const spoilerActive = unwatchedScoredEps.length > 0;
 
     const { standings, perEpisode } = useMemo(
         () => computeStandings(episodes, rideOrDies, memberUids),
         [episodes, rideOrDies, memberUids]
     );
 
-    const hasScoredEpisodes = Object.values(episodes || {}).some(ep => ep.scored);
+    const hasScoredEpisodes = scoredEpNums.length > 0;
 
     return (
         <div className="space-y-6">
@@ -179,6 +222,8 @@ export default function ScoreboardTab() {
                         The scoreboard will light up once the first episode is scored. May the best castaway win!
                     </p>
                 </FijianCard>
+            ) : spoilerActive ? (
+                <SpoilerShield unwatchedEps={unwatchedScoredEps} />
             ) : (
                 <>
                     <FijianCard className="p-4 space-y-1">
@@ -229,6 +274,14 @@ export default function ScoreboardTab() {
                                 <div className="flex justify-between">
                                     <span>⭐ Exclusive pick bonus</span>
                                     <span className="text-ochre">×1.5</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>🎯 Bingo line (5 in a row)</span>
+                                    <span className="text-ochre">+5</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>🔥 Bingo blackout (all 25)</span>
+                                    <span className="text-ochre">+50</span>
                                 </div>
                             </div>
                         </div>
