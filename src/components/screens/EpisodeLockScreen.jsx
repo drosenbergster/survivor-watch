@@ -135,9 +135,9 @@ export default function EpisodeLockScreen() {
         <div className="space-y-5">
             <FijianCard className="p-5 text-center border-fire-400/30 shadow-fire">
                 <div className="text-3xl mb-2 animate-flicker" aria-hidden>🔥</div>
-                <p className="font-display text-2xl tracking-wider text-fire-400">Episode {currentEpisode} is LIVE</p>
+                <p className="font-display text-2xl tracking-wider text-fire-400">Torch Lit &mdash; Ep {currentEpisode}</p>
                 <p className="text-earth text-sm mt-1 font-serif italic">
-                    Picks and predictions are locked. Enjoy the show!
+                    Your picks are locked in. Enjoy the show!
                 </p>
             </FijianCard>
 

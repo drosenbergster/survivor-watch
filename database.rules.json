@@ -37,14 +37,27 @@
             "propBets": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
             "picks": {
               "$uid": {
-                ".write": "auth != null && auth.uid === $uid && data.parent().parent().child('status').val() === 'pre_episode'"
+                ".write": "auth != null && auth.uid === $uid && data.parent().parent().child('status').val() === 'open'"
               }
             },
             "predictions": {
               "$uid": {
-                ".write": "auth != null && auth.uid === $uid && data.parent().parent().child('status').val() === 'pre_episode'"
+                ".write": "auth != null && auth.uid === $uid && data.parent().parent().child('status').val() === 'open'"
               }
             },
+            "snapVotes": {
+              "$uid": {
+                ".write": "auth != null && auth.uid === $uid && data.parent().parent().child('status').val() === 'open'"
+              }
+            },
+            "playerSideBets": {
+              "$uid": {
+                ".write": "auth != null && auth.uid === $uid && data.parent().parent().child('status').val() === 'open'"
+              }
+            },
+            "sideBets": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+            "sideBetResults": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+            "tribalStartedAt": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
             "gameEvents": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
             "propBetResults": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
             "boldResults": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
@@ -75,6 +88,68 @@
               ".read": "auth != null && auth.uid === $uid"
             }
           }
+        },
+        "postEpisode": {
+          "$epNum": {
+            "playerOfEpisode": {
+              "$uid": {
+                ".write": "auth != null && auth.uid === $uid && !data.exists()",
+                ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
+              },
+              ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
+            },
+            "impactRating": {
+              "$uid": {
+                ".write": "auth != null && auth.uid === $uid && !data.exists()",
+                ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
+              },
+              ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
+            },
+            ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
+          }
+        },
+        "tribeSwaps": {
+          ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid",
+          ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
+        },
+        "mergePassports": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && !data.exists()",
+            ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
+          },
+          ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
+        },
+        "auction": {
+          ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()",
+          "status": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+          "items": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+          "budgets": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+          "bids": {
+            "$itemId": {
+              "$uid": {
+                ".write": "auth != null && auth.uid === $uid"
+              }
+            }
+          },
+          "startedAt": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+          ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid && !data.exists()"
+        },
+        "finaleData": {
+          ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()",
+          "status": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+          "startedAt": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+          "passportReveals": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+          "mergePassportReveals": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+          "champion": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+          "reunionAwards": {
+            "$category": {
+              "$uid": {
+                ".write": "auth != null && auth.uid === $uid"
+              },
+              ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
+            }
+          },
+          ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid && !data.exists()"
         },
         ".write": "auth != null && !data.exists()"
       }

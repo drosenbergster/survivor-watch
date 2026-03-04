@@ -6,6 +6,11 @@ import AdminScoring from './AdminScoring';
 import WeeklyPicks from './WeeklyPicks';
 import Predictions from './Predictions';
 import EpisodeLockScreen from './EpisodeLockScreen';
+import TribalSnapVote from './TribalSnapVote';
+import PostEpisodeHub from './PostEpisodeHub';
+import CommissionerReport from './CommissionerReport';
+import MergePassport from './MergePassport';
+import FinaleMode from './FinaleMode';
 
 function SeasonOverview() {
     const { user, leagueMembers, rideOrDies } = useApp();
@@ -91,10 +96,35 @@ function EpisodeScoredBanner({ episodeNum }) {
 }
 
 export default function DraftTab() {
-    const { currentEpisode, episodeData } = useApp();
+    const {
+        user, currentEpisode, episodeData, league,
+        isWatching, hasWatched, hasLockedPicks,
+        isMerged, mergePassports, finaleData,
+    } = useApp();
 
     const episodeStatus = episodeData?.status;
     const hasEpisode = !!currentEpisode && !!episodeData;
+
+    const watching = hasEpisode ? isWatching(currentEpisode) : false;
+    const watched = hasEpisode ? hasWatched(currentEpisode) : false;
+    const picksLocked = hasEpisode ? hasLockedPicks(currentEpisode) : false;
+
+    const isOpen = episodeStatus === 'open';
+    const isScored = episodeStatus === 'scored';
+    const isFinaleActive = !!finaleData?.status;
+    const mergePassportSealed = !!mergePassports?.[user?.uid]?.sealedAt;
+
+    if (isFinaleActive) {
+        return (
+            <div className="space-y-6">
+                <header className="text-center">
+                    <h2 className="font-display text-4xl tracking-wider text-sand-warm drop-shadow-text">Sevu</h2>
+                    <p className="text-sand-warm/70 text-sm mt-1 font-sans">Finale</p>
+                </header>
+                <FinaleMode />
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -109,25 +139,55 @@ export default function DraftTab() {
 
             {!hasEpisode && <SeasonOverview />}
 
-            {episodeStatus === 'pre_episode' && (
+            {/* Merge Passport prompt — show when merged but not yet sealed */}
+            {isMerged && !mergePassportSealed && (
+                <MergePassport />
+            )}
+
+            {/* Episode open, player hasn't started watching — show picks + predictions */}
+            {isOpen && !picksLocked && (
                 <>
                     <WeeklyPicks />
                     <Predictions />
                 </>
             )}
 
-            {episodeStatus === 'live' && (
+            {/* Episode open, player is actively watching — show locked picks + tribal vote */}
+            {isOpen && watching && (
                 <>
                     <EpisodeLockScreen />
-                    <AdminScoring episodeNum={currentEpisode} />
+                    <TribalSnapVote episodeNum={currentEpisode} />
                 </>
             )}
 
-            {episodeStatus === 'scored' && (
-                <EpisodeScoredBanner episodeNum={currentEpisode} />
+            {/* Episode open, player finished watching but episode not scored yet */}
+            {isOpen && watched && (
+                <FijianCard className="p-5 text-center space-y-2">
+                    <Icon name="check_circle" className="text-jungle-400 text-3xl" />
+                    <p className="text-sand-warm font-display text-lg tracking-wider">
+                        You&apos;ve watched Episode {currentEpisode}
+                    </p>
+                    <p className="text-sand-warm/50 text-sm font-sans">
+                        Waiting for the host to score this episode.
+                    </p>
+                </FijianCard>
             )}
 
-            {hasEpisode && (episodeStatus === 'pre_episode' || episodeStatus === 'scored') && <SeasonOverview />}
+            {/* Admin scoring — visible to host after they've watched */}
+            {isOpen && watched && <AdminScoring episodeNum={currentEpisode} />}
+
+            {isScored && (
+                <>
+                    <EpisodeScoredBanner episodeNum={currentEpisode} />
+                    <CommissionerReport episodeNum={currentEpisode} />
+                </>
+            )}
+
+            {isScored && watched && (
+                <PostEpisodeHub episodeNum={currentEpisode} />
+            )}
+
+            {hasEpisode && (!isOpen || picksLocked) && <SeasonOverview />}
         </div>
     );
 }

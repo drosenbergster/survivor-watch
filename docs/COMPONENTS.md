@@ -8,7 +8,7 @@ React component architecture and conventions.
 src/components/
 ├── fijian/       # Shared Fijian UI (FijianCard, FijianInput, BingoSquare, Icon)
 ├── layout/       # App shell (AppShell, UserBar, Header, TabNav, Footer)
-└── screens/      # App views (AuthScreen, DraftTab, etc.)
+└── screens/      # App views (all screens listed below)
 ```
 
 ## Fijian Components
@@ -18,11 +18,14 @@ Use these for all screens. See `src/components/fijian/` and `docs/STYLE_GUIDE.md
 | Component | Usage |
 |-----------|-------|
 | **FijianCard** | Containers, sections |
-| **FijianInput** | Text inputs with optional label |
+| **FijianInput** | Text inputs with optional label (auto-generates `htmlFor`/`id`) |
 | **FijianPrimaryButton** | Primary CTAs |
 | **FijianSectionHeader** | Section titles |
-| **BingoSquare** | Bingo cells |
+| **FijianLabel** | Small Fijian/English label pairs |
+| **BingoSquare** | Bingo cells with mark/win states |
 | **Icon** | Material Symbols Outlined |
+| **MasiBackground** | Full-screen backgrounds with masi pattern |
+| **FijianHero** | Hero title block (SURVIVOR 50) |
 
 ## Layout Components
 
@@ -31,42 +34,85 @@ Use these for all screens. See `src/components/fijian/` and `docs/STYLE_GUIDE.md
 | **AppShell** | Main layout: UserBar | Header | TabNav | Content | Footer |
 | **UserBar** | Sync status, email, logout |
 | **AppHeader** | Logo, title, embers |
-| **TabNav** | Tab buttons with `aria-current` |
+| **TabNav** | Tab buttons with `aria-current` (5 tabs) |
 | **AppFooter** | Footer text |
+
+## Screen Components
+
+### Auth & League Setup
+| Component | File | Purpose |
+|-----------|------|---------|
+| **AuthScreen** | `AuthScreen.jsx` | Magic link sign-in |
+| **LeagueGate** | `LeagueGate.jsx` | Create or join a league with code |
+| **LeagueLobby** | `LeagueLobby.jsx` | Pre-game lobby, member list |
+| **RideOrDieDraft** | `RideOrDieDraft.jsx` | 2-round snake draft |
+| **SeasonPassport** | `SeasonPassport.jsx` | 5 sealed pre-season predictions |
+
+### Core Tabs
+| Component | File | Purpose |
+|-----------|------|---------|
+| **DraftTab** | `DraftTab.jsx` | Main episode hub — picks, predictions, admin, post-episode |
+| **BingoTab** | `BingoTab.jsx` | Bingo card viewer with episode selector |
+| **ScoreboardTab** | `ScoreboardTab.jsx` | Season standings with per-episode breakdown |
+| **RulesTab** | `RulesTab.jsx` | Scoring rules + admin tools (tribe management, auction) |
+| **PlayerProfile** | `PlayerProfile.jsx` | Player stats, badges, prediction accuracy |
+
+### Episode Flow
+| Component | File | Purpose |
+|-----------|------|---------|
+| **WeeklyPicks** | `WeeklyPicks.jsx` | Select contestants for the episode |
+| **Predictions** | `Predictions.jsx` | Elimination, bold, prop bet predictions |
+| **LightYourTorch** | `LightYourTorch.jsx` | Player-driven episode start (locks picks, activates bingo) |
+| **EpisodeLockScreen** | `EpisodeLockScreen.jsx` | Shows locked picks during episode |
+| **TribalSnapVote** | `TribalSnapVote.jsx` | Mid-episode snap vote at tribal council |
+| **BingoCard** | `BingoCard.jsx` | Interactive 5x5 bingo grid |
+
+### Admin
+| Component | File | Purpose |
+|-----------|------|---------|
+| **AdminEpisodeCard** | `AdminEpisodeCard.jsx` | Episode creation and management |
+| **AdminScoring** | `AdminScoring.jsx` | Post-episode game event input |
+| **TribeManagement** | `TribeManagement.jsx` | Tribe swaps and merge |
+
+### Post-Episode & Social
+| Component | File | Purpose |
+|-----------|------|---------|
+| **PostEpisodeHub** | `PostEpisodeHub.jsx` | Player of Episode + Impact Rating |
+| **CommissionerReport** | `CommissionerReport.jsx` | Auto-generated weekly recap |
+
+### Advanced
+| Component | File | Purpose |
+|-----------|------|---------|
+| **MergePassport** | `MergePassport.jsx` | Mid-season sealed predictions |
+| **SurvivorAuction** | `SurvivorAuction.jsx` | Bidding event with slider + number input |
+| **FinaleMode** | `FinaleMode.jsx` | Passport reveals, reunion awards, legacy cards, crowning |
 
 ## React Conventions
 
-### Component composition
-- Prefer composition over prop drilling
-- Use `children` for flexible layouts
-- Pass `className` for one-off overrides
+### State
+- Keep state close to where it's used
+- Use `useApp()` for global state (context)
+- **Never setState in the render body** — use `useEffect` with a ref guard for hydrating from async data
+- Lift state only when needed
 
 ### Props
 - Destructure props at top of component
 - Use JSDoc for optional/complex props
 - Spread `...rest` to underlying elements
 
-### State
-- Keep state close to where it's used
-- Use `useApp()` for global state (context)
-- Lift state only when needed
-
 ### Event handlers
 - Name handlers `handle*` (e.g. `handleSubmit`)
 - Use `async` for handlers that await
-- Avoid inline arrow functions in JSX when possible (for perf)
+- Wrap Firebase calls in try/catch and display errors to the user
 
 ### Accessibility
 - Use semantic HTML (`<header>`, `<main>`, `<section>`)
 - Add `aria-label` to icon-only buttons
 - Use `aria-current="page"` for active nav
-- Pass `aria-*` through to underlying elements
+- Use `role="alert"` for error messages
+- FijianInput auto-generates `htmlFor`/`id` for label association
 
-## Stitch Integration
-
-When integrating Stitch designs:
-
-1. **Map to Fijian components** — Stitch buttons → `FijianPrimaryButton`, cards → `FijianCard`
-2. **Preserve structure** — Keep semantic HTML from Stitch
-3. **Use theme classes** — Replace Stitch hex with `text-fire-400`, `bg-stone-900`, etc.
-4. **Add to theme.css / fijian.css** — New tokens or patterns as needed
+### Tailwind
+- Use theme tokens only — no hardcoded colors
+- **Never use dynamic Tailwind class names** (e.g., `bg-${color}/20`). Use a lookup map + inline styles instead.
+- For JS-driven colors, import from `src/theme.js`

@@ -1,5 +1,8 @@
 import { SCORE_EVENTS } from '../../data';
+import { useApp } from '../../AppContext';
 import { FijianSectionHeader, Icon } from '../fijian';
+import TribeManagement from './TribeManagement';
+import SurvivorAuction from './SurvivorAuction';
 
 const EVENT_ICONS = {
   survived: 'check_circle',
@@ -19,6 +22,10 @@ const EVENT_ICONS = {
 };
 
 export default function RulesTab() {
+  const { user, league } = useApp();
+  const isHost = league?.createdBy === user?.uid;
+  const isActive = league?.status === 'active';
+
   return (
     <article className="max-w-2xl mx-auto space-y-8 magimagi-border-rules p-6 scroll-container rounded-lg">
       <header className="text-center py-10">
@@ -122,6 +129,26 @@ export default function RulesTab() {
           </div>
         </div>
       </section>
+
+      {isActive && isHost && (
+        <section className="space-y-6 pt-8 border-t border-stone-700">
+          <div className="text-center">
+            <h3 className="font-display text-2xl tracking-wider text-ochre">Admin Tools</h3>
+            <p className="text-sand-warm/40 text-xs font-sans mt-1">Host-only game management</p>
+          </div>
+          <TribeManagement />
+        </section>
+      )}
+
+      {isActive && (
+        <section className="space-y-6 pt-8 border-t border-stone-700">
+          <div className="text-center">
+            <h3 className="font-display text-2xl tracking-wider text-ochre">Survivor Auction</h3>
+            <p className="text-sand-warm/40 text-xs font-sans mt-1">Mid-season catch-up event</p>
+          </div>
+          <SurvivorAuction />
+        </section>
+      )}
     </article>
   );
 }

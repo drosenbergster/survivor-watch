@@ -5,6 +5,7 @@ import { useApp } from '../../AppContext';
 export default function LightYourTorch({ episodeNum }) {
     const { lightTorch, markWatched, isWatching, hasWatched } = useApp();
     const [confirming, setConfirming] = useState(false);
+    const [error, setError] = useState('');
 
     const watching = isWatching(episodeNum);
     const watched = hasWatched(episodeNum);
@@ -42,7 +43,11 @@ export default function LightYourTorch({ episodeNum }) {
                             Mark as watched? Your bingo card will be locked in.
                         </p>
                         <div className="flex gap-2 justify-center">
-                            <FijianPrimaryButton onClick={() => markWatched(episodeNum)} className="text-xs px-4 py-1">
+                            <FijianPrimaryButton onClick={async () => {
+                                setError('');
+                                try { await markWatched(episodeNum); }
+                                catch (err) { setError(err.message || 'Failed to mark watched'); }
+                            }} className="text-xs px-4 py-1">
                                 Yes, I&apos;m done
                             </FijianPrimaryButton>
                             <button
@@ -63,13 +68,17 @@ export default function LightYourTorch({ episodeNum }) {
             <div className="text-4xl">🔥</div>
             <h3 className="font-display text-2xl text-sand-warm tracking-wider">Light Your Torch</h3>
             <p className="text-sand-warm/60 text-sm font-sans max-w-xs mx-auto">
-                Tap to activate your bingo card for Episode {episodeNum}.
-                Squares can only be marked while your torch is lit.
+                Ready to watch Episode {episodeNum}? This locks your picks and activates your bingo card.
             </p>
-            <FijianPrimaryButton onClick={() => lightTorch(episodeNum)}>
+            <FijianPrimaryButton onClick={async () => {
+                setError('');
+                try { await lightTorch(episodeNum); }
+                catch (err) { setError(err.message || 'Failed to light torch'); }
+            }}>
                 <Icon name="local_fire_department" className="mr-1" />
                 Light It Up
             </FijianPrimaryButton>
+            {error && <p className="text-amber text-xs text-center" role="alert">{error}</p>}
         </FijianCard>
     );
 }

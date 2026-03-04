@@ -3,18 +3,10 @@ import { useApp } from '../../AppContext';
 import {
   MasiBackground,
   FijianHero,
-  FijianLabel,
   FijianPrimaryButton,
   FijianInput,
   Icon,
 } from '../fijian';
-
-const TABS = [
-  { fijian: 'Sevu', english: 'Draft' },
-  { fijian: 'Qito', english: 'Bingo' },
-  { fijian: 'Tovo', english: 'Scores' },
-  { fijian: 'Lawa', english: 'Rules' },
-];
 
 export default function AuthScreen() {
   const { sendMagicLink } = useApp();
@@ -39,17 +31,6 @@ export default function AuthScreen() {
   return (
     <div className="fixed inset-0 z-50 bg-stone-dark font-sans text-stone-200 min-h-screen antialiased">
       <MasiBackground>
-        <nav className="flex items-center px-4 py-6 justify-between z-30 overflow-x-auto no-scrollbar">
-          <div className="flex gap-4 items-center">
-            {TABS.map((t) => (
-              <FijianLabel key={t.fijian} fijian={t.fijian} english={t.english} />
-            ))}
-          </div>
-          <div className="text-clay/60 hover:text-clay transition-colors ml-4" aria-hidden>
-            <Icon name="close" className="text-2xl" />
-          </div>
-        </nav>
-
         <div className="flex flex-col flex-1 items-center justify-center px-8 z-20 pb-16">
           <FijianHero subtitle="WATCH PARTY HQ" />
 

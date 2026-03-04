@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useApp } from '../../AppContext';
 import { TRIBES, ALL_CASTAWAYS, getMaxPicks } from '../../data';
 import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon } from '../fijian';
@@ -11,15 +11,19 @@ export default function WeeklyPicks() {
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(() => myPicks.length > 0);
     const [error, setError] = useState('');
+    const hydrated = useRef(myPicks.length > 0);
 
     const eliminatedSet = new Set(eliminated || []);
     const remaining = ALL_CASTAWAYS.filter(c => !eliminatedSet.has(c.id));
     const maxPicks = getMaxPicks(remaining.length);
 
-    if (myPicks.length > 0 && selected.length === 0) {
-        setSelected(myPicks);
-        setSaved(true);
-    }
+    useEffect(() => {
+        if (myPicks.length > 0 && !hydrated.current) {
+            hydrated.current = true;
+            setSelected(myPicks);
+            setSaved(true);
+        }
+    }, [myPicks]);
 
     const togglePick = (id) => {
         setSaved(false);

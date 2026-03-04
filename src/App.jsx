@@ -3,14 +3,19 @@ import { useApp } from './AppContext';
 import {
     AuthScreen, LeagueGate, LeagueLobby,
     RideOrDieDraft, SeasonPassport,
-    DraftTab, BingoTab, ScoreboardTab, RulesTab,
+    DraftTab, BingoTab, ScoreboardTab, RulesTab, PlayerProfile,
 } from './components/screens';
 import { AppShell } from './components/layout';
+
+function ProfileTab() {
+    return <PlayerProfile />;
+}
 
 const TABS = [
     { key: 'draft', fijian: 'Sevu', english: 'Draft', Component: DraftTab },
     { key: 'bingo', fijian: 'Qito', english: 'Bingo', Component: BingoTab },
     { key: 'scoreboard', fijian: 'Tovo', english: 'Scores', Component: ScoreboardTab },
+    { key: 'profile', fijian: 'Yau', english: 'Profile', Component: ProfileTab },
     { key: 'rules', fijian: 'Lawa', english: 'Rules', Component: RulesTab },
 ];
 

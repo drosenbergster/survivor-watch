@@ -74,8 +74,11 @@ export default function AdminScoring({ episodeNum }) {
     const [error, setError] = useState('');
     const [section, setSection] = useState('elimination');
 
+    const [sideBetResultsState, setSideBetResultsState] = useState({});
+
     const isAdmin = league?.createdBy === user?.uid;
     const propBets = episodeData?.propBets || [];
+    const sideBets = episodeData?.sideBets || [];
     const predictions = episodeData?.predictions || {};
 
     const remaining = useMemo(() => {
@@ -84,7 +87,7 @@ export default function AdminScoring({ episodeNum }) {
     }, [eliminated]);
 
     if (!isAdmin || episodeData?.scored) return null;
-    if (episodeData?.status !== 'live') return null;
+    if (episodeData?.status !== 'open') return null;
 
     const boldPredictions = Object.entries(predictions)
         .filter(([, p]) => p?.boldPrediction)
@@ -126,6 +129,7 @@ export default function AdminScoring({ episodeNum }) {
                 gameEvents,
                 propBetResults,
                 boldResults,
+                sideBetResults: sideBetResultsState,
                 eliminatedThisEp,
                 eliminationMethod,
             });
@@ -141,6 +145,7 @@ export default function AdminScoring({ episodeNum }) {
         { key: 'tribal', label: 'Tribal' },
         { key: 'moments', label: 'Big Moments' },
         { key: 'props', label: 'Prop Bets' },
+        ...(sideBets.length > 0 ? [{ key: 'sidebets', label: 'Side Bets' }] : []),
         { key: 'bold', label: 'Bold Predictions' },
     ];
 
@@ -247,6 +252,25 @@ export default function AdminScoring({ episodeNum }) {
                     {propBets.length === 0 && (
                         <p className="text-sm text-sand-warm/40 italic font-sans">No prop bets this episode</p>
                     )}
+                </div>
+            )}
+
+            {section === 'sidebets' && (
+                <div className="space-y-3">
+                    <h4 className="text-sand-warm/80 font-sans font-semibold text-sm">Tribal Side Bet Outcomes</h4>
+                    {sideBets.map(bet => (
+                        <button
+                            key={bet.id}
+                            onClick={() => setSideBetResultsState(prev => ({ ...prev, [bet.id]: !prev[bet.id] }))}
+                            className={`w-full text-left px-4 py-3 rounded-lg text-sm font-sans transition-all flex items-center gap-3 ${sideBetResultsState[bet.id]
+                                ? 'bg-green-900/40 text-green-300 border border-green-700/50'
+                                : 'bg-stone-800 text-sand-warm/60 border border-transparent'
+                                }`}
+                        >
+                            <span className="text-lg">{sideBetResultsState[bet.id] ? '✅' : '⬜'}</span>
+                            {bet.text}
+                        </button>
+                    ))}
                 </div>
             )}
 

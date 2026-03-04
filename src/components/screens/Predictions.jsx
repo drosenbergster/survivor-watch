@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../AppContext';
 import { ALL_CASTAWAYS } from '../../data';
 import { FijianCard, FijianSectionHeader, FijianInput, FijianPrimaryButton, Icon } from '../fijian';
@@ -18,13 +18,17 @@ export default function Predictions() {
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(() => !!myPredictions);
     const [error, setError] = useState('');
+    const hydrated = useRef(!!myPredictions);
 
-    if (myPredictions && !saved && !elimination) {
-        setElimination(myPredictions.elimination || '');
-        setBoldPrediction(myPredictions.boldPrediction || '');
-        setPropAnswers(myPredictions.propBets || {});
-        setSaved(true);
-    }
+    useEffect(() => {
+        if (myPredictions && !hydrated.current) {
+            hydrated.current = true;
+            setElimination(myPredictions.elimination || '');
+            setBoldPrediction(myPredictions.boldPrediction || '');
+            setPropAnswers(myPredictions.propBets || {});
+            setSaved(true);
+        }
+    }, [myPredictions]);
 
     const toggleProp = (propId) => {
         setSaved(false);

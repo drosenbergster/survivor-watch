@@ -59,7 +59,7 @@ function PropBetEditor({ propBets, onSave }) {
 export default function AdminEpisodeCard() {
     const {
         user, league, currentEpisode, episodeData,
-        createEpisode, updatePropBets, lockEpisode,
+        createEpisode, updatePropBets,
     } = useApp();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -68,12 +68,8 @@ export default function AdminEpisodeCard() {
     if (!isAdmin) return null;
 
     const episodeStatus = episodeData?.status;
-    const nextEpisodeNum = currentEpisode
-        ? (episodeStatus === 'live' || episodeStatus === 'post_episode' || episodeStatus === 'scored')
-            ? currentEpisode + 1
-            : currentEpisode
-        : 1;
-    const needsNewEpisode = !currentEpisode || !episodeData || episodeStatus === 'live' || episodeStatus === 'scored';
+    const nextEpisodeNum = currentEpisode ? currentEpisode + 1 : 1;
+    const needsNewEpisode = !currentEpisode || !episodeData || episodeStatus === 'scored';
 
     const handleCreate = async () => {
         setLoading(true);
@@ -85,20 +81,10 @@ export default function AdminEpisodeCard() {
         setLoading(false);
     };
 
-    const handleLock = async () => {
-        setLoading(true);
-        setError('');
-        try {
-            await lockEpisode(currentEpisode);
-        } catch (err) { setError(err.message); }
-        setLoading(false);
-    };
-
     const handleSavePropBets = async (bets) => {
         await updatePropBets(currentEpisode, bets);
     };
 
-    // No current episode or episode is finished → offer to create next
     if (needsNewEpisode) {
         return (
             <FijianCard className="p-4 border-fire-400/20">
@@ -114,8 +100,7 @@ export default function AdminEpisodeCard() {
         );
     }
 
-    // Episode is in pre_episode → show lock button + prop bet editor
-    if (episodeStatus === 'pre_episode') {
+    if (episodeStatus === 'open') {
         return (
             <FijianCard className="p-4 border-fire-400/20">
                 <div className="flex items-center gap-2 mb-3">
@@ -123,11 +108,8 @@ export default function AdminEpisodeCard() {
                     <span className="text-fire-400 text-xs font-bold uppercase tracking-widest">Host Controls</span>
                     <span className="ml-auto text-ochre/50 text-xs">Episode {currentEpisode}</span>
                 </div>
-                <FijianPrimaryButton onClick={handleLock} disabled={loading}>
-                    {loading ? 'Locking...' : 'Episode Starting — Lock Picks'}
-                </FijianPrimaryButton>
-                <p className="text-earth/50 text-xs text-center mt-2 font-serif italic">
-                    This locks all picks and predictions for everyone.
+                <p className="text-earth/60 text-xs font-sans">
+                    Episode is open. Players lock their own picks when they light their torch.
                 </p>
                 {episodeData?.propBets && (
                     <PropBetEditor propBets={episodeData.propBets} onSave={handleSavePropBets} />

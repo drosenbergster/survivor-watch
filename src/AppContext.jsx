@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useMemo } 
 import { onAuthStateChanged, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, signOut } from 'firebase/auth';
 import { ref, onValue, set, get, push, remove } from 'firebase/database';
 import { auth, db } from './firebase';
-import { generatePropBets } from './data';
+import { generatePropBets, generateSideBets } from './data';
 
 const AppContext = createContext(null);
 
@@ -70,6 +70,12 @@ export function AppProvider({ children }) {
     const [episodes, setEpisodes] = useState({});
     const [eliminated, setEliminated] = useState([]);
     const [watchStatus, setWatchStatus] = useState({});
+    const [bingo, setBingo] = useState({});
+    const [postEpisode, setPostEpisode] = useState({});
+    const [tribeSwaps, setTribeSwaps] = useState({});
+    const [mergePassports, setMergePassports] = useState({});
+    const [auction, setAuction] = useState(null);
+    const [finaleData, setFinaleData] = useState(null);
     const [leagueLoading, setLeagueLoading] = useState(true);
     const [syncStatus, setSyncStatus] = useState('offline');
 
@@ -135,6 +141,12 @@ export function AppProvider({ children }) {
             setEpisodes({});
             setEliminated([]);
             setWatchStatus({});
+            setBingo({});
+            setPostEpisode({});
+            setTribeSwaps({});
+            setMergePassports({});
+            setAuction(null);
+            setFinaleData(null);
             return;
         }
         if (!db) {
@@ -205,9 +217,10 @@ export function AppProvider({ children }) {
                     eliminationMethod: 'voted_out',
                 },
                 2: {
-                    status: 'pre_episode',
+                    status: 'open',
                     createdAt: Date.now(),
                     propBets: generatePropBets(2, 5),
+                    sideBets: generateSideBets(2, 3),
                     picks: {},
                     predictions: {},
                 },
@@ -217,6 +230,31 @@ export function AppProvider({ children }) {
                 1: { demo: { watching: false, watchedAt: Date.now() - 600000 }, bot1: { watchedAt: Date.now() - 500000 }, bot2: { watchedAt: Date.now() - 400000 }, bot3: { watchedAt: Date.now() - 300000 } },
                 2: {},
             });
+            const demoBingo1 = Array(25).fill(false);
+            demoBingo1[12] = true; // free space
+            [0, 1, 2, 3, 4].forEach(i => { demoBingo1[i] = true; }); // top row = 1 line
+            setBingo({
+                1: {
+                    demo: demoBingo1,
+                    bot1: Array(25).fill(false).map((_, i) => i === 12),
+                    bot2: Array(25).fill(false).map((_, i) => i === 12),
+                    bot3: Array(25).fill(false).map((_, i) => i === 12),
+                },
+            });
+            setPostEpisode({
+                1: {
+                    playerOfEpisode: {
+                        bot1: ['ozzy_lusth', 'cirie_fields', 'coach_wade'],
+                        bot2: ['ozzy_lusth', 'coach_wade', 'cirie_fields'],
+                        bot3: ['cirie_fields', 'ozzy_lusth', 'coach_wade'],
+                    },
+                    impactRating: { bot1: 2, bot2: 3, bot3: 2 },
+                },
+            });
+            setTribeSwaps({});
+            setMergePassports({});
+            setAuction(null);
+            setFinaleData(null);
             setSyncStatus('online');
             return;
         }
@@ -227,7 +265,10 @@ export function AppProvider({ children }) {
             if (data) {
                 const {
                     members, draft, rideOrDies: rod, passports: pp,
-                    episodes: eps, eliminated: elim, watchStatus: ws, ...meta
+                    episodes: eps, eliminated: elim, watchStatus: ws, bingo: bg,
+                    postEpisode: pe,
+                    tribeSwaps: ts, mergePassports: mp, auction: auc, finaleData: fd,
+                    ...meta
                 } = data;
                 setLeague(meta);
                 setLeagueMembers(members || {});
@@ -238,6 +279,12 @@ export function AppProvider({ children }) {
                 setCurrentEpisode(meta.currentEpisode || null);
                 setEliminated(elim || []);
                 setWatchStatus(ws || {});
+                setBingo(bg || {});
+                setPostEpisode(pe || {});
+                setTribeSwaps(ts || {});
+                setMergePassports(mp || {});
+                setAuction(auc || null);
+                setFinaleData(fd || null);
             } else {
                 setLeague(null);
                 setLeagueMembers({});
@@ -248,6 +295,12 @@ export function AppProvider({ children }) {
                 setEpisodes({});
                 setEliminated([]);
                 setWatchStatus({});
+                setBingo({});
+                setPostEpisode({});
+                setTribeSwaps({});
+                setMergePassports({});
+                setAuction(null);
+                setFinaleData(null);
             }
             setSyncStatus('online');
         }, () => setSyncStatus('offline'));
@@ -389,10 +442,12 @@ export function AppProvider({ children }) {
         if (league?.createdBy !== user.uid) throw new Error('Only the host can create episodes');
 
         const propBets = generatePropBets(episodeNum, 5);
+        const sideBets = generateSideBets(episodeNum, 3);
         await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}`), {
-            status: 'pre_episode',
+            status: 'open',
             createdAt: Date.now(),
             propBets,
+            sideBets,
             picks: {},
             predictions: {},
         });
@@ -415,22 +470,55 @@ export function AppProvider({ children }) {
         await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}/predictions/${user.uid}`), predictions);
     }, [user, leagueId]);
 
-    const lockEpisode = useCallback(async (episodeNum) => {
-        if (!db || !user || !leagueId) throw new Error('Not connected');
-        if (league?.createdBy !== user.uid) throw new Error('Only the host can lock episodes');
-        await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}/status`), 'live');
-    }, [user, leagueId, league]);
+    const submitSnapVote = useCallback(async (episodeNum, contestantId) => {
+        if (!user || !leagueId) throw new Error('Not connected');
+        const path = `leagues/${leagueId}/episodes/${episodeNum}/snapVotes/${user.uid}`;
+        if (db) {
+            await set(ref(db, path), { contestantId, submittedAt: Date.now() });
+        } else {
+            setEpisodes(prev => ({
+                ...prev,
+                [episodeNum]: {
+                    ...prev[episodeNum],
+                    snapVotes: {
+                        ...(prev[episodeNum]?.snapVotes || {}),
+                        [user.uid]: { contestantId, submittedAt: Date.now() },
+                    },
+                },
+            }));
+        }
+    }, [user, leagueId]);
+
+    const submitSideBets = useCallback(async (episodeNum, bets) => {
+        if (!user || !leagueId) throw new Error('Not connected');
+        const path = `leagues/${leagueId}/episodes/${episodeNum}/playerSideBets/${user.uid}`;
+        if (db) {
+            await set(ref(db, path), bets);
+        } else {
+            setEpisodes(prev => ({
+                ...prev,
+                [episodeNum]: {
+                    ...prev[episodeNum],
+                    playerSideBets: {
+                        ...(prev[episodeNum]?.playerSideBets || {}),
+                        [user.uid]: bets,
+                    },
+                },
+            }));
+        }
+    }, [user, leagueId]);
 
     const scoreEpisodeAction = useCallback(async (episodeNum, scoringData) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
         if (league?.createdBy !== user.uid) throw new Error('Only the host can score episodes');
 
-        const { gameEvents, propBetResults, boldResults, eliminatedThisEp, eliminationMethod } = scoringData;
+        const { gameEvents, propBetResults, boldResults, eliminatedThisEp, eliminationMethod, sideBetResults } = scoringData;
 
         const updates = {
             [`leagues/${leagueId}/episodes/${episodeNum}/gameEvents`]: gameEvents,
             [`leagues/${leagueId}/episodes/${episodeNum}/propBetResults`]: propBetResults || {},
             [`leagues/${leagueId}/episodes/${episodeNum}/boldResults`]: boldResults || {},
+            [`leagues/${leagueId}/episodes/${episodeNum}/sideBetResults`]: sideBetResults || {},
             [`leagues/${leagueId}/episodes/${episodeNum}/eliminatedThisEp`]: eliminatedThisEp || [],
             [`leagues/${leagueId}/episodes/${episodeNum}/eliminationMethod`]: eliminationMethod || 'voted_out',
             [`leagues/${leagueId}/episodes/${episodeNum}/scored`]: true,
@@ -453,13 +541,21 @@ export function AppProvider({ children }) {
 
     const lightTorch = useCallback(async (episodeNum) => {
         if (!user || !leagueId) return;
-        const path = `leagues/${leagueId}/watchStatus/${episodeNum}/${user.uid}/watching`;
+        const basePath = `leagues/${leagueId}/watchStatus/${episodeNum}/${user.uid}`;
         if (db) {
-            await set(ref(db, path), true);
+            await set(ref(db, `${basePath}/watching`), true);
+            await set(ref(db, `${basePath}/picksLockedAt`), Date.now());
         } else {
             setWatchStatus(prev => ({
                 ...prev,
-                [episodeNum]: { ...(prev[episodeNum] || {}), [user.uid]: { ...(prev[episodeNum]?.[user.uid] || {}), watching: true } },
+                [episodeNum]: {
+                    ...(prev[episodeNum] || {}),
+                    [user.uid]: {
+                        ...(prev[episodeNum]?.[user.uid] || {}),
+                        watching: true,
+                        picksLockedAt: Date.now(),
+                    },
+                },
             }));
         }
     }, [user, leagueId]);
@@ -499,6 +595,216 @@ export function AppProvider({ children }) {
         return !!ws[user.uid]?.watching;
     }, [watchStatus, user]);
 
+    const hasLockedPicks = useCallback((episodeNum) => {
+        const ws = watchStatus[episodeNum];
+        if (!ws || !user) return false;
+        const playerWs = ws[user.uid];
+        return !!(playerWs?.picksLockedAt || playerWs?.watching || playerWs?.watchedAt);
+    }, [watchStatus, user]);
+
+    // --- Post-episode actions ---
+
+    const submitPlayerOfEpisodeVote = useCallback(async (episodeNum, rankings) => {
+        if (!user || !leagueId) throw new Error('Not connected');
+        const path = `leagues/${leagueId}/postEpisode/${episodeNum}/playerOfEpisode/${user.uid}`;
+        if (db) {
+            await set(ref(db, path), rankings);
+        } else {
+            setPostEpisode(prev => ({
+                ...prev,
+                [episodeNum]: {
+                    ...(prev[episodeNum] || {}),
+                    playerOfEpisode: {
+                        ...(prev[episodeNum]?.playerOfEpisode || {}),
+                        [user.uid]: rankings,
+                    },
+                },
+            }));
+        }
+    }, [user, leagueId]);
+
+    const submitImpactRating = useCallback(async (episodeNum, rating) => {
+        if (!user || !leagueId) throw new Error('Not connected');
+        const path = `leagues/${leagueId}/postEpisode/${episodeNum}/impactRating/${user.uid}`;
+        if (db) {
+            await set(ref(db, path), rating);
+        } else {
+            setPostEpisode(prev => ({
+                ...prev,
+                [episodeNum]: {
+                    ...(prev[episodeNum] || {}),
+                    impactRating: {
+                        ...(prev[episodeNum]?.impactRating || {}),
+                        [user.uid]: rating,
+                    },
+                },
+            }));
+        }
+    }, [user, leagueId]);
+
+    // --- Phase 9: Tribe management, merge passport, auction, finale ---
+
+    const executeTribeSwap = useCallback(async (episodeNum, newAssignments) => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can manage tribes');
+        await set(ref(db, `leagues/${leagueId}/tribeSwaps/${episodeNum}`), {
+            assignments: newAssignments,
+            executedAt: Date.now(),
+        });
+    }, [user, leagueId, league]);
+
+    const executeMerge = useCallback(async (episodeNum, mergeTribeName) => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can merge tribes');
+        await set(ref(db, `leagues/${leagueId}/tribeSwaps/merge`), {
+            episodeNum,
+            tribeName: mergeTribeName,
+            executedAt: Date.now(),
+        });
+    }, [user, leagueId, league]);
+
+    const submitMergePassport = useCallback(async (answers) => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        await set(ref(db, `leagues/${leagueId}/mergePassports/${user.uid}`), {
+            ...answers,
+            sealedAt: Date.now(),
+        });
+    }, [user, leagueId]);
+
+    const startAuction = useCallback(async (items) => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can start the auction');
+        const memberUids = Object.keys(leagueMembers);
+        const standings = {}; // compute rank to set budgets
+        const baseBudget = 100;
+        const budgets = {};
+        memberUids.forEach(uid => { budgets[uid] = baseBudget; });
+
+        await set(ref(db, `leagues/${leagueId}/auction`), {
+            status: 'active',
+            items: items.map((item, i) => ({ id: `auc_${i}`, ...item, winner: null, winningBid: null })),
+            budgets,
+            bids: {},
+            startedAt: Date.now(),
+        });
+    }, [user, leagueId, league, leagueMembers]);
+
+    const placeBid = useCallback(async (itemId, amount) => {
+        if (!user || !leagueId) throw new Error('Not connected');
+        const path = `leagues/${leagueId}/auction/bids/${itemId}/${user.uid}`;
+        if (db) {
+            await set(ref(db, path), { amount, at: Date.now() });
+        } else {
+            setAuction(prev => prev ? {
+                ...prev,
+                bids: {
+                    ...(prev.bids || {}),
+                    [itemId]: {
+                        ...(prev.bids?.[itemId] || {}),
+                        [user.uid]: { amount, at: Date.now() },
+                    },
+                },
+            } : prev);
+        }
+    }, [user, leagueId]);
+
+    const closeAuctionItem = useCallback(async (itemId, winnerUid, winningBid) => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can close auction items');
+
+        const snap = await get(ref(db, `leagues/${leagueId}/auction`));
+        const auctionData = snap.val();
+        if (!auctionData) throw new Error('No auction running');
+
+        const items = (auctionData.items || []).map(item =>
+            item.id === itemId ? { ...item, winner: winnerUid, winningBid } : item
+        );
+        const budgets = { ...(auctionData.budgets || {}) };
+        if (winnerUid && winningBid) {
+            budgets[winnerUid] = (budgets[winnerUid] || 0) - winningBid;
+        }
+
+        await set(ref(db, `leagues/${leagueId}/auction/items`), items);
+        await set(ref(db, `leagues/${leagueId}/auction/budgets`), budgets);
+
+        const allClosed = items.every(i => i.winner !== null);
+        if (allClosed) {
+            await set(ref(db, `leagues/${leagueId}/auction/status`), 'complete');
+        }
+    }, [user, leagueId, league]);
+
+    const startFinale = useCallback(async () => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can start the finale');
+        await set(ref(db, `leagues/${leagueId}/finaleData`), {
+            status: 'active',
+            startedAt: Date.now(),
+            passportReveals: {},
+            reunionAwards: {},
+            champion: null,
+        });
+    }, [user, leagueId, league]);
+
+    const revealPassport = useCallback(async (uid) => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can reveal passports');
+        const passport = passports?.[uid];
+        if (!passport) return;
+        await set(ref(db, `leagues/${leagueId}/finaleData/passportReveals/${uid}`), {
+            ...passport,
+            revealedAt: Date.now(),
+        });
+    }, [user, leagueId, league, passports]);
+
+    const revealMergePassport = useCallback(async (uid) => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can reveal passports');
+        const mp = mergePassports?.[uid];
+        if (!mp) return;
+        await set(ref(db, `leagues/${leagueId}/finaleData/mergePassportReveals/${uid}`), {
+            ...mp,
+            revealedAt: Date.now(),
+        });
+    }, [user, leagueId, league, mergePassports]);
+
+    const submitReunionVote = useCallback(async (category, nomineeUid) => {
+        if (!user || !leagueId) throw new Error('Not connected');
+        const path = `leagues/${leagueId}/finaleData/reunionAwards/${category}/${user.uid}`;
+        if (db) {
+            await set(ref(db, path), nomineeUid);
+        } else {
+            setFinaleData(prev => prev ? {
+                ...prev,
+                reunionAwards: {
+                    ...(prev.reunionAwards || {}),
+                    [category]: {
+                        ...(prev.reunionAwards?.[category] || {}),
+                        [user.uid]: nomineeUid,
+                    },
+                },
+            } : prev);
+        }
+    }, [user, leagueId]);
+
+    const crownChampion = useCallback(async (uid) => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can crown the champion');
+        await set(ref(db, `leagues/${leagueId}/finaleData/champion`), uid);
+        await set(ref(db, `leagues/${leagueId}/status`), 'complete');
+    }, [user, leagueId, league]);
+
+    const isMerged = useMemo(() => {
+        return !!tribeSwaps?.merge;
+    }, [tribeSwaps]);
+
+    const currentTribes = useMemo(() => {
+        if (!tribeSwaps || Object.keys(tribeSwaps).length === 0) return null;
+        if (tribeSwaps.merge) return { merged: { name: tribeSwaps.merge.tribeName || 'Merged Tribe' } };
+        const swapEps = Object.keys(tribeSwaps).filter(k => k !== 'merge').map(Number).sort((a, b) => b - a);
+        if (swapEps.length === 0) return null;
+        return tribeSwaps[swapEps[0]]?.assignments || null;
+    }, [tribeSwaps]);
+
     const episodeData = useMemo(() => {
         if (!currentEpisode || !episodes[currentEpisode]) return null;
         return episodes[currentEpisode];
@@ -515,13 +821,20 @@ export function AppProvider({ children }) {
     const value = {
         user, authLoading,
         league, leagueId, leagueMembers, leagueLoading,
-        draftState, rideOrDies, passports,
+        draftState, rideOrDies, passports, mergePassports,
         currentEpisode, episodeData, episodes, eliminated,
-        watchStatus, lightTorch, markWatched, saveBingoMarks, hasWatched, isWatching,
+        watchStatus, bingo, postEpisode,
+        tribeSwaps, isMerged, currentTribes, auction, finaleData,
+        lightTorch, markWatched, saveBingoMarks, hasWatched, isWatching, hasLockedPicks,
         syncStatus,
         createLeague, joinLeague, leaveLeague,
         startDraft, makeDraftPick, submitPassport, startSeason,
-        createEpisode, updatePropBets, submitPicks, submitPredictions, lockEpisode, scoreEpisodeAction,
+        createEpisode, updatePropBets, submitPicks, submitPredictions,
+        submitSnapVote, submitSideBets, scoreEpisodeAction,
+        submitPlayerOfEpisodeVote, submitImpactRating,
+        executeTribeSwap, executeMerge, submitMergePassport,
+        startAuction, placeBid, closeAuctionItem,
+        startFinale, revealPassport, revealMergePassport, submitReunionVote, crownChampion,
         sendMagicLink, logout,
     };
 

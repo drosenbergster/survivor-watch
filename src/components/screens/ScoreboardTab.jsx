@@ -35,6 +35,7 @@ function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perE
                         <span>P:{entry.predictions}</span>
                         <span>R:{entry.rideOrDie}</span>
                         {entry.bingo > 0 && <span>B:{entry.bingo}</span>}
+                        {entry.social > 0 && <span>S:{entry.social}</span>}
                     </div>
                 </div>
 
@@ -51,11 +52,12 @@ function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perE
 
             {expanded && (
                 <div className="ml-12 mr-3 pb-3 space-y-3">
-                    <div className="grid grid-cols-4 gap-2 text-center">
+                    <div className="grid grid-cols-5 gap-2 text-center">
                         <ScoreBox label="Weekly" value={entry.weekly} color="text-fire-400" />
-                        <ScoreBox label="Predictions" value={entry.predictions} color="text-green-400" />
-                        <ScoreBox label="Ride or Die" value={entry.rideOrDie} color="text-sky-400" />
+                        <ScoreBox label="Predict" value={entry.predictions} color="text-green-400" />
+                        <ScoreBox label="RoD" value={entry.rideOrDie} color="text-sky-400" />
                         <ScoreBox label="Bingo" value={entry.bingo || 0} color="text-purple-400" />
+                        <ScoreBox label="Social" value={entry.social || 0} color="text-amber-400" />
                     </div>
 
                     {epNums.length > 0 && (
@@ -104,6 +106,7 @@ function EpisodeBreakdown({ epNum, score }) {
                     <span className="text-green-400">{score.predictions}</span>
                     <span className="text-sky-400">{score.rideOrDie}</span>
                     {(score.bingo || 0) > 0 && <span className="text-purple-400">{score.bingo}</span>}
+                    {(score.social || 0) > 0 && <span className="text-amber-400">{score.social}</span>}
                     <span className="text-ochre font-bold">{score.total}</span>
                 </div>
             </button>
@@ -128,6 +131,8 @@ function EpisodeBreakdown({ epNum, score }) {
                                 {p.type === 'elimination' && '🎯 Correct elimination'}
                                 {p.type === 'bold' && '💡 Bold prediction'}
                                 {p.type === 'propBet' && `📊 ${p.text}`}
+                                {p.type === 'snapVote' && '🔥 Snap vote correct'}
+                                {p.type === 'sideBet' && `⚡ ${p.text}`}
                             </span>
                             <span className="text-green-400">+{p.points}</span>
                         </div>
@@ -152,7 +157,16 @@ function EpisodeBreakdown({ epNum, score }) {
                             <span className="text-purple-400">+{b.points}</span>
                         </div>
                     ))}
-                    {score.breakdown.weekly.length === 0 && score.breakdown.predictions.length === 0 && score.breakdown.rideOrDie.length === 0 && (!score.breakdown.bingo || score.breakdown.bingo.length === 0) && (
+                    {(score.breakdown.social || []).map((s, i) => (
+                        <div key={`s${i}`} className="flex justify-between text-sand-warm/60">
+                            <span>
+                                {s.type === 'playerOfEpisode' && '👑 Player of the Episode vote'}
+                                {s.type === 'impactRating' && `💔 Impact rating (avg ${s.avg})`}
+                            </span>
+                            <span className="text-amber-400">+{s.points}</span>
+                        </div>
+                    ))}
+                    {score.breakdown.weekly.length === 0 && score.breakdown.predictions.length === 0 && score.breakdown.rideOrDie.length === 0 && (!score.breakdown.bingo || score.breakdown.bingo.length === 0) && (!score.breakdown.social || score.breakdown.social.length === 0) && (
                         <p className="text-sand-warm/30 italic">No points this episode</p>
                     )}
                 </div>
@@ -181,7 +195,7 @@ function SpoilerShield({ unwatchedEps, onGoToBingo }) {
 }
 
 export default function ScoreboardTab() {
-    const { episodes, rideOrDies, leagueMembers, hasWatched } = useApp();
+    const { episodes, rideOrDies, leagueMembers, hasWatched, bingo, postEpisode } = useApp();
     const [expandedUid, setExpandedUid] = useState(null);
 
     const memberUids = useMemo(() => Object.keys(leagueMembers || {}), [leagueMembers]);
@@ -199,8 +213,8 @@ export default function ScoreboardTab() {
     const spoilerActive = unwatchedScoredEps.length > 0;
 
     const { standings, perEpisode } = useMemo(
-        () => computeStandings(episodes, rideOrDies, memberUids),
-        [episodes, rideOrDies, memberUids]
+        () => computeStandings(episodes, rideOrDies, memberUids, bingo, postEpisode),
+        [episodes, rideOrDies, memberUids, bingo, postEpisode]
     );
 
     const hasScoredEpisodes = scoredEpNums.length > 0;
@@ -268,6 +282,14 @@ export default function ScoreboardTab() {
                                     <span className="text-ochre">+3</span>
                                 </div>
                                 <div className="flex justify-between">
+                                    <span>🔥 Tribal snap vote correct</span>
+                                    <span className="text-ochre">+8</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>⚡ Tribal side bet correct</span>
+                                    <span className="text-ochre">+3</span>
+                                </div>
+                                <div className="flex justify-between">
                                     <span>💀 Ride or Die survived</span>
                                     <span className="text-ochre">+2/ep</span>
                                 </div>
@@ -282,6 +304,24 @@ export default function ScoreboardTab() {
                                 <div className="flex justify-between">
                                     <span>🔥 Bingo blackout (all 25)</span>
                                     <span className="text-ochre">+50</span>
+                                </div>
+                            </div>
+                            <div className="col-span-2 border-t border-stone-700 mt-2 pt-2">
+                                <div className="flex justify-between">
+                                    <span>👑 Player of Episode (voted #1)</span>
+                                    <span className="text-ochre">+7</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>💔 Impact rating (avg to owner)</span>
+                                    <span className="text-ochre">avg</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>🔥 Hot take confirmed (3 ep)</span>
+                                    <span className="text-ochre">+8</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>🕯️ Slow burn confirmed (season)</span>
+                                    <span className="text-ochre">+12</span>
                                 </div>
                             </div>
                         </div>

@@ -53,6 +53,10 @@ export const PLAYER_COLORS = [
     { bg: 'bg-player-2', text: 'text-player-2', border: 'border-player-2', ring: 'ring-player-2', hex: COLORS.player2 },
     { bg: 'bg-player-3', text: 'text-player-3', border: 'border-player-3', ring: 'ring-player-3', hex: COLORS.player3 },
     { bg: 'bg-player-4', text: 'text-player-4', border: 'border-player-4', ring: 'ring-player-4', hex: COLORS.player4 },
+    { bg: 'bg-player-5', text: 'text-player-5', border: 'border-player-5', ring: 'ring-player-5', hex: COLORS.player5 },
+    { bg: 'bg-player-6', text: 'text-player-6', border: 'border-player-6', ring: 'ring-player-6', hex: COLORS.player6 },
+    { bg: 'bg-player-7', text: 'text-player-7', border: 'border-player-7', ring: 'ring-player-7', hex: COLORS.player7 },
+    { bg: 'bg-player-8', text: 'text-player-8', border: 'border-player-8', ring: 'ring-player-8', hex: COLORS.player8 },
 ];
 
 // Scoring events (values updated to match brainstorm)
@@ -110,6 +114,32 @@ export const PROP_BET_POOL = [
     'Will there be a medical check?',
     'Will the eliminated player see it coming?',
 ];
+
+export const SIDE_BET_POOL = [
+    'Will an idol be played at this tribal?',
+    'Will there be tears at tribal?',
+    'Will someone whisper at tribal?',
+    'Will there be a revote?',
+    'Will the vote be unanimous?',
+    'Will Jeff stir the pot?',
+    'Will someone play Shot in the Dark?',
+    'Will there be a split vote?',
+    'Will someone stand up during tribal?',
+    'Will the boot see it coming?',
+    'Will someone mention a past alliance?',
+    'Will Jeff give a dramatic pause?',
+];
+
+export function generateSideBets(episodeNumber, count = 3) {
+    const shuffled = [...SIDE_BET_POOL];
+    let s = (episodeNumber * 13337 + 42) % 2147483647;
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        s = (s * 16807 + 0) % 2147483647;
+        const j = s % (i + 1);
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled.slice(0, count).map((text, i) => ({ id: `side_${episodeNumber}_${i}`, text }));
+}
 
 export function generatePropBets(episodeNumber, count = 5) {
     const shuffled = [...PROP_BET_POOL];
@@ -296,3 +326,18 @@ export function detectBingoLines(marked) {
 export function isBingoBlackout(marked) {
     return marked.every(Boolean);
 }
+
+export const ACHIEVEMENTS = [
+    { id: 'prophet', name: 'Prophet', emoji: '🔮', description: '3 correct elimination predictions in a row' },
+    { id: 'bingo_blackout', name: 'Bingo Blackout', emoji: '🎯', description: 'Complete an entire bingo card' },
+    { id: 'contrarian', name: 'Contrarian', emoji: '🎭', description: 'Win 5 scarcity bonuses (unique picks that scored)' },
+    { id: 'ride_or_die_loyalty', name: 'Ride or Die Loyalty', emoji: '💀', description: 'Both ride or dies survive to merge' },
+    { id: 'beast_mode', name: 'Beast Mode', emoji: '💪', description: 'One of your picks scores 20+ in a single episode' },
+    { id: 'first_blood', name: 'First Blood', emoji: '🗡️', description: 'Correctly predict the first elimination' },
+    { id: 'sole_survivor_standings', name: 'Sole Survivor', emoji: '👑', description: 'Hold first place for 3 consecutive weeks' },
+    { id: 'dethroned', name: 'Dethroned', emoji: '⚔️', description: 'Overtake the first-place player' },
+    { id: 'social_butterfly', name: 'Social Butterfly', emoji: '🦋', description: 'Vote on every Player of the Episode for 5 episodes' },
+    { id: 'perfect_episode', name: 'Perfect Episode', emoji: '✨', description: 'Score in every category in a single episode' },
+];
+
+export const ACHIEVEMENT_MAP = Object.fromEntries(ACHIEVEMENTS.map(a => [a.id, a]));

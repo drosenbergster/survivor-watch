@@ -66,16 +66,15 @@ function BingoRecap({ episodeNum, leagueId, userId }) {
 export default function BingoTab() {
     const {
         user, league, leagueId, currentEpisode, episodes,
-        isWatching, hasWatched, saveBingoMarks,
+        isWatching, hasWatched, saveBingoMarks, bingo,
     } = useApp();
 
     const [selectedEp, setSelectedEp] = useState(currentEpisode || 1);
     const totalEpisodes = currentEpisode || 1;
 
     const epData = episodes[selectedEp];
-    const isLive = epData?.status === 'live';
+    const isOpen = epData?.status === 'open';
     const isScored = epData?.status === 'scored';
-    const isPreEpisode = epData?.status === 'pre_episode';
 
     const watching = isWatching(selectedEp);
     const watched = hasWatched(selectedEp);
@@ -122,16 +121,11 @@ export default function BingoTab() {
                 />
             )}
 
-            {isPreEpisode && (
-                <FijianCard className="p-6 text-center space-y-3">
-                    <Icon name="hourglass_empty" className="text-ochre text-3xl" />
-                    <p className="text-sand-warm/80 font-sans text-sm">
-                        Episode {selectedEp} hasn&apos;t started yet. Your bingo card will appear when the host locks picks.
-                    </p>
-                </FijianCard>
+            {isOpen && !watching && !watched && (
+                <LightYourTorch episodeNum={selectedEp} />
             )}
 
-            {(isLive || (isScored && !watched)) && (
+            {isScored && !watched && (
                 <LightYourTorch episodeNum={selectedEp} />
             )}
 
@@ -139,6 +133,7 @@ export default function BingoTab() {
                 <div className="max-w-sm mx-auto">
                     <BingoCard
                         seed={seed}
+                        marked={bingo?.[selectedEp]?.[user?.uid]}
                         onSave={handleSave}
                         disabled={false}
                     />
@@ -151,6 +146,7 @@ export default function BingoTab() {
                     <div className="max-w-sm mx-auto">
                         <BingoCard
                             seed={seed}
+                            marked={bingo?.[selectedEp]?.[user?.uid]}
                             disabled={true}
                         />
                     </div>

@@ -10,4 +10,8 @@ export const COLORS = {
   player2: '#1db954',
   player3: '#1a8cbb',
   player4: '#c77dff',
+  player5: '#f472b6',
+  player6: '#facc15',
+  player7: '#2dd4bf',
+  player8: '#fb923c',
 };

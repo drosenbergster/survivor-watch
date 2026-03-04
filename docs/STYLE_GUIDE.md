@@ -1,6 +1,6 @@
 # Style Guide — Survivor 50 Watch Party HQ
 
-Design system and CSS architecture for Stitch integration.
+Design system and CSS architecture.
 
 ## Structure
 
@@ -14,7 +14,7 @@ src/
 └── components/
     ├── fijian/        # Shared Fijian components — use for all new pages
     ├── layout/        # AppShell, UserBar, Header, TabNav, Footer
-    └── screens/       # AuthScreen, DraftTab, BingoTab, etc.
+    └── screens/       # All app screens
 ```
 
 ## New Pages — Use Fijian Components
@@ -29,7 +29,7 @@ Import from `../fijian`:
 | `FijianHero` | Hero title block (SURVIVOR 50) |
 | `FijianCard` | Cards, sections, containers |
 | `FijianSectionHeader` | Section titles with optional subtitle |
-| `FijianInput` | Text inputs with optional label |
+| `FijianInput` | Text inputs with optional label (auto-wires `htmlFor`/`id`) |
 | `FijianPrimaryButton` | Primary CTAs |
 | `FijianLabel` | Small Fijian/English label pairs |
 | `BingoSquare` | Bingo cells |
@@ -41,11 +41,11 @@ Import from `../fijian`:
 
 **No hardcoded values:** Use theme tokens only. For JS (inline styles, e.g. player colors), import from `src/theme.js`. For CSS, use `var(--color-*)` or Tailwind classes.
 
+**No dynamic Tailwind classes:** Never use string interpolation for Tailwind class names (e.g., `bg-${color}/20`). JIT compilation cannot resolve these. Use a static lookup map with inline styles instead.
+
 ## Design Tokens
 
 **Location:** `src/styles/theme.css`
-
-Update these when integrating Stitch designs. Keep in sync with Stitch project 17298965758760609228.
 
 | Token | Hex | Usage |
 |-------|-----|-------|
@@ -57,8 +57,20 @@ Update these when integrating Stitch designs. Keep in sync with Stitch project 1
 
 **Fijian earth tones:** earth `#2b1d12`, ochre `#8b4513`, sienna `#a0522d`, clay `#d2691e`, stone-dark `#0f0f0f`, sand-warm `#d4b483`
 
-**Tribe colors:** Cila `#e0a030`, Vatu `#c43e1c`, Kalo `#1a8cbb`  
-**Player colors:** `#e8722a`, `#1db954`, `#1a8cbb`, `#c77dff`
+**Tribe colors:** Cila `#e0a030`, Vatu `#c43e1c`, Kalo `#1a8cbb`
+
+**Player colors (8):**
+
+| Token | Hex | Color |
+|-------|-----|-------|
+| player-1 | `#e8722a` | Fire orange |
+| player-2 | `#1db954` | Jungle green |
+| player-3 | `#1a8cbb` | Ocean blue |
+| player-4 | `#c77dff` | Purple |
+| player-5 | `#f472b6` | Pink |
+| player-6 | `#facc15` | Yellow |
+| player-7 | `#2dd4bf` | Teal |
+| player-8 | `#fb923c` | Amber |
 
 ## Typography
 
@@ -79,18 +91,8 @@ Update these when integrating Stitch designs. Keep in sync with Stitch project 1
 | `animate-pulse-win` | Bingo win pulse (theme) |
 | `animate-bounce-in` | Win message (theme) |
 | `animate-pulse-sync` | Sync indicator (theme) |
-| `shadow-fire` | Fire glow box shadow (theme) |
 | `drop-shadow-cina` | Torch drop shadow (theme) |
 | `text-shadow-glow-fire` | Fire text glow (theme) |
-
-## Stitch Integration
-
-When integrating new Stitch designs:
-
-1. **Fetch HTML/CSS** from Stitch via `fetch_screen_code`
-2. **Map tokens** — replace Stitch colors with our theme classes (e.g. `#e8722a` → `text-fire-400` / `bg-fire-400`)
-3. **Update theme.css** if Stitch introduces new colors
-4. **Preserve structure** — keep semantic HTML (`<header>`, `<section>`, `<article>`, `aria-*`)
 
 ## React
 
@@ -107,3 +109,5 @@ When integrating new Stitch designs:
 - Use `role="alert"` for error messages
 - Use `aria-pressed` for toggle states
 - Support `prefers-reduced-motion` (handled in base.css)
+- Wrap async Firebase calls in try/catch, show errors via `role="alert"` elements
+- Never call `setState` in the render body — use `useEffect`
