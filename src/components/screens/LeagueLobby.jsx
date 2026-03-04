@@ -46,7 +46,7 @@ function MemberRow({ member, uid, currentUid }) {
             <div className="flex-1 min-w-0">
                 <span className="text-sand-warm text-sm font-medium truncate block">
                     {member.displayName}
-                    {isYou && <span className="text-earth text-xs ml-1.5">(you)</span>}
+                    {isYou && <span className="text-clay text-xs ml-1.5">(you)</span>}
                 </span>
             </div>
             {isAdmin && (
@@ -94,13 +94,13 @@ export default function LeagueLobby() {
                     {league.name}
                 </h2>
                 <div className="flex items-center justify-center gap-2 mt-3">
-                    <span className="text-earth text-xs uppercase tracking-widest">Join Code</span>
+                    <span className="text-clay text-xs uppercase tracking-widest">Join Code</span>
                     <span className="font-display text-lg tracking-[0.2em] text-ochre bg-stone-dark/60 px-3 py-1 rounded border border-ochre/20">
                         {league.joinCode}
                     </span>
                     <CopyCodeButton code={league.joinCode} />
                 </div>
-                <p className="text-earth/60 text-xs mt-2">
+                <p className="text-sand-warm/70 text-xs mt-2">
                     Share this code so others can join your league
                 </p>
             </header>
@@ -120,7 +120,7 @@ export default function LeagueLobby() {
                 </div>
                 {memberCount < 4 && (
                     <div className="px-4 py-3 text-center">
-                        <p className="text-earth/50 text-xs font-serif italic">
+                        <p className="text-sand-warm/60 text-xs font-serif italic">
                             Waiting for more castaways to arrive... ({4 - memberCount} more needed)
                         </p>
                     </div>
@@ -149,11 +149,11 @@ export default function LeagueLobby() {
                 </FijianCard>
             ) : (
                 <FijianCard className="p-4 text-center border-ochre/10">
-                    <div className="flex items-center justify-center gap-2 text-earth">
+                    <div className="flex items-center justify-center gap-2 text-clay">
                         <div className="w-2 h-2 rounded-full bg-torch animate-pulse-sync" aria-hidden />
                         <span className="text-xs uppercase tracking-widest font-bold">Lobby</span>
                     </div>
-                    <p className="text-earth/50 text-xs mt-2 font-serif italic">
+                    <p className="text-sand-warm/60 text-xs mt-2 font-serif italic">
                         {isAdmin
                             ? 'Waiting for more players to join before drafting...'
                             : 'The game begins once the host starts the Ride or Die draft.'}
@@ -165,7 +165,7 @@ export default function LeagueLobby() {
             <div className="text-center pt-2">
                 {confirmLeave ? (
                     <div className="space-y-3">
-                        <p className="text-earth text-xs">Leave this league?</p>
+                        <p className="text-clay text-xs">Leave this league?</p>
                         <div className="flex gap-3 justify-center">
                             <button
                                 type="button"
@@ -188,7 +188,7 @@ export default function LeagueLobby() {
                     <button
                         type="button"
                         onClick={() => setConfirmLeave(true)}
-                        className="text-earth/50 text-xs hover:text-fire-400 transition-all cursor-pointer"
+                        className="text-sand-warm/60 text-xs hover:text-fire-400 transition-all cursor-pointer"
                     >
                         Leave League
                     </button>

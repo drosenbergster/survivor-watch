@@ -25,7 +25,7 @@ function AuctionSetup() {
     return (
         <FijianCard className="p-4 space-y-4">
             <FijianSectionHeader title="Setup Auction" />
-            <p className="text-earth text-xs font-serif italic">
+            <p className="text-clay text-xs font-serif italic">
                 Select items for the auction. Last place gets 50% more budget.
             </p>
             <div className="space-y-2">
@@ -45,7 +45,7 @@ function AuctionSetup() {
                             <span className="text-xl">{item.emoji}</span>
                             <div className="flex-1">
                                 <p className="text-sand-warm text-sm font-sans font-bold">{item.name}</p>
-                                <p className="text-sand-warm/40 text-xs font-sans">{item.description}</p>
+                                <p className="text-sand-warm/60 text-xs font-sans">{item.description}</p>
                             </div>
                             {selected && <Icon name="check_circle" className="text-ochre" />}
                         </button>
@@ -93,7 +93,7 @@ function BidPanel({ item, budget, myBid, onBid, isHost }) {
                 <span className="text-2xl">{item.emoji}</span>
                 <div className="flex-1">
                     <p className="text-sand-warm text-sm font-sans font-bold">{item.name}</p>
-                    <p className="text-sand-warm/40 text-xs font-sans">{item.description}</p>
+                    <p className="text-sand-warm/60 text-xs font-sans">{item.description}</p>
                 </div>
                 {isSold && (
                     <span className="text-jungle-400 text-xs font-bold px-2 py-1 bg-jungle-400/10 rounded">
@@ -115,7 +115,7 @@ function BidPanel({ item, budget, myBid, onBid, isHost }) {
                                     <span className={i === 0 ? 'text-ochre font-bold' : 'text-sand-warm/50'}>
                                         {leagueMembers?.[bid.uid]?.displayName}
                                     </span>
-                                    <span className="text-sand-warm/30 ml-auto">{bid.amount} coins</span>
+                                    <span className="text-sand-warm/60 ml-auto">{bid.amount} coins</span>
                                 </div>
                             ))}
                         </div>

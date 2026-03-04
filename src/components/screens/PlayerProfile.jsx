@@ -18,7 +18,7 @@ function BadgeWall({ earned }) {
                     >
                         <span className="text-2xl">{a.emoji}</span>
                         <span className={`text-[10px] font-sans mt-1 leading-tight ${
-                            unlocked ? 'text-ochre' : 'text-sand-warm/30'
+                            unlocked ? 'text-ochre' : 'text-sand-warm/60'
                         }`}>
                             {a.name}
                         </span>
@@ -42,7 +42,7 @@ function RideOrDieCard({ contestantId, isEliminated }) {
                 <p className={`text-sm font-sans font-bold ${isEliminated ? 'text-red-400/60 line-through' : 'text-sand-warm'}`}>
                     {c.name}
                 </p>
-                <p className="text-[10px] text-sand-warm/40 font-sans">{c.seasons}</p>
+                <p className="text-[10px] text-sand-warm/60 font-sans">{c.seasons}</p>
             </div>
             <span className={`text-xs font-sans ${isEliminated ? 'text-red-400/50' : 'text-jungle-400'}`}>
                 {isEliminated ? 'Eliminated' : 'Active'}
@@ -55,8 +55,8 @@ function StatBox({ label, value, sub }) {
     return (
         <div className="bg-stone-800/50 rounded-lg p-3 text-center">
             <p className="font-display text-xl text-ochre">{value}</p>
-            <p className="text-[10px] text-sand-warm/40 font-sans">{label}</p>
-            {sub && <p className="text-[9px] text-sand-warm/30 font-sans">{sub}</p>}
+            <p className="text-[10px] text-sand-warm/60 font-sans">{label}</p>
+            {sub && <p className="text-[11px] text-sand-warm/60 font-sans">{sub}</p>}
         </div>
     );
 }
@@ -90,7 +90,7 @@ function PredictionAccuracy({ episodes, uid }) {
                 />
             </div>
             <span className="text-ochre text-sm font-bold font-sans w-12 text-right">{pct}%</span>
-            <span className="text-sand-warm/30 text-xs font-sans">({correct}/{total})</span>
+            <span className="text-sand-warm/60 text-xs font-sans">({correct}/{total})</span>
         </div>
     );
 }
@@ -131,7 +131,7 @@ export default function PlayerProfile({ uid: profileUid, onClose }) {
                 {onClose && (
                     <button
                         onClick={onClose}
-                        className="absolute top-3 right-3 text-sand-warm/40 hover:text-sand-warm"
+                        className="absolute top-3 right-3 text-sand-warm/60 hover:text-sand-warm"
                     >
                         <Icon name="close" />
                     </button>
@@ -148,11 +148,11 @@ export default function PlayerProfile({ uid: profileUid, onClose }) {
                     <span className="text-ochre font-bold">
                         {myRank ? `#${myRank}` : '—'}
                     </span>
-                    <span className="text-sand-warm/30">·</span>
+                    <span className="text-sand-warm/60">·</span>
                     <span className="text-sand-warm/60">
                         {myStanding?.total || 0} pts
                     </span>
-                    <span className="text-sand-warm/30">·</span>
+                    <span className="text-sand-warm/60">·</span>
                     <span className="text-sand-warm/60">
                         {myAchievements.length} badges
                     </span>
@@ -172,7 +172,7 @@ export default function PlayerProfile({ uid: profileUid, onClose }) {
             <FijianCard className="p-4 space-y-2">
                 <FijianSectionHeader title="Ride or Dies" />
                 {rods.length === 0 ? (
-                    <p className="text-sand-warm/40 text-sm font-sans italic">No ride or dies drafted</p>
+                    <p className="text-sand-warm/60 text-sm font-sans italic">No ride or dies drafted</p>
                 ) : (
                     rods.map(cid => (
                         <RideOrDieCard

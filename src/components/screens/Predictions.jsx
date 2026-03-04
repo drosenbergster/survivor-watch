@@ -69,9 +69,9 @@ export default function Predictions() {
                 <div className="flex items-center gap-2 mb-3">
                     <Icon name="skull" className="text-fire-400" />
                     <span className="text-sand-warm text-sm font-bold">Elimination Prediction</span>
-                    <span className="text-ochre/50 text-xs ml-auto">+5 pts</span>
+                    <span className="text-ochre/70 text-xs ml-auto">+5 pts</span>
                 </div>
-                <p className="text-earth text-xs mb-2 font-serif italic">Who goes home tonight?</p>
+                <p className="text-clay text-xs mb-2 font-serif italic">Who goes home tonight?</p>
                 <select
                     value={elimination}
                     onChange={(e) => { setElimination(e.target.value); setSaved(false); }}
@@ -90,9 +90,9 @@ export default function Predictions() {
                 <div className="flex items-center gap-2 mb-3">
                     <Icon name="bolt" className="text-torch" />
                     <span className="text-sand-warm text-sm font-bold">Bold Prediction</span>
-                    <span className="text-ochre/50 text-xs ml-auto">+10 pts</span>
+                    <span className="text-ochre/70 text-xs ml-auto">+10 pts</span>
                 </div>
-                <p className="text-earth text-xs mb-2 font-serif italic">
+                <p className="text-clay text-xs mb-2 font-serif italic">
                     Make a bold call about one of your picks this episode.
                 </p>
                 {pickedCastaways.length > 0 && (
@@ -119,7 +119,7 @@ export default function Predictions() {
                     <div className="flex items-center gap-2 mb-3">
                         <Icon name="casino" className="text-ochre" />
                         <span className="text-sand-warm text-sm font-bold">Prop Bets</span>
-                        <span className="text-ochre/50 text-xs ml-auto">+3 pts each</span>
+                        <span className="text-ochre/70 text-xs ml-auto">+3 pts each</span>
                     </div>
                     <div className="space-y-2">
                         {propBets.map((bet) => {
@@ -132,7 +132,7 @@ export default function Predictions() {
                                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-sm transition-all cursor-pointer
                                         ${answered
                                             ? 'bg-ochre/15 border border-ochre/40 text-sand-warm'
-                                            : 'bg-stone-800/30 border border-transparent text-earth hover:bg-stone-800/50'
+                                            : 'bg-stone-800/30 border border-transparent text-clay hover:bg-stone-800/50'
                                         }
                                     `}
                                 >
@@ -145,7 +145,7 @@ export default function Predictions() {
                                 </button>
                             );
                         })}
-                        <p className="text-earth/40 text-xs text-center pt-1">
+                        <p className="text-sand-warm/50 text-xs text-center pt-1">
                             Tap to predict YES. Leave unchecked for NO.
                         </p>
                     </div>

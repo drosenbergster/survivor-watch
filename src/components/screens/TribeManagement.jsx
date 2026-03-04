@@ -53,7 +53,7 @@ function TribeSwapPanel({ episodeNum }) {
     return (
         <FijianCard className="p-4 space-y-4">
             <FijianSectionHeader title="Tribe Swap" />
-            <p className="text-earth text-xs font-serif italic">
+            <p className="text-clay text-xs font-serif italic">
                 Move contestants between tribes to reflect the swap. Apply after the episode airs.
             </p>
 
@@ -81,7 +81,7 @@ function TribeSwapPanel({ episodeNum }) {
                             );
                         })}
                         {(assignments[tribeName] || []).length === 0 && (
-                            <p className="text-sand-warm/30 text-xs italic px-3 py-2">Empty</p>
+                            <p className="text-sand-warm/60 text-xs italic px-3 py-2">Empty</p>
                         )}
                     </div>
                 </div>
@@ -123,7 +123,7 @@ function MergePanel() {
     return (
         <FijianCard className="p-4 space-y-3">
             <FijianSectionHeader title="Merge Tribes" />
-            <p className="text-earth text-xs font-serif italic">
+            <p className="text-clay text-xs font-serif italic">
                 Combine all tribes into one. This unlocks the Merge Passport and switches to individual scoring.
             </p>
             <FijianInput

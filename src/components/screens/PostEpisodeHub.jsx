@@ -78,7 +78,7 @@ function PlayerOfEpisode({ episodeNum }) {
                 <div className="flex items-center gap-2">
                     <Icon name="check_circle" className="text-jungle-400" />
                     <span className="text-sand-warm text-sm font-sans">Vote submitted</span>
-                    <span className="text-sand-warm/40 text-xs ml-auto">{totalVoters}/{totalMembers} voted</span>
+                    <span className="text-sand-warm/60 text-xs ml-auto">{totalVoters}/{totalMembers} voted</span>
                 </div>
                 {results.length > 0 && (
                     <div className="space-y-1">
@@ -90,11 +90,11 @@ function PlayerOfEpisode({ episodeNum }) {
                                         {i === 0 ? '👑' : `#${i + 1}`}
                                     </span>
                                     <span className={i === 0 ? 'text-ochre' : 'text-sand-warm/60'}>{c?.name}</span>
-                                    <span className="text-sand-warm/30 text-xs ml-auto">{score} pts</span>
+                                    <span className="text-sand-warm/60 text-xs ml-auto">{score} pts</span>
                                 </div>
                             );
                         })}
-                        {winnerName && <p className="text-sand-warm/40 text-xs">Winner&apos;s pick owners get +7 pts</p>}
+                        {winnerName && <p className="text-sand-warm/60 text-xs">Winner&apos;s pick owners get +7 pts</p>}
                     </div>
                 )}
             </FijianCard>
@@ -104,7 +104,7 @@ function PlayerOfEpisode({ episodeNum }) {
     return (
         <FijianCard className="p-4 space-y-4">
             <FijianSectionHeader title="Player of the Episode" />
-            <p className="text-earth text-xs font-serif italic">
+            <p className="text-clay text-xs font-serif italic">
                 Rank the top 3 performers. Tap a medal to assign.
             </p>
             <div className="space-y-2">
@@ -114,7 +114,7 @@ function PlayerOfEpisode({ episodeNum }) {
                     return (
                         <div key={c.id} className="flex items-center gap-2 bg-stone-800/50 px-3 py-2.5 rounded-lg">
                             <span className="text-sand-warm text-sm font-sans flex-1">{c.name}</span>
-                            <span className="text-ochre/50 text-xs">{c.pts} pts</span>
+                            <span className="text-ochre/70 text-xs">{c.pts} pts</span>
                             <div className="flex gap-1">
                                 {[0, 1, 2].map(r => (
                                     <button
@@ -188,7 +188,7 @@ function ImpactRating({ episodeNum }) {
     return (
         <FijianCard className="p-4 space-y-3">
             <FijianSectionHeader title="Impact Rating" />
-            <p className="text-earth text-xs font-serif italic">
+            <p className="text-clay text-xs font-serif italic">
                 Rate {eliminated?.name}&apos;s game impact. Their pick owner(s) earn the group average.
             </p>
             <div className="flex gap-2 justify-center">

@@ -11,7 +11,7 @@ function RankBadge({ rank }) {
     if (rank === 1) return <span className="text-2xl">🥇</span>;
     if (rank === 2) return <span className="text-2xl">🥈</span>;
     if (rank === 3) return <span className="text-2xl">🥉</span>;
-    return <span className="text-lg text-sand-warm/40 font-bold font-sans">#{rank}</span>;
+    return <span className="text-lg text-sand-warm/60 font-bold font-sans">#{rank}</span>;
 }
 
 function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perEpisode }) {
@@ -41,12 +41,12 @@ function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perE
 
                 <div className="text-right">
                     <p className="font-display text-2xl text-ochre tracking-wider">{entry.total}</p>
-                    <p className="text-[10px] text-sand-warm/40 font-sans uppercase">pts</p>
+                    <p className="text-[10px] text-sand-warm/60 font-sans uppercase">pts</p>
                 </div>
 
                 <Icon
                     name="expand_more"
-                    className={`text-sand-warm/30 transition-transform ${expanded ? 'rotate-180' : ''}`}
+                    className={`text-sand-warm/60 transition-transform ${expanded ? 'rotate-180' : ''}`}
                 />
             </button>
 
@@ -86,7 +86,7 @@ function ScoreBox({ label, value, color }) {
     return (
         <div className="bg-stone-800/60 rounded-lg p-2">
             <p className={`font-display text-lg ${color}`}>{value}</p>
-            <p className="text-[10px] text-sand-warm/40 font-sans">{label}</p>
+            <p className="text-[10px] text-sand-warm/60 font-sans">{label}</p>
         </div>
     );
 }
@@ -118,7 +118,7 @@ function EpisodeBreakdown({ epNum, score }) {
                             <span>
                                 {w.name}
                                 {w.scarcityBonus && <span className="text-ochre ml-1">×1.5</span>}
-                                <span className="text-sand-warm/30 ml-1">
+                                <span className="text-sand-warm/60 ml-1">
                                     ({w.events.map(e => SCORE_EMOJI[e] || e).join(' ')})
                                 </span>
                             </span>
@@ -167,7 +167,7 @@ function EpisodeBreakdown({ epNum, score }) {
                         </div>
                     ))}
                     {score.breakdown.weekly.length === 0 && score.breakdown.predictions.length === 0 && score.breakdown.rideOrDie.length === 0 && (!score.breakdown.bingo || score.breakdown.bingo.length === 0) && (!score.breakdown.social || score.breakdown.social.length === 0) && (
-                        <p className="text-sand-warm/30 italic">No points this episode</p>
+                        <p className="text-sand-warm/60 italic">No points this episode</p>
                     )}
                 </div>
             )}
@@ -232,7 +232,7 @@ export default function ScoreboardTab() {
                     <div className="flex justify-center mb-4 opacity-30">
                         <Icon name="leaderboard" className="text-ochre text-4xl" />
                     </div>
-                    <p className="text-earth font-serif italic text-sm leading-relaxed">
+                    <p className="text-clay font-serif italic text-sm leading-relaxed">
                         The scoreboard will light up once the first episode is scored. May the best castaway win!
                     </p>
                 </FijianCard>

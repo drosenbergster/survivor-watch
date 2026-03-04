@@ -41,7 +41,7 @@ function SealedPassport() {
             <p className="font-display text-2xl tracking-wider text-jungle-400">
                 Passport Sealed!
             </p>
-            <p className="text-earth text-sm mt-2 font-serif italic">
+            <p className="text-clay text-sm mt-2 font-serif italic">
                 Your gut picks are locked away until the finale reveal.
             </p>
         </FijianCard>
@@ -106,13 +106,13 @@ export default function SeasonPassport() {
                                     <div key={uid} className="flex items-center gap-2 px-3 py-1.5 text-sm">
                                         <Icon
                                             name={sealed ? 'lock' : 'hourglass_empty'}
-                                            className={`text-sm ${sealed ? 'text-jungle-400' : 'text-earth/50'}`}
+                                            className={`text-sm ${sealed ? 'text-jungle-400' : 'text-sand-warm/60'}`}
                                         />
-                                        <span className={sealed ? 'text-sand-warm' : 'text-earth/50'}>
+                                        <span className={sealed ? 'text-sand-warm' : 'text-sand-warm/60'}>
                                             {member.displayName}
-                                            {uid === user?.uid && <span className="text-earth text-xs ml-1">(you)</span>}
+                                            {uid === user?.uid && <span className="text-clay text-xs ml-1">(you)</span>}
                                         </span>
-                                        <span className={`ml-auto text-xs ${sealed ? 'text-jungle-400' : 'text-earth/40'}`}>
+                                        <span className={`ml-auto text-xs ${sealed ? 'text-jungle-400' : 'text-sand-warm/50'}`}>
                                             {sealed ? 'Sealed' : 'Pending'}
                                         </span>
                                     </div>
@@ -126,7 +126,7 @@ export default function SeasonPassport() {
                     )}
                     {allSealed && !isAdmin && (
                         <FijianCard className="p-4 text-center border-ochre/10">
-                            <p className="text-earth text-xs font-serif italic">
+                            <p className="text-clay text-xs font-serif italic">
                                 All passports sealed! Waiting for the host to start the season...
                             </p>
                         </FijianCard>
@@ -140,10 +140,10 @@ export default function SeasonPassport() {
                                 <Icon name={q.icon} className="text-ochre text-lg" />
                                 <div className="flex-1">
                                     <span className="text-sand-warm text-sm font-bold">{q.label}</span>
-                                    <span className="text-ochre/50 text-xs ml-2">{q.points}</span>
+                                    <span className="text-ochre/70 text-xs ml-2">{q.points}</span>
                                 </div>
                             </div>
-                            <p className="text-earth text-xs mb-2 font-serif italic">{q.prompt}</p>
+                            <p className="text-clay text-xs mb-2 font-serif italic">{q.prompt}</p>
                             <ContestantSelect
                                 value={answers[q.key]}
                                 onChange={(val) => setAnswer(q.key, val)}
@@ -156,7 +156,7 @@ export default function SeasonPassport() {
                         <FijianPrimaryButton type="submit" disabled={!allFilled || submitting}>
                             {submitting ? 'Sealing...' : 'Seal My Passport'}
                         </FijianPrimaryButton>
-                        <p className="text-earth/50 text-xs text-center mt-3 font-serif italic">
+                        <p className="text-sand-warm/60 text-xs text-center mt-3 font-serif italic">
                             Once sealed, your picks cannot be changed.
                         </p>
                     </div>

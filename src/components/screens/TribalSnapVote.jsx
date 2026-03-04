@@ -55,7 +55,7 @@ function SideBetToggle({ bet, value, onChange, disabled }) {
         >
             <span className="text-lg">{value ? '🔥' : '⬜'}</span>
             <span className="flex-1">{bet.text}</span>
-            <span className="text-xs text-sand-warm/40">{value ? 'YES' : 'NO'}</span>
+            <span className="text-xs text-sand-warm/60">{value ? 'YES' : 'NO'}</span>
         </button>
     );
 }
@@ -121,12 +121,12 @@ export default function TribalSnapVote({ episodeNum }) {
                     <span className="text-sand-warm font-sans font-bold text-sm">Tribal Votes Locked</span>
                 </div>
                 <div className="text-xs font-sans text-sand-warm/60 space-y-1">
-                    <p>Snap vote: <span className="text-ochre">{votedContestant?.name}</span> <span className="text-sand-warm/30">(+8 if correct)</span></p>
+                    <p>Snap vote: <span className="text-ochre">{votedContestant?.name}</span> <span className="text-sand-warm/60">(+8 if correct)</span></p>
                     {sideBets.map(bet => {
                         const answer = mySideBets?.[bet.id];
                         return (
                             <div key={bet.id} className="flex items-center gap-2">
-                                <span className={answer ? 'text-fire-400' : 'text-sand-warm/40'}>
+                                <span className={answer ? 'text-fire-400' : 'text-sand-warm/60'}>
                                     {answer ? 'YES' : 'NO'}
                                 </span>
                                 <span className="text-stone-400">{bet.text}</span>
@@ -194,14 +194,14 @@ export default function TribalSnapVote({ episodeNum }) {
                     <p className="text-ochre text-sm font-sans">
                         {votedContestant?.name} is going home
                     </p>
-                    <p className="text-sand-warm/30 text-xs font-sans">+8 pts if you&apos;re right</p>
+                    <p className="text-sand-warm/60 text-xs font-sans">+8 pts if you&apos;re right</p>
                 </FijianCard>
             )}
 
             {sideBets.length > 0 && !hasSubmittedSideBets && (
                 <FijianCard className="p-4 space-y-3">
                     <FijianSectionHeader title="Tribal Side Bets" />
-                    <p className="text-earth text-xs font-serif italic">
+                    <p className="text-clay text-xs font-serif italic">
                         Quick yes/no calls &mdash; +3 pts each correct
                     </p>
                     {sideBets.map(bet => (

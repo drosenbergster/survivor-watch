@@ -18,7 +18,7 @@ export default function BingoSquare({ label, isFree, isMarked, isWinning, onClic
     <button
       type="button"
       onClick={onClick}
-      className={`${base} ${style} ${isWinning ? 'animate-pulse-win' : ''} text-[9px] font-medium uppercase leading-tight`}
+      className={`${base} ${style} ${isWinning ? 'animate-pulse-win' : ''} text-[11px] font-medium uppercase leading-tight`}
       aria-pressed={isMarked}
       aria-label={isFree ? (isTabua ? 'Tabua (free space)' : 'Free space') : `${label}${isMarked ? ', marked' : ''}`}
       {...props}

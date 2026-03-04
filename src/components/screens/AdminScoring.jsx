@@ -250,7 +250,7 @@ export default function AdminScoring({ episodeNum }) {
                         </button>
                     ))}
                     {propBets.length === 0 && (
-                        <p className="text-sm text-sand-warm/40 italic font-sans">No prop bets this episode</p>
+                        <p className="text-sm text-sand-warm/60 italic font-sans">No prop bets this episode</p>
                     )}
                 </div>
             )}
@@ -278,7 +278,7 @@ export default function AdminScoring({ episodeNum }) {
                 <div className="space-y-3">
                     <h4 className="text-sand-warm/80 font-sans font-semibold text-sm">Bold Prediction Outcomes</h4>
                     {boldPredictions.length === 0 && (
-                        <p className="text-sm text-sand-warm/40 italic font-sans">No bold predictions submitted</p>
+                        <p className="text-sm text-sand-warm/60 italic font-sans">No bold predictions submitted</p>
                     )}
                     {boldPredictions.map(({ uid, text }) => (
                         <button

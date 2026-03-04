@@ -38,7 +38,7 @@ function PropBetEditor({ propBets, onSave }) {
                     onClick={() => swapBet(i)}
                     className="w-full text-left flex items-center gap-2 px-3 py-2 rounded bg-stone-800/50 text-sand-warm text-xs hover:bg-stone-700/50 transition-all cursor-pointer"
                 >
-                    <Icon name="swap_horiz" className="text-ochre/50 text-sm shrink-0" />
+                    <Icon name="swap_horiz" className="text-ochre/70 text-sm shrink-0" />
                     <span className="flex-1">{bet.text}</span>
                 </button>
             ))}
@@ -106,9 +106,9 @@ export default function AdminEpisodeCard() {
                 <div className="flex items-center gap-2 mb-3">
                     <Icon name="shield_person" className="text-fire-400" />
                     <span className="text-fire-400 text-xs font-bold uppercase tracking-widest">Host Controls</span>
-                    <span className="ml-auto text-ochre/50 text-xs">Episode {currentEpisode}</span>
+                    <span className="ml-auto text-ochre/70 text-xs">Episode {currentEpisode}</span>
                 </div>
-                <p className="text-earth/60 text-xs font-sans">
+                <p className="text-sand-warm/70 text-xs font-sans">
                     Episode is open. Players lock their own picks when they light their torch.
                 </p>
                 {episodeData?.propBets && (

@@ -13,15 +13,15 @@ export function UserBar() {
           }`}
           aria-hidden
         />
-        <span className="text-stone-500 hidden sm:inline">
+        <span className="text-stone-400 hidden sm:inline">
           {syncStatus === 'online' ? 'Synced' : syncStatus === 'syncing' ? 'Syncing...' : 'Local'}
         </span>
       </div>
-      <span className="flex-1 text-stone-500 truncate">{user.email}</span>
+      <span className="flex-1 text-stone-400 truncate">{user.email}</span>
       <button
         type="button"
         onClick={logout}
-        className="px-2.5 py-1 rounded border border-stone-700 text-stone-500 hover:text-ochre hover:border-ochre/40 transition-all cursor-pointer"
+        className="px-2.5 py-1 rounded border border-stone-700 text-stone-400 hover:text-ochre hover:border-ochre/40 transition-all cursor-pointer"
       >
         Sign Out
       </button>

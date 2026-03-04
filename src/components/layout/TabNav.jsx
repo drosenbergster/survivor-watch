@@ -13,7 +13,7 @@ export function TabNav({ tabs, activeTab, onTabChange }) {
             }`}
           aria-current={activeTab === tab.key ? 'page' : undefined}
         >
-          <span className={`text-[9px] uppercase tracking-tighter font-bold italic leading-none ${activeTab === tab.key ? 'text-stone-dark' : 'text-ochre'}`}>
+          <span className={`text-[11px] uppercase tracking-tighter font-bold italic leading-none ${activeTab === tab.key ? 'text-stone-dark' : 'text-ochre'}`}>
             {tab.fijian}
           </span>
           <span className={`text-[10px] uppercase tracking-widest leading-none ${activeTab === tab.key ? 'text-stone-dark/90' : 'text-sand-warm/60'}`}>

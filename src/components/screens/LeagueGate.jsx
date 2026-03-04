@@ -39,7 +39,7 @@ function CreateSuccess({ joinCode }) {
         <div className="space-y-6 text-center">
             <div className="text-4xl" aria-hidden>🏝️</div>
             <h2 className="font-display text-2xl tracking-wider text-clay">League Created!</h2>
-            <p className="text-earth font-serif italic text-sm leading-relaxed">
+            <p className="text-clay font-serif italic text-sm leading-relaxed">
                 Share this code with your crew to join the island.
             </p>
             <div className="flex items-center justify-center gap-2">
@@ -48,7 +48,7 @@ function CreateSuccess({ joinCode }) {
                 </span>
                 <CopyButton text={joinCode} />
             </div>
-            <p className="text-earth/60 text-xs">
+            <p className="text-sand-warm/70 text-xs">
                 Waiting in the lobby for your tribe...
             </p>
         </div>
@@ -108,7 +108,7 @@ export default function LeagueGate() {
                                         className={`flex-1 pb-3 text-xs font-bold uppercase tracking-widest transition-all cursor-pointer ${
                                             mode === 'create'
                                                 ? 'text-ochre border-b-2 border-ochre'
-                                                : 'text-earth hover:text-sand-warm'
+                                                : 'text-clay hover:text-sand-warm'
                                         }`}
                                     >
                                         Create League
@@ -119,7 +119,7 @@ export default function LeagueGate() {
                                         className={`flex-1 pb-3 text-xs font-bold uppercase tracking-widest transition-all cursor-pointer ${
                                             mode === 'join'
                                                 ? 'text-ochre border-b-2 border-ochre'
-                                                : 'text-earth hover:text-sand-warm'
+                                                : 'text-clay hover:text-sand-warm'
                                         }`}
                                     >
                                         Join League
@@ -184,7 +184,7 @@ export default function LeagueGate() {
                                 )}
 
                                 <div className="mt-8 text-center">
-                                    <p className="text-earth font-serif italic text-sm leading-relaxed">
+                                    <p className="text-clay font-serif italic text-sm leading-relaxed">
                                         {mode === 'create'
                                             ? '"Gather your alliance. The island awaits."'
                                             : '"Enter the code from your tribe leader."'}

@@ -107,7 +107,7 @@ function ReunionAwards() {
                             <span className="text-xl">{cat.emoji}</span>
                             <div className="flex-1">
                                 <p className="text-sand-warm text-sm font-sans font-bold">{cat.label}</p>
-                                <p className="text-sand-warm/40 text-xs font-sans">{cat.description}</p>
+                                <p className="text-sand-warm/60 text-xs font-sans">{cat.description}</p>
                             </div>
                         </div>
                         {myVote ? (
@@ -119,10 +119,10 @@ function ReunionAwards() {
                                     <div className="space-y-0.5">
                                         {sorted.map(([uid, count], i) => (
                                             <div key={uid} className="flex items-center gap-2 text-xs font-sans">
-                                                <span className={i === 0 ? 'text-ochre font-bold' : 'text-sand-warm/40'}>
+                                                <span className={i === 0 ? 'text-ochre font-bold' : 'text-sand-warm/60'}>
                                                     {leagueMembers?.[uid]?.displayName}
                                                 </span>
-                                                <span className="text-sand-warm/20 ml-auto">{count} vote{count > 1 ? 's' : ''}</span>
+                                                <span className="text-sand-warm/60 ml-auto">{count} vote{count > 1 ? 's' : ''}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -157,7 +157,7 @@ function LegacyCard({ uid, memberName, standing, rank, achievements: earned, epi
     return (
         <FijianCard className="p-4 space-y-3 border-ochre/20">
             <div className="text-center">
-                <p className="text-ochre/60 text-[10px] font-bold uppercase tracking-[0.3em]">Legacy Card</p>
+                <p className="text-ochre text-[11px] font-bold uppercase tracking-[0.3em]">Legacy Card</p>
                 <p className="font-display text-2xl tracking-wider text-sand-warm">{memberName}</p>
                 <p className="text-ochre font-display text-lg">
                     #{rank} · {standing?.total || 0} pts
@@ -167,11 +167,11 @@ function LegacyCard({ uid, memberName, standing, rank, achievements: earned, epi
             <div className="grid grid-cols-2 gap-2 text-center">
                 <div className="bg-stone-800/50 rounded-lg p-2">
                     <p className="font-display text-lg text-fire-400">{avgPerEp}</p>
-                    <p className="text-[9px] text-sand-warm/40">Avg/Ep</p>
+                    <p className="text-[11px] text-sand-warm/60">Avg/Ep</p>
                 </div>
                 <div className="bg-stone-800/50 rounded-lg p-2">
                     <p className="font-display text-lg text-purple-400">{badge.length}</p>
-                    <p className="text-[9px] text-sand-warm/40">Badges</p>
+                    <p className="text-[11px] text-sand-warm/60">Badges</p>
                 </div>
             </div>
 
@@ -221,7 +221,7 @@ function ChampionCrowning() {
     return (
         <FijianCard className="p-4 space-y-3">
             <FijianSectionHeader title="Crown the Champion" />
-            <p className="text-earth text-xs font-serif italic">
+            <p className="text-clay text-xs font-serif italic">
                 The group decides. Who played the best game this season?
             </p>
             <div className="space-y-2">
@@ -281,7 +281,7 @@ export default function FinaleMode() {
             <FijianCard className="p-5 space-y-3 text-center">
                 <span className="text-4xl">🏝️</span>
                 <p className="font-display text-xl tracking-wider text-ochre">Start the Finale</p>
-                <p className="text-earth text-xs font-serif italic">
+                <p className="text-clay text-xs font-serif italic">
                     This begins the passport reveal ceremony, reunion awards, and champion crowning.
                 </p>
                 <FijianPrimaryButton
@@ -308,7 +308,7 @@ export default function FinaleMode() {
             {/* Season Passport Reveals */}
             <FijianCard className="p-4 space-y-3">
                 <FijianSectionHeader title="Season Passport Reveals" />
-                <p className="text-earth text-xs font-serif italic">
+                <p className="text-clay text-xs font-serif italic">
                     Sealed before the premiere. How did everyone&apos;s gut picks hold up?
                 </p>
                 {memberUids.map(uid => (
@@ -328,7 +328,7 @@ export default function FinaleMode() {
             {Object.keys(mergePassports || {}).length > 0 && (
                 <FijianCard className="p-4 space-y-3">
                     <FijianSectionHeader title="Merge Passport Reveals" />
-                    <p className="text-earth text-xs font-serif italic">
+                    <p className="text-clay text-xs font-serif italic">
                         Updated at the merge with more info. Half the stakes, double the accountability.
                     </p>
                     {memberUids.map(uid => (

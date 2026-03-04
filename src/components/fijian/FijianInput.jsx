@@ -16,7 +16,7 @@ export default function FijianInput({ label, id: externalId, className = '', ...
       )}
       <input
         id={inputId}
-        className={`w-full bg-stone-dark/80 border-2 border-earth/30 focus:border-clay/50 focus:ring-0 rounded-lg h-14 px-5 text-sand-warm placeholder:text-earth italic transition-all outline-none ${className}`}
+        className={`w-full bg-stone-dark/80 border-2 border-earth/30 focus:border-clay/50 focus:ring-0 rounded-lg h-14 px-5 text-sand-warm placeholder:text-sand-warm/50 italic transition-all outline-none ${className}`}
         {...props}
       />
     </div>

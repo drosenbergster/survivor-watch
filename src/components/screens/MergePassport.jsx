@@ -66,7 +66,7 @@ export default function MergePassport() {
             <FijianCard className="p-5 text-center border-purple-400/30">
                 <div className="text-3xl mb-2">🔒</div>
                 <p className="font-display text-xl tracking-wider text-purple-400">Merge Passport Sealed</p>
-                <p className="text-earth text-xs mt-1 font-serif italic">
+                <p className="text-clay text-xs mt-1 font-serif italic">
                     Your mid-season reads are locked until the finale reveal.
                 </p>
             </FijianCard>
@@ -92,7 +92,7 @@ export default function MergePassport() {
                                 <span className="text-purple-400/50 text-xs ml-2">{q.points}</span>
                             </div>
                         </div>
-                        <p className="text-earth text-xs mb-2 font-serif italic">{q.prompt}</p>
+                        <p className="text-clay text-xs mb-2 font-serif italic">{q.prompt}</p>
                         <ContestantSelect
                             value={answers[q.key]}
                             onChange={val => setAnswer(q.key, val)}
@@ -104,7 +104,7 @@ export default function MergePassport() {
                 <FijianPrimaryButton type="submit" disabled={!allFilled || submitting}>
                     {submitting ? 'Sealing...' : 'Seal Merge Passport'}
                 </FijianPrimaryButton>
-                <p className="text-earth/50 text-xs text-center font-serif italic">
+                <p className="text-sand-warm/60 text-xs text-center font-serif italic">
                     Once sealed, your merge picks cannot be changed.
                 </p>
                 {error && <p className="text-amber text-xs text-center" role="alert">{error}</p>}

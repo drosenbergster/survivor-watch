@@ -134,7 +134,7 @@ export default function RulesTab() {
         <section className="space-y-6 pt-8 border-t border-stone-700">
           <div className="text-center">
             <h3 className="font-display text-2xl tracking-wider text-ochre">Admin Tools</h3>
-            <p className="text-sand-warm/40 text-xs font-sans mt-1">Host-only game management</p>
+            <p className="text-sand-warm/60 text-xs font-sans mt-1">Host-only game management</p>
           </div>
           <TribeManagement />
         </section>
@@ -144,7 +144,7 @@ export default function RulesTab() {
         <section className="space-y-6 pt-8 border-t border-stone-700">
           <div className="text-center">
             <h3 className="font-display text-2xl tracking-wider text-ochre">Survivor Auction</h3>
-            <p className="text-sand-warm/40 text-xs font-sans mt-1">Mid-season catch-up event</p>
+            <p className="text-sand-warm/60 text-xs font-sans mt-1">Mid-season catch-up event</p>
           </div>
           <SurvivorAuction />
         </section>

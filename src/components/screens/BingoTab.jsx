@@ -17,7 +17,7 @@ function EpisodeSelector({ current, total, selected, onSelect }) {
                             ? 'bg-ochre text-black shadow-md scale-110'
                             : ep <= current
                                 ? 'bg-black/30 text-sand-warm/80 hover:bg-ochre/30 border border-ochre/20'
-                                : 'bg-black/10 text-sand-warm/30 cursor-not-allowed'
+                                : 'bg-black/10 text-sand-warm/60 cursor-not-allowed'
                     }`}
                     disabled={ep > current}
                 >
@@ -51,8 +51,8 @@ function BingoRecap({ episodeNum, leagueId, userId }) {
                 {card.map((item, i) => (
                     <div
                         key={i}
-                        className={`aspect-square flex items-center justify-center p-1 text-center text-[7px] font-medium uppercase leading-tight rounded-sm ${
-                            i === 12 ? 'bg-masi-ochre/40 text-masi-cream' : 'bg-masi-black text-masi-cream/50'
+                        className={`aspect-square flex items-center justify-center p-1 text-center text-[10px] font-medium uppercase leading-tight rounded-sm ${
+                            i === 12 ? 'bg-masi-ochre/40 text-masi-cream' : 'bg-masi-black text-masi-cream/80'
                         }`}
                     >
                         {item}
@@ -97,7 +97,7 @@ export default function BingoTab() {
                     <div className="flex justify-center mb-4 opacity-30">
                         <Icon name="grid_view" className="text-ochre text-4xl" />
                     </div>
-                    <p className="text-earth font-serif italic text-sm leading-relaxed">
+                    <p className="text-clay font-serif italic text-sm leading-relaxed">
                         Bingo cards activate once the season begins. Complete your draft first!
                     </p>
                 </FijianCard>
@@ -178,7 +178,7 @@ export default function BingoTab() {
                                         {hasWatched(ep) && (
                                             <Icon name="check_circle" className="text-emerald-400 text-sm" />
                                         )}
-                                        <Icon name="chevron_right" className="text-sand-warm/40 text-sm" />
+                                        <Icon name="chevron_right" className="text-sand-warm/60 text-sm" />
                                     </div>
                                 </div>
                             </button>

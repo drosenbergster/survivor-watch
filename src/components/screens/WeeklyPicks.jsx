@@ -98,7 +98,7 @@ export default function WeeklyPicks() {
                                         >
                                             {isPicked && <Icon name="check" className="text-ochre text-sm shrink-0" />}
                                             <span className="flex-1 font-medium">{c.name}</span>
-                                            <span className="text-stone-500 text-xs">{c.short}</span>
+                                            <span className="text-stone-400 text-xs">{c.short}</span>
                                         </button>
                                     );
                                 })}

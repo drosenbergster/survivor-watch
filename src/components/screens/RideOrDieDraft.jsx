@@ -17,13 +17,13 @@ function ContestantButton({ castaway, drafted, draftedByName, isPickable, onPick
             className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-sm transition-all
                 ${drafted ? 'opacity-40 cursor-default' : ''}
                 ${isPickable ? 'hover:bg-ochre/10 hover:border-ochre/30 cursor-pointer' : 'cursor-default'}
-                ${!drafted ? 'text-stone-200' : 'text-stone-500'}
+                ${!drafted ? 'text-stone-200' : 'text-stone-400'}
                 border border-transparent
             `}
         >
             <div className="flex-1 min-w-0">
                 <span className={`font-medium ${drafted ? 'line-through' : ''}`}>{castaway.name}</span>
-                <span className="text-xs text-stone-500 ml-2">{castaway.short}</span>
+                <span className="text-xs text-stone-400 ml-2">{castaway.short}</span>
             </div>
             {drafted && draftedByName && (
                 <span className="text-xs text-ochre/60 truncate ml-2">{draftedByName}</span>
@@ -86,16 +86,16 @@ function DraftOrder({ draftState, leagueMembers, user }) {
                             key={idx}
                             className={`flex items-center gap-2 px-3 py-1.5 rounded text-xs ${
                                 isCurrent ? 'bg-fire-400/10 text-fire-400 font-bold' :
-                                isPast ? 'text-stone-500' : 'text-earth'
+                                isPast ? 'text-stone-400' : 'text-clay'
                             }`}
                         >
                             <span className="w-5 text-right text-ochre/40">{idx + 1}.</span>
                             <span className="flex-1">
                                 {member?.displayName || uid}
-                                {uid === user?.uid && <span className="text-earth ml-1">(you)</span>}
+                                {uid === user?.uid && <span className="text-clay ml-1">(you)</span>}
                             </span>
                             {isPast && castaway && (
-                                <span className="text-ochre/50">{castaway.name}</span>
+                                <span className="text-ochre/70">{castaway.name}</span>
                             )}
                             {isCurrent && <span className="text-fire-400 animate-pulse">◀</span>}
                         </div>
@@ -114,7 +114,7 @@ function DraftComplete({ rideOrDies, leagueMembers, user }) {
                 <p className="font-display text-2xl tracking-wider text-jungle-400">
                     Ride or Dies Locked!
                 </p>
-                <p className="text-earth text-sm mt-2 font-serif italic">
+                <p className="text-clay text-sm mt-2 font-serif italic">
                     These bonds last all season. May your allies go far.
                 </p>
             </FijianCard>
@@ -127,7 +127,7 @@ function DraftComplete({ rideOrDies, leagueMembers, user }) {
                         <FijianCard key={uid} className="p-4">
                             <h4 className="text-sand-warm text-sm font-bold mb-3">
                                 {member?.displayName || uid}
-                                {isYou && <span className="text-earth text-xs ml-1.5">(you)</span>}
+                                {isYou && <span className="text-clay text-xs ml-1.5">(you)</span>}
                             </h4>
                             <ul className="space-y-2">
                                 {(contestantIds || []).map((cId) => {
@@ -136,7 +136,7 @@ function DraftComplete({ rideOrDies, leagueMembers, user }) {
                                         <li key={cId} className="flex items-center gap-2 bg-stone-800/50 px-3 py-2 rounded-lg">
                                             <Icon name="handshake" className="text-ochre text-sm" />
                                             <span className="text-sand-warm text-sm">{c?.name || cId}</span>
-                                            <span className="text-stone-500 text-xs ml-auto">{c?.short}</span>
+                                            <span className="text-stone-400 text-xs ml-auto">{c?.short}</span>
                                         </li>
                                     );
                                 })}

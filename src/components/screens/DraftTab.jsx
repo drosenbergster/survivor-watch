@@ -29,7 +29,7 @@ function SeasonOverview() {
                                 <div key={cId} className="flex items-center gap-3 bg-stone-800/50 px-3 py-2.5 rounded-lg">
                                     <Icon name="handshake" className="text-ochre text-sm" />
                                     <span className="text-sand-warm text-sm">{c?.name || cId}</span>
-                                    <span className="text-ochre/50 text-xs ml-auto">+2 pts/ep</span>
+                                    <span className="text-ochre/70 text-xs ml-auto">+2 pts/ep</span>
                                 </div>
                             );
                         })}
@@ -48,7 +48,7 @@ function SeasonOverview() {
                             <div key={uid}>
                                 <span className="text-sand-warm text-sm font-bold">
                                     {member.displayName}
-                                    {uid === user?.uid && <span className="text-earth text-xs ml-1">(you)</span>}
+                                    {uid === user?.uid && <span className="text-clay text-xs ml-1">(you)</span>}
                                 </span>
                                 <div className="flex gap-2 flex-wrap mt-1">
                                     {rod.length > 0 ? rod.map(cId => {
@@ -58,7 +58,7 @@ function SeasonOverview() {
                                                 {c?.name || cId}
                                             </span>
                                         );
-                                    }) : <span className="text-earth/40 text-xs">None</span>}
+                                    }) : <span className="text-sand-warm/50 text-xs">None</span>}
                                 </div>
                             </div>
                         );
