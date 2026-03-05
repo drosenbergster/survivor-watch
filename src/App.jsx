@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useApp } from './AppContext';
 import {
     AuthScreen, LeagueGate, LeagueLobby,
     RideOrDieDraft, SeasonPassport,
     DraftTab, BingoTab, ScoreboardTab, RulesTab, PlayerProfile,
+    WelcomeCarousel,
 } from './components/screens';
 import { AppShell } from './components/layout';
 
@@ -28,20 +29,35 @@ function LoadingScreen() {
 }
 
 export default function App() {
-    const { user, authLoading, league, leagueId, leagueLoading, draftState, passports } = useApp();
+    const { user, authLoading, league, leagueId, leagueLoading, draftState, passports, onboardingComplete, completeOnboarding } = useApp();
     const [activeTab, setActiveTab] = useState('draft');
+    const [joinParam, setJoinParam] = useState(null);
+    const [showTutorial, setShowTutorial] = useState(false);
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('join');
+        if (code) {
+            setJoinParam(code.toUpperCase());
+            window.history.replaceState(null, '', window.location.pathname);
+        }
+    }, []);
 
     if (authLoading) return <LoadingScreen />;
     if (!user) return <AuthScreen />;
+    if (!onboardingComplete) return <WelcomeCarousel onComplete={completeOnboarding} />;
+    if (showTutorial) return <WelcomeCarousel onComplete={() => setShowTutorial(false)} />;
     if (leagueLoading) return <LoadingScreen />;
-    if (!leagueId) return <LeagueGate />;
+    if (!leagueId) return <LeagueGate prefillCode={joinParam} />;
 
     // League status: lobby → draft → active
     const status = league?.status || 'lobby';
 
+    const shellProps = { tabs: TABS, activeTab, onTabChange: setActiveTab, onShowTutorial: () => setShowTutorial(true) };
+
     if (status === 'lobby') {
         return (
-            <AppShell tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab}>
+            <AppShell {...shellProps}>
                 <LeagueLobby />
             </AppShell>
         );
@@ -51,27 +67,24 @@ export default function App() {
         const draftComplete = draftState?.status === 'complete';
         const myPassportSealed = !!passports?.[user.uid]?.sealedAt;
 
-        // Draft in progress or just completed (show results)
         if (!draftComplete) {
             return (
-                <AppShell tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab}>
+                <AppShell {...shellProps}>
                     <RideOrDieDraft />
                 </AppShell>
             );
         }
 
-        // Draft done but passport not yet sealed → fill out passport
         if (!myPassportSealed) {
             return (
-                <AppShell tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab}>
+                <AppShell {...shellProps}>
                     <SeasonPassport />
                 </AppShell>
             );
         }
 
-        // Passport sealed → show passport status (waiting for others / start season)
         return (
-            <AppShell tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab}>
+            <AppShell {...shellProps}>
                 <SeasonPassport />
             </AppShell>
         );
@@ -81,7 +94,7 @@ export default function App() {
     const ActiveComponent = TABS.find(t => t.key === activeTab)?.Component || DraftTab;
 
     return (
-        <AppShell tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab}>
+        <AppShell {...shellProps}>
             <ActiveComponent />
         </AppShell>
     );

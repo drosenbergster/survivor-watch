@@ -1,6 +1,6 @@
 import { useApp } from '../../AppContext';
 import { ALL_CASTAWAYS } from '../../data';
-import { FijianCard, FijianSectionHeader, Icon } from '../fijian';
+import { FijianCard, FijianSectionHeader, Icon, HintBadge } from '../fijian';
 import AdminEpisodeCard from './AdminEpisodeCard';
 import AdminScoring from './AdminScoring';
 import WeeklyPicks from './WeeklyPicks';
@@ -130,8 +130,11 @@ export default function DraftTab() {
         <div className="space-y-6">
             <header className="text-center">
                 <h2 className="font-display text-4xl tracking-wider text-sand-warm drop-shadow-text">Sevu</h2>
-                <p className="text-sand-warm/70 text-sm mt-1 font-sans">
+                <p className="text-sand-warm/70 text-sm mt-1 font-sans inline-flex items-center justify-center">
                     {hasEpisode ? `Episode ${currentEpisode}` : 'Season 50'}
+                    <HintBadge hintKey="picks">
+                        Each episode, pick 2 contestants to score points for you. Lock your picks before watching, then mark bingo squares and vote at tribal council while you watch.
+                    </HintBadge>
                 </p>
             </header>
 

@@ -15,3 +15,6 @@ export { default as TribeManagement } from './TribeManagement';
 export { default as MergePassport } from './MergePassport';
 export { default as SurvivorAuction } from './SurvivorAuction';
 export { default as FinaleMode } from './FinaleMode';
+export { default as WelcomeCarousel } from './WelcomeCarousel';
+export { default as LeagueSwitcher } from './LeagueSwitcher';
+export { default as LeagueSettings } from './LeagueSettings';

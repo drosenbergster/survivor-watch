@@ -81,6 +81,54 @@ export const SCORE_EVENTS = [
     { key: 'medevac', label: 'Medevac Consolation', points: 3, emoji: '🚑' },
 ];
 
+export const ENGAGEMENT_SCORING = [
+    {
+        section: 'Predictions',
+        icon: '🔮',
+        items: [
+            { label: 'Correct Elimination Pick', points: 5, emoji: '🎯' },
+            { label: 'Bold Prediction (correct)', points: 10, emoji: '💡' },
+            { label: 'Prop Bet (correct)', points: 3, emoji: '🎰' },
+            { label: 'Snap Vote (correct)', points: 8, emoji: '⚡' },
+            { label: 'Side Bet (correct)', points: 3, emoji: '🤞' },
+        ],
+    },
+    {
+        section: 'Ride or Die',
+        icon: '🤝',
+        items: [
+            { label: 'Survive per Episode', points: 2, emoji: '✅' },
+            { label: 'Reach Finale', points: 15, emoji: '🏛️' },
+            { label: 'Win Season', points: 30, emoji: '👑' },
+            { label: 'Scarcity Multiplier', points: '1.5×', emoji: '💎', note: 'Applied when 3+ players share a pick' },
+        ],
+    },
+    {
+        section: 'Bingo',
+        icon: '🎱',
+        items: [
+            { label: 'Complete a Line', points: 5, emoji: '➖' },
+            { label: 'Blackout (Full Card)', points: 50, emoji: '🌑' },
+        ],
+    },
+    {
+        section: 'Social',
+        icon: '⭐',
+        items: [
+            { label: 'Player of the Episode', points: 7, emoji: '🏆' },
+            { label: 'Impact Rating', points: '1-5 avg', emoji: '📊', note: 'Weekly peer rating' },
+        ],
+    },
+    {
+        section: 'Passports',
+        icon: '📜',
+        items: [
+            { label: 'Season Passport', points: '15-25', emoji: '🛂', note: 'Pre-season predictions scored at finale' },
+            { label: 'Merge Passport', points: '8-12', emoji: '📋', note: 'Mid-season predictions scored at finale' },
+        ],
+    },
+];
+
 // Prop bet template pool (auto-generated, admin can swap/edit)
 export const PROP_BET_POOL = [
     'Will an idol be played tonight?',

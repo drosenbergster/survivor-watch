@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { FijianCard, FijianSectionHeader, Icon } from '../fijian';
+import { FijianCard, FijianSectionHeader, Icon, HintBadge } from '../fijian';
 import { useApp } from '../../AppContext';
 import { generateBingoCard } from '../../data';
 import BingoCard from './BingoCard';
@@ -109,7 +109,12 @@ export default function BingoTab() {
         <div className="space-y-5">
             <header className="text-center">
                 <h2 className="font-display text-4xl tracking-wider text-sand-warm drop-shadow-text">Qito</h2>
-                <p className="text-sand-warm/70 text-sm mt-1 font-sans">Bingo</p>
+                <p className="text-sand-warm/70 text-sm mt-1 font-sans inline-flex items-center justify-center">
+                    Bingo
+                    <HintBadge hintKey="bingo">
+                        Mark squares as events happen while you watch. Complete a line for +5 pts, or black out the whole card for +50 pts! Each episode gets a fresh card.
+                    </HintBadge>
+                </p>
             </header>
 
             {totalEpisodes > 1 && (

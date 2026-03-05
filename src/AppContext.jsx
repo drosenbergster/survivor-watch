@@ -78,6 +78,8 @@ export function AppProvider({ children }) {
     const [finaleData, setFinaleData] = useState(null);
     const [leagueLoading, setLeagueLoading] = useState(true);
     const [syncStatus, setSyncStatus] = useState('offline');
+    const [onboardingComplete, setOnboardingComplete] = useState(false);
+    const [userLeagues, setUserLeagues] = useState({});
 
     // Auth listener — demo user when Firebase not configured
     useEffect(() => {
@@ -126,6 +128,22 @@ export function AppProvider({ children }) {
             setLeagueLoading(false);
         }, () => setLeagueLoading(false));
         return () => unsub();
+    }, [user]);
+
+    // Sync onboardingComplete and user leagues list
+    useEffect(() => {
+        if (!user || !db) return;
+        const onboardRef = ref(db, `users/${user.uid}/onboardingComplete`);
+        const leaguesRef = ref(db, `users/${user.uid}/leagues`);
+        const unsub1 = onValue(onboardRef, (snap) => {
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- async listener
+            setOnboardingComplete(!!snap.val());
+        });
+        const unsub2 = onValue(leaguesRef, (snap) => {
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- async listener
+            setUserLeagues(snap.val() || {});
+        });
+        return () => { unsub1(); unsub2(); };
     }, [user]);
 
     // Sync league data + members + draft + rideOrDies + passports + episodes
@@ -342,6 +360,7 @@ export function AppProvider({ children }) {
         await set(newRef, leagueData);
         await set(ref(db, `leagueCodes/${joinCode}`), id);
         await set(ref(db, `users/${user.uid}/currentLeague`), id);
+        await set(ref(db, `users/${user.uid}/leagues/${id}`), true);
 
         return { id, joinCode };
     }, [user]);
@@ -368,6 +387,7 @@ export function AppProvider({ children }) {
             role: 'player',
         });
         await set(ref(db, `users/${user.uid}/currentLeague`), targetId);
+        await set(ref(db, `users/${user.uid}/leagues/${targetId}`), true);
 
         return targetId;
     }, [user]);
@@ -375,8 +395,35 @@ export function AppProvider({ children }) {
     const leaveLeague = useCallback(async () => {
         if (!db || !user || !leagueId) return;
         await remove(ref(db, `leagues/${leagueId}/members/${user.uid}`));
-        await remove(ref(db, `users/${user.uid}/currentLeague`));
-    }, [user, leagueId]);
+        await remove(ref(db, `users/${user.uid}/leagues/${leagueId}`));
+        const remaining = { ...userLeagues };
+        delete remaining[leagueId];
+        const nextId = Object.keys(remaining)[0] || null;
+        if (nextId) {
+            await set(ref(db, `users/${user.uid}/currentLeague`), nextId);
+        } else {
+            await remove(ref(db, `users/${user.uid}/currentLeague`));
+        }
+    }, [user, leagueId, userLeagues]);
+
+    const switchLeague = useCallback(async (targetLeagueId) => {
+        if (!db || !user) return;
+        await set(ref(db, `users/${user.uid}/currentLeague`), targetLeagueId);
+    }, [user]);
+
+    const updateLeagueName = useCallback(async (name) => {
+        if (!db || !user || !leagueId) return;
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can rename the league');
+        await set(ref(db, `leagues/${leagueId}/name`), name);
+    }, [user, leagueId, league]);
+
+    const completeOnboarding = useCallback(async () => {
+        if (!db || !user) {
+            setOnboardingComplete(true);
+            return;
+        }
+        await set(ref(db, `users/${user.uid}/onboardingComplete`), true);
+    }, [user]);
 
     const startDraft = useCallback(async () => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
@@ -826,8 +873,8 @@ export function AppProvider({ children }) {
         watchStatus, bingo, postEpisode,
         tribeSwaps, isMerged, currentTribes, auction, finaleData,
         lightTorch, markWatched, saveBingoMarks, hasWatched, isWatching, hasLockedPicks,
-        syncStatus,
-        createLeague, joinLeague, leaveLeague,
+        syncStatus, onboardingComplete, userLeagues,
+        createLeague, joinLeague, leaveLeague, switchLeague, updateLeagueName, completeOnboarding,
         startDraft, makeDraftPick, submitPassport, startSeason,
         createEpisode, updatePropBets, submitPicks, submitPredictions,
         submitSnapVote, submitSideBets, scoreEpisodeAction,

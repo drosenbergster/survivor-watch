@@ -7,3 +7,4 @@ export { default as FijianCard } from './FijianCard';
 export { default as FijianSectionHeader } from './FijianSectionHeader';
 export { default as BingoSquare } from './BingoSquare';
 export { default as Icon } from './Icon';
+export { default as HintBadge } from './HintBadge';

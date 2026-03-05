@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useApp } from '../../AppContext';
 import { computeStandings } from '../../scoring';
 import { SCORE_EVENTS, ALL_CASTAWAYS, PLAYER_COLORS } from '../../data';
-import { FijianCard, FijianSectionHeader, Icon } from '../fijian';
+import { FijianCard, FijianSectionHeader, Icon, HintBadge } from '../fijian';
 
 const SCORE_EMOJI = Object.fromEntries(SCORE_EVENTS.map(e => [e.key, e.emoji]));
 const SCORE_LABEL = Object.fromEntries(SCORE_EVENTS.map(e => [e.key, e.label]));
@@ -223,7 +223,12 @@ export default function ScoreboardTab() {
         <div className="space-y-6">
             <header className="text-center">
                 <h2 className="font-display text-4xl tracking-wider text-sand-warm drop-shadow-text">Tovo</h2>
-                <p className="text-sand-warm/70 text-sm mt-1 font-sans">Scores</p>
+                <p className="text-sand-warm/70 text-sm mt-1 font-sans inline-flex items-center justify-center">
+                    Scores
+                    <HintBadge hintKey="scores">
+                        W = Weekly picks, P = Predictions, R = Ride or Die, B = Bingo, S = Social votes. Tap a player row to see their episode-by-episode breakdown.
+                    </HintBadge>
+                </p>
             </header>
 
             {!hasScoredEpisodes ? (

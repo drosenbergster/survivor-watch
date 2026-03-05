@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../AppContext';
 import { ALL_CASTAWAYS } from '../../data';
-import { FijianCard, FijianSectionHeader, FijianInput, FijianPrimaryButton, Icon } from '../fijian';
+import { FijianCard, FijianSectionHeader, FijianInput, FijianPrimaryButton, Icon, HintBadge } from '../fijian';
 
 export default function Predictions() {
     const { user, currentEpisode, episodeData, eliminated, submitPredictions } = useApp();
@@ -118,7 +118,12 @@ export default function Predictions() {
                 <FijianCard className="p-4">
                     <div className="flex items-center gap-2 mb-3">
                         <Icon name="casino" className="text-ochre" />
-                        <span className="text-sand-warm text-sm font-bold">Prop Bets</span>
+                        <span className="text-sand-warm text-sm font-bold inline-flex items-center">
+                            Prop Bets
+                            <HintBadge hintKey="propBets">
+                                Yes/No questions about what will happen this episode. Get +3 pts for each correct answer. The host sets the questions before the episode.
+                            </HintBadge>
+                        </span>
                         <span className="text-ochre/70 text-xs ml-auto">+3 pts each</span>
                     </div>
                     <div className="space-y-2">

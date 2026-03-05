@@ -1,8 +1,9 @@
-import { SCORE_EVENTS } from '../../data';
+import { SCORE_EVENTS, ENGAGEMENT_SCORING } from '../../data';
 import { useApp } from '../../AppContext';
 import { FijianSectionHeader, Icon } from '../fijian';
 import TribeManagement from './TribeManagement';
 import SurvivorAuction from './SurvivorAuction';
+import LeagueSettings from './LeagueSettings';
 
 const EVENT_ICONS = {
   survived: 'check_circle',
@@ -82,7 +83,7 @@ export default function RulesTab() {
               </tr>
             </thead>
             <tbody className="divide-y divide-terracotta/10">
-              {SCORE_EVENTS.slice(0, 8).map((ev) => (
+              {SCORE_EVENTS.map((ev) => (
                 <tr key={ev.key}>
                   <td className="px-4 py-3 text-sm flex items-center gap-2 font-sans">
                     <Icon name={EVENT_ICONS[ev.key] || 'circle'} className="text-terracotta text-sm" />
@@ -97,6 +98,44 @@ export default function RulesTab() {
           </table>
         </div>
       </section>
+
+      {ENGAGEMENT_SCORING.map((group) => (
+        <section key={group.section}>
+          <FijianSectionHeader title={group.section} subtitle={`${group.icon} Engagement`} variant="rules" />
+          <div className="bg-black/20 rounded-xl overflow-hidden border border-terracotta/20">
+            <table className="w-full text-left">
+              <thead className="bg-terracotta/10 border-b border-terracotta/20">
+                <tr>
+                  <th className="px-4 py-3 font-wood-serif text-sand-warm text-lg uppercase" scope="col">
+                    Category
+                  </th>
+                  <th className="px-4 py-3 font-wood-serif text-sand-warm text-lg uppercase text-right" scope="col">
+                    Toka (Pts)
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-terracotta/10">
+                {group.items.map((item) => (
+                  <tr key={item.label}>
+                    <td className="px-4 py-3 text-sm font-sans">
+                      <div className="flex items-center gap-2">
+                        <span>{item.emoji}</span>
+                        <span>{item.label}</span>
+                      </div>
+                      {item.note && (
+                        <p className="text-xs text-bleached-sand/50 mt-0.5 ml-7 italic">{item.note}</p>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right font-display text-2xl text-sand-warm align-top">
+                      {typeof item.points === 'number' ? `+${item.points}` : item.points}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ))}
 
       <section>
         <FijianSectionHeader title="Qito" subtitle="Bingo" variant="rules" />
@@ -149,6 +188,10 @@ export default function RulesTab() {
           <SurvivorAuction />
         </section>
       )}
+
+      <section className="space-y-6 pt-8 border-t border-stone-700">
+        <LeagueSettings />
+      </section>
     </article>
   );
 }

@@ -55,12 +55,12 @@ function CreateSuccess({ joinCode }) {
     );
 }
 
-export default function LeagueGate() {
+export default function LeagueGate({ prefillCode }) {
     const { createLeague, joinLeague } = useApp();
-    const [mode, setMode] = useState('create');
+    const [mode, setMode] = useState(prefillCode ? 'join' : 'create');
     const [leagueName, setLeagueName] = useState('');
     const [displayName, setDisplayName] = useState('');
-    const [joinCode, setJoinCode] = useState('');
+    const [joinCode, setJoinCode] = useState(prefillCode || '');
     const [createdCode, setCreatedCode] = useState(null);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
