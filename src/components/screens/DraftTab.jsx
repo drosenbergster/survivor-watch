@@ -79,7 +79,7 @@ function EpisodeScoredBanner({ episodeNum }) {
                 <div className="text-3xl">🛡️</div>
                 <p className="text-sand-warm font-display text-lg tracking-wider">Episode {episodeNum} Complete</p>
                 <p className="text-sand-warm/50 text-sm font-sans">
-                    Details hidden until you&apos;ve watched. Head to Qito to light your torch!
+                    Details hidden until you&apos;ve watched. Go to the Bingo tab and tap &quot;Start Watching&quot; to begin.
                 </p>
             </FijianCard>
         );
@@ -89,7 +89,7 @@ function EpisodeScoredBanner({ episodeNum }) {
         <FijianCard className="p-5 text-center bg-gradient-to-b from-stone-800/80 to-stone-900/60">
             <p className="text-ochre font-display text-xl tracking-wider">Episode {episodeNum} Scored</p>
             <p className="text-sand-warm/60 text-sm font-sans mt-1">
-                Check the Tovo tab for standings and breakdowns.
+                Check the Scores tab for standings and breakdowns.
             </p>
         </FijianCard>
     );
@@ -133,7 +133,7 @@ export default function DraftTab() {
                 <p className="text-sand-warm/70 text-sm mt-1 font-sans inline-flex items-center justify-center">
                     {hasEpisode ? `Episode ${currentEpisode}` : 'Season 50'}
                     <HintBadge hintKey="picks">
-                        Each episode, pick 2 contestants to score points for you. Lock your picks before watching, then mark bingo squares and vote at tribal council while you watch.
+                        Each episode, pick 2 contestants and make your predictions. Then go to the Bingo tab and tap &quot;Start Watching&quot; to lock everything in and activate your bingo card.
                     </HintBadge>
                 </p>
             </header>
@@ -168,10 +168,10 @@ export default function DraftTab() {
                 <FijianCard className="p-5 text-center space-y-2">
                     <Icon name="check_circle" className="text-jungle-400 text-3xl" />
                     <p className="text-sand-warm font-display text-lg tracking-wider">
-                        You&apos;ve watched Episode {currentEpisode}
+                        Episode {currentEpisode} Watched
                     </p>
                     <p className="text-sand-warm/50 text-sm font-sans">
-                        Waiting for the host to score this episode.
+                        Waiting for the host to enter results and score this episode.
                     </p>
                 </FijianCard>
             )}

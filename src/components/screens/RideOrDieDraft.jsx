@@ -196,10 +196,16 @@ export default function RideOrDieDraft() {
         <div className="space-y-6 max-w-2xl mx-auto">
             <header className="text-center">
                 <h2 className="font-display text-4xl tracking-wider text-sand-warm drop-shadow-text">Sevu</h2>
-                <p className="text-sand-warm/70 text-sm mt-1">Ride or Die Draft &middot; Pick 2 exclusive allies</p>
+                <p className="text-sand-warm/70 text-sm mt-1">Ride or Die Draft</p>
             </header>
 
             <DraftStatus draftState={draftState} leagueMembers={leagueMembers} user={user} />
+
+            <p className="text-sand-warm/60 text-xs font-sans leading-relaxed text-center max-w-sm mx-auto">
+                Draft 2 contestants as your Ride or Dies. These are exclusive &mdash; no one else in
+                your league can have the same picks. They earn you passive points all season just for
+                surviving (+2/ep), plus bonuses for reaching the finale (+15) or winning (+30).
+            </p>
 
             {error && <p className="text-amber text-xs text-center" role="alert">{error}</p>}
 

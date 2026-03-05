@@ -87,12 +87,12 @@ function ScarcityInfo({ episodeData, user }) {
 
     return (
         <FijianCard className="p-4">
-            <FijianSectionHeader title="Scarcity Report" />
+            <FijianSectionHeader title="Exclusivity Bonus" />
             {exclusive.length > 0 && (
                 <div className="mb-3">
                     <div className="flex items-center gap-1.5 mb-1">
                         <Icon name="star" className="text-torch text-sm" />
-                        <span className="text-torch text-xs font-bold">1.5x Bonus Eligible</span>
+                        <span className="text-torch text-xs font-bold">1.5&times; bonus &mdash; only you picked them</span>
                     </div>
                     <div className="flex flex-wrap gap-1">
                         {exclusive.map(id => {
@@ -134,10 +134,10 @@ export default function EpisodeLockScreen() {
     return (
         <div className="space-y-5">
             <FijianCard className="p-5 text-center border-fire-400/30 shadow-fire">
-                <div className="text-3xl mb-2 animate-flicker" aria-hidden>🔥</div>
-                <p className="font-display text-2xl tracking-wider text-fire-400">Torch Lit &mdash; Ep {currentEpisode}</p>
-                <p className="text-clay text-sm mt-1 font-serif italic">
-                    Your picks are locked in. Enjoy the show!
+                <div className="text-3xl mb-2 animate-flicker" aria-hidden>📺</div>
+                <p className="font-display text-2xl tracking-wider text-fire-400">Watching Episode {currentEpisode}</p>
+                <p className="text-sand-warm/60 text-sm mt-1 font-sans">
+                    Your picks and predictions are locked in. Enjoy the show!
                 </p>
             </FijianCard>
 

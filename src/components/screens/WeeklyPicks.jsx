@@ -55,6 +55,11 @@ export default function WeeklyPicks() {
                 </span>
             </div>
 
+            <p className="text-sand-warm/60 text-xs font-sans leading-relaxed">
+                Choose {maxPicks} contestants to score for you this episode. You can pick anyone still in the game.
+                If you&apos;re the only player who picks someone, you get a <strong className="text-ochre">1.5&times; bonus</strong> on their points.
+            </p>
+
             {saved && (
                 <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-jungle-400/10 border border-jungle-400/20">
                     <Icon name="check_circle" className="text-jungle-400 text-sm" />

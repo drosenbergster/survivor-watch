@@ -32,8 +32,6 @@ export default function App() {
     const { user, authLoading, league, leagueId, leagueLoading, draftState, passports, onboardingComplete, completeOnboarding } = useApp();
     const [activeTab, setActiveTab] = useState('draft');
     const [joinParam, setJoinParam] = useState(null);
-    const [showTutorial, setShowTutorial] = useState(false);
-
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const code = params.get('join');
@@ -46,14 +44,13 @@ export default function App() {
     if (authLoading) return <LoadingScreen />;
     if (!user) return <AuthScreen />;
     if (!onboardingComplete) return <WelcomeCarousel onComplete={completeOnboarding} />;
-    if (showTutorial) return <WelcomeCarousel onComplete={() => setShowTutorial(false)} />;
     if (leagueLoading) return <LoadingScreen />;
     if (!leagueId) return <LeagueGate prefillCode={joinParam} />;
 
     // League status: lobby → draft → active
     const status = league?.status || 'lobby';
 
-    const shellProps = { tabs: TABS, activeTab, onTabChange: setActiveTab, onShowTutorial: () => setShowTutorial(true) };
+    const shellProps = { tabs: TABS, activeTab, onTabChange: setActiveTab, onShowTutorial: () => setActiveTab('rules') };
 
     if (status === 'lobby') {
         return (

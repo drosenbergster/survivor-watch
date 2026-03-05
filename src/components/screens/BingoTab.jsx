@@ -112,7 +112,7 @@ export default function BingoTab() {
                 <p className="text-sand-warm/70 text-sm mt-1 font-sans inline-flex items-center justify-center">
                     Bingo
                     <HintBadge hintKey="bingo">
-                        Mark squares as events happen while you watch. Complete a line for +5 pts, or black out the whole card for +50 pts! Each episode gets a fresh card.
+                        Each episode you get a fresh bingo card. Tap &quot;Start Watching&quot; to activate it, then mark squares as events happen. Complete a line for +5 pts, or the whole card for +50 pts!
                     </HintBadge>
                 </p>
             </header>

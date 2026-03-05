@@ -100,7 +100,7 @@ export const ENGAGEMENT_SCORING = [
             { label: 'Survive per Episode', points: 2, emoji: '✅' },
             { label: 'Reach Finale', points: 15, emoji: '🏛️' },
             { label: 'Win Season', points: 30, emoji: '👑' },
-            { label: 'Scarcity Multiplier', points: '1.5×', emoji: '💎', note: 'Applied when 3+ players share a pick' },
+            { label: 'Exclusivity Bonus', points: '1.5×', emoji: '💎', note: 'If you are the only player who picked a contestant, their points are multiplied by 1.5×' },
         ],
     },
     {

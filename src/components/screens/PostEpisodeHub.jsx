@@ -105,7 +105,8 @@ function PlayerOfEpisode({ episodeNum }) {
         <FijianCard className="p-4 space-y-4">
             <FijianSectionHeader title="Player of the Episode" />
             <p className="text-clay text-xs font-serif italic">
-                Rank the top 3 performers. Tap a medal to assign.
+                Rank the top 3 performers this episode. Whoever wins the vote earns +7 pts
+                for the player(s) who had them as a weekly pick. Tap the medals to assign 1st, 2nd, 3rd.
             </p>
             <div className="space-y-2">
                 {top3.map(c => {
@@ -189,7 +190,8 @@ function ImpactRating({ episodeNum }) {
         <FijianCard className="p-4 space-y-3">
             <FijianSectionHeader title="Impact Rating" />
             <p className="text-clay text-xs font-serif italic">
-                Rate {eliminated?.name}&apos;s game impact. Their pick owner(s) earn the group average.
+                How much did {eliminated?.name} impact the game? The average rating becomes bonus points
+                for whoever had them as a weekly pick this episode.
             </p>
             <div className="flex gap-2 justify-center">
                 {[1, 2, 3, 4, 5].map(v => (
@@ -223,6 +225,9 @@ export default function PostEpisodeHub({ episodeNum }) {
             <FijianCard className="p-4 text-center border-ochre/20">
                 <p className="font-display text-xl tracking-wider text-ochre">Post-Episode</p>
                 <p className="text-sand-warm/50 text-xs font-sans mt-1">Episode {episodeNum} wrap-up</p>
+                <p className="text-sand-warm/50 text-xs font-sans mt-2 max-w-xs mx-auto">
+                    Vote for who had the best episode and rate the eliminated player&apos;s game impact. These social scores count toward your season total.
+                </p>
             </FijianCard>
 
             <PlayerOfEpisode episodeNum={episodeNum} />

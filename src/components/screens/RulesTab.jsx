@@ -5,6 +5,61 @@ import TribeManagement from './TribeManagement';
 import SurvivorAuction from './SurvivorAuction';
 import LeagueSettings from './LeagueSettings';
 
+const HOW_IT_WORKS = [
+  {
+    icon: '🤝',
+    title: 'Draft Your Ride or Dies',
+    body: 'Before the season starts, your league holds a snake draft. Each player picks two exclusive contestants who earn passive points all season long.',
+  },
+  {
+    icon: '🎯',
+    title: 'Make Weekly Picks & Predictions',
+    body: 'Before each episode, pick two contestants to score for you that week and make predictions: who goes home, bold calls, and yes/no prop bets.',
+  },
+  {
+    icon: '📺',
+    title: 'Start Watching',
+    body: 'When you\'re ready to watch, tap "Start Watching" on the Bingo tab. This locks in your picks and predictions and activates your bingo card. Watch live or catch up later — you control your own timing.',
+  },
+  {
+    icon: '🗳️',
+    title: 'Vote at Tribal Council',
+    body: 'When tribal council starts, pause the show and cast your snap vote for who you think is going home. Correct votes earn +8 points.',
+  },
+  {
+    icon: '📊',
+    title: 'Score & Compete',
+    body: 'After you finish watching, tap "Done Watching." The host enters game results and scores the episode. Points come from contestant performance, predictions, bingo, and social votes.',
+  },
+];
+
+const EPISODE_FLOW = [
+  {
+    title: 'Save Picks & Predictions (Draft Tab)',
+    body: 'Choose your two weekly contestants and submit your predictions. Do this before you start the episode.',
+  },
+  {
+    title: 'Start Watching (Bingo Tab)',
+    body: 'Tap "Start Watching" when you\'re ready to press play. This locks your picks and predictions and activates your bingo card and tribal snap vote.',
+  },
+  {
+    title: 'Play Bingo While You Watch',
+    body: 'Mark off bingo squares as events happen during the episode. Complete a line for +5 pts or the whole card for +50.',
+  },
+  {
+    title: 'Snap Vote at Tribal Council',
+    body: 'When tribal council starts, pause and pick who you think gets voted out. This is your live in-the-moment call (+8 pts if correct).',
+  },
+  {
+    title: 'Finish the Episode',
+    body: 'When the episode ends, tap "Done Watching" to lock in your bingo card. The host then enters the game results and scores the episode.',
+  },
+  {
+    title: 'Post-Episode Votes (After Scoring)',
+    body: 'Vote for Player of the Episode and rate the eliminated contestant\'s game impact. These social points add up over the season.',
+  },
+];
+
 const EVENT_ICONS = {
   survived: 'check_circle',
   immunity: 'waves',
@@ -40,6 +95,184 @@ export default function RulesTab() {
         </div>
       </header>
 
+      {/* ── How It Works ── */}
+      <section>
+        <FijianSectionHeader title="Tukutuku" subtitle="How It Works" variant="rules" />
+        <div className="space-y-6">
+          {HOW_IT_WORKS.map((step, i) => (
+            <div key={i} className="flex gap-4">
+              <div className="shrink-0 size-8 rounded-full border border-terracotta flex items-center justify-center text-lg">
+                {step.icon}
+              </div>
+              <div>
+                <h4 className="font-wood-serif text-lg text-sand-warm leading-none mb-1">{step.title}</h4>
+                <p className="text-sm text-bleached-sand/70 leading-relaxed italic font-sans">
+                  {step.body}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Two Ways to Earn ── */}
+      <section>
+        <FijianSectionHeader title="Veitokani" subtitle="Two Ways to Earn from Contestants" variant="rules" />
+
+        <p className="text-sm text-bleached-sand/70 leading-relaxed font-sans mb-5">
+          You earn points from contestants in two completely separate ways. Think of it like
+          investing: Ride or Dies are your <strong className="text-sand-warm">long-term stock picks</strong>, while
+          Weekly Picks are <strong className="text-sand-warm">short-term bets</strong> you make each episode.
+        </p>
+
+        <div className="space-y-5">
+          {/* Ride or Die */}
+          <div className="bg-black/20 rounded-xl p-5 border border-terracotta/20 space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🤝</span>
+              <h4 className="font-wood-serif text-lg text-sand-warm">Ride or Die &mdash; Your Season-Long Alliance</h4>
+            </div>
+            <p className="text-sm text-bleached-sand/70 leading-relaxed font-sans">
+              Before the season begins, your league holds a <strong className="text-sand-warm">snake draft</strong>.
+              Each player drafts <strong className="text-sand-warm">two exclusive contestants</strong> &mdash; no one else
+              in your league can have the same ones. These picks are <strong className="text-sand-warm">locked for the
+              entire season</strong>. You never change them.
+            </p>
+            <p className="text-sm text-bleached-sand/70 leading-relaxed font-sans">
+              Your Ride or Dies earn you <strong className="text-sand-warm">passive points automatically</strong> just
+              by staying in the game:
+            </p>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="bg-black/30 rounded-lg py-2 px-1">
+                <p className="font-display text-xl text-sand-warm">+2</p>
+                <p className="text-[10px] text-bleached-sand/50 font-sans uppercase">per episode survived</p>
+              </div>
+              <div className="bg-black/30 rounded-lg py-2 px-1">
+                <p className="font-display text-xl text-sand-warm">+15</p>
+                <p className="text-[10px] text-bleached-sand/50 font-sans uppercase">reach finale</p>
+              </div>
+              <div className="bg-black/30 rounded-lg py-2 px-1">
+                <p className="font-display text-xl text-sand-warm">+30</p>
+                <p className="text-[10px] text-bleached-sand/50 font-sans uppercase">win the season</p>
+              </div>
+            </div>
+            <p className="text-xs text-bleached-sand/50 italic font-sans">
+              Strategy: Draft contestants you think will last the longest, not necessarily the flashiest players.
+            </p>
+          </div>
+
+          {/* Weekly Picks */}
+          <div className="bg-black/20 rounded-xl p-5 border border-terracotta/20 space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🎯</span>
+              <h4 className="font-wood-serif text-lg text-sand-warm">Weekly Picks &mdash; Your Episode-by-Episode Bet</h4>
+            </div>
+            <p className="text-sm text-bleached-sand/70 leading-relaxed font-sans">
+              Before each episode, you choose <strong className="text-sand-warm">two contestants from anyone still in the game</strong>.
+              These don&apos;t have to be your Ride or Dies &mdash; you can pick <em>any</em> remaining contestant,
+              even the same ones other players pick.
+            </p>
+            <p className="text-sm text-bleached-sand/70 leading-relaxed font-sans">
+              Your weekly picks earn points based on <strong className="text-sand-warm">what actually happens during that
+              episode</strong>: winning challenges, finding idols, playing advantages, surviving tribal council, and more.
+              The full event list is in the scoring table below.
+            </p>
+            <p className="text-xs text-bleached-sand/50 italic font-sans">
+              Strategy: Pick contestants you think will have a big episode &mdash; challenge beasts, players on the
+              chopping block who might survive, or anyone you think might find an idol.
+            </p>
+          </div>
+
+          {/* Exclusivity Bonus */}
+          <div className="bg-terracotta/5 rounded-xl p-5 border-2 border-dashed border-terracotta/30 space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">💎</span>
+              <h4 className="font-wood-serif text-lg text-sand-warm">Exclusivity Bonus &mdash; 1.5&times; for Going Solo</h4>
+            </div>
+            <p className="text-sm text-bleached-sand/70 leading-relaxed font-sans">
+              This applies to <strong className="text-sand-warm">Weekly Picks only</strong>. After everyone locks in
+              their picks for an episode, the app checks if any contestant was picked by
+              only <strong className="text-sand-warm">one player</strong> in the league.
+            </p>
+            <p className="text-sm text-bleached-sand/70 leading-relaxed font-sans">
+              If you&apos;re the <strong className="text-terracotta">only person</strong> who picked a contestant, all
+              of that contestant&apos;s episode points are multiplied
+              by <strong className="text-terracotta">1.5&times;</strong> for you. If multiple players picked the same
+              contestant, everyone gets the normal points &mdash; no bonus.
+            </p>
+            <div className="bg-black/30 rounded-lg p-3 text-sm font-sans space-y-1">
+              <p className="text-bleached-sand/70">
+                <strong className="text-sand-warm">Example:</strong> You pick Ozzy, and no one else does. Ozzy wins
+                individual immunity (+10) and survives (+2) = 12 pts. With the exclusivity
+                bonus: <strong className="text-terracotta">12 &times; 1.5 = 18 pts</strong> for you.
+              </p>
+              <p className="text-bleached-sand/50 text-xs italic">
+                If two players had both picked Ozzy, they&apos;d each get the normal 12.
+              </p>
+            </div>
+          </div>
+
+          {/* Quick comparison */}
+          <div className="bg-black/20 rounded-xl overflow-hidden border border-terracotta/20">
+            <table className="w-full text-sm font-sans">
+              <thead className="bg-terracotta/10 border-b border-terracotta/20">
+                <tr>
+                  <th className="px-4 py-2.5 text-left font-wood-serif text-sand-warm" scope="col" />
+                  <th className="px-4 py-2.5 text-center font-wood-serif text-sand-warm" scope="col">🤝 Ride or Die</th>
+                  <th className="px-4 py-2.5 text-center font-wood-serif text-sand-warm" scope="col">🎯 Weekly Picks</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-terracotta/10 text-bleached-sand/70">
+                <tr>
+                  <td className="px-4 py-2.5 font-bold text-sand-warm">When chosen</td>
+                  <td className="px-4 py-2.5 text-center">Once, before the season</td>
+                  <td className="px-4 py-2.5 text-center">Every episode</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-2.5 font-bold text-sand-warm">Can you change them?</td>
+                  <td className="px-4 py-2.5 text-center">No &mdash; locked all season</td>
+                  <td className="px-4 py-2.5 text-center">Yes &mdash; new picks each week</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-2.5 font-bold text-sand-warm">Who can you pick?</td>
+                  <td className="px-4 py-2.5 text-center">Exclusive (no overlap)</td>
+                  <td className="px-4 py-2.5 text-center">Anyone remaining</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-2.5 font-bold text-sand-warm">How you score</td>
+                  <td className="px-4 py-2.5 text-center">Passive survival points</td>
+                  <td className="px-4 py-2.5 text-center">Episode event points</td>
+                </tr>
+                <tr>
+                  <td className="px-4 py-2.5 font-bold text-sand-warm">Exclusivity bonus?</td>
+                  <td className="px-4 py-2.5 text-center">No</td>
+                  <td className="px-4 py-2.5 text-center">Yes (1.5&times;)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Episode Flow ── */}
+      <section>
+        <FijianSectionHeader title="Siga" subtitle="Episode Flow" variant="rules" />
+        <div className="space-y-4">
+          {EPISODE_FLOW.map((step, i) => (
+            <div key={i} className="flex gap-3 items-start">
+              <div className="shrink-0 size-7 rounded-full bg-terracotta/10 border border-terracotta/30 flex items-center justify-center font-wood-serif text-terracotta font-bold text-sm">
+                {i + 1}
+              </div>
+              <div>
+                <h4 className="font-wood-serif text-base text-sand-warm leading-none mb-1">{step.title}</h4>
+                <p className="text-sm text-bleached-sand/70 leading-relaxed italic font-sans">{step.body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Bracket Draft ── */}
       <section>
         <FijianSectionHeader title="Sevu" subtitle="Bracket Draft" variant="rules" />
         <div className="space-y-6">

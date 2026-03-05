@@ -57,6 +57,10 @@ export default function Predictions() {
         <div className="space-y-4">
             <FijianSectionHeader title="Predictions" />
 
+            <p className="text-sand-warm/60 text-xs font-sans leading-relaxed">
+                Lock in your predictions before watching. Points are awarded after the host scores the episode.
+            </p>
+
             {saved && (
                 <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-jungle-400/10 border border-jungle-400/20">
                     <Icon name="check_circle" className="text-jungle-400 text-sm" />
@@ -93,7 +97,7 @@ export default function Predictions() {
                     <span className="text-ochre/70 text-xs ml-auto">+10 pts</span>
                 </div>
                 <p className="text-clay text-xs mb-2 font-serif italic">
-                    Make a bold call about one of your picks this episode.
+                    Predict something specific about one of your weekly picks. The host decides if it came true.
                 </p>
                 {pickedCastaways.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-2">
