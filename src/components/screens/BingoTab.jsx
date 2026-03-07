@@ -126,11 +126,7 @@ export default function BingoTab() {
                 />
             )}
 
-            {isOpen && !watching && !watched && (
-                <LightYourTorch episodeNum={selectedEp} />
-            )}
-
-            {isScored && !watched && (
+            {(isOpen || isScored) && !watched && (
                 <LightYourTorch episodeNum={selectedEp} />
             )}
 
@@ -145,7 +141,7 @@ export default function BingoTab() {
                 </div>
             )}
 
-            {isScored && watched && (
+            {watched && (
                 <div className="space-y-3">
                     <FijianSectionHeader title="Your Card" />
                     <div className="max-w-sm mx-auto">
