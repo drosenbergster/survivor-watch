@@ -236,19 +236,37 @@ export default function AdminScoring({ episodeNum }) {
             {section === 'props' && (
                 <div className="space-y-3">
                     <h4 className="text-sand-warm/80 font-sans font-semibold text-sm">Prop Bet Outcomes</h4>
-                    {propBets.map(prop => (
-                        <button
-                            key={prop.id}
-                            onClick={() => setPropBetResults(prev => ({ ...prev, [prop.id]: !prev[prop.id] }))}
-                            className={`w-full text-left px-4 py-3 rounded-lg text-sm font-sans transition-all flex items-center gap-3 ${propBetResults[prop.id]
-                                ? 'bg-green-900/40 text-green-300 border border-green-700/50'
-                                : 'bg-stone-800 text-sand-warm/60 border border-transparent'
-                                }`}
-                        >
-                            <span className="text-lg">{propBetResults[prop.id] ? '✅' : '⬜'}</span>
-                            {prop.text}
-                        </button>
-                    ))}
+                    <p className="text-sand-warm/50 text-xs font-sans">Did this happen? Mark YES or NO. Unanswered props won&apos;t affect scores.</p>
+                    {propBets.map(prop => {
+                        const result = propBetResults[prop.id];
+                        return (
+                            <div key={prop.id} className="flex items-center gap-3 px-4 py-3 rounded-lg bg-stone-800 text-sm font-sans">
+                                <span className="flex-1 text-sand-warm/80">{prop.text}</span>
+                                <div className="flex gap-1 shrink-0">
+                                    <button
+                                        onClick={() => setPropBetResults(prev => ({ ...prev, [prop.id]: true }))}
+                                        className={`px-3 py-1 rounded text-xs font-bold transition-all ${
+                                            result === true
+                                                ? 'bg-green-500 text-white'
+                                                : 'bg-stone-700 text-sand-warm/50 hover:bg-stone-600'
+                                        }`}
+                                    >
+                                        YES
+                                    </button>
+                                    <button
+                                        onClick={() => setPropBetResults(prev => ({ ...prev, [prop.id]: false }))}
+                                        className={`px-3 py-1 rounded text-xs font-bold transition-all ${
+                                            result === false
+                                                ? 'bg-red-500 text-white'
+                                                : 'bg-stone-700 text-sand-warm/50 hover:bg-stone-600'
+                                        }`}
+                                    >
+                                        NO
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })}
                     {propBets.length === 0 && (
                         <p className="text-sm text-sand-warm/60 italic font-sans">No prop bets this episode</p>
                     )}
@@ -258,19 +276,37 @@ export default function AdminScoring({ episodeNum }) {
             {section === 'sidebets' && (
                 <div className="space-y-3">
                     <h4 className="text-sand-warm/80 font-sans font-semibold text-sm">Tribal Side Bet Outcomes</h4>
-                    {sideBets.map(bet => (
-                        <button
-                            key={bet.id}
-                            onClick={() => setSideBetResultsState(prev => ({ ...prev, [bet.id]: !prev[bet.id] }))}
-                            className={`w-full text-left px-4 py-3 rounded-lg text-sm font-sans transition-all flex items-center gap-3 ${sideBetResultsState[bet.id]
-                                ? 'bg-green-900/40 text-green-300 border border-green-700/50'
-                                : 'bg-stone-800 text-sand-warm/60 border border-transparent'
-                                }`}
-                        >
-                            <span className="text-lg">{sideBetResultsState[bet.id] ? '✅' : '⬜'}</span>
-                            {bet.text}
-                        </button>
-                    ))}
+                    <p className="text-sand-warm/50 text-xs font-sans">Mark YES or NO. Unanswered bets won&apos;t affect scores.</p>
+                    {sideBets.map(bet => {
+                        const result = sideBetResultsState[bet.id];
+                        return (
+                            <div key={bet.id} className="flex items-center gap-3 px-4 py-3 rounded-lg bg-stone-800 text-sm font-sans">
+                                <span className="flex-1 text-sand-warm/80">{bet.text}</span>
+                                <div className="flex gap-1 shrink-0">
+                                    <button
+                                        onClick={() => setSideBetResultsState(prev => ({ ...prev, [bet.id]: true }))}
+                                        className={`px-3 py-1 rounded text-xs font-bold transition-all ${
+                                            result === true
+                                                ? 'bg-green-500 text-white'
+                                                : 'bg-stone-700 text-sand-warm/50 hover:bg-stone-600'
+                                        }`}
+                                    >
+                                        YES
+                                    </button>
+                                    <button
+                                        onClick={() => setSideBetResultsState(prev => ({ ...prev, [bet.id]: false }))}
+                                        className={`px-3 py-1 rounded text-xs font-bold transition-all ${
+                                            result === false
+                                                ? 'bg-red-500 text-white'
+                                                : 'bg-stone-700 text-sand-warm/50 hover:bg-stone-600'
+                                        }`}
+                                    >
+                                        NO
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             )}
 

@@ -47,16 +47,20 @@ function PredictionsSummary({ predictions, propBets }) {
                     </div>
                 </div>
             )}
-            {propBets && propBets.length > 0 && predictions.propBets && (
+            {propBets && propBets.length > 0 && (
                 <div>
                     <span className="text-clay text-xs block mb-1.5">Prop bets:</span>
                     <div className="space-y-1">
                         {propBets.map(bet => {
-                            const answer = predictions.propBets[bet.id];
+                            const answer = predictions.propBets?.[bet.id];
                             return (
                                 <div key={bet.id} className="flex items-center gap-2 text-xs">
-                                    <span className={answer ? 'text-jungle-400' : 'text-sand-warm/50'}>
-                                        {answer ? 'YES' : 'NO'}
+                                    <span className={
+                                        answer === true ? 'text-jungle-400 font-bold' :
+                                        answer === false ? 'text-fire-400 font-bold' :
+                                        'text-sand-warm/30'
+                                    }>
+                                        {answer === true ? 'YES' : answer === false ? 'NO' : '—'}
                                     </span>
                                     <span className="text-stone-400">{bet.text}</span>
                                 </div>

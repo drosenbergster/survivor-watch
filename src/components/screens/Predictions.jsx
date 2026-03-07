@@ -30,9 +30,9 @@ export default function Predictions() {
         }
     }, [myPredictions]);
 
-    const toggleProp = (propId) => {
+    const setProp = (propId, value) => {
         setSaved(false);
-        setPropAnswers(prev => ({ ...prev, [propId]: !prev[propId] }));
+        setPropAnswers(prev => ({ ...prev, [propId]: value }));
     };
 
     const handleSubmit = async () => {
@@ -132,30 +132,42 @@ export default function Predictions() {
                     </div>
                     <div className="space-y-2">
                         {propBets.map((bet) => {
-                            const answered = propAnswers[bet.id] === true;
+                            const answer = propAnswers[bet.id];
                             return (
-                                <button
+                                <div
                                     key={bet.id}
-                                    type="button"
-                                    onClick={() => toggleProp(bet.id)}
-                                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-sm transition-all cursor-pointer
-                                        ${answered
-                                            ? 'bg-ochre/15 border border-ochre/40 text-sand-warm'
-                                            : 'bg-stone-800/30 border border-transparent text-clay hover:bg-stone-800/50'
-                                        }
-                                    `}
+                                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-stone-800/30 border border-transparent"
                                 >
-                                    <div className={`w-5 h-5 rounded flex items-center justify-center shrink-0 text-xs ${
-                                        answered ? 'bg-ochre text-stone-dark' : 'border border-earth/40'
-                                    }`}>
-                                        {answered && <Icon name="check" className="text-xs" />}
+                                    <span className="flex-1 text-sm text-sand-warm">{bet.text}</span>
+                                    <div className="flex gap-1 shrink-0">
+                                        <button
+                                            type="button"
+                                            onClick={() => setProp(bet.id, true)}
+                                            className={`px-3 py-1 rounded text-xs font-bold transition-all cursor-pointer ${
+                                                answer === true
+                                                    ? 'bg-jungle-400 text-white'
+                                                    : 'bg-stone-700 text-sand-warm/50 hover:bg-stone-600'
+                                            }`}
+                                        >
+                                            YES
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setProp(bet.id, false)}
+                                            className={`px-3 py-1 rounded text-xs font-bold transition-all cursor-pointer ${
+                                                answer === false
+                                                    ? 'bg-fire-400 text-white'
+                                                    : 'bg-stone-700 text-sand-warm/50 hover:bg-stone-600'
+                                            }`}
+                                        >
+                                            NO
+                                        </button>
                                     </div>
-                                    <span className="flex-1">{bet.text}</span>
-                                </button>
+                                </div>
                             );
                         })}
                         <p className="text-sand-warm/50 text-xs text-center pt-1">
-                            Tap to predict YES. Leave unchecked for NO.
+                            Tap YES or NO for each prop bet.
                         </p>
                     </div>
                 </FijianCard>

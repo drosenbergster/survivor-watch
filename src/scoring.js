@@ -126,12 +126,13 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
             breakdown.predictions.push({ type: 'bold', correct: true, points: CORRECT_BOLD_PREDICTION_POINTS });
         }
 
-        // Prop bets
+        // Prop bets — only score when admin has explicitly set a result
         const playerProps = playerPred.propBets || {};
         for (const prop of propBets) {
+            const correctAnswer = propBetResults[prop.id];
+            if (correctAnswer === undefined || correctAnswer === null) continue;
             const playerAnswer = !!playerProps[prop.id];
-            const correctAnswer = !!propBetResults[prop.id];
-            if (playerAnswer === correctAnswer) {
+            if (playerAnswer === !!correctAnswer) {
                 predictionTotal += CORRECT_PROP_BET_POINTS;
                 breakdown.predictions.push({
                     type: 'propBet',
@@ -149,12 +150,13 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
             breakdown.predictions.push({ type: 'snapVote', correct: true, points: CORRECT_SNAP_VOTE_POINTS });
         }
 
-        // --- Side bet scoring ---
+        // --- Side bet scoring — only score when admin has explicitly set a result ---
         const playerSB = playerSideBets[uid] || {};
         for (const bet of sideBets) {
+            const correctAnswer = sideBetResults[bet.id];
+            if (correctAnswer === undefined || correctAnswer === null) continue;
             const playerAnswer = !!playerSB[bet.id];
-            const correctAnswer = !!sideBetResults[bet.id];
-            if (playerAnswer === correctAnswer) {
+            if (playerAnswer === !!correctAnswer) {
                 predictionTotal += CORRECT_SIDE_BET_POINTS;
                 breakdown.predictions.push({
                     type: 'sideBet',
