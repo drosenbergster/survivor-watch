@@ -519,57 +519,63 @@ export function detectAchievements(episodes, rideOrDies, memberUids, bingoAllEpi
 }
 
 /**
- * Generate the Auto-Commissioner report for a given episode.
- * Returns an object with headline, standings snapshot, superlatives, etc.
+ * Generate the "Previously On... Survivor" recap for a given episode.
+ * Builds Jeff Probst–style narrative from game events, confessionals, big moments,
+ * tribal council data, and fantasy league standings.
  */
-export function generateCommissionerReport(epNum, episodes, standings, perEpisode, members, achievements) {
+export function generateProbstRecap(epNum, episodes, standings, perEpisode, members, achievements) {
     const epScores = perEpisode?.[epNum] || {};
     const ep = episodes?.[epNum];
     if (!ep) return null;
 
     const memberNames = (uid) => members?.[uid]?.displayName || uid;
     const contestantName = (cid) => ALL_CASTAWAYS.find(c => c.id === cid)?.name || cid;
+    const gameEvents = ep.gameEvents || {};
+    const contestantScores = scoreContestants(gameEvents);
 
-    // Biggest mover: who gained the most this episode
+    // ── Superlatives ──
     let biggestMover = null;
     let biggestMoverPts = 0;
-    for (const [uid, score] of Object.entries(epScores)) {
-        if (score.total > biggestMoverPts) {
-            biggestMoverPts = score.total;
-            biggestMover = uid;
-        }
-    }
-
-    // Worst episode
     let worstPlayer = null;
     let worstPts = Infinity;
     for (const [uid, score] of Object.entries(epScores)) {
-        if (score.total < worstPts) {
-            worstPts = score.total;
-            worstPlayer = uid;
-        }
+        if (score.total > biggestMoverPts) { biggestMoverPts = score.total; biggestMover = uid; }
+        if (score.total < worstPts) { worstPts = score.total; worstPlayer = uid; }
     }
 
-    // Best pick: highest scoring individual contestant this episode
     let bestPick = null;
     let bestPickPts = 0;
-    const contestantScores = scoreContestants(ep.gameEvents || {});
     for (const [cid, pts] of Object.entries(contestantScores)) {
-        if (pts > bestPickPts) {
-            bestPickPts = pts;
-            bestPick = cid;
+        if (pts > bestPickPts) { bestPickPts = pts; bestPick = cid; }
+    }
+
+    // ── Narrative data extraction ──
+    const eliminated = (ep.eliminatedThisEp || []).map(contestantName);
+    const eliminationMethod = ep.eliminationMethod || 'voted_out';
+
+    const immunityWinners = [];
+    const rewardWinners = [];
+    const idolPlays = [];
+    const advantagePlays = [];
+    const survivedWithVotes = [];
+    const idolFinds = [];
+
+    for (const [cid, events] of Object.entries(gameEvents)) {
+        const name = contestantName(cid);
+        for (const evt of events) {
+            if (evt === 'individual_immunity') immunityWinners.push(name);
+            if (evt === 'individual_reward') rewardWinners.push(name);
+            if (evt === 'idol_played_success') idolPlays.push(name);
+            if (evt === 'advantage_used') advantagePlays.push(name);
+            if (evt === 'survived_with_votes') survivedWithVotes.push(name);
+            if (evt === 'idol_found') idolFinds.push(name);
         }
     }
 
-    // Elimination
-    const eliminated = (ep.eliminatedThisEp || []).map(contestantName);
-
-    // Correct snap votes at tribal
     const correctPredictors = Object.entries(ep.snapVotes || {})
         .filter(([, vote]) => (ep.eliminatedThisEp || []).includes(vote?.contestantId))
         .map(([uid]) => memberNames(uid));
 
-    // New achievements this episode (simplified — just list all)
     const newBadges = [];
     for (const [uid, badges] of Object.entries(achievements || {})) {
         for (const badge of badges) {
@@ -577,25 +583,109 @@ export function generateCommissionerReport(epNum, episodes, standings, perEpisod
         }
     }
 
-    // Headlines — ESPN-style tone
+    // ── Probst-voice narrative paragraphs ──
+    const narrative = [];
+
+    if (immunityWinners.length > 0 || rewardWinners.length > 0) {
+        const parts = [];
+        if (immunityWinners.length > 0) {
+            parts.push(`${immunityWinners.join(' and ')} ${immunityWinners.length === 1 ? 'wins' : 'win'} individual immunity, safe at tonight's tribal council`);
+        }
+        if (rewardWinners.length > 0) {
+            parts.push(`${rewardWinners.join(' and ')} ${rewardWinners.length === 1 ? 'takes' : 'take'} home reward`);
+        }
+        narrative.push(parts.join('. ') + '.');
+    }
+
+    if (idolFinds.length > 0 || idolPlays.length > 0 || advantagePlays.length > 0) {
+        const parts = [];
+        if (idolFinds.length > 0) {
+            parts.push(`${idolFinds.join(' and ')} ${idolFinds.length === 1 ? 'finds' : 'find'} a hidden immunity idol`);
+        }
+        if (idolPlays.length > 0) {
+            parts.push(`${idolPlays.join(' and ')} ${idolPlays.length === 1 ? 'plays' : 'play'} an idol successfully — negating all votes`);
+        }
+        if (advantagePlays.length > 0) {
+            parts.push(`${advantagePlays.join(' and ')} ${advantagePlays.length === 1 ? 'uses' : 'use'} an advantage to shake up the game`);
+        }
+        narrative.push(parts.join('. ') + '.');
+    }
+
+    if (survivedWithVotes.length > 0) {
+        narrative.push(
+            `${survivedWithVotes.join(' and ')} ${survivedWithVotes.length === 1 ? 'receives' : 'receive'} votes at tribal but ${survivedWithVotes.length === 1 ? 'survives' : 'survive'} to see another day.`
+        );
+    }
+
+    if (eliminated.length > 0) {
+        const elimName = eliminated.join(' & ');
+        const methodText = {
+            voted_out: `the tribe has spoken — ${elimName}'s torch is snuffed`,
+            medevac: `in a heartbreaking turn, ${elimName} is pulled from the game by medical`,
+            quit: `${elimName} makes the difficult decision to leave the game`,
+            fire: `${elimName} falls short in fire-making and their torch is snuffed`,
+        };
+        narrative.push((methodText[eliminationMethod] || methodText.voted_out) + '.');
+    }
+
+    // ── Headlines (Probst voice) ──
     const headlines = [];
-    if (biggestMover) {
+    if (idolPlays.length > 0) {
+        headlines.push(`${idolPlays[0]} drops a bomb at tribal council`);
+    } else if (biggestMover) {
         headlines.push(`${memberNames(biggestMover)} dominates Episode ${epNum} with ${biggestMoverPts} points`);
     }
     if (eliminated.length > 0) {
-        headlines.push(`${eliminated.join(' & ')} ${eliminated.length === 1 ? 'has' : 'have'} their torch snuffed`);
+        if (eliminationMethod === 'medevac') {
+            headlines.push(`${eliminated.join(' & ')} — medical evacuation`);
+        } else {
+            headlines.push(`${eliminated.join(' & ')}: "The tribe has spoken"`);
+        }
     }
     if (standings?.[0]) {
-        headlines.push(`${memberNames(standings[0].uid)} leads the standings with ${standings[0].total} total points`);
+        headlines.push(`${memberNames(standings[0].uid)} leads the game with ${standings[0].total} points`);
     }
     if (correctPredictors.length > 0) {
-        headlines.push(`${correctPredictors.join(', ')} called the boot at tribal`);
+        headlines.push(`${correctPredictors.join(', ')} called it at tribal`);
+    }
+
+    // ── Confessional count (if available via autoImport) ──
+    const confessionals = ep.confessionals || null;
+    let confessionalKing = null;
+    if (confessionals && typeof confessionals === 'object') {
+        let maxCount = 0;
+        for (const [cid, count] of Object.entries(confessionals)) {
+            if (count > maxCount) { maxCount = count; confessionalKing = { name: contestantName(cid), count }; }
+        }
+    }
+
+    // ── Exclusive pick bonuses ──
+    const exclusivePicks = [];
+    const pickCounts = {};
+    for (const [, picks] of Object.entries(ep.picks || {})) {
+        for (const cid of (picks || [])) {
+            pickCounts[cid] = (pickCounts[cid] || 0) + 1;
+        }
+    }
+    for (const [cid, count] of Object.entries(pickCounts)) {
+        if (count === 1 && contestantScores[cid] > 0) {
+            const ownerUid = Object.entries(ep.picks || {}).find(([, p]) => p?.includes(cid))?.[0];
+            if (ownerUid) {
+                exclusivePicks.push({
+                    player: memberNames(ownerUid),
+                    contestant: contestantName(cid),
+                    points: contestantScores[cid],
+                    bonus: Math.round(contestantScores[cid] * 0.5),
+                });
+            }
+        }
     }
 
     return {
         epNum,
         headline: headlines[0] || `Episode ${epNum} is in the books`,
         subheadlines: headlines.slice(1),
+        narrative,
         standings: standings?.slice(0, 6).map((s, i) => ({
             rank: i + 1,
             name: memberNames(s.uid),
@@ -606,7 +696,11 @@ export function generateCommissionerReport(epNum, episodes, standings, perEpisod
         worstEpisode: worstPlayer ? { name: memberNames(worstPlayer), points: worstPts } : null,
         bestPick: bestPick ? { name: contestantName(bestPick), points: bestPickPts } : null,
         eliminated,
+        eliminationMethod,
         correctPredictors,
+        confessionalKing,
+        exclusivePicks,
+        challengeHighlights: { immunityWinners, rewardWinners, idolPlays, advantagePlays, survivedWithVotes, idolFinds },
         newBadges: newBadges.map(b => ({ name: memberNames(b.uid), badge: b.badge?.name, emoji: b.badge?.emoji })),
     };
 }

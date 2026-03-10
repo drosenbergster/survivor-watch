@@ -8,7 +8,7 @@ import Predictions from './Predictions';
 import EpisodeLockScreen from './EpisodeLockScreen';
 import TribalSnapVote from './TribalSnapVote';
 import PostEpisodeHub from './PostEpisodeHub';
-import CommissionerReport from './CommissionerReport';
+import ProbstRecap from './ProbstRecap';
 import MergePassport from './MergePassport';
 import FinaleMode from './FinaleMode';
 
@@ -188,7 +188,7 @@ export default function DraftTab() {
 
             {isScored && watched && (
                 <>
-                    <CommissionerReport episodeNum={currentEpisode} />
+                    <ProbstRecap episodeNum={currentEpisode} />
                     <PostEpisodeHub episodeNum={currentEpisode} />
                 </>
             )}

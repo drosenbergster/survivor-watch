@@ -12,7 +12,7 @@ function EpisodeSelector({ current, total, selected, onSelect }) {
                 <button
                     key={ep}
                     onClick={() => onSelect(ep)}
-                    className={`w-9 h-9 rounded-full text-sm font-semibold transition-all ${
+                    className={`w-11 h-11 rounded-full text-sm font-semibold transition-all ${
                         ep === selected
                             ? 'bg-ochre text-black shadow-md scale-110'
                             : ep <= current

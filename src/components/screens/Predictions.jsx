@@ -82,7 +82,7 @@ export default function Predictions() {
                                     <button
                                         type="button"
                                         onClick={() => setProp(bet.id, true)}
-                                        className={`px-3 py-1 rounded text-xs font-bold transition-all cursor-pointer ${
+                                        className={`px-4 py-2 rounded text-xs font-bold transition-all cursor-pointer min-h-[44px] ${
                                             answer === true
                                                 ? 'bg-jungle-400 text-white'
                                                 : 'bg-stone-700 text-sand-warm/50 hover:bg-stone-600'
@@ -93,7 +93,7 @@ export default function Predictions() {
                                     <button
                                         type="button"
                                         onClick={() => setProp(bet.id, false)}
-                                        className={`px-3 py-1 rounded text-xs font-bold transition-all cursor-pointer ${
+                                        className={`px-4 py-2 rounded text-xs font-bold transition-all cursor-pointer min-h-[44px] ${
                                             answer === false
                                                 ? 'bg-fire-400 text-white'
                                                 : 'bg-stone-700 text-sand-warm/50 hover:bg-stone-600'

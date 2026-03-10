@@ -13,11 +13,11 @@ function ProfileTab() {
 }
 
 const TABS = [
-    { key: 'play', label: 'Play', Component: DraftTab },
-    { key: 'watch', label: 'Watch', Component: BingoTab },
-    { key: 'scores', label: 'Scores', Component: ScoreboardTab },
-    { key: 'profile', label: 'Profile', Component: ProfileTab },
-    { key: 'rules', label: 'Rules', Component: RulesTab },
+    { key: 'play', label: 'Play', icon: 'sports_esports', Component: DraftTab },
+    { key: 'watch', label: 'Watch', icon: 'live_tv', Component: BingoTab },
+    { key: 'scores', label: 'Scores', icon: 'leaderboard', Component: ScoreboardTab },
+    { key: 'profile', label: 'Profile', icon: 'person', Component: ProfileTab },
+    { key: 'rules', label: 'Rules', icon: 'menu_book', Component: RulesTab },
 ];
 
 function LoadingScreen() {

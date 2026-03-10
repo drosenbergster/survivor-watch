@@ -50,7 +50,7 @@ export default function LeagueSwitcher() {
             <button
                 type="button"
                 onClick={() => setOpen(o => !o)}
-                className="flex items-center gap-1 px-2 py-1 rounded border border-stone-700 text-stone-400 hover:text-ochre hover:border-ochre/40 transition-all text-xs cursor-pointer max-w-[140px]"
+                className="flex items-center justify-center gap-1 min-h-[44px] min-w-[44px] px-2 rounded border border-stone-700 text-stone-400 hover:text-ochre hover:border-ochre/40 transition-all text-xs cursor-pointer max-w-[140px]"
                 aria-label="League menu"
             >
                 <Icon name={hasMultiple ? 'swap_horiz' : 'groups'} className="text-sm shrink-0" />

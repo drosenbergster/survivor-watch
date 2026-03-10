@@ -5,7 +5,10 @@ import LeagueSwitcher from '../screens/LeagueSwitcher';
 export function UserBar({ onShowTutorial }) {
   const { user, syncStatus, logout } = useApp();
   return (
-    <div className="flex items-center gap-2 px-4 py-2 bg-stone-900 border-b border-stone-800 text-xs relative z-20">
+    <div
+      className="flex items-center gap-2 px-4 py-2.5 bg-stone-900 border-b border-stone-800 text-xs relative z-20"
+      style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.625rem)' }}
+    >
       <div className="flex items-center gap-1.5">
         <div
           className={`w-1.5 h-1.5 rounded-full ${
@@ -19,12 +22,13 @@ export function UserBar({ onShowTutorial }) {
           {syncStatus === 'online' ? 'Synced' : syncStatus === 'syncing' ? 'Syncing...' : 'Local'}
         </span>
       </div>
-      <span className="flex-1 text-stone-400 truncate">{user.email}</span>
+      <span className="flex-1 text-stone-400 truncate hidden sm:block">{user.email}</span>
+      <span className="flex-1 sm:hidden" />
       {onShowTutorial && (
         <button
           type="button"
           onClick={onShowTutorial}
-          className="flex items-center gap-1 px-2 py-1 rounded border border-stone-700 text-stone-400 hover:text-ochre hover:border-ochre/40 transition-all cursor-pointer"
+          className="flex items-center justify-center gap-1 min-h-[44px] min-w-[44px] px-2 rounded border border-stone-700 text-stone-400 hover:text-ochre hover:border-ochre/40 transition-all cursor-pointer"
           aria-label="How to play"
         >
           <Icon name="help_outline" className="text-sm" />
@@ -35,9 +39,11 @@ export function UserBar({ onShowTutorial }) {
       <button
         type="button"
         onClick={logout}
-        className="px-2.5 py-1 rounded border border-stone-700 text-stone-400 hover:text-ochre hover:border-ochre/40 transition-all cursor-pointer"
+        className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded border border-stone-700 text-stone-400 hover:text-ochre hover:border-ochre/40 transition-all cursor-pointer"
+        aria-label="Sign out"
       >
-        Sign Out
+        <Icon name="logout" className="text-base sm:hidden" />
+        <span className="hidden sm:inline px-2.5">Sign Out</span>
       </button>
     </div>
   );
