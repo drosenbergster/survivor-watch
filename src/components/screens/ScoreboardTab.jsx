@@ -138,7 +138,8 @@ function EpisodeBreakdown({ epNum, score }) {
                     {score.breakdown.rideOrDie.map((r, i) => (
                         <div key={`r${i}`} className="flex justify-between text-sand-warm/60">
                             <span>
-                                💀 {r.name}
+                                {r.reason === 'events' ? '🤝' : '💀'} {r.name}
+                                {r.reason === 'events' && ' events'}
                                 {r.reason === 'survived' && ' survived'}
                                 {r.reason === 'ftc' && ' made FTC'}
                                 {r.reason === 'winner' && ' won!'}

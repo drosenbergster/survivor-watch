@@ -139,8 +139,8 @@ export default function RulesTab() {
               entire season</strong>. You never change them.
             </p>
             <p className="text-sm text-bleached-sand/70 leading-relaxed font-sans">
-              Your Ride or Dies earn you <strong className="text-sand-warm">passive points automatically</strong> just
-              by staying in the game:
+              Your Ride or Dies earn you <strong className="text-sand-warm">episode event points</strong> (just
+              like weekly picks) <strong className="text-sand-warm">plus</strong> passive bonuses for staying in the game:
             </p>
             <div className="grid grid-cols-3 gap-2 text-center">
               <div className="bg-black/30 rounded-lg py-2 px-1">
@@ -157,7 +157,7 @@ export default function RulesTab() {
               </div>
             </div>
             <p className="text-xs text-bleached-sand/50 italic font-sans">
-              Strategy: Draft contestants you think will last the longest, not necessarily the flashiest players.
+              Strategy: Draft contestants you think will be active and last the longest &mdash; they earn event points every episode plus survival bonuses.
             </p>
           </div>
 
@@ -240,7 +240,7 @@ export default function RulesTab() {
                 </tr>
                 <tr>
                   <td className="px-4 py-2.5 font-bold text-sand-warm">How you score</td>
-                  <td className="px-4 py-2.5 text-center">Passive survival points</td>
+                  <td className="px-4 py-2.5 text-center">Event points + survival bonuses</td>
                   <td className="px-4 py-2.5 text-center">Episode event points</td>
                 </tr>
                 <tr>

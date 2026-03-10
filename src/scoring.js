@@ -92,7 +92,11 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
         for (const cid of playerPicks) {
             const raw = contestantScores[cid] || 0;
             const sc = scarcity[cid];
-            const isExclusive = sc?.exclusiveOwner === uid;
+            const isSolePicker = sc?.exclusiveOwner === uid;
+            const isOthersRoD = Object.entries(rideOrDies || {}).some(
+                ([rodUid, rods]) => rodUid !== uid && (rods || []).includes(cid)
+            );
+            const isExclusive = isSolePicker && !isOthersRoD;
             const multiplied = isExclusive ? Math.round(raw * SCARCITY_MULTIPLIER) : raw;
             weeklyTotal += multiplied;
             if (raw > 0) {
@@ -152,39 +156,51 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
             }
         }
 
-        // --- Ride or Die passive bonus ---
+        // --- Ride or Die scoring: event points + passive bonuses ---
         const playerRoDs = rideOrDies[uid] || [];
         for (const rodId of playerRoDs) {
-            if (!eliminatedSet.has(rodId) && !eliminatedThisEp.includes(rodId)) {
-                rideOrDieTotal += RIDE_OR_DIE_SURVIVE_BONUS;
-                const castaway = ALL_CASTAWAYS.find(c => c.id === rodId);
+            const castaway = ALL_CASTAWAYS.find(c => c.id === rodId);
+            const rodName = castaway?.name || rodId;
+            const rodEvents = gameEvents[rodId] || [];
+
+            // Event-based points (same as weekly picks, but no exclusivity multiplier)
+            const eventPts = contestantScores[rodId] || 0;
+            if (eventPts > 0) {
+                rideOrDieTotal += eventPts;
                 breakdown.rideOrDie.push({
                     contestantId: rodId,
-                    name: castaway?.name || rodId,
+                    name: rodName,
+                    reason: 'events',
+                    points: eventPts,
+                    events: rodEvents,
+                });
+            }
+
+            // Passive survival bonus
+            if (!eliminatedSet.has(rodId) && !eliminatedThisEp.includes(rodId)) {
+                rideOrDieTotal += RIDE_OR_DIE_SURVIVE_BONUS;
+                breakdown.rideOrDie.push({
+                    contestantId: rodId,
+                    name: rodName,
                     reason: 'survived',
                     points: RIDE_OR_DIE_SURVIVE_BONUS,
                 });
             }
-        }
 
-        // Ride or Die milestone bonuses (FTC / winner) from game events
-        for (const rodId of playerRoDs) {
-            const events = gameEvents[rodId] || [];
-            if (events.includes('winner')) {
+            // Milestone bonuses (FTC / winner)
+            if (rodEvents.includes('winner')) {
                 rideOrDieTotal += RIDE_OR_DIE_WINNER_BONUS;
-                const castaway = ALL_CASTAWAYS.find(c => c.id === rodId);
                 breakdown.rideOrDie.push({
                     contestantId: rodId,
-                    name: castaway?.name || rodId,
+                    name: rodName,
                     reason: 'winner',
                     points: RIDE_OR_DIE_WINNER_BONUS,
                 });
-            } else if (events.includes('ftc')) {
+            } else if (rodEvents.includes('ftc')) {
                 rideOrDieTotal += RIDE_OR_DIE_FINALE_BONUS;
-                const castaway = ALL_CASTAWAYS.find(c => c.id === rodId);
                 breakdown.rideOrDie.push({
                     contestantId: rodId,
-                    name: castaway?.name || rodId,
+                    name: rodName,
                     reason: 'ftc',
                     points: RIDE_OR_DIE_FINALE_BONUS,
                 });
