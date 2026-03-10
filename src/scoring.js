@@ -252,9 +252,11 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
  * Returns: { winnerId, scores: { [uid]: number } }
  */
 function computePlayerOfEpisode(votes, picks, memberUids) {
+    const validVoters = Object.entries(votes || {}).filter(([, r]) => Array.isArray(r));
+    if (validVoters.length < 2) return { winnerId: null, scores: {} };
+
     const tally = {};
-    for (const [, ranks] of Object.entries(votes || {})) {
-        if (!Array.isArray(ranks)) continue;
+    for (const [, ranks] of validVoters) {
         ranks.forEach((cid, i) => {
             if (!cid) return;
             tally[cid] = (tally[cid] || 0) + (3 - i);
