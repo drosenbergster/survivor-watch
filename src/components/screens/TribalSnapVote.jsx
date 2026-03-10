@@ -62,7 +62,7 @@ function SideBetToggle({ bet, value, onChange, disabled }) {
 
 export default function TribalSnapVote({ episodeNum }) {
     const {
-        user, episodeData, eliminated,
+        user, episodeData, safeEliminated,
         submitSnapVote, submitSideBets,
     } = useApp();
 
@@ -74,9 +74,9 @@ export default function TribalSnapVote({ episodeNum }) {
     const [error, setError] = useState('');
 
     const remaining = useMemo(() => {
-        const elimSet = new Set(eliminated || []);
+        const elimSet = new Set(safeEliminated || []);
         return ALL_CASTAWAYS.filter(c => !elimSet.has(c.id));
-    }, [eliminated]);
+    }, [safeEliminated]);
 
     const sideBets = episodeData?.sideBets || [];
     const mySnapVote = episodeData?.snapVotes?.[user?.uid];

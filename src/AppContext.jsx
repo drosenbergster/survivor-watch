@@ -344,6 +344,7 @@ export function AppProvider({ children }) {
         const leagueData = {
             name,
             joinCode,
+            season: 's50',
             createdBy: user.uid,
             createdAt: Date.now(),
             status: 'lobby',

@@ -10,12 +10,12 @@ function PropBetEditor({ propBets, onSave }) {
 
     const swapBet = (index) => {
         const usedTexts = new Set(bets.map(b => b.text));
-        const available = PROP_BET_POOL.filter(t => !usedTexts.has(t));
+        const available = PROP_BET_POOL.filter(b => !usedTexts.has(b.text));
         if (available.length === 0) return;
         setBets(prev => {
             const updated = [...prev];
             const replacement = available[Math.floor(Math.random() * available.length)];
-            updated[index] = { ...updated[index], text: replacement };
+            updated[index] = { ...updated[index], text: replacement.text, resolveType: replacement.resolveType, resolveParams: replacement.resolveParams };
             return updated;
         });
         setDirty(true);

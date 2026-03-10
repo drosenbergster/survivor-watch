@@ -119,7 +119,11 @@ async function fetchAndParse(episodeNum) {
 
     // Resolve prop/side bets for all leagues referencing this season
     try {
-        const leaguesSnap = await db.ref('leagues').orderByChild('season').equalTo('s50').get();
+        let leaguesSnap = await db.ref('leagues').orderByChild('season').equalTo('s50').get();
+        // Fallback: if no leagues have the season field yet, scan all leagues
+        if (!leaguesSnap.exists()) {
+            leaguesSnap = await db.ref('leagues').get();
+        }
         if (leaguesSnap.exists()) {
             for (const [leagueId, league] of Object.entries(leaguesSnap.val())) {
                 const ep = league.episodes?.[episodeNum];
