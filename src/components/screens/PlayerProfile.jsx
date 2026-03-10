@@ -3,6 +3,7 @@ import { useApp } from '../../AppContext';
 import { computeStandings, detectAchievements } from '../../scoring';
 import { ALL_CASTAWAYS, ACHIEVEMENTS, PLAYER_COLORS } from '../../data';
 import { FijianCard, FijianSectionHeader, Icon } from '../fijian';
+import { HistoricalStatBars } from './HistoricalStats';
 
 function BadgeWall({ earned }) {
     return (
@@ -29,24 +30,27 @@ function BadgeWall({ earned }) {
     );
 }
 
-function RideOrDieCard({ contestantId, isEliminated }) {
+function RideOrDieCard({ contestantId, isEliminated, showStats = false }) {
     const c = ALL_CASTAWAYS.find(x => x.id === contestantId);
     if (!c) return null;
 
     return (
-        <div className={`flex items-center gap-3 p-3 rounded-lg ${
+        <div className={`p-3 rounded-lg space-y-2 ${
             isEliminated ? 'bg-red-950/30 border border-red-900/30' : 'bg-stone-800/50'
         }`}>
-            <span className="text-xl">{isEliminated ? '💀' : '🔥'}</span>
-            <div className="flex-1">
-                <p className={`text-sm font-sans font-bold ${isEliminated ? 'text-red-400/60 line-through' : 'text-sand-warm'}`}>
-                    {c.name}
-                </p>
-                <p className="text-[10px] text-sand-warm/60 font-sans">{c.seasons}</p>
+            <div className="flex items-center gap-3">
+                <span className="text-xl">{isEliminated ? '💀' : '🔥'}</span>
+                <div className="flex-1">
+                    <p className={`text-sm font-sans font-bold ${isEliminated ? 'text-red-400/60 line-through' : 'text-sand-warm'}`}>
+                        {c.name}
+                    </p>
+                    <p className="text-[10px] text-sand-warm/60 font-sans">{c.seasons}</p>
+                </div>
+                <span className={`text-xs font-sans ${isEliminated ? 'text-red-400/50' : 'text-jungle-400'}`}>
+                    {isEliminated ? 'Eliminated' : 'Active'}
+                </span>
             </div>
-            <span className={`text-xs font-sans ${isEliminated ? 'text-red-400/50' : 'text-jungle-400'}`}>
-                {isEliminated ? 'Eliminated' : 'Active'}
-            </span>
+            {showStats && <HistoricalStatBars contestantId={contestantId} />}
         </div>
     );
 }
@@ -61,7 +65,7 @@ function StatBox({ label, value, sub }) {
     );
 }
 
-function PredictionAccuracy({ episodes, uid }) {
+function SnapVoteAccuracy({ episodes, uid }) {
     const epNums = Object.keys(episodes || {})
         .map(Number)
         .filter(n => episodes[n]?.scored)
@@ -72,10 +76,10 @@ function PredictionAccuracy({ episodes, uid }) {
 
     for (const epNum of epNums) {
         const ep = episodes[epNum];
-        const pred = ep.predictions?.[uid]?.elimination;
-        if (pred) {
+        const vote = ep.snapVotes?.[uid]?.contestantId;
+        if (vote) {
             total++;
-            if ((ep.eliminatedThisEp || []).includes(pred)) correct++;
+            if ((ep.eliminatedThisEp || []).includes(vote)) correct++;
         }
     }
 
@@ -97,7 +101,7 @@ function PredictionAccuracy({ episodes, uid }) {
 
 export default function PlayerProfile({ uid: profileUid, onClose }) {
     const {
-        user, episodes, rideOrDies, leagueMembers, eliminated, bingo,
+        user, episodes, rideOrDies, leagueMembers, safeEliminated, bingo,
         postEpisode,
     } = useApp();
 
@@ -178,7 +182,8 @@ export default function PlayerProfile({ uid: profileUid, onClose }) {
                         <RideOrDieCard
                             key={cid}
                             contestantId={cid}
-                            isEliminated={(eliminated || []).includes(cid)}
+                            isEliminated={(safeEliminated || []).includes(cid)}
+                            showStats
                         />
                     ))
                 )}
@@ -186,10 +191,10 @@ export default function PlayerProfile({ uid: profileUid, onClose }) {
 
             {/* Prediction accuracy */}
             <FijianCard className="p-4 space-y-3">
-                <FijianSectionHeader title="Prediction Accuracy" />
+                <FijianSectionHeader title="Snap Vote Accuracy" />
                 <div>
-                    <p className="text-sand-warm/50 text-xs font-sans mb-1">Elimination Predictions</p>
-                    <PredictionAccuracy episodes={episodes} uid={targetUid} />
+                    <p className="text-sand-warm/50 text-xs font-sans mb-1">Tribal Council Votes</p>
+                    <SnapVoteAccuracy episodes={episodes} uid={targetUid} />
                 </div>
             </FijianCard>
 

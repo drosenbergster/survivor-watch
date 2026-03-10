@@ -12,9 +12,9 @@ const MERGE_QUESTIONS = [
 ];
 
 function ContestantSelect({ value, onChange, label, excludeIds = [] }) {
-    const { eliminated } = useApp();
+    const { safeEliminated } = useApp();
     const available = ALL_CASTAWAYS.filter(
-        c => !(eliminated || []).includes(c.id) && (!excludeIds.includes(c.id) || c.id === value)
+        c => !(safeEliminated || []).includes(c.id) && (!excludeIds.includes(c.id) || c.id === value)
     );
 
     return (

@@ -89,8 +89,7 @@ export default function BingoTab() {
         return (
             <div className="space-y-6">
                 <header className="text-center">
-                    <h2 className="font-display text-4xl tracking-wider text-sand-warm drop-shadow-text">Qito</h2>
-                    <p className="text-sand-warm/70 text-sm mt-1 font-sans">Bingo</p>
+                    <h2 className="font-display text-3xl tracking-wider text-sand-warm drop-shadow-text">Watch</h2>
                 </header>
                 <FijianCard className="p-8 max-w-md mx-auto text-center">
                     <FijianSectionHeader title="Not Yet" className="justify-center" />
@@ -108,9 +107,11 @@ export default function BingoTab() {
     return (
         <div className="space-y-5">
             <header className="text-center">
-                <h2 className="font-display text-4xl tracking-wider text-sand-warm drop-shadow-text">Qito</h2>
+                <h2 className="font-display text-3xl tracking-wider text-sand-warm drop-shadow-text">
+                    {watching ? `Watching Episode ${selectedEp}` : `Episode ${selectedEp}`}
+                </h2>
                 <p className="text-sand-warm/70 text-sm mt-1 font-sans inline-flex items-center justify-center">
-                    Bingo
+                    Bingo &amp; Watch Flow
                     <HintBadge hintKey="bingo">
                         Each episode you get a fresh bingo card. Tap &quot;Start Watching&quot; to activate it, then mark squares as events happen. Complete a line for +5 pts, or the whole card for +50 pts!
                     </HintBadge>

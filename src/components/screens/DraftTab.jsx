@@ -79,7 +79,7 @@ function EpisodeScoredBanner({ episodeNum }) {
                 <div className="text-3xl">🛡️</div>
                 <p className="text-sand-warm font-display text-lg tracking-wider">Episode {episodeNum} Complete</p>
                 <p className="text-sand-warm/50 text-sm font-sans">
-                    Details hidden until you&apos;ve watched. Go to the Bingo tab and tap &quot;Start Watching&quot; to begin.
+                    Details hidden until you&apos;ve watched. Go to the Watch tab and tap &quot;Start Watching&quot; to begin.
                 </p>
             </FijianCard>
         );
@@ -118,8 +118,7 @@ export default function DraftTab() {
         return (
             <div className="space-y-6">
                 <header className="text-center">
-                    <h2 className="font-display text-4xl tracking-wider text-sand-warm drop-shadow-text">Sevu</h2>
-                    <p className="text-sand-warm/70 text-sm mt-1 font-sans">Finale</p>
+                    <h2 className="font-display text-3xl tracking-wider text-sand-warm drop-shadow-text">Finale</h2>
                 </header>
                 <FinaleMode />
             </div>
@@ -129,13 +128,17 @@ export default function DraftTab() {
     return (
         <div className="space-y-6">
             <header className="text-center">
-                <h2 className="font-display text-4xl tracking-wider text-sand-warm drop-shadow-text">Sevu</h2>
-                <p className="text-sand-warm/70 text-sm mt-1 font-sans inline-flex items-center justify-center">
+                <h2 className="font-display text-3xl tracking-wider text-sand-warm drop-shadow-text">
                     {hasEpisode ? `Episode ${currentEpisode}` : 'Season 50'}
-                    <HintBadge hintKey="picks">
-                        Each episode, pick 2 contestants and make your predictions. Then go to the Bingo tab and tap &quot;Start Watching&quot; to lock everything in and activate your bingo card.
-                    </HintBadge>
-                </p>
+                </h2>
+                {hasEpisode && (
+                    <p className="text-sand-warm/70 text-sm mt-1 font-sans inline-flex items-center justify-center">
+                        Make your picks, then head to Watch to start the episode.
+                        <HintBadge hintKey="picks">
+                            Each episode, pick contestants and answer prop bets. Then go to the Watch tab and tap &quot;Start Watching&quot; to lock everything in and activate your bingo card.
+                        </HintBadge>
+                    </p>
+                )}
             </header>
 
             <AdminEpisodeCard />
@@ -171,23 +174,23 @@ export default function DraftTab() {
                         Episode {currentEpisode} Watched
                     </p>
                     <p className="text-sand-warm/50 text-sm font-sans">
-                        Waiting for the host to enter results and score this episode.
+                        Scores will appear automatically once stats are imported.
                     </p>
                 </FijianCard>
             )}
 
-            {/* Admin scoring — visible to host after they've watched */}
-            {isOpen && watched && <AdminScoring episodeNum={currentEpisode} />}
+            {/* Admin scoring — optional override for host, works in both open and scored states */}
+            {watched && <AdminScoring episodeNum={currentEpisode} />}
 
             {isScored && (
-                <>
-                    <EpisodeScoredBanner episodeNum={currentEpisode} />
-                    <CommissionerReport episodeNum={currentEpisode} />
-                </>
+                <EpisodeScoredBanner episodeNum={currentEpisode} />
             )}
 
             {isScored && watched && (
-                <PostEpisodeHub episodeNum={currentEpisode} />
+                <>
+                    <CommissionerReport episodeNum={currentEpisode} />
+                    <PostEpisodeHub episodeNum={currentEpisode} />
+                </>
             )}
 
             {hasEpisode && (!isOpen || picksLocked) && <SeasonOverview />}

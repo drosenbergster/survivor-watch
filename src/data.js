@@ -48,6 +48,33 @@ export const TRIBES = {
 
 export const ALL_CASTAWAYS = Object.values(TRIBES).flatMap(t => t.members);
 
+// Historical stats from SurvivorStatsDB (pre-season, based on prior seasons)
+// Source: https://survivorstatsdb.com/character-cards-US50.html
+export const HISTORICAL_STATS = {
+    ozzy_lusth:           { overall: 85, tribal: 84, individual: 100, voting: 84, advantages: 0,   influence: 50, jury: 44, bestResult: 'Runner-up', age: 43, timesPlayed: 5 },
+    colby_donaldson:      { overall: 83, tribal: 35, individual: 100, voting: 91, advantages: 0,   influence: 98, jury: 43, bestResult: 'Runner-up', age: 51, timesPlayed: 4 },
+    kyle_fraser:          { overall: 78, tribal: 61, individual: 79,  voting: 79, advantages: 30,  influence: 58, jury: 62, bestResult: 'Sole Survivor', age: 31, timesPlayed: 2 },
+    dee_valladares:       { overall: 77, tribal: 75, individual: 80,  voting: 61, advantages: 0,   influence: 73, jury: 62, bestResult: 'Sole Survivor', age: 28, timesPlayed: 2 },
+    joe_hunter:           { overall: 77, tribal: 75, individual: 93,  voting: 76, advantages: 0,   influence: 55, jury: 12, bestResult: 'Runner-up', age: 46, timesPlayed: 2 },
+    charlie_davis:        { overall: 73, tribal: 45, individual: 81,  voting: 70, advantages: 0,   influence: 71, jury: 38, bestResult: 'Runner-up', age: 27, timesPlayed: 2 },
+    coach_wade:           { overall: 72, tribal: 51, individual: 39,  voting: 100, advantages: 20, influence: 93, jury: 33, bestResult: 'Runner-up', age: 53, timesPlayed: 4 },
+    chrissy_hofbeck:      { overall: 70, tribal: 22, individual: 98,  voting: 63, advantages: 7,   influence: 61, jury: 25, bestResult: 'Runner-up', age: 54, timesPlayed: 2 },
+    rick_devens:          { overall: 66, tribal: 26, individual: 90,  voting: 63, advantages: 100, influence: 79, jury: 0,  bestResult: '4th', age: 41, timesPlayed: 2 },
+    kamilla_karthigesu:   { overall: 63, tribal: 61, individual: 58,  voting: 71, advantages: 19,  influence: 57, jury: 0,  bestResult: '4th', age: 31, timesPlayed: 2 },
+    aubry_bracco:         { overall: 62, tribal: 53, individual: 27,  voting: 73, advantages: 0,   influence: 91, jury: 29, bestResult: 'Runner-up', age: 39, timesPlayed: 4 },
+    jonathan_young:       { overall: 61, tribal: 66, individual: 52,  voting: 74, advantages: 0,   influence: 21, jury: 0,  bestResult: '4th', age: 32, timesPlayed: 2 },
+    mike_white:           { overall: 58, tribal: 26, individual: 38,  voting: 70, advantages: 0,   influence: 45, jury: 30, bestResult: 'Runner-up', age: 54, timesPlayed: 2 },
+    stephenie_lagrossa:   { overall: 58, tribal: 22, individual: 27,  voting: 77, advantages: 0,   influence: 90, jury: 14, bestResult: 'Runner-up', age: 45, timesPlayed: 4 },
+    emily_flippen:        { overall: 55, tribal: 18, individual: 55,  voting: 74, advantages: 0,   influence: 86, jury: 0,  bestResult: '7th', age: 30, timesPlayed: 2 },
+    q_burdette:           { overall: 54, tribal: 18, individual: 48,  voting: 76, advantages: 13,  influence: 67, jury: 0,  bestResult: '6th', age: 31, timesPlayed: 2 },
+    genevieve_mushaluk:   { overall: 54, tribal: 40, individual: 43,  voting: 63, advantages: 15,  influence: 66, jury: 0,  bestResult: '5th', age: 34, timesPlayed: 2 },
+    cirie_fields:         { overall: 53, tribal: 51, individual: 23,  voting: 69, advantages: 0,   influence: 95, jury: 0,  bestResult: '4th', age: 54, timesPlayed: 5 },
+    christian_hubicki:    { overall: 52, tribal: 40, individual: 53,  voting: 60, advantages: 43,  influence: 53, jury: 0,  bestResult: '7th', age: 39, timesPlayed: 2 },
+    angelina_keeley:      { overall: 51, tribal: 26, individual: 18,  voting: 68, advantages: 20,  influence: 72, jury: 0,  bestResult: 'Runner-up', age: 35, timesPlayed: 2 },
+    jenna_lewis:          { overall: 51, tribal: 61, individual: 11,  voting: 70, advantages: 0,   influence: 48, jury: 0,  bestResult: '3rd', age: 47, timesPlayed: 3 },
+    tiffany_ervin:        { overall: 51, tribal: 18, individual: 35,  voting: 89, advantages: 11,  influence: 57, jury: 0,  bestResult: '8th', age: 34, timesPlayed: 2 },
+};
+
 export const PLAYER_COLORS = [
     { bg: 'bg-player-1', text: 'text-player-1', border: 'border-player-1', ring: 'ring-player-1', hex: COLORS.player1 },
     { bg: 'bg-player-2', text: 'text-player-2', border: 'border-player-2', ring: 'ring-player-2', hex: COLORS.player2 },
@@ -79,6 +106,17 @@ export const SCORE_EVENTS = [
     { key: 'fire_making_win', label: 'Fire-Making Win', points: 10, emoji: '🔥' },
     { key: 'winner', label: 'Sole Survivor', points: 50, emoji: '👑' },
     { key: 'medevac', label: 'Medevac Consolation', points: 3, emoji: '🚑' },
+    // Camp life & journey events (auto-detected from FSG)
+    { key: 'supply_challenge_win', label: 'Supply Challenge Win', points: 1, emoji: '📦' },
+    { key: 'marooning_win', label: 'Marooning Challenge Win', points: 1, emoji: '⚓' },
+    { key: 'read_tree_mail', label: 'Read Tree Mail', points: 1, emoji: '📬' },
+    { key: 'water_well_talk', label: 'Water Well Strategy', points: 1, emoji: '💧' },
+    { key: 'make_fire_camp', label: 'Made Fire at Camp', points: 1, emoji: '🪵' },
+    { key: 'find_food', label: 'Found Food', points: 1, emoji: '🍌' },
+    { key: 'journey', label: 'Went on Journey', points: 1, emoji: '🚶' },
+    { key: 'journey_challenge_win', label: 'Journey Challenge Win', points: 2, emoji: '⛰️' },
+    { key: 'find_clue', label: 'Found Clue', points: 2, emoji: '🔎' },
+    { key: 'shot_in_dark', label: 'Shot in the Dark', points: 2, emoji: '🎲' },
 ];
 
 export const ENGAGEMENT_SCORING = [
@@ -86,8 +124,6 @@ export const ENGAGEMENT_SCORING = [
         section: 'Predictions',
         icon: '🔮',
         items: [
-            { label: 'Correct Elimination Pick', points: 5, emoji: '🎯' },
-            { label: 'Bold Prediction (correct)', points: 10, emoji: '💡' },
             { label: 'Prop Bet (correct)', points: 3, emoji: '🎰' },
             { label: 'Snap Vote (correct)', points: 8, emoji: '⚡' },
             { label: 'Side Bet (correct)', points: 3, emoji: '🤞' },
@@ -129,75 +165,108 @@ export const ENGAGEMENT_SCORING = [
     },
 ];
 
-// Prop bet template pool (auto-generated, admin can swap/edit)
+// Structured prop bets -- each has resolution logic so outcomes are auto-determined from imported data.
+// resolveType: 'event_any' | 'event_count_gte' | 'vote_unanimous' | 'elimination_method' | 'has_reward' | 'vote_split'
 export const PROP_BET_POOL = [
-    'Will an idol be played tonight?',
-    'Will someone cry?',
-    'Will there be a revote at tribal?',
-    'Will the challenge involve water?',
-    'Will someone find an idol or advantage?',
-    'Will Jeff say "dig deep"?',
-    'Will there be a blindside?',
-    'Will the vote be unanimous?',
-    'Will someone whisper at tribal council?',
-    'Will a player mention their family?',
-    'Will there be a puzzle in the challenge?',
-    'Will someone talk about being a threat?',
-    'Will a former winner win immunity?',
-    'Will someone throw another player under the bus at tribal?',
-    'Will there be a split vote?',
-    'Will someone play a Shot in the Dark?',
-    'Will rain fall during camp scenes?',
-    'Will there be a reward challenge?',
-    'Will Jeff give a speech or life advice?',
-    'Will someone make fire at camp?',
-    'Will an alliance be formed or discussed?',
-    'Will the episode end with a torch snuff?',
-    'Will Ozzy catch a fish?',
-    'Will Coach do something Coach-like?',
-    'Will someone say "at the end of the day"?',
-    'Will a player hide something from their tribe?',
-    'Will someone say "million dollars"?',
-    'Will a player get sunburned or complain about conditions?',
-    'Will there be a medical check?',
-    'Will the eliminated player see it coming?',
+    { text: 'Will someone find an idol?', resolveType: 'event_any', resolveParams: { eventKey: 'idol_found' } },
+    { text: 'Will someone play an idol?', resolveType: 'event_any', resolveParams: { eventKey: 'idol_played_success' } },
+    { text: 'Will someone find an advantage?', resolveType: 'event_any', resolveParams: { eventKey: 'advantage_found' } },
+    { text: 'Will someone use an advantage?', resolveType: 'event_any', resolveParams: { eventKey: 'advantage_used' } },
+    { text: 'Will someone find a clue?', resolveType: 'event_any', resolveParams: { eventKey: 'find_clue' } },
+    { text: 'Will someone make fire at camp?', resolveType: 'event_any', resolveParams: { eventKey: 'make_fire_camp' } },
+    { text: 'Will someone find food?', resolveType: 'event_any', resolveParams: { eventKey: 'find_food' } },
+    { text: 'Will someone go on a journey?', resolveType: 'event_any', resolveParams: { eventKey: 'journey' } },
+    { text: 'Will someone win a journey challenge?', resolveType: 'event_any', resolveParams: { eventKey: 'journey_challenge_win' } },
+    { text: 'Will someone read tree mail?', resolveType: 'event_any', resolveParams: { eventKey: 'read_tree_mail' } },
+    { text: 'Will someone strategize at the water well?', resolveType: 'event_any', resolveParams: { eventKey: 'water_well_talk' } },
+    { text: 'Will someone go to exile?', resolveType: 'event_any', resolveParams: { eventKey: 'exile' } },
+    { text: 'Will someone play Shot in the Dark?', resolveType: 'event_any', resolveParams: { eventKey: 'shot_in_dark' } },
+    { text: 'Will anyone survive with votes against them?', resolveType: 'event_any', resolveParams: { eventKey: 'survived_with_votes' } },
+    { text: 'Will there be a medical evacuation?', resolveType: 'elimination_method', resolveParams: { method: 'medevac' } },
+    { text: 'Will the vote be unanimous?', resolveType: 'vote_unanimous', resolveParams: {} },
+    { text: 'Will there be a split vote?', resolveType: 'vote_split', resolveParams: {} },
+    { text: 'Will there be a reward challenge?', resolveType: 'has_reward', resolveParams: {} },
+    { text: 'Will 2+ players receive votes at tribal?', resolveType: 'event_count_gte', resolveParams: { eventKey: 'survived_with_votes', threshold: 1 } },
+    { text: 'Will 3+ players get zero votes at tribal?', resolveType: 'event_count_gte', resolveParams: { eventKey: 'attended_tribal_zero', threshold: 3 } },
+    { text: 'Will someone win an individual immunity?', resolveType: 'event_any', resolveParams: { eventKey: 'individual_immunity' } },
+    { text: 'Will someone win an individual reward?', resolveType: 'event_any', resolveParams: { eventKey: 'individual_reward' } },
+    { text: 'Will someone reach the merge?', resolveType: 'event_any', resolveParams: { eventKey: 'merge' } },
+    { text: 'Will there be a fire-making challenge?', resolveType: 'event_any', resolveParams: { eventKey: 'fire_making_win' } },
 ];
 
 export const SIDE_BET_POOL = [
-    'Will an idol be played at this tribal?',
-    'Will there be tears at tribal?',
-    'Will someone whisper at tribal?',
-    'Will there be a revote?',
-    'Will the vote be unanimous?',
-    'Will Jeff stir the pot?',
-    'Will someone play Shot in the Dark?',
-    'Will there be a split vote?',
-    'Will someone stand up during tribal?',
-    'Will the boot see it coming?',
-    'Will someone mention a past alliance?',
-    'Will Jeff give a dramatic pause?',
+    { text: 'Will an idol be played at this tribal?', resolveType: 'event_any', resolveParams: { eventKey: 'idol_played_success' } },
+    { text: 'Will the vote be unanimous?', resolveType: 'vote_unanimous', resolveParams: {} },
+    { text: 'Will someone play Shot in the Dark?', resolveType: 'event_any', resolveParams: { eventKey: 'shot_in_dark' } },
+    { text: 'Will there be a split vote?', resolveType: 'vote_split', resolveParams: {} },
+    { text: 'Will anyone survive with votes against them?', resolveType: 'event_any', resolveParams: { eventKey: 'survived_with_votes' } },
+    { text: 'Will an advantage be played?', resolveType: 'event_any', resolveParams: { eventKey: 'advantage_used' } },
+    { text: 'Will 2+ players receive votes?', resolveType: 'event_count_gte', resolveParams: { eventKey: 'survived_with_votes', threshold: 1 } },
+    { text: 'Will 3+ players get zero votes at tribal?', resolveType: 'event_count_gte', resolveParams: { eventKey: 'attended_tribal_zero', threshold: 3 } },
 ];
 
-export function generateSideBets(episodeNumber, count = 3) {
-    const shuffled = [...SIDE_BET_POOL];
-    let s = (episodeNumber * 13337 + 42) % 2147483647;
+function deterministicShuffle(arr, seed) {
+    const shuffled = [...arr];
+    let s = seed;
     for (let i = shuffled.length - 1; i > 0; i--) {
         s = (s * 16807 + 0) % 2147483647;
         const j = s % (i + 1);
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
-    return shuffled.slice(0, count).map((text, i) => ({ id: `side_${episodeNumber}_${i}`, text }));
+    return shuffled;
+}
+
+export function generateSideBets(episodeNumber, count = 3) {
+    const shuffled = deterministicShuffle(SIDE_BET_POOL, (episodeNumber * 13337 + 42) % 2147483647);
+    return shuffled.slice(0, count).map((bet, i) => ({ id: `side_${episodeNumber}_${i}`, text: bet.text, resolveType: bet.resolveType, resolveParams: bet.resolveParams }));
 }
 
 export function generatePropBets(episodeNumber, count = 5) {
-    const shuffled = [...PROP_BET_POOL];
-    let s = episodeNumber * 7919;
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        s = (s * 16807 + 0) % 2147483647;
-        const j = s % (i + 1);
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    const shuffled = deterministicShuffle(PROP_BET_POOL, episodeNumber * 7919);
+    return shuffled.slice(0, count).map((bet, i) => ({ id: `prop_${episodeNumber}_${i}`, text: bet.text, resolveType: bet.resolveType, resolveParams: bet.resolveParams }));
+}
+
+/**
+ * Resolve prop/side bet outcomes from imported episode data.
+ * importData: { bigMoments, minorityVoters, receivedVotes, eliminationMethod, rewardWinners, ... }
+ * bets: [{ id, resolveType, resolveParams }]
+ * Returns: { [betId]: boolean }
+ */
+export function resolveBets(importData, bets) {
+    const results = {};
+    const allEvents = Object.values(importData.bigMoments || {}).flat();
+    const gameEvents = importData.gameEvents || {};
+    const allGameEvents = Object.values(gameEvents).flat();
+    const combinedEvents = [...allEvents, ...allGameEvents];
+
+    for (const bet of bets) {
+        const { id, resolveType, resolveParams } = bet;
+        switch (resolveType) {
+            case 'event_any':
+                results[id] = combinedEvents.includes(resolveParams.eventKey);
+                break;
+            case 'event_count_gte': {
+                const count = combinedEvents.filter(e => e === resolveParams.eventKey).length;
+                results[id] = count >= resolveParams.threshold;
+                break;
+            }
+            case 'vote_unanimous':
+                results[id] = (importData.minorityVoters || []).length === 0 && !!importData.eliminatedId;
+                break;
+            case 'vote_split':
+                results[id] = (importData.minorityVoters || []).length > 0;
+                break;
+            case 'elimination_method':
+                results[id] = importData.eliminationMethod === resolveParams.method;
+                break;
+            case 'has_reward':
+                results[id] = (importData.rewardWinners || []).length > 0;
+                break;
+            default:
+                results[id] = false;
+        }
     }
-    return shuffled.slice(0, count).map((text, i) => ({ id: `prop_${episodeNumber}_${i}`, text }));
+    return results;
 }
 
 export function getMaxPicks(remainingCount) {
@@ -376,12 +445,12 @@ export function isBingoBlackout(marked) {
 }
 
 export const ACHIEVEMENTS = [
-    { id: 'prophet', name: 'Prophet', emoji: '🔮', description: '3 correct elimination predictions in a row' },
+    { id: 'prophet', name: 'Prophet', emoji: '🔮', description: '3 correct snap votes in a row' },
     { id: 'bingo_blackout', name: 'Bingo Blackout', emoji: '🎯', description: 'Complete an entire bingo card' },
     { id: 'contrarian', name: 'Contrarian', emoji: '🎭', description: 'Win 5 scarcity bonuses (unique picks that scored)' },
     { id: 'ride_or_die_loyalty', name: 'Ride or Die Loyalty', emoji: '💀', description: 'Both ride or dies survive to merge' },
     { id: 'beast_mode', name: 'Beast Mode', emoji: '💪', description: 'One of your picks scores 20+ in a single episode' },
-    { id: 'first_blood', name: 'First Blood', emoji: '🗡️', description: 'Correctly predict the first elimination' },
+    { id: 'first_blood', name: 'First Blood', emoji: '🗡️', description: 'Correct snap vote on the first episode' },
     { id: 'sole_survivor_standings', name: 'Sole Survivor', emoji: '👑', description: 'Hold first place for 3 consecutive weeks' },
     { id: 'dethroned', name: 'Dethroned', emoji: '⚔️', description: 'Overtake the first-place player' },
     { id: 'social_butterfly', name: 'Social Butterfly', emoji: '🦋', description: 'Vote on every Player of the Episode for 5 episodes' },

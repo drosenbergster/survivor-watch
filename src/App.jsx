@@ -13,11 +13,11 @@ function ProfileTab() {
 }
 
 const TABS = [
-    { key: 'draft', fijian: 'Sevu', english: 'Draft', Component: DraftTab },
-    { key: 'bingo', fijian: 'Qito', english: 'Bingo', Component: BingoTab },
-    { key: 'scoreboard', fijian: 'Tovo', english: 'Scores', Component: ScoreboardTab },
-    { key: 'profile', fijian: 'Yau', english: 'Profile', Component: ProfileTab },
-    { key: 'rules', fijian: 'Lawa', english: 'Rules', Component: RulesTab },
+    { key: 'play', label: 'Play', Component: DraftTab },
+    { key: 'watch', label: 'Watch', Component: BingoTab },
+    { key: 'scores', label: 'Scores', Component: ScoreboardTab },
+    { key: 'profile', label: 'Profile', Component: ProfileTab },
+    { key: 'rules', label: 'Rules', Component: RulesTab },
 ];
 
 function LoadingScreen() {
@@ -30,7 +30,7 @@ function LoadingScreen() {
 
 export default function App() {
     const { user, authLoading, league, leagueId, leagueLoading, draftState, passports, onboardingComplete, completeOnboarding } = useApp();
-    const [activeTab, setActiveTab] = useState('draft');
+    const [activeTab, setActiveTab] = useState('play');
     const [joinParam, setJoinParam] = useState(null);
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -88,11 +88,11 @@ export default function App() {
     }
 
     // status === 'active' or beyond → normal tab routing
-    const ActiveComponent = TABS.find(t => t.key === activeTab)?.Component || DraftTab;
+    const ActiveComponent = TABS.find(t => t.key === activeTab)?.Component || TABS[0].Component;
 
     return (
         <AppShell {...shellProps}>
-            <ActiveComponent />
+            <ActiveComponent onTabChange={setActiveTab} />
         </AppShell>
     );
 }

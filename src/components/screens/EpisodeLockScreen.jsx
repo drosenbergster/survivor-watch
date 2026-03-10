@@ -25,29 +25,16 @@ function PredictionsSummary({ predictions, propBets }) {
         return <p className="text-sand-warm/50 text-xs font-serif italic">No predictions submitted.</p>;
     }
 
-    const elimTarget = predictions.elimination
-        ? ALL_CASTAWAYS.find(c => c.id === predictions.elimination)
-        : null;
+    const hasPropBets = propBets && propBets.length > 0;
+    const hasAnswers = hasPropBets && propBets.some(bet => predictions.propBets?.[bet.id] !== undefined);
+
+    if (!hasAnswers) {
+        return <p className="text-sand-warm/50 text-xs font-serif italic">No prop bets this episode.</p>;
+    }
 
     return (
         <div className="space-y-3">
-            {elimTarget && (
-                <div className="flex items-center gap-2">
-                    <Icon name="skull" className="text-fire-400 text-sm" />
-                    <span className="text-clay text-xs">Going home:</span>
-                    <span className="text-sand-warm text-sm font-medium">{elimTarget.name}</span>
-                </div>
-            )}
-            {predictions.boldPrediction && (
-                <div className="flex items-start gap-2">
-                    <Icon name="bolt" className="text-torch text-sm mt-0.5" />
-                    <div>
-                        <span className="text-clay text-xs block">Bold prediction:</span>
-                        <span className="text-sand-warm text-sm italic">&ldquo;{predictions.boldPrediction}&rdquo;</span>
-                    </div>
-                </div>
-            )}
-            {propBets && propBets.length > 0 && (
+            {hasPropBets && (
                 <div>
                     <span className="text-clay text-xs block mb-1.5">Prop bets:</span>
                     <div className="space-y-1">

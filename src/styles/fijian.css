@@ -96,9 +96,8 @@
   pointer-events: none;
 }
 .tabua-icon {
-  font-size: 2.5rem;
   color: #f5d393;
-  filter: drop-shadow(0 0 5px rgba(245, 211, 147, 0.5));
+  filter: drop-shadow(0 0 4px rgba(245, 211, 147, 0.4));
 }
 .win-glow {
   text-shadow: 0 0 10px rgba(255, 95, 31, 0.8), 0 0 20px rgba(255, 95, 31, 0.4);

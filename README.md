@@ -7,12 +7,13 @@ A web app for Survivor Season 50 watch parties. Pick contestants, make predictio
 ## Features
 
 - **League System** — Create/join private leagues with join codes
-- **Ride or Die Draft** — Pre-season 2-round snake draft for exclusive contestants
+- **Ride or Die Draft** — Pre-season 2-round snake draft for exclusive contestants with historical player stats
 - **Weekly Picks** — Choose contestants to score for you each episode
-- **Predictions** — Elimination picks, bold predictions, prop bets, snap votes, side bets
+- **Predictions** — Prop bets (auto-resolvable), snap votes, side bets
 - **Season & Merge Passports** — Sealed long-term predictions revealed at finale
 - **Bingo** — Auto-generated 5x5 card per player per episode with line/blackout detection
-- **Scoring Engine** — Auto-calculated scores from contestant performance + player engagement
+- **Fully Automated Scoring** — Stats auto-imported from TrueDorkTimes, InsideSurvivor, and FantasySurvivorGame; prop bets auto-resolved; episodes scored without host intervention
+- **Spoiler Protection** — Per-player watch gating ensures scores and results only appear after a player completes their viewing
 - **Post-Episode Social** — Player of the Episode voting, Impact Rating
 - **Achievements** — 10 badges (Prophet, Beast Mode, Contrarian, etc.)
 - **Auto-Commissioner** — Weekly recap with headlines, superlatives, and standings
@@ -21,6 +22,15 @@ A web app for Survivor Season 50 watch parties. Pick contestants, make predictio
 - **Finale Mode** — Passport reveals, reunion awards, legacy cards, champion crowning
 - **Async Support** — Player-driven episode flow so everyone plays at their own pace
 
+## How Scoring Works
+
+1. **Thursday night** — Firebase Cloud Functions automatically fetch episode stats from three external sources (TDT, InsideSurvivor, FSG)
+2. **Auto-resolve** — Prop bets and side bets are resolved programmatically against the imported data
+3. **Auto-score** — The first league creator to open the app triggers automatic scoring from the imported data
+4. **Spoiler-safe** — Results are gated per-player behind their watch status; no data leaks until they mark the episode as watched
+
+The host can still manually review or adjust scores via an optional admin override panel.
+
 ## Setup
 
 ```bash
@@ -28,6 +38,15 @@ npm install
 cp .env.example .env
 # Edit .env with your Firebase config (Firebase Console → Project Settings)
 npm run dev
+```
+
+### Cloud Functions (auto-import)
+
+```bash
+cd functions
+npm install
+cd ..
+firebase deploy --only functions
 ```
 
 ## Firebase
@@ -48,16 +67,18 @@ Without `.env`, the app runs in demo mode (local-only with demo user, no auth or
 
 ## Stack
 
-React 19, Vite 7, Tailwind CSS v4, Firebase (Auth + Realtime DB).
+React 19, Vite 7, Tailwind CSS v4, Firebase (Auth + Realtime DB + Cloud Functions).
 
 ## Project Structure
 
 | Path | Purpose |
 |------|---------|
 | `src/App.jsx` | Main app, tab routing, league flow |
-| `src/AppContext.jsx` | Global state, Firebase sync, all game actions |
-| `src/data.js` | Season 50 cast, tribes, scoring events, bingo items, achievements |
+| `src/AppContext.jsx` | Global state, Firebase sync, auto-scoring, all game actions |
+| `src/data.js` | Season 50 cast, tribes, scoring events, structured prop bets, bet resolution |
 | `src/scoring.js` | Scoring engine, standings, achievements, commissioner report |
+| `src/importers/` | Client-side parsers (TDT, InsideSurvivor) and game event derivation |
+| `functions/` | Firebase Cloud Functions for scheduled auto-import and bet resolution |
 | `src/theme.js` | Color constants for JS |
 | `src/components/fijian/` | Shared Fijian UI (FijianCard, FijianInput, BingoSquare, Icon) |
 | `src/components/layout/` | AppShell, AppHeader, TabNav, UserBar, AppFooter |

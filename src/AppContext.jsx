@@ -1,8 +1,9 @@
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { onAuthStateChanged, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, signOut } from 'firebase/auth';
 import { ref, onValue, set, get, push, remove } from 'firebase/database';
 import { auth, db } from './firebase';
-import { generatePropBets, generateSideBets } from './data';
+import { generatePropBets, generateSideBets, ALL_CASTAWAYS, resolveBets } from './data';
+import { deriveGameEvents } from './importers/deriveGameEvents';
 
 const AppContext = createContext(null);
 
@@ -230,7 +231,6 @@ export function AppProvider({ children }) {
                         chrissy_hofbeck: ['survived'],
                     },
                     propBetResults: { [ep1Props[0].id]: true, [ep1Props[2].id]: false, [ep1Props[4].id]: true },
-                    boldResults: {},
                     eliminatedThisEp: ['mike_white'],
                     eliminationMethod: 'voted_out',
                 },
@@ -559,12 +559,11 @@ export function AppProvider({ children }) {
         if (!db || !user || !leagueId) throw new Error('Not connected');
         if (league?.createdBy !== user.uid) throw new Error('Only the host can score episodes');
 
-        const { gameEvents, propBetResults, boldResults, eliminatedThisEp, eliminationMethod, sideBetResults } = scoringData;
+        const { gameEvents, propBetResults, eliminatedThisEp, eliminationMethod, sideBetResults } = scoringData;
 
         const updates = {
             [`leagues/${leagueId}/episodes/${episodeNum}/gameEvents`]: gameEvents,
             [`leagues/${leagueId}/episodes/${episodeNum}/propBetResults`]: propBetResults || {},
-            [`leagues/${leagueId}/episodes/${episodeNum}/boldResults`]: boldResults || {},
             [`leagues/${leagueId}/episodes/${episodeNum}/sideBetResults`]: sideBetResults || {},
             [`leagues/${leagueId}/episodes/${episodeNum}/eliminatedThisEp`]: eliminatedThisEp || [],
             [`leagues/${leagueId}/episodes/${episodeNum}/eliminationMethod`]: eliminationMethod || 'voted_out',
@@ -857,6 +856,83 @@ export function AppProvider({ children }) {
         return episodes[currentEpisode];
     }, [currentEpisode, episodes]);
 
+    // --- Auto-scoring: detect import data and score without host intervention ---
+    const autoScoreAttempted = useRef({});
+
+    useEffect(() => {
+        if (!db || !user || !leagueId || !league || !currentEpisode) return;
+        if (league.createdBy !== user.uid) return;
+
+        const epNum = currentEpisode;
+        const ep = episodes[epNum];
+        if (!ep || ep.status !== 'open' || ep.scored) return;
+        if (autoScoreAttempted.current[`${leagueId}_${epNum}`]) return;
+
+        const importRef = ref(db, `seasons/s50/autoImport/e${epNum}`);
+        get(importRef).then(snap => {
+            if (!snap.exists()) return;
+            const importData = snap.val();
+            if (!importData.eliminatedId && !importData.eliminationMethod) return;
+
+            autoScoreAttempted.current[`${leagueId}_${epNum}`] = true;
+
+            const remaining = ALL_CASTAWAYS.filter(c => !(eliminated || []).includes(c.id));
+            const { gameEvents } = deriveGameEvents({
+                eliminatedId: importData.eliminatedId,
+                eliminationMethod: importData.eliminationMethod || 'voted_out',
+                immunityWinners: importData.immunityWinners || [],
+                rewardWinners: importData.rewardWinners || [],
+                isPostMerge: importData.isPostMerge || false,
+                minorityVoters: importData.minorityVoters || [],
+                receivedVotes: importData.receivedVotes || [],
+                bigMoments: importData.bigMoments || {},
+                remaining,
+            });
+
+            const propBets = ep.propBets || [];
+            const sideBets = ep.sideBets || [];
+            let propBetResults = ep.autoResolvedPropBets || {};
+            let sideBetResults = ep.autoResolvedSideBets || {};
+
+            if (Object.keys(propBetResults).length === 0 && propBets.length > 0 && propBets[0].resolveType) {
+                propBetResults = resolveBets(importData, propBets);
+            }
+            if (Object.keys(sideBetResults).length === 0 && sideBets.length > 0 && sideBets[0].resolveType) {
+                sideBetResults = resolveBets(importData, sideBets);
+            }
+
+            const eliminatedThisEp = importData.eliminatedId ? [importData.eliminatedId] : [];
+
+            scoreEpisodeAction(epNum, {
+                gameEvents,
+                propBetResults,
+                sideBetResults,
+                eliminatedThisEp,
+                eliminationMethod: importData.eliminationMethod || 'voted_out',
+            }).then(() => {
+                console.log(`Auto-scored episode ${epNum} from imported data`);
+            }).catch(err => {
+                console.warn('Auto-score failed:', err.message);
+                delete autoScoreAttempted.current[`${leagueId}_${epNum}`];
+            });
+        }).catch(err => {
+            console.warn('Auto-score import check failed:', err.message);
+        });
+    }, [db, user, leagueId, league, currentEpisode, episodes, eliminated, scoreEpisodeAction]);
+
+    // --- Spoiler protection: safeEliminated only includes eliminations from watched episodes ---
+    const safeEliminated = useMemo(() => {
+        if (!user) return [];
+        return (eliminated || []).filter(cid => {
+            for (const [epNum, ep] of Object.entries(episodes || {})) {
+                if ((ep.eliminatedThisEp || []).includes(cid)) {
+                    return hasWatched(Number(epNum));
+                }
+            }
+            return true;
+        });
+    }, [eliminated, episodes, user, hasWatched]);
+
     const sendMagicLink = (email) => {
         if (!auth) throw new Error('Firebase not configured. Add .env from .env.example');
         window.localStorage.setItem('emailForSignIn', email);
@@ -869,7 +945,7 @@ export function AppProvider({ children }) {
         user, authLoading,
         league, leagueId, leagueMembers, leagueLoading,
         draftState, rideOrDies, passports, mergePassports,
-        currentEpisode, episodeData, episodes, eliminated,
+        currentEpisode, episodeData, episodes, eliminated, safeEliminated,
         watchStatus, bingo, postEpisode,
         tribeSwaps, isMerged, currentTribes, auction, finaleData,
         lightTorch, markWatched, saveBingoMarks, hasWatched, isWatching, hasLockedPicks,

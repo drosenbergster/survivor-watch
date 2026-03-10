@@ -14,12 +14,12 @@ const HOW_IT_WORKS = [
   {
     icon: '🎯',
     title: 'Make Weekly Picks & Predictions',
-    body: 'Before each episode, pick two contestants to score for you that week and make predictions: who goes home, bold calls, and yes/no prop bets.',
+    body: 'Before each episode, pick contestants to score for you that week and answer yes/no prop bets.',
   },
   {
     icon: '📺',
     title: 'Start Watching',
-    body: 'When you\'re ready to watch, tap "Start Watching" on the Bingo tab. This locks in your picks and predictions and activates your bingo card. Watch live or catch up later — you control your own timing.',
+    body: 'When you\'re ready to watch, tap "Start Watching" on the Watch tab. This locks in your picks and predictions and activates your bingo card. Watch live or catch up later — you control your own timing.',
   },
   {
     icon: '🗳️',
@@ -35,11 +35,11 @@ const HOW_IT_WORKS = [
 
 const EPISODE_FLOW = [
   {
-    title: 'Save Picks & Predictions (Draft Tab)',
-    body: 'Choose your two weekly contestants and submit your predictions. Do this before you start the episode.',
+    title: 'Save Picks & Prop Bets (Play Tab)',
+    body: 'Choose your weekly contestants and answer prop bets. Do this before you start the episode.',
   },
   {
-    title: 'Start Watching (Bingo Tab)',
+    title: 'Start Watching (Watch Tab)',
     body: 'Tap "Start Watching" when you\'re ready to press play. This locks your picks and predictions and activates your bingo card and tribal snap vote.',
   },
   {
@@ -274,7 +274,7 @@ export default function RulesTab() {
 
       {/* ── Bracket Draft ── */}
       <section>
-        <FijianSectionHeader title="Sevu" subtitle="Bracket Draft" variant="rules" />
+        <FijianSectionHeader title="Draft" subtitle="Ride or Die" variant="rules" />
         <div className="space-y-6">
           <div className="flex gap-4">
             <div className="shrink-0 size-8 rounded-full border border-terracotta flex items-center justify-center font-wood-serif text-terracotta font-bold">
@@ -302,7 +302,7 @@ export default function RulesTab() {
       </section>
 
       <section>
-        <FijianSectionHeader title="Lawa ni Qito" subtitle="Scoring" variant="rules" />
+        <FijianSectionHeader title="Scoring" subtitle="Contestant Points" variant="rules" />
         <div className="bg-black/20 rounded-xl overflow-hidden border border-terracotta/20">
           <table className="w-full text-left">
             <thead className="bg-terracotta/10 border-b border-terracotta/20">
@@ -311,7 +311,7 @@ export default function RulesTab() {
                   Event
                 </th>
                 <th className="px-4 py-3 font-wood-serif text-sand-warm text-lg uppercase text-right" scope="col">
-                  Toka (Pts)
+                  Points
                 </th>
               </tr>
             </thead>
@@ -343,7 +343,7 @@ export default function RulesTab() {
                     Category
                   </th>
                   <th className="px-4 py-3 font-wood-serif text-sand-warm text-lg uppercase text-right" scope="col">
-                    Toka (Pts)
+                    Points
                   </th>
                 </tr>
               </thead>
@@ -371,7 +371,7 @@ export default function RulesTab() {
       ))}
 
       <section>
-        <FijianSectionHeader title="Qito" subtitle="Bingo" variant="rules" />
+        <FijianSectionHeader title="Bingo" subtitle="Watch Party Game" variant="rules" />
         <div className="p-6 bg-terracotta/5 border-2 border-dashed border-terracotta/30 rounded-2xl text-center">
           <p className="font-wood-serif text-sand-warm text-2xl italic mb-2">&quot;JEFF PROBST!&quot;</p>
           <p className="text-[10px] uppercase text-bleached-sand/60 font-bold tracking-[0.2em] font-sans">

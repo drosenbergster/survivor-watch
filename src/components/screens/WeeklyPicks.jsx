@@ -4,7 +4,7 @@ import { TRIBES, ALL_CASTAWAYS, getMaxPicks } from '../../data';
 import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon } from '../fijian';
 
 export default function WeeklyPicks() {
-    const { user, currentEpisode, episodeData, eliminated, submitPicks } = useApp();
+    const { user, currentEpisode, episodeData, safeEliminated, submitPicks } = useApp();
 
     const myPicks = useMemo(() => episodeData?.picks?.[user?.uid] || [], [episodeData?.picks, user?.uid]);
     const [selected, setSelected] = useState(() => myPicks);
@@ -13,7 +13,7 @@ export default function WeeklyPicks() {
     const [error, setError] = useState('');
     const hydrated = useRef(myPicks.length > 0);
 
-    const eliminatedSet = new Set(eliminated || []);
+    const eliminatedSet = new Set(safeEliminated || []);
     const remaining = ALL_CASTAWAYS.filter(c => !eliminatedSet.has(c.id));
     const maxPicks = getMaxPicks(remaining.length);
 

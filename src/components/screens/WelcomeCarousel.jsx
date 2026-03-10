@@ -16,7 +16,7 @@ const SLIDES = [
     {
         icon: '🔮',
         title: 'Predict & Play',
-        body: 'Call the elimination, lock in bold predictions, vote at tribal council, and fill out your bingo card — all while watching the show.',
+        body: 'Answer prop bets, vote at tribal council, and fill out your bingo card — all while watching the show.',
     },
     {
         icon: '🏆',

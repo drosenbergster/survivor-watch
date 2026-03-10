@@ -7,28 +7,45 @@ import {
     FijianPrimaryButton,
     Icon,
 } from '../fijian';
+import { HistoricalStatBars, HistoricalStatMini } from '../screens/HistoricalStats';
 
-function ContestantButton({ castaway, drafted, draftedByName, isPickable, onPick }) {
+function ContestantButton({ castaway, drafted, draftedByName, isPickable, onPick, expanded, onToggleExpand }) {
     return (
-        <button
-            type="button"
-            onClick={() => isPickable && onPick(castaway.id)}
-            disabled={!isPickable}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-sm transition-all
-                ${drafted ? 'opacity-40 cursor-default' : ''}
-                ${isPickable ? 'hover:bg-ochre/10 hover:border-ochre/30 cursor-pointer' : 'cursor-default'}
-                ${!drafted ? 'text-stone-200' : 'text-stone-400'}
-                border border-transparent
-            `}
-        >
-            <div className="flex-1 min-w-0">
-                <span className={`font-medium ${drafted ? 'line-through' : ''}`}>{castaway.name}</span>
-                <span className="text-xs text-stone-400 ml-2">{castaway.short}</span>
-            </div>
-            {drafted && draftedByName && (
-                <span className="text-xs text-ochre/60 truncate ml-2">{draftedByName}</span>
+        <div className={`rounded-lg transition-all border ${drafted ? 'opacity-40 border-transparent' : isPickable ? 'border-transparent hover:border-ochre/30' : 'border-transparent'}`}>
+            <button
+                type="button"
+                onClick={() => isPickable ? onPick(castaway.id) : (!drafted && onToggleExpand?.(castaway.id))}
+                disabled={false}
+                className={`w-full flex items-center justify-between px-3 py-2.5 text-left text-sm transition-all
+                    ${isPickable ? 'hover:bg-ochre/10 cursor-pointer' : drafted ? 'cursor-default' : 'cursor-pointer'}
+                    ${!drafted ? 'text-stone-200' : 'text-stone-400'}
+                `}
+            >
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                        <span className={`font-medium ${drafted ? 'line-through' : ''}`}>{castaway.name}</span>
+                        <span className="text-xs text-stone-400">{castaway.short}</span>
+                        {!drafted && <HistoricalStatMini contestantId={castaway.id} />}
+                    </div>
+                </div>
+                {drafted && draftedByName && (
+                    <span className="text-xs text-ochre/60 truncate ml-2">{draftedByName}</span>
+                )}
+            </button>
+            {expanded && !drafted && (
+                <div className="px-3 pb-3">
+                    <HistoricalStatBars contestantId={castaway.id} />
+                    {isPickable && (
+                        <button
+                            onClick={() => onPick(castaway.id)}
+                            className="mt-2 w-full py-1.5 rounded bg-fire-400/90 text-white text-xs font-sans font-bold hover:bg-fire-400 transition-all"
+                        >
+                            Draft {castaway.name}
+                        </button>
+                    )}
+                </div>
             )}
-        </button>
+        </div>
     );
 }
 
@@ -153,6 +170,7 @@ export default function RideOrDieDraft() {
     const { draftState, rideOrDies, leagueMembers, user, makeDraftPick } = useApp();
     const [picking, setPicking] = useState(false);
     const [error, setError] = useState('');
+    const [expandedId, setExpandedId] = useState(null);
 
     if (!draftState) return null;
 
@@ -162,8 +180,7 @@ export default function RideOrDieDraft() {
         return (
             <div className="space-y-6 max-w-2xl mx-auto">
                 <header className="text-center">
-                    <h2 className="font-display text-4xl tracking-wider text-sand-warm drop-shadow-text">Sevu</h2>
-                    <p className="text-sand-warm/70 text-sm mt-1">Ride or Die Draft</p>
+                    <h2 className="font-display text-3xl tracking-wider text-sand-warm drop-shadow-text">Ride or Die Draft</h2>
                 </header>
                 <DraftComplete rideOrDies={rideOrDies} leagueMembers={leagueMembers} user={user} />
             </div>
@@ -195,8 +212,7 @@ export default function RideOrDieDraft() {
     return (
         <div className="space-y-6 max-w-2xl mx-auto">
             <header className="text-center">
-                <h2 className="font-display text-4xl tracking-wider text-sand-warm drop-shadow-text">Sevu</h2>
-                <p className="text-sand-warm/70 text-sm mt-1">Ride or Die Draft</p>
+                <h2 className="font-display text-3xl tracking-wider text-sand-warm drop-shadow-text">Ride or Die Draft</h2>
             </header>
 
             <DraftStatus draftState={draftState} leagueMembers={leagueMembers} user={user} />
@@ -231,6 +247,8 @@ export default function RideOrDieDraft() {
                                     draftedByName={draftedByMap[c.id]}
                                     isPickable={isYourTurn && !draftedIds.has(c.id) && !picking}
                                     onPick={handlePick}
+                                    expanded={expandedId === c.id}
+                                    onToggleExpand={(id) => setExpandedId(prev => prev === id ? null : id)}
                                 />
                             ))}
                         </div>

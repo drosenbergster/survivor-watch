@@ -165,6 +165,14 @@
         ".read": "auth != null",
         ".write": "auth != null && !data.exists()"
       }
+    },
+    "seasons": {
+      ".read": "auth != null",
+      "s50": {
+        "autoImport": {
+          ".write": false
+        }
+      }
     }
   }
 }

@@ -128,8 +128,6 @@ function EpisodeBreakdown({ epNum, score }) {
                     {score.breakdown.predictions.map((p, i) => (
                         <div key={`p${i}`} className="flex justify-between text-sand-warm/60">
                             <span>
-                                {p.type === 'elimination' && '🎯 Correct elimination'}
-                                {p.type === 'bold' && '💡 Bold prediction'}
                                 {p.type === 'propBet' && `📊 ${p.text}`}
                                 {p.type === 'snapVote' && '🔥 Snap vote correct'}
                                 {p.type === 'sideBet' && `⚡ ${p.text}`}
@@ -175,7 +173,7 @@ function EpisodeBreakdown({ epNum, score }) {
     );
 }
 
-function SpoilerShield({ unwatchedEps, onGoToBingo }) {
+function SpoilerShield({ unwatchedEps, onNavigate }) {
     return (
         <FijianCard className="p-6 max-w-md mx-auto text-center space-y-4">
             <div className="text-4xl">🛡️</div>
@@ -185,7 +183,7 @@ function SpoilerShield({ unwatchedEps, onGoToBingo }) {
                 Scores are hidden to keep things fresh.
             </p>
             <button
-                onClick={onGoToBingo}
+                onClick={() => onNavigate?.('watch')}
                 className="text-ochre text-sm underline hover:text-ochre/80 transition-colors font-sans"
             >
                 🔥 Light your torch to watch →
@@ -194,7 +192,7 @@ function SpoilerShield({ unwatchedEps, onGoToBingo }) {
     );
 }
 
-export default function ScoreboardTab() {
+export default function ScoreboardTab({ onTabChange }) {
     const { episodes, rideOrDies, leagueMembers, hasWatched, bingo, postEpisode } = useApp();
     const [expandedUid, setExpandedUid] = useState(null);
 
@@ -222,7 +220,7 @@ export default function ScoreboardTab() {
     return (
         <div className="space-y-6">
             <header className="text-center">
-                <h2 className="font-display text-4xl tracking-wider text-sand-warm drop-shadow-text">Tovo</h2>
+                <h2 className="font-display text-3xl tracking-wider text-sand-warm drop-shadow-text">Scores</h2>
                 <p className="text-sand-warm/70 text-sm mt-1 font-sans inline-flex items-center justify-center">
                     Scores
                     <HintBadge hintKey="scores">
@@ -242,7 +240,7 @@ export default function ScoreboardTab() {
                     </p>
                 </FijianCard>
             ) : spoilerActive ? (
-                <SpoilerShield unwatchedEps={unwatchedScoredEps} />
+                <SpoilerShield unwatchedEps={unwatchedScoredEps} onNavigate={onTabChange} />
             ) : (
                 <>
                     <FijianCard className="p-4 space-y-1">
@@ -274,14 +272,6 @@ export default function ScoreboardTab() {
                                 </div>
                             ))}
                             <div className="col-span-2 border-t border-stone-700 mt-2 pt-2">
-                                <div className="flex justify-between">
-                                    <span>🎯 Correct elimination pick</span>
-                                    <span className="text-ochre">+5</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>💡 Bold prediction confirmed</span>
-                                    <span className="text-ochre">+10</span>
-                                </div>
                                 <div className="flex justify-between">
                                     <span>📊 Correct prop bet</span>
                                     <span className="text-ochre">+3</span>

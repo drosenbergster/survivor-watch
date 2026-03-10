@@ -6,9 +6,7 @@ const RIDE_OR_DIE_SURVIVE_BONUS = 2;
 const RIDE_OR_DIE_FINALE_BONUS = 15;
 const RIDE_OR_DIE_WINNER_BONUS = 30;
 const SCARCITY_MULTIPLIER = 1.5;
-const CORRECT_ELIMINATION_POINTS = 5;
 const CORRECT_PROP_BET_POINTS = 3;
-const CORRECT_BOLD_PREDICTION_POINTS = 10;
 const CORRECT_SNAP_VOTE_POINTS = 8;
 const CORRECT_SIDE_BET_POINTS = 3;
 const PLAYER_OF_EPISODE_POINTS = 7;
@@ -72,7 +70,6 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
         propBets = [],
         propBetResults = {},
         eliminatedThisEp = [],
-        boldResults = {},
         snapVotes = {},
         sideBets = [],
         playerSideBets = {},
@@ -113,18 +110,6 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
 
         // --- Prediction scoring ---
         const playerPred = predictions[uid] || {};
-
-        // Correct elimination prediction
-        if (playerPred.elimination && eliminatedThisEp.includes(playerPred.elimination)) {
-            predictionTotal += CORRECT_ELIMINATION_POINTS;
-            breakdown.predictions.push({ type: 'elimination', correct: true, points: CORRECT_ELIMINATION_POINTS });
-        }
-
-        // Bold prediction (admin confirms per player)
-        if (boldResults[uid]) {
-            predictionTotal += CORRECT_BOLD_PREDICTION_POINTS;
-            breakdown.predictions.push({ type: 'bold', correct: true, points: CORRECT_BOLD_PREDICTION_POINTS });
-        }
 
         // Prop bets — only score when admin has explicitly set a result
         const playerProps = playerPred.propBets || {};
@@ -400,10 +385,10 @@ export function detectAchievements(episodes, rideOrDies, memberUids, bingoAllEpi
             const score = epScores[uid];
             if (!score) continue;
 
-            // Prophet: consecutive correct elimination predictions
-            const prediction = ep.predictions?.[uid]?.elimination;
+            // Prophet: consecutive correct snap votes
+            const snapVote = ep.snapVotes?.[uid]?.contestantId;
             const actualEliminated = ep.eliminatedThisEp || [];
-            if (prediction && actualEliminated.includes(prediction)) {
+            if (snapVote && actualEliminated.includes(snapVote)) {
                 elimStreaks[uid]++;
                 if (elimStreaks[uid] >= 3 && !earned[uid].includes('prophet')) {
                     earned[uid].push('prophet');
@@ -412,8 +397,8 @@ export function detectAchievements(episodes, rideOrDies, memberUids, bingoAllEpi
                 elimStreaks[uid] = 0;
             }
 
-            // First Blood: correct first elimination (episode 1 only)
-            if (epNum === epNums[0] && prediction && actualEliminated.includes(prediction)) {
+            // First Blood: correct snap vote on the first episode
+            if (epNum === epNums[0] && snapVote && actualEliminated.includes(snapVote)) {
                 if (!earned[uid].includes('first_blood')) earned[uid].push('first_blood');
             }
 
@@ -561,9 +546,9 @@ export function generateCommissionerReport(epNum, episodes, standings, perEpisod
     // Elimination
     const eliminated = (ep.eliminatedThisEp || []).map(contestantName);
 
-    // Correct elimination predictions
-    const correctPredictors = Object.entries(ep.predictions || {})
-        .filter(([, pred]) => (ep.eliminatedThisEp || []).includes(pred?.elimination))
+    // Correct snap votes at tribal
+    const correctPredictors = Object.entries(ep.snapVotes || {})
+        .filter(([, vote]) => (ep.eliminatedThisEp || []).includes(vote?.contestantId))
         .map(([uid]) => memberNames(uid));
 
     // New achievements this episode (simplified — just list all)
@@ -586,7 +571,7 @@ export function generateCommissionerReport(epNum, episodes, standings, perEpisod
         headlines.push(`${memberNames(standings[0].uid)} leads the standings with ${standings[0].total} total points`);
     }
     if (correctPredictors.length > 0) {
-        headlines.push(`${correctPredictors.join(', ')} correctly predicted the boot`);
+        headlines.push(`${correctPredictors.join(', ')} called the boot at tribal`);
     }
 
     return {

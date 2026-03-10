@@ -90,7 +90,7 @@ export default function LeagueSwitcher() {
                         );
                     })}
                     <div className="border-t border-stone-700 px-3 py-2 text-[10px] text-stone-500">
-                        Manage league settings in the Lawa (Rules) tab
+                        Manage league settings in the Rules tab
                     </div>
                 </div>
             )}
