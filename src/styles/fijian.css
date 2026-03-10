@@ -82,8 +82,14 @@
 
 /* Stitch 02 Rules — terracotta/sand magimagi */
 .magimagi-border-rules {
-  border: 12px solid transparent;
-  border-image: repeating-linear-gradient(45deg, #7a331e, #7a331e 10px, #d4b483 10px, #d4b483 20px) 20;
+  border: 6px solid transparent;
+  border-image: repeating-linear-gradient(45deg, #7a331e, #7a331e 10px, #d4b483 10px, #d4b483 20px) 12;
+}
+@media (min-width: 640px) {
+  .magimagi-border-rules {
+    border-width: 12px;
+    border-image: repeating-linear-gradient(45deg, #7a331e, #7a331e 10px, #d4b483 10px, #d4b483 20px) 20;
+  }
 }
 
 /* Stitch 02 Rules — scroll container with gradient sides */

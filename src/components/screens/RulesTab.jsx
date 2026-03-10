@@ -83,14 +83,14 @@ export default function RulesTab() {
   const isActive = league?.status === 'active';
 
   return (
-    <article className="max-w-2xl mx-auto space-y-8 magimagi-border-rules p-6 scroll-container rounded-lg">
-      <header className="text-center py-10">
-        <h1 className="font-wood-serif font-bold text-5xl text-sand-warm uppercase tracking-tighter drop-shadow-text">
+    <article className="max-w-2xl mx-auto space-y-6 sm:space-y-8 magimagi-border-rules px-3 py-4 sm:p-6 scroll-container rounded-lg">
+      <header className="text-center py-6 sm:py-10">
+        <h1 className="font-wood-serif font-bold text-4xl sm:text-5xl text-sand-warm uppercase tracking-tighter drop-shadow-text">
           LAWA
         </h1>
         <div className="flex items-center justify-center gap-2 mt-1">
           <span className="h-[1px] w-8 bg-terracotta" />
-          <p className="font-display text-terracotta text-lg tracking-[0.3em]">FIJIAN RULES</p>
+          <p className="font-display text-terracotta text-base sm:text-lg tracking-[0.3em]">FIJIAN RULES</p>
           <span className="h-[1px] w-8 bg-terracotta" />
         </div>
       </header>
@@ -127,10 +127,10 @@ export default function RulesTab() {
 
         <div className="space-y-5">
           {/* Ride or Die */}
-          <div className="bg-black/20 rounded-xl p-5 border border-terracotta/20 space-y-3">
+          <div className="bg-black/20 rounded-xl p-3 sm:p-5 border border-terracotta/20 space-y-3">
             <div className="flex items-center gap-2">
               <span className="text-xl">🤝</span>
-              <h4 className="font-wood-serif text-lg text-sand-warm">Ride or Die &mdash; Your Season-Long Alliance</h4>
+              <h4 className="font-wood-serif text-base sm:text-lg text-sand-warm">Ride or Die &mdash; Your Season-Long Alliance</h4>
             </div>
             <p className="text-sm text-bleached-sand/70 leading-relaxed font-sans">
               Before the season begins, your league holds a <strong className="text-sand-warm">snake draft</strong>.
@@ -142,18 +142,18 @@ export default function RulesTab() {
               Your Ride or Dies earn you <strong className="text-sand-warm">episode event points</strong> (just
               like weekly picks) <strong className="text-sand-warm">plus</strong> passive bonuses for staying in the game:
             </p>
-            <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2 text-center">
               <div className="bg-black/30 rounded-lg py-2 px-1">
-                <p className="font-display text-xl text-sand-warm">+2</p>
-                <p className="text-[10px] text-bleached-sand/50 font-sans uppercase">per episode survived</p>
+                <p className="font-display text-lg sm:text-xl text-sand-warm">+2</p>
+                <p className="text-[9px] sm:text-[10px] text-bleached-sand/50 font-sans uppercase leading-tight">per episode survived</p>
               </div>
               <div className="bg-black/30 rounded-lg py-2 px-1">
-                <p className="font-display text-xl text-sand-warm">+15</p>
-                <p className="text-[10px] text-bleached-sand/50 font-sans uppercase">reach finale</p>
+                <p className="font-display text-lg sm:text-xl text-sand-warm">+15</p>
+                <p className="text-[9px] sm:text-[10px] text-bleached-sand/50 font-sans uppercase leading-tight">reach finale</p>
               </div>
               <div className="bg-black/30 rounded-lg py-2 px-1">
-                <p className="font-display text-xl text-sand-warm">+30</p>
-                <p className="text-[10px] text-bleached-sand/50 font-sans uppercase">win the season</p>
+                <p className="font-display text-lg sm:text-xl text-sand-warm">+30</p>
+                <p className="text-[9px] sm:text-[10px] text-bleached-sand/50 font-sans uppercase leading-tight">win the season</p>
               </div>
             </div>
             <p className="text-xs text-bleached-sand/50 italic font-sans">
@@ -162,10 +162,10 @@ export default function RulesTab() {
           </div>
 
           {/* Weekly Picks */}
-          <div className="bg-black/20 rounded-xl p-5 border border-terracotta/20 space-y-3">
+          <div className="bg-black/20 rounded-xl p-3 sm:p-5 border border-terracotta/20 space-y-3">
             <div className="flex items-center gap-2">
               <span className="text-xl">🎯</span>
-              <h4 className="font-wood-serif text-lg text-sand-warm">Weekly Picks &mdash; Your Episode-by-Episode Bet</h4>
+              <h4 className="font-wood-serif text-base sm:text-lg text-sand-warm">Weekly Picks &mdash; Your Episode-by-Episode Bet</h4>
             </div>
             <p className="text-sm text-bleached-sand/70 leading-relaxed font-sans">
               Before each episode, you choose <strong className="text-sand-warm">two contestants from anyone still in the game</strong>.
@@ -184,10 +184,10 @@ export default function RulesTab() {
           </div>
 
           {/* Exclusivity Bonus */}
-          <div className="bg-terracotta/5 rounded-xl p-5 border-2 border-dashed border-terracotta/30 space-y-3">
+          <div className="bg-terracotta/5 rounded-xl p-3 sm:p-5 border-2 border-dashed border-terracotta/30 space-y-3">
             <div className="flex items-center gap-2">
               <span className="text-xl">💎</span>
-              <h4 className="font-wood-serif text-lg text-sand-warm">Exclusivity Bonus &mdash; 1.5&times; for Going Solo</h4>
+              <h4 className="font-wood-serif text-base sm:text-lg text-sand-warm">Exclusivity Bonus &mdash; 1.5&times; for Going Solo</h4>
             </div>
             <p className="text-sm text-bleached-sand/70 leading-relaxed font-sans">
               This applies to <strong className="text-sand-warm">Weekly Picks only</strong>. After everyone locks in
@@ -213,40 +213,40 @@ export default function RulesTab() {
           </div>
 
           {/* Quick comparison */}
-          <div className="bg-black/20 rounded-xl overflow-hidden border border-terracotta/20">
-            <table className="w-full text-sm font-sans">
+          <div className="bg-black/20 rounded-xl overflow-x-auto border border-terracotta/20">
+            <table className="w-full text-xs sm:text-sm font-sans min-w-[420px]">
               <thead className="bg-terracotta/10 border-b border-terracotta/20">
                 <tr>
-                  <th className="px-4 py-2.5 text-left font-wood-serif text-sand-warm" scope="col" />
-                  <th className="px-4 py-2.5 text-center font-wood-serif text-sand-warm" scope="col">🤝 Ride or Die</th>
-                  <th className="px-4 py-2.5 text-center font-wood-serif text-sand-warm" scope="col">🎯 Weekly Picks</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-2.5 text-left font-wood-serif text-sand-warm" scope="col" />
+                  <th className="px-2 sm:px-4 py-2 sm:py-2.5 text-center font-wood-serif text-sand-warm" scope="col">🤝 Ride or Die</th>
+                  <th className="px-2 sm:px-4 py-2 sm:py-2.5 text-center font-wood-serif text-sand-warm" scope="col">🎯 Weekly Picks</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-terracotta/10 text-bleached-sand/70">
                 <tr>
-                  <td className="px-4 py-2.5 font-bold text-sand-warm">When chosen</td>
-                  <td className="px-4 py-2.5 text-center">Once, before the season</td>
-                  <td className="px-4 py-2.5 text-center">Every episode</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 font-bold text-sand-warm">When chosen</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">Once, before the season</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">Every episode</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-2.5 font-bold text-sand-warm">Can you change them?</td>
-                  <td className="px-4 py-2.5 text-center">No &mdash; locked all season</td>
-                  <td className="px-4 py-2.5 text-center">Yes &mdash; new picks each week</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 font-bold text-sand-warm">Can you change them?</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">No &mdash; locked all season</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">Yes &mdash; new picks each week</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-2.5 font-bold text-sand-warm">Who can you pick?</td>
-                  <td className="px-4 py-2.5 text-center">Exclusive (no overlap)</td>
-                  <td className="px-4 py-2.5 text-center">Anyone remaining</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 font-bold text-sand-warm">Who can you pick?</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">Exclusive (no overlap)</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">Anyone remaining</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-2.5 font-bold text-sand-warm">How you score</td>
-                  <td className="px-4 py-2.5 text-center">Event points + survival bonuses</td>
-                  <td className="px-4 py-2.5 text-center">Episode event points</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 font-bold text-sand-warm">How you score</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">Event pts + survival</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">Episode event pts</td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-2.5 font-bold text-sand-warm">Exclusivity bonus?</td>
-                  <td className="px-4 py-2.5 text-center">No</td>
-                  <td className="px-4 py-2.5 text-center">Yes (1.5&times;)</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 font-bold text-sand-warm">Exclusivity bonus?</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">No</td>
+                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">Yes (1.5&times;)</td>
                 </tr>
               </tbody>
             </table>
@@ -307,10 +307,10 @@ export default function RulesTab() {
           <table className="w-full text-left">
             <thead className="bg-terracotta/10 border-b border-terracotta/20">
               <tr>
-                <th className="px-4 py-3 font-wood-serif text-sand-warm text-lg uppercase" scope="col">
+                <th className="px-2 sm:px-4 py-2 sm:py-3 font-wood-serif text-sand-warm text-base sm:text-lg uppercase" scope="col">
                   Event
                 </th>
-                <th className="px-4 py-3 font-wood-serif text-sand-warm text-lg uppercase text-right" scope="col">
+                <th className="px-2 sm:px-4 py-2 sm:py-3 font-wood-serif text-sand-warm text-base sm:text-lg uppercase text-right" scope="col">
                   Points
                 </th>
               </tr>
@@ -318,11 +318,11 @@ export default function RulesTab() {
             <tbody className="divide-y divide-terracotta/10">
               {SCORE_EVENTS.map((ev) => (
                 <tr key={ev.key}>
-                  <td className="px-4 py-3 text-sm flex items-center gap-2 font-sans">
+                  <td className="px-2 sm:px-4 py-2 sm:py-3 text-sm flex items-center gap-2 font-sans">
                     <Icon name={EVENT_ICONS[ev.key] || 'circle'} className="text-terracotta text-sm" />
                     {ev.label}
                   </td>
-                  <td className={`px-4 py-3 text-right font-display text-2xl ${ev.negative ? 'text-deep-terracotta' : 'text-sand-warm'}`}>
+                  <td className={`px-2 sm:px-4 py-2 sm:py-3 text-right font-display text-xl sm:text-2xl ${ev.negative ? 'text-deep-terracotta' : 'text-sand-warm'}`}>
                     {ev.points > 0 ? '+' : ''}{ev.points}
                   </td>
                 </tr>
@@ -339,10 +339,10 @@ export default function RulesTab() {
             <table className="w-full text-left">
               <thead className="bg-terracotta/10 border-b border-terracotta/20">
                 <tr>
-                  <th className="px-4 py-3 font-wood-serif text-sand-warm text-lg uppercase" scope="col">
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 font-wood-serif text-sand-warm text-base sm:text-lg uppercase" scope="col">
                     Category
                   </th>
-                  <th className="px-4 py-3 font-wood-serif text-sand-warm text-lg uppercase text-right" scope="col">
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 font-wood-serif text-sand-warm text-base sm:text-lg uppercase text-right" scope="col">
                     Points
                   </th>
                 </tr>
@@ -350,7 +350,7 @@ export default function RulesTab() {
               <tbody className="divide-y divide-terracotta/10">
                 {group.items.map((item) => (
                   <tr key={item.label}>
-                    <td className="px-4 py-3 text-sm font-sans">
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-sm font-sans">
                       <div className="flex items-center gap-2">
                         <span>{item.emoji}</span>
                         <span>{item.label}</span>
@@ -359,7 +359,7 @@ export default function RulesTab() {
                         <p className="text-xs text-bleached-sand/50 mt-0.5 ml-7 italic">{item.note}</p>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-right font-display text-2xl text-sand-warm align-top">
+                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-right font-display text-xl sm:text-2xl text-sand-warm align-top">
                       {typeof item.points === 'number' ? `+${item.points}` : item.points}
                     </td>
                   </tr>
@@ -372,8 +372,8 @@ export default function RulesTab() {
 
       <section>
         <FijianSectionHeader title="Bingo" subtitle="Watch Party Game" variant="rules" />
-        <div className="p-6 bg-terracotta/5 border-2 border-dashed border-terracotta/30 rounded-2xl text-center">
-          <p className="font-wood-serif text-sand-warm text-2xl italic mb-2">&quot;JEFF PROBST!&quot;</p>
+        <div className="p-4 sm:p-6 bg-terracotta/5 border-2 border-dashed border-terracotta/30 rounded-2xl text-center">
+          <p className="font-wood-serif text-sand-warm text-xl sm:text-2xl italic mb-2">&quot;JEFF PROBST!&quot;</p>
           <p className="text-[10px] uppercase text-bleached-sand/60 font-bold tracking-[0.2em] font-sans">
             Must be yelled at full volume to claim victory.
           </p>
@@ -381,19 +381,19 @@ export default function RulesTab() {
       </section>
 
       <section className="mb-16">
-        <div className="relative bg-masi-dark/80 rounded-3xl p-8 border-2 border-terracotta overflow-hidden">
+        <div className="relative bg-masi-dark/80 rounded-3xl p-5 sm:p-8 border-2 border-terracotta overflow-hidden">
           <div className="absolute -right-4 -bottom-4 opacity-10" aria-hidden>
-            <Icon name="temple_hindu" className="text-[120px] text-terracotta" />
+            <Icon name="temple_hindu" className="text-[80px] sm:text-[120px] text-terracotta" />
           </div>
           <div className="relative z-10">
-            <div className="flex flex-col items-center mb-6 text-center">
-              <Icon name="soup_kitchen" className="text-terracotta text-5xl mb-2" />
-              <h3 className="font-wood-serif font-bold text-3xl text-sand-warm tracking-tight uppercase">
+            <div className="flex flex-col items-center mb-4 sm:mb-6 text-center">
+              <Icon name="soup_kitchen" className="text-terracotta text-4xl sm:text-5xl mb-2" />
+              <h3 className="font-wood-serif font-bold text-2xl sm:text-3xl text-sand-warm tracking-tight uppercase">
                 Vaka-Viti
               </h3>
               <p className="text-[10px] text-terracotta font-black tracking-[0.3em] uppercase font-sans">(The Fijian Way)</p>
             </div>
-            <p className="text-bleached-sand text-center text-base leading-relaxed italic font-sans">
+            <p className="text-bleached-sand text-center text-sm sm:text-base leading-relaxed italic font-sans">
               Whenever the host says <span className="text-terracotta font-bold">&quot;C&apos;mon in guys!&quot;</span> or{' '}
               <span className="text-terracotta font-bold">&quot;Dig Deep&quot;</span>, the custom replacement for
               &quot;Cheers!&quot; is a synchronous tribe-wide salute.
