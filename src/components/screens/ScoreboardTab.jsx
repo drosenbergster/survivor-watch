@@ -194,7 +194,7 @@ function SpoilerShield({ unwatchedEps, onNavigate }) {
 }
 
 export default function ScoreboardTab({ onTabChange }) {
-    const { episodes, rideOrDies, leagueMembers, hasWatched, bingo, postEpisode } = useApp();
+    const { episodes, rideOrDies, leagueMembers, hasWatched, bingo, postEpisode, league } = useApp();
     const [expandedUid, setExpandedUid] = useState(null);
 
     const memberUids = useMemo(() => Object.keys(leagueMembers || {}), [leagueMembers]);
@@ -212,8 +212,8 @@ export default function ScoreboardTab({ onTabChange }) {
     const spoilerActive = unwatchedScoredEps.length > 0;
 
     const { standings, perEpisode } = useMemo(
-        () => computeStandings(episodes, rideOrDies, memberUids, bingo, postEpisode),
-        [episodes, rideOrDies, memberUids, bingo, postEpisode]
+        () => computeStandings(episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated),
+        [episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated]
     );
 
     const hasScoredEpisodes = scoredEpNums.length > 0;

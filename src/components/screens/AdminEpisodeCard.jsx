@@ -68,14 +68,15 @@ export default function AdminEpisodeCard() {
     if (!isAdmin) return null;
 
     const episodeStatus = episodeData?.status;
-    const nextEpisodeNum = currentEpisode ? currentEpisode + 1 : 1;
+    const firstEpisode = league?.startingEpisode || 1;
+    const nextEpisodeNum = currentEpisode ? currentEpisode + 1 : firstEpisode;
     const needsNewEpisode = !currentEpisode || !episodeData || episodeStatus === 'scored';
 
     const handleCreate = async () => {
         setLoading(true);
         setError('');
         try {
-            const num = currentEpisode ? currentEpisode + 1 : 1;
+            const num = currentEpisode ? currentEpisode + 1 : firstEpisode;
             await createEpisode(num);
         } catch (err) { setError(err.message); }
         setLoading(false);

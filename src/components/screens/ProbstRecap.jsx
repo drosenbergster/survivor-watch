@@ -6,14 +6,14 @@ import { FijianCard, Icon } from '../fijian';
 export default function ProbstRecap({ episodeNum }) {
     const {
         episodes, rideOrDies, leagueMembers, bingo,
-        postEpisode,
+        postEpisode, league,
     } = useApp();
 
     const memberUids = useMemo(() => Object.keys(leagueMembers || {}), [leagueMembers]);
 
     const { standings, perEpisode } = useMemo(
-        () => computeStandings(episodes, rideOrDies, memberUids, bingo, postEpisode),
-        [episodes, rideOrDies, memberUids, bingo, postEpisode]
+        () => computeStandings(episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated),
+        [episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated]
     );
 
     const achievements = useMemo(

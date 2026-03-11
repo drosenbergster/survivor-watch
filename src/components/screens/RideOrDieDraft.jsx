@@ -167,13 +167,14 @@ function DraftComplete({ rideOrDies, leagueMembers, user }) {
 }
 
 export default function RideOrDieDraft() {
-    const { draftState, rideOrDies, leagueMembers, user, makeDraftPick } = useApp();
+    const { draftState, rideOrDies, leagueMembers, user, makeDraftPick, eliminated } = useApp();
     const [picking, setPicking] = useState(false);
     const [error, setError] = useState('');
     const [expandedId, setExpandedId] = useState(null);
 
     if (!draftState) return null;
 
+    const preSeasonEliminated = new Set(eliminated || []);
     const isComplete = draftState.status === 'complete';
 
     if (isComplete) {
@@ -239,7 +240,7 @@ export default function RideOrDieDraft() {
                             {tribe.name}
                         </div>
                         <div className="p-2 space-y-0.5">
-                            {tribe.members.map((c) => (
+                            {tribe.members.filter(c => !preSeasonEliminated.has(c.id)).map((c) => (
                                 <ContestantButton
                                     key={c.id}
                                     castaway={c}

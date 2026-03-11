@@ -325,7 +325,18 @@ export function AppProvider({ children }) {
         return () => unsub();
     }, [leagueId]);
 
-    const createLeague = useCallback(async (name, displayName) => {
+    const getSeasonImportData = useCallback(async () => {
+        if (!db) return [];
+        const snap = await get(ref(db, 'seasons/s50/autoImport'));
+        if (!snap.exists()) return [];
+        const data = snap.val();
+        return Object.keys(data)
+            .filter(k => k.startsWith('e'))
+            .map(k => ({ episodeNum: parseInt(k.slice(1), 10), eliminatedId: data[k].eliminatedId || null }))
+            .sort((a, b) => a.episodeNum - b.episodeNum);
+    }, []);
+
+    const createLeague = useCallback(async (name, displayName, startingEpisode = 1) => {
         if (!db || !user) throw new Error('Firebase not configured');
 
         let joinCode;
@@ -341,6 +352,14 @@ export function AppProvider({ children }) {
         const newRef = push(ref(db, 'leagues'));
         const id = newRef.key;
 
+        let preSeasonEliminated = [];
+        if (startingEpisode > 1) {
+            const importData = await getSeasonImportData();
+            preSeasonEliminated = importData
+                .filter(ep => ep.episodeNum < startingEpisode && ep.eliminatedId)
+                .map(ep => ep.eliminatedId);
+        }
+
         const leagueData = {
             name,
             joinCode,
@@ -348,6 +367,7 @@ export function AppProvider({ children }) {
             createdBy: user.uid,
             createdAt: Date.now(),
             status: 'lobby',
+            startingEpisode,
             members: {
                 [user.uid]: {
                     displayName,
@@ -358,13 +378,17 @@ export function AppProvider({ children }) {
             },
         };
 
+        if (preSeasonEliminated.length > 0) {
+            leagueData.eliminated = preSeasonEliminated;
+            leagueData.preSeasonEliminated = preSeasonEliminated;
+        }
+
         await set(newRef, leagueData);
         await set(ref(db, `leagueCodes/${joinCode}`), id);
-        await set(ref(db, `users/${user.uid}/currentLeague`), id);
         await set(ref(db, `users/${user.uid}/leagues/${id}`), true);
 
         return { id, joinCode };
-    }, [user]);
+    }, [user, getSeasonImportData]);
 
     const joinLeague = useCallback(async (code, displayName) => {
         if (!db || !user) throw new Error('Firebase not configured');
@@ -934,6 +958,11 @@ export function AppProvider({ children }) {
         });
     }, [eliminated, episodes, user, hasWatched]);
 
+    const enterLeague = useCallback(async (targetLeagueId) => {
+        if (!db || !user) return;
+        await set(ref(db, `users/${user.uid}/currentLeague`), targetLeagueId);
+    }, [user]);
+
     const sendMagicLink = (email) => {
         if (!auth) throw new Error('Firebase not configured. Add .env from .env.example');
         window.localStorage.setItem('emailForSignIn', email);
@@ -959,6 +988,7 @@ export function AppProvider({ children }) {
         executeTribeSwap, executeMerge, submitMergePassport,
         startAuction, placeBid, closeAuctionItem,
         startFinale, revealPassport, revealMergePassport, submitReunionVote, crownChampion,
+        getSeasonImportData, enterLeague,
         sendMagicLink, logout,
     };
 

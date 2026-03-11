@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useApp } from '../../AppContext';
 import {
     MasiBackground,
@@ -34,7 +34,9 @@ function CopyButton({ text }) {
     );
 }
 
-function CreateSuccess({ joinCode }) {
+function CreateSuccess({ joinCode, onContinue, entering }) {
+    const shareLink = `${window.location.origin}?join=${joinCode}`;
+
     return (
         <div className="space-y-6 text-center">
             <div className="text-4xl" aria-hidden>🏝️</div>
@@ -48,34 +50,71 @@ function CreateSuccess({ joinCode }) {
                 </span>
                 <CopyButton text={joinCode} />
             </div>
-            <p className="text-sand-warm/70 text-xs">
-                Waiting in the lobby for your tribe...
-            </p>
+            <div className="flex items-center justify-center gap-2">
+                <span className="text-sand-warm/50 text-xs truncate max-w-[200px]">{shareLink}</span>
+                <CopyButton text={shareLink} />
+            </div>
+            <div className="pt-2">
+                <FijianPrimaryButton onClick={onContinue} disabled={entering}>
+                    {entering ? 'Entering...' : 'Continue to Lobby'}
+                </FijianPrimaryButton>
+            </div>
         </div>
     );
 }
 
 export default function LeagueGate({ prefillCode }) {
-    const { createLeague, joinLeague } = useApp();
+    const { createLeague, joinLeague, enterLeague, getSeasonImportData } = useApp();
     const [mode, setMode] = useState(prefillCode ? 'join' : 'create');
     const [leagueName, setLeagueName] = useState('');
     const [displayName, setDisplayName] = useState('');
     const [joinCode, setJoinCode] = useState(prefillCode || '');
     const [createdCode, setCreatedCode] = useState(null);
+    const [createdLeagueId, setCreatedLeagueId] = useState(null);
+    const [entering, setEntering] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [startingEpisode, setStartingEpisode] = useState(1);
+    const [availableEpisodes, setAvailableEpisodes] = useState([]);
+
+    useEffect(() => {
+        let cancelled = false;
+        getSeasonImportData().then(data => {
+            if (!cancelled) setAvailableEpisodes(data);
+        });
+        return () => { cancelled = true; };
+    }, [getSeasonImportData]);
+
+    const maxStartEpisode = availableEpisodes.length > 0
+        ? availableEpisodes[availableEpisodes.length - 1].episodeNum + 1
+        : 1;
+
+    const eliminatedCount = availableEpisodes
+        .filter(ep => ep.episodeNum < startingEpisode && ep.eliminatedId)
+        .length;
 
     const handleCreate = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
         try {
-            const result = await createLeague(leagueName.trim(), displayName.trim());
+            const result = await createLeague(leagueName.trim(), displayName.trim(), startingEpisode);
             setCreatedCode(result.joinCode);
+            setCreatedLeagueId(result.id);
         } catch (err) {
             setError(err.message);
         }
         setLoading(false);
+    };
+
+    const handleEnterLobby = async () => {
+        if (!createdLeagueId) return;
+        setEntering(true);
+        try {
+            await enterLeague(createdLeagueId);
+        } catch {
+            setEntering(false);
+        }
     };
 
     const handleJoin = async (e) => {
@@ -98,7 +137,7 @@ export default function LeagueGate({ prefillCode }) {
 
                     <div className="w-full max-w-[360px]">
                         {createdCode ? (
-                            <CreateSuccess joinCode={createdCode} />
+                            <CreateSuccess joinCode={createdCode} onContinue={handleEnterLobby} entering={entering} />
                         ) : (
                             <FijianCard className="p-6">
                                 <div className="flex mb-6 border-b border-ochre/20">
@@ -146,6 +185,36 @@ export default function LeagueGate({ prefillCode }) {
                                             maxLength={20}
                                             aria-label="Your display name"
                                         />
+                                        {availableEpisodes.length > 0 && (
+                                            <div className="space-y-2">
+                                                <label className="block text-ochre text-[10px] font-bold uppercase tracking-widest">
+                                                    Starting Week
+                                                </label>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {Array.from({ length: maxStartEpisode }, (_, i) => i + 1).map(ep => (
+                                                        <button
+                                                            key={ep}
+                                                            type="button"
+                                                            onClick={() => setStartingEpisode(ep)}
+                                                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
+                                                                startingEpisode === ep
+                                                                    ? 'bg-fire-400/20 border-fire-400/50 text-fire-400'
+                                                                    : 'border-ochre/20 text-clay hover:border-ochre/40 hover:text-sand-warm'
+                                                            }`}
+                                                        >
+                                                            {ep}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                {startingEpisode > 1 && (
+                                                    <p className="text-sand-warm/60 text-xs font-serif italic">
+                                                        {eliminatedCount > 0
+                                                            ? `${eliminatedCount} castaway${eliminatedCount !== 1 ? 's' : ''} already eliminated — they'll be removed from the draft.`
+                                                            : 'Starting fresh from this week.'}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        )}
                                         <FijianPrimaryButton type="submit" disabled={loading || !leagueName.trim() || !displayName.trim()}>
                                             {loading ? 'Creating...' : 'Create League'}
                                         </FijianPrimaryButton>

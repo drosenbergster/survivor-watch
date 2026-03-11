@@ -290,7 +290,7 @@ function computeImpactRatingAvg(ratings) {
     return Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 10) / 10;
 }
 
-export function computeStandings(episodes, rideOrDies, memberUids, bingoAllEpisodes, postEpisodeData) {
+export function computeStandings(episodes, rideOrDies, memberUids, bingoAllEpisodes, postEpisodeData, preSeasonEliminated) {
     const perEpisode = {};
     const cumulative = {};
     for (const uid of memberUids) {
@@ -302,7 +302,7 @@ export function computeStandings(episodes, rideOrDies, memberUids, bingoAllEpiso
         .filter(n => episodes[n]?.scored)
         .sort((a, b) => a - b);
 
-    let eliminatedSoFar = [];
+    let eliminatedSoFar = [...(preSeasonEliminated || [])];
 
     for (const epNum of epNums) {
         const ep = episodes[epNum];

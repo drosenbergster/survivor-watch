@@ -118,10 +118,10 @@ export default function LeagueLobby() {
                         <MemberRow key={uid} member={member} uid={uid} currentUid={user?.uid} />
                     ))}
                 </div>
-                {memberCount < 4 && (
+                {memberCount < 2 && (
                     <div className="px-4 py-3 text-center">
                         <p className="text-sand-warm/60 text-xs font-serif italic">
-                            Waiting for more castaways to arrive... ({4 - memberCount} more needed)
+                            Waiting for more castaways to arrive... (at least 2 needed to draft)
                         </p>
                     </div>
                 )}
