@@ -83,7 +83,7 @@ export default function RulesTab() {
   const isActive = league?.status === 'active';
 
   return (
-    <article className="max-w-2xl mx-auto space-y-6 sm:space-y-8 magimagi-border-rules px-2 py-4 sm:p-6 scroll-container rounded-lg">
+    <article className="max-w-2xl mx-auto space-y-6 sm:space-y-8 magimagi-border-rules px-3 py-4 sm:p-6 scroll-container overflow-x-hidden">
       <header className="text-center py-6 sm:py-10">
         <h1 className="font-wood-serif font-bold text-4xl sm:text-5xl text-sand-warm uppercase tracking-tighter drop-shadow-text">
           LAWA
@@ -214,43 +214,48 @@ export default function RulesTab() {
 
           {/* Quick comparison */}
           <div className="bg-black/20 rounded-xl overflow-hidden border border-terracotta/20">
-            <table className="w-full text-[11px] sm:text-sm font-sans">
+            <table className="w-full table-fixed text-[10px] sm:text-sm font-sans">
+              <colgroup>
+                <col className="w-[28%] sm:w-auto" />
+                <col className="w-[36%] sm:w-auto" />
+                <col className="w-[36%] sm:w-auto" />
+              </colgroup>
               <thead className="bg-terracotta/10 border-b border-terracotta/20">
                 <tr>
-                  <th className="px-1.5 sm:px-4 py-2 sm:py-2.5 text-left font-wood-serif text-sand-warm text-xs sm:text-sm" scope="col" />
-                  <th className="px-1.5 sm:px-4 py-2 sm:py-2.5 text-center font-wood-serif text-sand-warm text-xs sm:text-sm" scope="col">
+                  <th className="px-1 sm:px-4 py-2 sm:py-2.5 text-left font-wood-serif text-sand-warm text-[10px] sm:text-sm" scope="col" />
+                  <th className="px-1 sm:px-4 py-2 sm:py-2.5 text-center font-wood-serif text-sand-warm text-[10px] sm:text-sm" scope="col">
                     <span className="hidden sm:inline">🤝 </span>Ride or Die
                   </th>
-                  <th className="px-1.5 sm:px-4 py-2 sm:py-2.5 text-center font-wood-serif text-sand-warm text-xs sm:text-sm" scope="col">
+                  <th className="px-1 sm:px-4 py-2 sm:py-2.5 text-center font-wood-serif text-sand-warm text-[10px] sm:text-sm" scope="col">
                     <span className="hidden sm:inline">🎯 </span>Weekly Picks
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-terracotta/10 text-bleached-sand/70">
                 <tr>
-                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 font-bold text-sand-warm">When chosen</td>
-                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">Before the season</td>
-                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">Every episode</td>
+                  <td className="px-1 sm:px-4 py-1.5 sm:py-2.5 font-bold text-sand-warm">When chosen</td>
+                  <td className="px-1 sm:px-4 py-1.5 sm:py-2.5 text-center">Before season</td>
+                  <td className="px-1 sm:px-4 py-1.5 sm:py-2.5 text-center">Every episode</td>
                 </tr>
                 <tr>
-                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 font-bold text-sand-warm">Changeable?</td>
-                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">No &mdash; locked all season</td>
-                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">Yes &mdash; new each week</td>
+                  <td className="px-1 sm:px-4 py-1.5 sm:py-2.5 font-bold text-sand-warm">Changeable?</td>
+                  <td className="px-1 sm:px-4 py-1.5 sm:py-2.5 text-center">No &mdash; locked</td>
+                  <td className="px-1 sm:px-4 py-1.5 sm:py-2.5 text-center">Yes &mdash; weekly</td>
                 </tr>
                 <tr>
-                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 font-bold text-sand-warm">Who to pick?</td>
-                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">Exclusive</td>
-                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">Anyone remaining</td>
+                  <td className="px-1 sm:px-4 py-1.5 sm:py-2.5 font-bold text-sand-warm">Who?</td>
+                  <td className="px-1 sm:px-4 py-1.5 sm:py-2.5 text-center">Exclusive</td>
+                  <td className="px-1 sm:px-4 py-1.5 sm:py-2.5 text-center">Anyone left</td>
                 </tr>
                 <tr>
-                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 font-bold text-sand-warm">Scoring</td>
-                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">Events + survival</td>
-                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">Episode events</td>
+                  <td className="px-1 sm:px-4 py-1.5 sm:py-2.5 font-bold text-sand-warm">Scoring</td>
+                  <td className="px-1 sm:px-4 py-1.5 sm:py-2.5 text-center">Events + survival</td>
+                  <td className="px-1 sm:px-4 py-1.5 sm:py-2.5 text-center">Episode events</td>
                 </tr>
                 <tr>
-                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 font-bold text-sand-warm">Exclusivity?</td>
-                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">No</td>
-                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">Yes (1.5&times;)</td>
+                  <td className="px-1 sm:px-4 py-1.5 sm:py-2.5 font-bold text-sand-warm">Exclusive?</td>
+                  <td className="px-1 sm:px-4 py-1.5 sm:py-2.5 text-center">No</td>
+                  <td className="px-1 sm:px-4 py-1.5 sm:py-2.5 text-center">Yes (1.5&times;)</td>
                 </tr>
               </tbody>
             </table>
