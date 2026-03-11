@@ -51,8 +51,8 @@ function BingoRecap({ episodeNum, leagueId, userId }) {
                 {card.map((item, i) => (
                     <div
                         key={i}
-                        className={`aspect-square flex items-center justify-center p-1 text-center text-[10px] font-medium uppercase leading-tight rounded-sm ${
-                            i === 12 ? 'bg-masi-ochre/40 text-masi-cream' : 'bg-masi-black text-masi-cream/80'
+                        className={`min-h-[3rem] flex items-center justify-center p-1.5 text-center text-[10px] sm:text-xs font-medium uppercase leading-snug rounded-sm ${
+                            i === 12 ? 'bg-masi-ochre/40 text-masi-cream' : 'bg-masi-black text-masi-cream/90'
                         }`}
                     >
                         {item}
@@ -132,7 +132,7 @@ export default function BingoTab() {
             )}
 
             {watching && (
-                <div className="max-w-sm mx-auto">
+                <div className="max-w-md mx-auto">
                     <BingoCard
                         seed={seed}
                         marked={bingo?.[selectedEp]?.[user?.uid]}
@@ -145,7 +145,7 @@ export default function BingoTab() {
             {watched && (
                 <div className="space-y-3">
                     <FijianSectionHeader title="Your Card" />
-                    <div className="max-w-sm mx-auto">
+                    <div className="max-w-md mx-auto">
                         <BingoCard
                             seed={seed}
                             marked={bingo?.[selectedEp]?.[user?.uid]}

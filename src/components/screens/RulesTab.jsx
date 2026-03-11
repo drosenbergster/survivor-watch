@@ -83,7 +83,7 @@ export default function RulesTab() {
   const isActive = league?.status === 'active';
 
   return (
-    <article className="max-w-2xl mx-auto space-y-6 sm:space-y-8 magimagi-border-rules px-3 py-4 sm:p-6 scroll-container rounded-lg">
+    <article className="max-w-2xl mx-auto space-y-6 sm:space-y-8 magimagi-border-rules px-2 py-4 sm:p-6 scroll-container rounded-lg">
       <header className="text-center py-6 sm:py-10">
         <h1 className="font-wood-serif font-bold text-4xl sm:text-5xl text-sand-warm uppercase tracking-tighter drop-shadow-text">
           LAWA
@@ -213,40 +213,44 @@ export default function RulesTab() {
           </div>
 
           {/* Quick comparison */}
-          <div className="bg-black/20 rounded-xl overflow-x-auto border border-terracotta/20">
-            <table className="w-full text-xs sm:text-sm font-sans min-w-[420px]">
+          <div className="bg-black/20 rounded-xl overflow-hidden border border-terracotta/20">
+            <table className="w-full text-[11px] sm:text-sm font-sans">
               <thead className="bg-terracotta/10 border-b border-terracotta/20">
                 <tr>
-                  <th className="px-2 sm:px-4 py-2 sm:py-2.5 text-left font-wood-serif text-sand-warm" scope="col" />
-                  <th className="px-2 sm:px-4 py-2 sm:py-2.5 text-center font-wood-serif text-sand-warm" scope="col">🤝 Ride or Die</th>
-                  <th className="px-2 sm:px-4 py-2 sm:py-2.5 text-center font-wood-serif text-sand-warm" scope="col">🎯 Weekly Picks</th>
+                  <th className="px-1.5 sm:px-4 py-2 sm:py-2.5 text-left font-wood-serif text-sand-warm text-xs sm:text-sm" scope="col" />
+                  <th className="px-1.5 sm:px-4 py-2 sm:py-2.5 text-center font-wood-serif text-sand-warm text-xs sm:text-sm" scope="col">
+                    <span className="hidden sm:inline">🤝 </span>Ride or Die
+                  </th>
+                  <th className="px-1.5 sm:px-4 py-2 sm:py-2.5 text-center font-wood-serif text-sand-warm text-xs sm:text-sm" scope="col">
+                    <span className="hidden sm:inline">🎯 </span>Weekly Picks
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-terracotta/10 text-bleached-sand/70">
                 <tr>
-                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 font-bold text-sand-warm">When chosen</td>
-                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">Once, before the season</td>
-                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">Every episode</td>
+                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 font-bold text-sand-warm">When chosen</td>
+                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">Before the season</td>
+                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">Every episode</td>
                 </tr>
                 <tr>
-                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 font-bold text-sand-warm">Can you change them?</td>
-                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">No &mdash; locked all season</td>
-                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">Yes &mdash; new picks each week</td>
+                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 font-bold text-sand-warm">Changeable?</td>
+                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">No &mdash; locked all season</td>
+                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">Yes &mdash; new each week</td>
                 </tr>
                 <tr>
-                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 font-bold text-sand-warm">Who can you pick?</td>
-                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">Exclusive (no overlap)</td>
-                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">Anyone remaining</td>
+                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 font-bold text-sand-warm">Who to pick?</td>
+                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">Exclusive</td>
+                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">Anyone remaining</td>
                 </tr>
                 <tr>
-                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 font-bold text-sand-warm">How you score</td>
-                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">Event pts + survival</td>
-                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">Episode event pts</td>
+                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 font-bold text-sand-warm">Scoring</td>
+                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">Events + survival</td>
+                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">Episode events</td>
                 </tr>
                 <tr>
-                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 font-bold text-sand-warm">Exclusivity bonus?</td>
-                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">No</td>
-                  <td className="px-2 sm:px-4 py-2 sm:py-2.5 text-center">Yes (1.5&times;)</td>
+                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 font-bold text-sand-warm">Exclusivity?</td>
+                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">No</td>
+                  <td className="px-1.5 sm:px-4 py-1.5 sm:py-2.5 text-center">Yes (1.5&times;)</td>
                 </tr>
               </tbody>
             </table>
@@ -307,10 +311,10 @@ export default function RulesTab() {
           <table className="w-full text-left">
             <thead className="bg-terracotta/10 border-b border-terracotta/20">
               <tr>
-                <th className="px-2 sm:px-4 py-2 sm:py-3 font-wood-serif text-sand-warm text-base sm:text-lg uppercase" scope="col">
+                <th className="px-2 sm:px-4 py-2 sm:py-3 font-wood-serif text-sand-warm text-sm sm:text-lg uppercase" scope="col">
                   Event
                 </th>
-                <th className="px-2 sm:px-4 py-2 sm:py-3 font-wood-serif text-sand-warm text-base sm:text-lg uppercase text-right" scope="col">
+                <th className="px-2 sm:px-4 py-2 sm:py-3 font-wood-serif text-sand-warm text-sm sm:text-lg uppercase text-right" scope="col">
                   Points
                 </th>
               </tr>
@@ -318,11 +322,11 @@ export default function RulesTab() {
             <tbody className="divide-y divide-terracotta/10">
               {SCORE_EVENTS.map((ev) => (
                 <tr key={ev.key}>
-                  <td className="px-2 sm:px-4 py-2 sm:py-3 text-sm flex items-center gap-2 font-sans">
-                    <Icon name={EVENT_ICONS[ev.key] || 'circle'} className="text-terracotta text-sm" />
+                  <td className="px-2 sm:px-4 py-1.5 sm:py-3 text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 font-sans">
+                    <Icon name={EVENT_ICONS[ev.key] || 'circle'} className="text-terracotta text-xs sm:text-sm" />
                     {ev.label}
                   </td>
-                  <td className={`px-2 sm:px-4 py-2 sm:py-3 text-right font-display text-xl sm:text-2xl ${ev.negative ? 'text-deep-terracotta' : 'text-sand-warm'}`}>
+                  <td className={`px-2 sm:px-4 py-1.5 sm:py-3 text-right font-display text-lg sm:text-2xl ${ev.negative ? 'text-deep-terracotta' : 'text-sand-warm'}`}>
                     {ev.points > 0 ? '+' : ''}{ev.points}
                   </td>
                 </tr>
@@ -339,10 +343,10 @@ export default function RulesTab() {
             <table className="w-full text-left">
               <thead className="bg-terracotta/10 border-b border-terracotta/20">
                 <tr>
-                  <th className="px-2 sm:px-4 py-2 sm:py-3 font-wood-serif text-sand-warm text-base sm:text-lg uppercase" scope="col">
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 font-wood-serif text-sand-warm text-sm sm:text-lg uppercase" scope="col">
                     Category
                   </th>
-                  <th className="px-2 sm:px-4 py-2 sm:py-3 font-wood-serif text-sand-warm text-base sm:text-lg uppercase text-right" scope="col">
+                  <th className="px-2 sm:px-4 py-2 sm:py-3 font-wood-serif text-sand-warm text-sm sm:text-lg uppercase text-right" scope="col">
                     Points
                   </th>
                 </tr>
@@ -350,16 +354,16 @@ export default function RulesTab() {
               <tbody className="divide-y divide-terracotta/10">
                 {group.items.map((item) => (
                   <tr key={item.label}>
-                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-sm font-sans">
-                      <div className="flex items-center gap-2">
+                    <td className="px-2 sm:px-4 py-1.5 sm:py-3 text-xs sm:text-sm font-sans">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
                         <span>{item.emoji}</span>
                         <span>{item.label}</span>
                       </div>
                       {item.note && (
-                        <p className="text-xs text-bleached-sand/50 mt-0.5 ml-7 italic">{item.note}</p>
+                        <p className="text-[10px] sm:text-xs text-bleached-sand/50 mt-0.5 ml-6 sm:ml-7 italic">{item.note}</p>
                       )}
                     </td>
-                    <td className="px-2 sm:px-4 py-2 sm:py-3 text-right font-display text-xl sm:text-2xl text-sand-warm align-top">
+                    <td className="px-2 sm:px-4 py-1.5 sm:py-3 text-right font-display text-lg sm:text-2xl text-sand-warm align-top">
                       {typeof item.points === 'number' ? `+${item.points}` : item.points}
                     </td>
                   </tr>

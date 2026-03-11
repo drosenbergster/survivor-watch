@@ -6,14 +6,14 @@ export default function FijianSectionHeader({ title, subtitle, variant = 'defaul
   const isRules = variant === 'rules';
   const borderClass = isRules ? 'border-terracotta/30' : 'border-ochre/30';
   const headingClass = isRules
-    ? 'font-wood-serif font-bold text-3xl text-sand-warm tracking-wide'
-    : 'font-serif font-bold text-2xl text-sand-warm tracking-wide';
+    ? 'font-wood-serif font-bold text-2xl sm:text-3xl text-sand-warm tracking-wide'
+    : 'font-serif font-bold text-xl sm:text-2xl text-sand-warm tracking-wide';
   return (
     <div className={`flex items-center gap-3 mb-6 border-b ${borderClass} pb-2 ${className}`}>
       <h3 className={headingClass}>
         {title}
         {subtitle && (
-          <span className="text-sm font-sans opacity-60 text-sand-warm/80 italic tracking-normal ml-1">
+          <span className="text-xs sm:text-sm font-sans opacity-60 text-sand-warm/80 italic tracking-normal ml-1">
             ({subtitle})
           </span>
         )}
