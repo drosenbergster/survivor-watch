@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useApp } from '../../AppContext';
 import { computeStandings, generateProbstRecap, detectAchievements } from '../../scoring';
-import { FijianCard, FijianSectionHeader, Icon } from '../fijian';
+import { FijianCard, Icon } from '../fijian';
 
 export default function ProbstRecap({ episodeNum }) {
     const {
@@ -29,7 +29,6 @@ export default function ProbstRecap({ episodeNum }) {
     if (!report) return null;
 
     const { challengeHighlights: ch } = report;
-    const hasNarrative = report.narrative.length > 0;
     const hasChallengeHighlights = ch.immunityWinners.length > 0 || ch.rewardWinners.length > 0
         || ch.idolPlays.length > 0 || ch.idolFinds.length > 0 || ch.advantagePlays.length > 0;
 
@@ -48,28 +47,8 @@ export default function ProbstRecap({ episodeNum }) {
                     <p className="font-display text-xl tracking-wider text-ochre leading-tight">
                         {report.headline}
                     </p>
-                    {report.subheadlines.map((h, i) => (
-                        <p key={i} className="text-sand-warm/50 text-xs font-sans">{h}</p>
-                    ))}
                 </div>
             </FijianCard>
-
-            {/* Narrative recap — Jeff Probst voice */}
-            {hasNarrative && (
-                <FijianCard className="p-4 space-y-3">
-                    <div className="flex items-center gap-2">
-                        <Icon name="mic" className="text-ochre text-sm" />
-                        <p className="text-ochre text-[11px] font-bold uppercase tracking-widest">The Recap</p>
-                    </div>
-                    <div className="space-y-2">
-                        {report.narrative.map((para, i) => (
-                            <p key={i} className="text-sand-warm/80 text-sm font-serif italic leading-relaxed">
-                                {para}
-                            </p>
-                        ))}
-                    </div>
-                </FijianCard>
-            )}
 
             {/* Challenge & Big Moments highlights */}
             {hasChallengeHighlights && (

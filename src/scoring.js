@@ -583,70 +583,29 @@ export function generateProbstRecap(epNum, episodes, standings, perEpisode, memb
         }
     }
 
-    // ── Probst-voice narrative paragraphs ──
-    const narrative = [];
+    // ── Headline — standings race commentary (game events live in Key Moments / Elimination) ──
+    let headline = `Episode ${epNum} is in the books`;
+    if (standings && standings.length >= 2) {
+        const leader = memberNames(standings[0].uid);
+        const second = memberNames(standings[1].uid);
+        const gap = standings[0].total - standings[1].total;
+        const leaderEpPts = epScores[standings[0].uid]?.total || 0;
+        const leaderPrevTotal = standings[0].total - leaderEpPts;
+        const secondPrevTotal = standings[1].total - (epScores[standings[1].uid]?.total || 0);
 
-    if (immunityWinners.length > 0 || rewardWinners.length > 0) {
-        const parts = [];
-        if (immunityWinners.length > 0) {
-            parts.push(`${immunityWinners.join(' and ')} ${immunityWinners.length === 1 ? 'wins' : 'win'} individual immunity, safe at tonight's tribal council`);
-        }
-        if (rewardWinners.length > 0) {
-            parts.push(`${rewardWinners.join(' and ')} ${rewardWinners.length === 1 ? 'takes' : 'take'} home reward`);
-        }
-        narrative.push(parts.join('. ') + '.');
-    }
-
-    if (idolFinds.length > 0 || idolPlays.length > 0 || advantagePlays.length > 0) {
-        const parts = [];
-        if (idolFinds.length > 0) {
-            parts.push(`${idolFinds.join(' and ')} ${idolFinds.length === 1 ? 'finds' : 'find'} a hidden immunity idol`);
-        }
-        if (idolPlays.length > 0) {
-            parts.push(`${idolPlays.join(' and ')} ${idolPlays.length === 1 ? 'plays' : 'play'} an idol successfully — negating all votes`);
-        }
-        if (advantagePlays.length > 0) {
-            parts.push(`${advantagePlays.join(' and ')} ${advantagePlays.length === 1 ? 'uses' : 'use'} an advantage to shake up the game`);
-        }
-        narrative.push(parts.join('. ') + '.');
-    }
-
-    if (survivedWithVotes.length > 0) {
-        narrative.push(
-            `${survivedWithVotes.join(' and ')} ${survivedWithVotes.length === 1 ? 'receives' : 'receive'} votes at tribal but ${survivedWithVotes.length === 1 ? 'survives' : 'survive'} to see another day.`
-        );
-    }
-
-    if (eliminated.length > 0) {
-        const elimName = eliminated.join(' & ');
-        const methodText = {
-            voted_out: `the tribe has spoken — ${elimName}'s torch is snuffed`,
-            medevac: `in a heartbreaking turn, ${elimName} is pulled from the game by medical`,
-            quit: `${elimName} makes the difficult decision to leave the game`,
-            fire: `${elimName} falls short in fire-making and their torch is snuffed`,
-        };
-        narrative.push((methodText[eliminationMethod] || methodText.voted_out) + '.');
-    }
-
-    // ── Headlines (Probst voice) ──
-    const headlines = [];
-    if (idolPlays.length > 0) {
-        headlines.push(`${idolPlays[0]} drops a bomb at tribal council`);
-    } else if (biggestMover) {
-        headlines.push(`${memberNames(biggestMover)} dominates Episode ${epNum} with ${biggestMoverPts} points`);
-    }
-    if (eliminated.length > 0) {
-        if (eliminationMethod === 'medevac') {
-            headlines.push(`${eliminated.join(' & ')} — medical evacuation`);
+        if (gap === 0) {
+            headline = `Dead heat — ${leader} and ${second} are tied for the lead`;
+        } else if (leaderPrevTotal <= secondPrevTotal && gap > 0) {
+            headline = `${leader} takes over first place after Episode ${epNum}`;
+        } else if (gap <= 5) {
+            headline = `${gap}-point gap — ${leader} holds off ${second}`;
+        } else if (gap >= 30) {
+            headline = `${leader} is running away with it — ${gap}-point lead`;
         } else {
-            headlines.push(`${eliminated.join(' & ')}: "The tribe has spoken"`);
+            headline = `${leader} leads by ${gap} after Episode ${epNum}`;
         }
-    }
-    if (standings?.[0]) {
-        headlines.push(`${memberNames(standings[0].uid)} leads the game with ${standings[0].total} points`);
-    }
-    if (correctPredictors.length > 0) {
-        headlines.push(`${correctPredictors.join(', ')} called it at tribal`);
+    } else if (standings?.length === 1) {
+        headline = `${memberNames(standings[0].uid)} opens with ${standings[0].total} points`;
     }
 
     // ── Confessional count (if available via autoImport) ──
@@ -683,9 +642,7 @@ export function generateProbstRecap(epNum, episodes, standings, perEpisode, memb
 
     return {
         epNum,
-        headline: headlines[0] || `Episode ${epNum} is in the books`,
-        subheadlines: headlines.slice(1),
-        narrative,
+        headline,
         standings: standings?.slice(0, 6).map((s, i) => ({
             rank: i + 1,
             name: memberNames(s.uid),
