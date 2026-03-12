@@ -115,6 +115,7 @@ async function fetchAndParse(episodeNum) {
         receivedVotes: result.receivedVotes || [],
         bigMoments: result.bigMoments || {},
         confessionals: result.confessionals || {},
+        voteCountMap: result.voteCountMap || {},
     };
 
     // Resolve prop/side bets for all leagues referencing this season
