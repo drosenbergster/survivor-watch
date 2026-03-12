@@ -30,7 +30,7 @@ function PropBetEditor({ propBets, onSave }) {
 
     return (
         <div className="space-y-2 mt-3">
-            <p className="text-ochre text-[10px] font-bold uppercase tracking-widest">Prop Bets (tap to swap)</p>
+            <p className="text-ochre text-[10px] font-bold uppercase tracking-widest">Tree Mail (tap to swap)</p>
             {bets.map((bet, i) => (
                 <button
                     key={bet.id}
@@ -49,7 +49,7 @@ function PropBetEditor({ propBets, onSave }) {
                     disabled={saving}
                     className="w-full mt-1 px-3 py-2 text-xs rounded-lg border border-ochre/40 text-ochre hover:bg-ochre/10 transition-all cursor-pointer disabled:opacity-50"
                 >
-                    {saving ? 'Saving...' : 'Save Prop Bet Changes'}
+                    {saving ? 'Saving...' : 'Save Tree Mail Changes'}
                 </button>
             )}
         </div>

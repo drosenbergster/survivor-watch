@@ -135,7 +135,7 @@ export default function DraftTab() {
                     <p className="text-sand-warm/70 text-sm mt-1 font-sans inline-flex items-center justify-center">
                         Make your picks, then head to Watch to start the episode.
                         <HintBadge hintKey="picks">
-                            Each episode, pick contestants and answer prop bets. Then go to the Watch tab and tap &quot;Start Watching&quot; to lock everything in and activate your bingo card.
+                            Each episode, pick contestants and answer Tree Mail. Then go to the Watch tab and tap &quot;Start Watching&quot; to lock everything in and activate your bingo card.
                         </HintBadge>
                     </p>
                 )}

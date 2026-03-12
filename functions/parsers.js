@@ -226,6 +226,13 @@ export function parseTDTHtml(html, eliminatedBefore = []) {
         }
     }
 
+    const voteCountMap = {};
+    for (const r of rows) {
+        if (r.vap !== null && r.vap > 0) {
+            voteCountMap[r.id] = r.vap;
+        }
+    }
+
     return {
         eliminatedId,
         eliminationMethod,
@@ -235,6 +242,7 @@ export function parseTDTHtml(html, eliminatedBefore = []) {
         minorityVoters,
         receivedVotes,
         bigMoments,
+        voteCountMap,
         parsed: rows,
     };
 }
@@ -570,7 +578,7 @@ export function mergeFSGResults(combinedResult, fsgResult) {
 
 
 /* ═══════════════════════════════════════════════════════════
-   Auto-resolve prop/side bets from imported data
+   Auto-resolve Tree Mail / Tribal Whisper bets from imported data
    ═══════════════════════════════════════════════════════════ */
 
 /**
@@ -582,6 +590,8 @@ export function mergeFSGResults(combinedResult, fsgResult) {
 export function resolvePropBets(importData, bets) {
     const results = {};
     const allEvents = Object.values(importData.bigMoments || {}).flat();
+    const confessionals = importData.confessionals || {};
+    const voteCountMap = importData.voteCountMap || {};
 
     for (const bet of bets) {
         const { id, resolveType, resolveParams } = bet;
@@ -589,9 +599,25 @@ export function resolvePropBets(importData, bets) {
             case 'event_any':
                 results[id] = allEvents.includes(resolveParams.eventKey);
                 break;
+            case 'event_any_of':
+                results[id] = (resolveParams.eventKeys || []).some(k => allEvents.includes(k));
+                break;
+            case 'event_none_of':
+                results[id] = !(resolveParams.eventKeys || []).some(k => allEvents.includes(k));
+                break;
             case 'event_count_gte': {
                 const count = allEvents.filter(e => e === resolveParams.eventKey).length;
                 results[id] = count >= resolveParams.threshold;
+                break;
+            }
+            case 'event_count_any_of_gte': {
+                const count = allEvents.filter(e => (resolveParams.eventKeys || []).includes(e)).length;
+                results[id] = count >= resolveParams.threshold;
+                break;
+            }
+            case 'confessional_any_gte': {
+                const counts = Object.values(confessionals);
+                results[id] = counts.some(c => c >= resolveParams.threshold);
                 break;
             }
             case 'vote_unanimous':
@@ -606,6 +632,17 @@ export function resolvePropBets(importData, bets) {
             case 'has_reward':
                 results[id] = (importData.rewardWinners || []).length > 0;
                 break;
+            case 'eliminated_vap_gte': {
+                const bootVap = importData.eliminatedId ? (voteCountMap[importData.eliminatedId] || 0) : 0;
+                results[id] = bootVap >= resolveParams.threshold;
+                break;
+            }
+            case 'survived_with_vap_gte': {
+                results[id] = Object.entries(voteCountMap).some(
+                    ([cid, vap]) => cid !== importData.eliminatedId && vap >= resolveParams.threshold
+                );
+                break;
+            }
             default:
                 results[id] = false;
         }

@@ -124,9 +124,9 @@ export const ENGAGEMENT_SCORING = [
         section: 'Predictions',
         icon: '🔮',
         items: [
-            { label: 'Prop Bet (correct)', points: 3, emoji: '🎰' },
+            { label: 'Tree Mail (correct)', points: 3, emoji: '📬' },
             { label: 'Snap Vote (correct)', points: 8, emoji: '⚡' },
-            { label: 'Side Bet (correct)', points: 3, emoji: '🤞' },
+            { label: 'Tribal Whisper (correct)', points: 3, emoji: '🤫' },
         ],
     },
     {
@@ -165,44 +165,38 @@ export const ENGAGEMENT_SCORING = [
     },
 ];
 
-// Structured prop bets -- each has resolution logic so outcomes are auto-determined from imported data.
-// resolveType: 'event_any' | 'event_count_gte' | 'vote_unanimous' | 'elimination_method' | 'has_reward' | 'vote_split'
+// Tree Mail — pre-episode predictions with auto-resolution from imported data.
+// UI label: "Tree Mail". Internal keys kept as propBets for Firebase compatibility.
 export const PROP_BET_POOL = [
-    { text: 'Will someone find an idol?', resolveType: 'event_any', resolveParams: { eventKey: 'idol_found' } },
-    { text: 'Will someone play an idol?', resolveType: 'event_any', resolveParams: { eventKey: 'idol_played_success' } },
-    { text: 'Will someone find an advantage?', resolveType: 'event_any', resolveParams: { eventKey: 'advantage_found' } },
-    { text: 'Will someone use an advantage?', resolveType: 'event_any', resolveParams: { eventKey: 'advantage_used' } },
-    { text: 'Will someone find a clue?', resolveType: 'event_any', resolveParams: { eventKey: 'find_clue' } },
-    { text: 'Will someone make fire at camp?', resolveType: 'event_any', resolveParams: { eventKey: 'make_fire_camp' } },
-    { text: 'Will someone find food?', resolveType: 'event_any', resolveParams: { eventKey: 'find_food' } },
-    { text: 'Will someone go on a journey?', resolveType: 'event_any', resolveParams: { eventKey: 'journey' } },
-    { text: 'Will someone win a journey challenge?', resolveType: 'event_any', resolveParams: { eventKey: 'journey_challenge_win' } },
-    { text: 'Will someone read tree mail?', resolveType: 'event_any', resolveParams: { eventKey: 'read_tree_mail' } },
-    { text: 'Will someone strategize at the water well?', resolveType: 'event_any', resolveParams: { eventKey: 'water_well_talk' } },
-    { text: 'Will someone go to exile?', resolveType: 'event_any', resolveParams: { eventKey: 'exile' } },
-    { text: 'Will someone play Shot in the Dark?', resolveType: 'event_any', resolveParams: { eventKey: 'shot_in_dark' } },
-    { text: 'Will anyone survive with votes against them?', resolveType: 'event_any', resolveParams: { eventKey: 'survived_with_votes' } },
-    { text: 'Will there be a medical evacuation?', resolveType: 'elimination_method', resolveParams: { method: 'medevac' } },
-    { text: 'Will the vote be unanimous?', resolveType: 'vote_unanimous', resolveParams: {} },
-    { text: 'Will there be a split vote?', resolveType: 'vote_split', resolveParams: {} },
-    { text: 'Will there be a reward challenge?', resolveType: 'has_reward', resolveParams: {} },
-    { text: 'Will 2+ players receive votes at tribal?', resolveType: 'event_count_gte', resolveParams: { eventKey: 'survived_with_votes', threshold: 1 } },
-    { text: 'Will 3+ players get zero votes at tribal?', resolveType: 'event_count_gte', resolveParams: { eventKey: 'attended_tribal_zero', threshold: 3 } },
-    { text: 'Will someone win an individual immunity?', resolveType: 'event_any', resolveParams: { eventKey: 'individual_immunity' } },
-    { text: 'Will someone win an individual reward?', resolveType: 'event_any', resolveParams: { eventKey: 'individual_reward' } },
-    { text: 'Will someone reach the merge?', resolveType: 'event_any', resolveParams: { eventKey: 'merge' } },
-    { text: 'Will there be a fire-making challenge?', resolveType: 'event_any', resolveParams: { eventKey: 'fire_making_win' } },
+    // Camp
+    { text: 'Fire is made at camp', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'make_fire_camp' } },
+    { text: 'Food is found or caught', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'find_food' } },
+    { text: 'Strategy happens at the water well', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'water_well_talk' } },
+    { text: 'Someone leaves camp on a journey or exile', cat: 'camp', phase: 'any', resolveType: 'event_any_of', resolveParams: { eventKeys: ['journey', 'exile'] } },
+    { text: 'A journey challenge is won', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'journey_challenge_win' } },
+    // Challenge
+    { text: 'A reward challenge takes place', cat: 'challenge', phase: 'any', resolveType: 'has_reward', resolveParams: {} },
+    { text: 'Individual immunity is on the line', cat: 'challenge', phase: 'post-merge', resolveType: 'event_any', resolveParams: { eventKey: 'individual_immunity' } },
+    { text: 'Individual reward is up for grabs', cat: 'challenge', phase: 'post-merge', resolveType: 'event_any', resolveParams: { eventKey: 'individual_reward' } },
+    // Idol & power
+    { text: 'Hidden power surfaces tonight', cat: 'idol', phase: 'any', resolveType: 'event_any_of', resolveParams: { eventKeys: ['idol_found', 'advantage_found', 'find_clue'] } },
+    { text: 'An idol or advantage is played', cat: 'idol', phase: 'any', resolveType: 'event_any_of', resolveParams: { eventKeys: ['idol_played_success', 'advantage_used'] } },
+    { text: 'Multiple power events tonight (2+ finds or plays)', cat: 'idol', phase: 'any', resolveType: 'event_count_any_of_gte', resolveParams: { eventKeys: ['idol_found', 'advantage_found', 'find_clue', 'idol_played_success', 'advantage_used'], threshold: 2 } },
+    // Outcome
+    { text: 'A medical evacuation occurs', cat: 'outcome', phase: 'any', resolveType: 'elimination_method', resolveParams: { method: 'medevac' } },
+    { text: 'Someone racks up 4+ confessionals', cat: 'outcome', phase: 'any', resolveType: 'confessional_any_gte', resolveParams: { threshold: 4 } },
 ];
 
+// Tribal Whispers — during-tribal predictions with auto-resolution.
+// UI label: "Tribal Whispers". Internal keys kept as sideBets for Firebase compatibility.
 export const SIDE_BET_POOL = [
-    { text: 'Will an idol be played at this tribal?', resolveType: 'event_any', resolveParams: { eventKey: 'idol_played_success' } },
-    { text: 'Will the vote be unanimous?', resolveType: 'vote_unanimous', resolveParams: {} },
-    { text: 'Will someone play Shot in the Dark?', resolveType: 'event_any', resolveParams: { eventKey: 'shot_in_dark' } },
-    { text: 'Will there be a split vote?', resolveType: 'vote_split', resolveParams: {} },
-    { text: 'Will anyone survive with votes against them?', resolveType: 'event_any', resolveParams: { eventKey: 'survived_with_votes' } },
-    { text: 'Will an advantage be played?', resolveType: 'event_any', resolveParams: { eventKey: 'advantage_used' } },
-    { text: 'Will 2+ players receive votes?', resolveType: 'event_count_gte', resolveParams: { eventKey: 'survived_with_votes', threshold: 1 } },
-    { text: 'Will 3+ players get zero votes at tribal?', resolveType: 'event_count_gte', resolveParams: { eventKey: 'attended_tribal_zero', threshold: 3 } },
+    { text: 'Someone pulls out an idol', resolveType: 'event_any', resolveParams: { eventKey: 'idol_played_success' } },
+    { text: 'Someone plays an advantage', resolveType: 'event_any', resolveParams: { eventKey: 'advantage_used' } },
+    { text: 'Someone rolls the dice — Shot in the Dark', resolveType: 'event_any', resolveParams: { eventKey: 'shot_in_dark' } },
+    { text: 'The votes fracture — split vote', resolveType: 'vote_split', resolveParams: {} },
+    { text: 'The vote is decisive — 5+ votes on the boot', resolveType: 'eliminated_vap_gte', resolveParams: { threshold: 5 } },
+    { text: 'No power is played tonight', resolveType: 'event_none_of', resolveParams: { eventKeys: ['idol_played_success', 'advantage_used', 'shot_in_dark'] } },
+    { text: 'Someone survives with 2+ votes against them', resolveType: 'survived_with_vap_gte', resolveParams: { threshold: 2 } },
 ];
 
 function deterministicShuffle(arr, seed) {
@@ -221,14 +215,24 @@ export function generateSideBets(episodeNumber, count = 3) {
     return shuffled.slice(0, count).map((bet, i) => ({ id: `side_${episodeNumber}_${i}`, text: bet.text, resolveType: bet.resolveType, resolveParams: bet.resolveParams }));
 }
 
-export function generatePropBets(episodeNumber, count = 5) {
-    const shuffled = deterministicShuffle(PROP_BET_POOL, episodeNumber * 7919);
-    return shuffled.slice(0, count).map((bet, i) => ({ id: `prop_${episodeNumber}_${i}`, text: bet.text, resolveType: bet.resolveType, resolveParams: bet.resolveParams }));
+export function generatePropBets(episodeNumber, count = 5, isPostMerge = false) {
+    const pool = isPostMerge ? PROP_BET_POOL : PROP_BET_POOL.filter(b => b.phase !== 'post-merge');
+    const shuffled = deterministicShuffle(pool, episodeNumber * 7919);
+    const selected = [];
+    const catCount = {};
+    for (const bet of shuffled) {
+        const cat = bet.cat || 'other';
+        if ((catCount[cat] || 0) >= 2) continue;
+        selected.push(bet);
+        catCount[cat] = (catCount[cat] || 0) + 1;
+        if (selected.length >= count) break;
+    }
+    return selected.map((bet, i) => ({ id: `prop_${episodeNumber}_${i}`, text: bet.text, resolveType: bet.resolveType, resolveParams: bet.resolveParams }));
 }
 
 /**
- * Resolve prop/side bet outcomes from imported episode data.
- * importData: { bigMoments, minorityVoters, receivedVotes, eliminationMethod, rewardWinners, ... }
+ * Resolve Tree Mail / Tribal Whisper outcomes from imported episode data.
+ * importData: { bigMoments, minorityVoters, receivedVotes, eliminationMethod, rewardWinners, confessionals, voteCountMap, ... }
  * bets: [{ id, resolveType, resolveParams }]
  * Returns: { [betId]: boolean }
  */
@@ -238,6 +242,8 @@ export function resolveBets(importData, bets) {
     const gameEvents = importData.gameEvents || {};
     const allGameEvents = Object.values(gameEvents).flat();
     const combinedEvents = [...allEvents, ...allGameEvents];
+    const confessionals = importData.confessionals || {};
+    const voteCountMap = importData.voteCountMap || {};
 
     for (const bet of bets) {
         const { id, resolveType, resolveParams } = bet;
@@ -245,9 +251,25 @@ export function resolveBets(importData, bets) {
             case 'event_any':
                 results[id] = combinedEvents.includes(resolveParams.eventKey);
                 break;
+            case 'event_any_of':
+                results[id] = (resolveParams.eventKeys || []).some(k => combinedEvents.includes(k));
+                break;
+            case 'event_none_of':
+                results[id] = !(resolveParams.eventKeys || []).some(k => combinedEvents.includes(k));
+                break;
             case 'event_count_gte': {
                 const count = combinedEvents.filter(e => e === resolveParams.eventKey).length;
                 results[id] = count >= resolveParams.threshold;
+                break;
+            }
+            case 'event_count_any_of_gte': {
+                const count = combinedEvents.filter(e => (resolveParams.eventKeys || []).includes(e)).length;
+                results[id] = count >= resolveParams.threshold;
+                break;
+            }
+            case 'confessional_any_gte': {
+                const counts = Object.values(confessionals);
+                results[id] = counts.some(c => c >= resolveParams.threshold);
                 break;
             }
             case 'vote_unanimous':
@@ -262,6 +284,17 @@ export function resolveBets(importData, bets) {
             case 'has_reward':
                 results[id] = (importData.rewardWinners || []).length > 0;
                 break;
+            case 'eliminated_vap_gte': {
+                const bootVap = importData.eliminatedId ? (voteCountMap[importData.eliminatedId] || 0) : 0;
+                results[id] = bootVap >= resolveParams.threshold;
+                break;
+            }
+            case 'survived_with_vap_gte': {
+                results[id] = Object.entries(voteCountMap).some(
+                    ([cid, vap]) => cid !== importData.eliminatedId && vap >= resolveParams.threshold
+                );
+                break;
+            }
             default:
                 results[id] = false;
         }
@@ -273,65 +306,52 @@ export function getMaxPicks(remainingCount) {
     return Math.min(5, Math.floor(remainingCount / 2));
 }
 
-// Bingo squares pool (100+ items, Probst-isms mixed in)
+// Island Bingo squares pool (119 items)
 export const BINGO_ITEMS = [
-    // Jeff Probst classics
+    // Jeff Probst (11)
     '"The tribe has spoken"',
     '"Come on in!"',
     '"Dig deep!"',
     '"Worth playing for?"',
-    '"Outwit, outplay, outlast"',
-    'Jeff says "previously on"',
-    'Jeff says "want to know?"',
-    'Jeff gives life advice',
-    'Jeff raises his eyebrow',
-    'Jeff narrates the challenge',
     'Jeff says "got nothin\' for ya"',
     'Jeff says "fire represents life"',
-    'Jeff says "biggest move ever"',
-    'Jeff says "one of the biggest blindsides"',
-    'Jeff dramatically snuffs a torch',
-    'Jeff asks "what happened at camp?"',
-    'Jeff stirs the pot at tribal',
-    'Jeff smirks at an answer',
-    'Jeff does a challenge play-by-play',
-    'Jeff says "I\'ll count the votes"',
-    // Tribal council
-    '"Blindside!"',
+    'Jeff gives a life lesson at tribal',
+    'Jeff calls something "the biggest" or "the greatest"',
+    'Jeff opens tribal asking about camp',
+    'Jeff says "this is Survivor"',
+    'Jeff is visibly shocked at tribal',
+    // Tribal council (15)
     'Someone whispers at tribal',
-    'Vote is split',
-    'Emotional tribal council',
-    'Someone says "trust"',
-    'Someone says "threat"',
-    'Someone says "resume"',
+    'Votes land on more than one name',
     'Someone says "at the end of the day"',
-    'Player throws someone under the bus',
-    'Player boasts about themselves',
+    'Someone names a target at tribal',
     'Someone says "million dollars"',
-    'Someone says "it\'s just a game"',
-    'Someone says "game changer"',
-    'Player defends their game',
-    'Player calls someone out',
     'Side conversation during tribal',
     'Someone says "blindside"',
-    'A vote reveal gets a gasp',
-    'Someone says "big move"',
-    'Standing ovation or applause at tribal',
-    // Challenges
+    'Someone shows their vote to the camera',
+    'Creative spelling on a vote',
+    'Someone cries at tribal council',
+    'Jeff asks a follow-up question at tribal',
+    'Someone mentions jury management',
+    'Someone stands up or moves seats during tribal',
+    'A player dodges Jeff\'s question',
+    'Tribal goes to a revote',
+    // Challenges (14)
     'Challenge involves water',
     'Puzzle in challenge',
     'Someone falls in challenge',
     'Immunity necklace closeup',
     'Challenge involves balance',
     'Challenge involves endurance',
-    'Challenge has a gross food element',
     'Someone sits out of a challenge',
     'Challenge involves digging',
-    'Photo finish in challenge',
-    'Someone dominates a challenge',
     'Challenge involves knots or ropes',
-    'Comeback win in challenge',
-    // Idols & advantages
+    'Someone gets hurt during a challenge',
+    'Jeff stops or pauses a challenge',
+    'Challenge involves throwing or tossing',
+    'Challenge involves crawling',
+    'Sit-out bench is shown',
+    // Idols & advantages (10)
     'Idol is found',
     'Idol is played',
     'Player hides an idol',
@@ -341,7 +361,8 @@ export const BINGO_ITEMS = [
     'Fake idol or decoy',
     'Someone searches for an idol alone',
     'Idol/advantage bluff',
-    // Camp life
+    'Idol is played but no votes are negated',
+    // Camp life (17)
     'Rain at camp',
     'Someone makes fire',
     'Coconut is cracked open',
@@ -353,36 +374,41 @@ export const BINGO_ITEMS = [
     'Shelter building or repair',
     'Someone goes fishing',
     'Night vision camp footage',
-    'Player talks to camera at night',
     'Someone naps in the shelter',
     'Fireside strategy talk',
-    // Emotional & social
+    'Someone gets bitten by bugs',
+    'Someone negotiates with Jeff for rice',
+    'A camp argument or confrontation',
+    'Camp celebration — dancing, singing, or cheering',
+    // Emotional & social (10)
     'Player cries',
     'Someone talks about family',
-    'Player fake-cries',
     'Group hug',
-    'Someone gets emotional in confessional',
     'Someone says "I love this game"',
-    'Player motivational speech',
-    'Someone misses home',
-    'Heartfelt moment between rivals',
     'Someone comforts another player',
-    // Strategy
-    'Alliance is formed',
+    'Letters from home or family visit',
+    'Someone talks about their job back home',
+    'Someone bonds over shared experience',
+    'Someone vows revenge in confessional',
+    'Players celebrate after a challenge win',
+    // Strategy (16)
     'Alliance is betrayed',
-    'Someone strategizes in confessional',
     '"I didn\'t come here to lose"',
     '"This is my island"',
-    'Someone says "4th time playing"',
     'A returnee references their past season',
-    'Player lies to someone\'s face',
     'Two players make a final 2/3 deal',
     'Someone flips on their alliance',
     'Voting confessional trash talk',
     'Someone says "blood on my hands"',
-    'Someone says "under the radar"',
-    'Someone plays both sides',
-    // Production & visuals
+    'A returnee drops their season count',
+    'Someone makes a promise at camp',
+    'Someone says "I need to win immunity"',
+    'A blindside is planned in confessional',
+    'Someone mentions being on the bottom',
+    'A name is thrown out as a decoy target',
+    'Someone says "stick to the plan"',
+    'Post-tribal fallout conversation',
+    // Production & visuals (11)
     'Shot of wildlife',
     'Bug/insect closeup',
     'Dramatic music sting',
@@ -391,19 +417,26 @@ export const BINGO_ITEMS = [
     'Someone does a victory dance',
     'Slow-motion challenge replay',
     'Tree mail arrives',
-    'Confessional count: 5+ for one player',
-    // Game milestones
+    'Drone shot following a contestant',
+    'Torch-lit walk to tribal council',
+    'Split-screen or picture-in-picture edit',
+    // Game milestones (3)
     'Medical team is called',
     'Post-merge feast',
     'Tribe swap happens',
-    // Season 50 specials
-    'Coach does Coach things',
+    // Season 50 specials (12)
     'Ozzy catches fish',
-    'Cirie makes a big move',
+    'Cirie is shown strategizing',
     'Angelina mentions the jacket',
     'A winner references their winning season',
-    'Two legends strategize together',
+    'Two 3+ time players talk strategy',
     'Someone mentions "the greatest season"',
+    'Someone mentions a player not on this season',
+    'Old rivals from a previous season interact',
+    'Someone says "this time I\'m playing differently"',
+    'Coach tells a story or quotes a philosopher',
+    'Colby references the Outback',
+    'Someone mentions being the oldest or youngest',
 ];
 
 // Hash a string to a numeric seed

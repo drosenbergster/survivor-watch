@@ -14,7 +14,7 @@ const HOW_IT_WORKS = [
   {
     icon: '🎯',
     title: 'Make Weekly Picks & Predictions',
-    body: 'Before each episode, pick contestants to score for you that week and answer yes/no prop bets.',
+    body: 'Before each episode, pick contestants to score for you that week and answer yes/no Tree Mail predictions.',
   },
   {
     icon: '📺',
@@ -35,8 +35,8 @@ const HOW_IT_WORKS = [
 
 const EPISODE_FLOW = [
   {
-    title: 'Save Picks & Prop Bets (Play Tab)',
-    body: 'Choose your weekly contestants and answer prop bets. Do this before you start the episode.',
+    title: 'Save Picks & Tree Mail (Play Tab)',
+    body: 'Choose your weekly contestants and answer Tree Mail questions. Do this before you start the episode.',
   },
   {
     title: 'Start Watching (Watch Tab)',

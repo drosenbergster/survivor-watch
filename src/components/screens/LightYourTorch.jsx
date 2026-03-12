@@ -70,7 +70,7 @@ export default function LightYourTorch({ episodeNum }) {
             <h3 className="font-display text-2xl text-sand-warm tracking-wider">Ready to Watch?</h3>
             <p className="text-sand-warm/60 text-sm font-sans max-w-xs mx-auto">
                 Before you press play on Episode {episodeNum}, make sure you&apos;ve saved your
-                weekly picks and prop bets on the Play tab. Starting the episode locks them in
+                weekly picks and Tree Mail on the Play tab. Starting the episode locks them in
                 and activates your bingo card and tribal snap vote.
             </p>
             <FijianPrimaryButton onClick={async () => {

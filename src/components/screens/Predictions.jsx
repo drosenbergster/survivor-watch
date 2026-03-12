@@ -45,7 +45,7 @@ export default function Predictions() {
 
     return (
         <div className="space-y-4">
-            <FijianSectionHeader title="Prop Bets" />
+            <FijianSectionHeader title="Tree Mail" />
 
             <p className="text-sand-warm/60 text-xs font-sans leading-relaxed">
                 Quick calls before the episode. Points are awarded after the host scores.
@@ -62,7 +62,7 @@ export default function Predictions() {
                 <div className="flex items-center gap-2 mb-3">
                     <Icon name="casino" className="text-ochre" />
                     <span className="text-sand-warm text-sm font-bold inline-flex items-center">
-                        Prop Bets
+                        Tree Mail
                         <HintBadge hintKey="propBets">
                             Yes/No questions about what will happen this episode. Get +3 pts for each correct answer. The host sets the questions before the episode.
                         </HintBadge>
@@ -106,7 +106,7 @@ export default function Predictions() {
                         );
                     })}
                     <p className="text-sand-warm/50 text-xs text-center pt-1">
-                        Tap YES or NO for each prop bet.
+                        Tap YES or NO for each question.
                     </p>
                 </div>
             </FijianCard>

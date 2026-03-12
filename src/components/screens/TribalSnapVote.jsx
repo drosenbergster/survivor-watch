@@ -200,7 +200,7 @@ export default function TribalSnapVote({ episodeNum }) {
 
             {sideBets.length > 0 && !hasSubmittedSideBets && (
                 <FijianCard className="p-4 space-y-3">
-                    <FijianSectionHeader title="Tribal Side Bets" />
+                    <FijianSectionHeader title="Tribal Whispers" />
                     <p className="text-clay text-xs font-serif italic">
                         Quick yes/no calls &mdash; +3 pts each correct
                     </p>
@@ -217,7 +217,7 @@ export default function TribalSnapVote({ episodeNum }) {
                         onClick={handleSubmitSideBets}
                         disabled={submittingSideBets}
                     >
-                        {submittingSideBets ? 'Locking...' : 'Lock In Side Bets'}
+                        {submittingSideBets ? 'Locking...' : 'Lock In Tribal Whispers'}
                     </FijianPrimaryButton>
                 </FijianCard>
             )}

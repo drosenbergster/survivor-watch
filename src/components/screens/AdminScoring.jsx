@@ -588,7 +588,7 @@ function BetResultsStep({ propBets, propBetResults, setPropBetResults, sideBets,
         return (
             <div className="space-y-3">
                 <SectionLabel>Bet Results</SectionLabel>
-                <HelpText>No prop bets or side bets this episode.</HelpText>
+                <HelpText>No Tree Mail or Tribal Whispers this episode.</HelpText>
             </div>
         );
     }
@@ -597,7 +597,7 @@ function BetResultsStep({ propBets, propBetResults, setPropBetResults, sideBets,
         <div className="space-y-5">
             {propBets.length > 0 && (
                 <div className="space-y-3">
-                    <SectionLabel>Prop Bet Outcomes</SectionLabel>
+                    <SectionLabel>Tree Mail Outcomes</SectionLabel>
                     <HelpText>Did this happen? Mark YES or NO.</HelpText>
                     {propBets.map(prop => {
                         const result = propBetResults[prop.id];
@@ -615,7 +615,7 @@ function BetResultsStep({ propBets, propBetResults, setPropBetResults, sideBets,
             )}
             {sideBets.length > 0 && (
                 <div className="space-y-3">
-                    <SectionLabel>Side Bet Outcomes</SectionLabel>
+                    <SectionLabel>Tribal Whisper Outcomes</SectionLabel>
                     <HelpText>Mark YES or NO.</HelpText>
                     {sideBets.map(bet => {
                         const result = sideBetResults[bet.id];

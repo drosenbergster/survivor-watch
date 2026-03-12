@@ -29,14 +29,14 @@ function PredictionsSummary({ predictions, propBets }) {
     const hasAnswers = hasPropBets && propBets.some(bet => predictions.propBets?.[bet.id] !== undefined);
 
     if (!hasAnswers) {
-        return <p className="text-sand-warm/50 text-xs font-serif italic">No prop bets this episode.</p>;
+        return <p className="text-sand-warm/50 text-xs font-serif italic">No Tree Mail this episode.</p>;
     }
 
     return (
         <div className="space-y-3">
             {hasPropBets && (
                 <div>
-                    <span className="text-clay text-xs block mb-1.5">Prop bets:</span>
+                    <span className="text-clay text-xs block mb-1.5">Tree Mail:</span>
                     <div className="space-y-1">
                         {propBets.map(bet => {
                             const answer = predictions.propBets?.[bet.id];

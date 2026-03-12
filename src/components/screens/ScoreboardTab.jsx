@@ -128,9 +128,9 @@ function EpisodeBreakdown({ epNum, score }) {
                     {score.breakdown.predictions.map((p, i) => (
                         <div key={`p${i}`} className="flex justify-between text-sand-warm/60">
                             <span>
-                                {p.type === 'propBet' && `📊 ${p.text}`}
+                                {p.type === 'propBet' && `📬 ${p.text}`}
                                 {p.type === 'snapVote' && '🔥 Snap vote correct'}
-                                {p.type === 'sideBet' && `⚡ ${p.text}`}
+                                {p.type === 'sideBet' && `🤫 ${p.text}`}
                             </span>
                             <span className="text-green-400">+{p.points}</span>
                         </div>
@@ -274,7 +274,7 @@ export default function ScoreboardTab({ onTabChange }) {
                             ))}
                             <div className="col-span-2 border-t border-stone-700 mt-2 pt-2">
                                 <div className="flex justify-between">
-                                    <span>📊 Correct prop bet</span>
+                                    <span>📬 Correct Tree Mail</span>
                                     <span className="text-ochre">+3</span>
                                 </div>
                                 <div className="flex justify-between">
@@ -282,7 +282,7 @@ export default function ScoreboardTab({ onTabChange }) {
                                     <span className="text-ochre">+8</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span>⚡ Tribal side bet correct</span>
+                                    <span>🤫 Tribal Whisper correct</span>
                                     <span className="text-ochre">+3</span>
                                 </div>
                                 <div className="flex justify-between">
