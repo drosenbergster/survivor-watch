@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from 'react';
 import { useApp } from '../../AppContext';
 import { ALL_CASTAWAYS } from '../../data';
 import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon, HintBadge } from '../fijian';
@@ -11,6 +12,8 @@ import PostEpisodeHub from './PostEpisodeHub';
 import ProbstRecap from './ProbstRecap';
 import MergePassport from './MergePassport';
 import FinaleMode from './FinaleMode';
+import LightYourTorch from './LightYourTorch';
+import BingoCard from './BingoCard';
 
 function SeasonOverview() {
     const { user, leagueMembers, rideOrDies } = useApp();
@@ -79,7 +82,7 @@ function EpisodeScoredBanner({ episodeNum }) {
                 <div className="text-3xl">🛡️</div>
                 <p className="text-sand-warm font-display text-lg tracking-wider">Episode {episodeNum} Complete</p>
                 <p className="text-sand-warm/50 text-sm font-sans">
-                    Details hidden until you&apos;ve watched. Go to the Watch tab and tap &quot;Start Watching&quot; to begin.
+                    Details hidden until you&apos;ve watched. Tap &quot;Light Your Torch&quot; above to begin.
                 </p>
             </FijianCard>
         );
@@ -97,9 +100,9 @@ function EpisodeScoredBanner({ episodeNum }) {
 
 export default function DraftTab() {
     const {
-        user, myEpisode, myEpisodeData, league,
+        user, myEpisode, myEpisodeData, league, leagueId,
         isWatching, hasWatched, hasLockedPicks,
-        advanceEpisode,
+        advanceEpisode, saveBingoMarks, bingo,
         isMerged, mergePassports, finaleData,
     } = useApp();
 
@@ -112,6 +115,20 @@ export default function DraftTab() {
     const isScored = !!myEpisodeData?.scored;
     const isFinaleActive = !!finaleData?.status;
     const mergePassportSealed = !!mergePassports?.[user?.uid]?.sealedAt;
+
+    const bingoSeed = user ? `${leagueId}-${myEpisode}-${user.uid}` : 'fallback';
+    const bingoMarked = bingo?.[myEpisode]?.[user?.uid];
+    const handleBingoSave = useCallback((marked) => {
+        if (saveBingoMarks) saveBingoMarks(myEpisode, marked);
+    }, [saveBingoMarks, myEpisode]);
+
+    const headerSubtitle = useMemo(() => {
+        if (!hasEpisode) return null;
+        if (watching) return 'Your torch is lit — enjoy the show.';
+        if (watched && isScored) return 'Episode complete. Review your results below.';
+        if (watched) return 'Waiting for the host to score this episode.';
+        return 'Make your picks and Tree Mail, then light your torch.';
+    }, [hasEpisode, watching, watched, isScored]);
 
     if (isFinaleActive) {
         return (
@@ -130,12 +147,14 @@ export default function DraftTab() {
                 <h2 className="font-display text-3xl tracking-wider text-sand-warm drop-shadow-text">
                     {hasEpisode ? `Episode ${myEpisode}` : 'Season 50'}
                 </h2>
-                {hasEpisode && (
+                {headerSubtitle && (
                     <p className="text-sand-warm/70 text-sm mt-1 font-sans inline-flex items-center justify-center">
-                        Make your picks, then head to Watch to start the episode.
-                        <HintBadge hintKey="picks">
-                            Each episode, pick contestants and answer Tree Mail. Then go to the Watch tab and tap &quot;Start Watching&quot; to lock everything in and activate your bingo card.
-                        </HintBadge>
+                        {headerSubtitle}
+                        {!watching && !watched && (
+                            <HintBadge hintKey="picks">
+                                Pick contestants and answer Tree Mail, then tap &quot;Light Your Torch&quot; to lock everything in, activate your bingo card, and start the episode.
+                            </HintBadge>
+                        )}
                     </p>
                 )}
             </header>
@@ -144,28 +163,37 @@ export default function DraftTab() {
 
             {!hasEpisode && <SeasonOverview />}
 
-            {/* Merge Passport prompt — show when merged but not yet sealed */}
             {isMerged && !mergePassportSealed && (
                 <MergePassport />
             )}
 
-            {/* Player hasn't locked picks — show picks + predictions */}
+            {/* Pre-watch: picks, predictions, then torch */}
             {hasEpisode && !picksLocked && !watching && !watched && (
                 <>
                     <WeeklyPicks />
                     <Predictions />
+                    <LightYourTorch episodeNum={myEpisode} />
                 </>
             )}
 
-            {/* Player is actively watching — show locked picks + tribal vote */}
+            {/* Watching: torch status, bingo card, tribal vote, locked picks reference */}
             {hasEpisode && watching && (
                 <>
-                    <EpisodeLockScreen />
+                    <LightYourTorch episodeNum={myEpisode} />
+                    <div className="max-w-md mx-auto">
+                        <BingoCard
+                            seed={bingoSeed}
+                            marked={bingoMarked}
+                            onSave={handleBingoSave}
+                            disabled={false}
+                        />
+                    </div>
                     <TribalSnapVote episodeNum={myEpisode} />
+                    <EpisodeLockScreen />
                 </>
             )}
 
-            {/* Player finished watching, episode not scored yet */}
+            {/* Watched, not yet scored */}
             {hasEpisode && watched && !isScored && (
                 <FijianCard className="p-5 text-center space-y-2">
                     <Icon name="check_circle" className="text-jungle-400 text-3xl" />
@@ -173,12 +201,11 @@ export default function DraftTab() {
                         Episode {myEpisode} Watched
                     </p>
                     <p className="text-sand-warm/50 text-sm font-sans">
-                        Scores will appear automatically once stats are imported.
+                        Scores will appear once the host imports results.
                     </p>
                 </FijianCard>
             )}
 
-            {/* Admin scoring — optional override for host */}
             {watched && <AdminScoring episodeNum={myEpisode} />}
 
             {isScored && (
@@ -192,7 +219,6 @@ export default function DraftTab() {
                 </>
             )}
 
-            {/* Continue to next episode — available after watching */}
             {hasEpisode && watched && (
                 <FijianCard className="p-4 text-center">
                     <FijianPrimaryButton onClick={advanceEpisode}>

@@ -3,7 +3,7 @@ import { useApp } from './AppContext';
 import {
     AuthScreen, LeagueGate, LeagueLobby,
     RideOrDieDraft, SeasonPassport,
-    DraftTab, BingoTab, ScoreboardTab, RulesTab, PlayerProfile,
+    DraftTab, ScoreboardTab, RulesTab, PlayerProfile,
     WelcomeCarousel,
 } from './components/screens';
 import { AppShell } from './components/layout';
@@ -13,8 +13,7 @@ function ProfileTab() {
 }
 
 const TABS = [
-    { key: 'play', label: 'Play', icon: 'sports_esports', Component: DraftTab },
-    { key: 'watch', label: 'Watch', icon: 'live_tv', Component: BingoTab },
+    { key: 'episode', label: 'Episode', icon: 'local_fire_department', Component: DraftTab },
     { key: 'scores', label: 'Scores', icon: 'leaderboard', Component: ScoreboardTab },
     { key: 'profile', label: 'Profile', icon: 'person', Component: ProfileTab },
     { key: 'rules', label: 'Rules', icon: 'menu_book', Component: RulesTab },
@@ -30,7 +29,7 @@ function LoadingScreen() {
 
 export default function App() {
     const { user, authLoading, league, leagueId, leagueLoading, draftState, passports, onboardingComplete, completeOnboarding } = useApp();
-    const [activeTab, setActiveTab] = useState('play');
+    const [activeTab, setActiveTab] = useState('episode');
     const [joinParam, setJoinParam] = useState(null);
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);

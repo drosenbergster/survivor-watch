@@ -49,13 +49,12 @@ Use these for all screens. See `src/components/fijian/` and `docs/STYLE_GUIDE.md
 | **SeasonPassport** | `SeasonPassport.jsx` | 5 sealed pre-season predictions |
 
 ### Core Tabs
-| Component | File | Purpose |
-|-----------|------|---------|
-| **DraftTab** | `DraftTab.jsx` | Main episode hub — picks, predictions, admin, post-episode |
-| **BingoTab** | `BingoTab.jsx` | Bingo card viewer with episode selector |
-| **ScoreboardTab** | `ScoreboardTab.jsx` | Season standings with per-episode breakdown |
-| **RulesTab** | `RulesTab.jsx` | Scoring rules + admin tools (tribe management, auction) |
-| **PlayerProfile** | `PlayerProfile.jsx` | Player stats, badges, prediction accuracy |
+| Component | File | Tab Label | Purpose |
+|-----------|------|-----------|---------|
+| **DraftTab** | `DraftTab.jsx` | Episode | Phase-driven episode hub — picks, predictions, torch, bingo, tribal, post-episode |
+| **ScoreboardTab** | `ScoreboardTab.jsx` | Scores | Season standings with per-episode breakdown + bingo card history |
+| **RulesTab** | `RulesTab.jsx` | Rules | Scoring rules + admin tools (tribe management, auction) |
+| **PlayerProfile** | `PlayerProfile.jsx` | Profile | Player stats, badges, prediction accuracy |
 
 ### Episode Flow
 | Component | File | Purpose |

@@ -4,7 +4,7 @@ export { default as LeagueLobby } from './LeagueLobby';
 export { default as RideOrDieDraft } from './RideOrDieDraft';
 export { default as SeasonPassport } from './SeasonPassport';
 export { default as DraftTab } from './DraftTab';
-export { default as BingoTab } from './BingoTab';
+// BingoTab removed — bingo is now inline in the Episode (DraftTab) tab
 export { default as ScoreboardTab } from './ScoreboardTab';
 export { default as RulesTab } from './RulesTab';
 export { default as TribalSnapVote } from './TribalSnapVote';

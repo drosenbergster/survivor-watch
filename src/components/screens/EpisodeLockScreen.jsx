@@ -120,23 +120,15 @@ function ScarcityInfo({ episodeData, user, rideOrDies }) {
 }
 
 export default function EpisodeLockScreen() {
-    const { user, myEpisode, myEpisodeData, rideOrDies } = useApp();
+    const { user, myEpisodeData, rideOrDies } = useApp();
 
     const myPicks = myEpisodeData?.picks?.[user?.uid] || [];
     const myPredictions = myEpisodeData?.predictions?.[user?.uid];
 
     return (
-        <div className="space-y-5">
-            <FijianCard className="p-5 text-center border-fire-400/30 shadow-fire">
-                <div className="text-3xl mb-2 animate-flicker" aria-hidden>📺</div>
-                <p className="font-display text-2xl tracking-wider text-fire-400">Watching Episode {myEpisode}</p>
-                <p className="text-sand-warm/60 text-sm mt-1 font-sans">
-                    Your picks and predictions are locked in. Enjoy the show!
-                </p>
-            </FijianCard>
-
+        <div className="space-y-4">
             <FijianCard className="p-4">
-                <FijianSectionHeader title="Your Picks" />
+                <FijianSectionHeader title="Your Locked Picks" />
                 <PicksList picks={myPicks} />
             </FijianCard>
 

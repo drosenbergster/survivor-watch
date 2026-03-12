@@ -28,7 +28,7 @@ export default function LightYourTorch({ episodeNum }) {
                     <span className="text-3xl animate-pulse">🔥</span>
                 </div>
                 <p className="text-sand-warm/70 text-xs font-sans">
-                    Your picks and predictions are locked in. Bingo card is active &mdash; mark squares as things happen!
+                    Picks and predictions locked. Mark bingo squares below as things happen!
                 </p>
                 {!confirming ? (
                     <button
@@ -69,17 +69,16 @@ export default function LightYourTorch({ episodeNum }) {
             <div className="text-4xl">📺</div>
             <h3 className="font-display text-2xl text-sand-warm tracking-wider">Ready to Watch?</h3>
             <p className="text-sand-warm/60 text-sm font-sans max-w-xs mx-auto">
-                Before you press play on Episode {episodeNum}, make sure you&apos;ve saved your
-                weekly picks and Tree Mail on the Play tab. Starting the episode locks them in
-                and activates your bingo card and tribal snap vote.
+                Make sure you&apos;ve saved your picks and Tree Mail above.
+                This locks everything in and activates your bingo card and tribal snap vote.
             </p>
             <FijianPrimaryButton onClick={async () => {
                 setError('');
                 try { await lightTorch(episodeNum); }
                 catch (err) { setError(err.message || 'Failed to start'); }
             }}>
-                <Icon name="play_arrow" className="mr-1" />
-                Start Watching
+                <Icon name="local_fire_department" className="mr-1" />
+                Light Your Torch
             </FijianPrimaryButton>
             {error && <p className="text-amber text-xs text-center" role="alert">{error}</p>}
         </FijianCard>

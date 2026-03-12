@@ -3,6 +3,7 @@ import { useApp } from '../../AppContext';
 import { computeStandings } from '../../scoring';
 import { SCORE_EVENTS, ALL_CASTAWAYS, PLAYER_COLORS } from '../../data';
 import { FijianCard, FijianSectionHeader, Icon, HintBadge } from '../fijian';
+import BingoCard from './BingoCard';
 
 const SCORE_EMOJI = Object.fromEntries(SCORE_EVENTS.map(e => [e.key, e.emoji]));
 const SCORE_LABEL = Object.fromEntries(SCORE_EVENTS.map(e => [e.key, e.label]));
@@ -14,7 +15,7 @@ function RankBadge({ rank }) {
     return <span className="text-lg text-sand-warm/60 font-bold font-sans">#{rank}</span>;
 }
 
-function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perEpisode }) {
+function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perEpisode, leagueId, bingo, isCurrentUser }) {
     const epNums = Object.keys(perEpisode || {}).map(Number).sort((a, b) => a - b);
 
     return (
@@ -66,11 +67,15 @@ function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perE
                             {epNums.map(epNum => {
                                 const epScore = perEpisode[epNum]?.[entry.uid];
                                 if (!epScore) return null;
+                                const bingoSeed = isCurrentUser ? `${leagueId}-${epNum}-${entry.uid}` : null;
+                                const bingoMarked = isCurrentUser ? bingo?.[epNum]?.[entry.uid] : null;
                                 return (
                                     <EpisodeBreakdown
                                         key={epNum}
                                         epNum={epNum}
                                         score={epScore}
+                                        bingoSeed={bingoSeed}
+                                        bingoMarked={bingoMarked}
                                     />
                                 );
                             })}
@@ -91,8 +96,9 @@ function ScoreBox({ label, value, color }) {
     );
 }
 
-function EpisodeBreakdown({ epNum, score }) {
+function EpisodeBreakdown({ epNum, score, bingoSeed, bingoMarked }) {
     const [open, setOpen] = useState(false);
+    const [showBingo, setShowBingo] = useState(false);
 
     return (
         <div>
@@ -168,6 +174,27 @@ function EpisodeBreakdown({ epNum, score }) {
                     {score.breakdown.weekly.length === 0 && score.breakdown.predictions.length === 0 && score.breakdown.rideOrDie.length === 0 && (!score.breakdown.bingo || score.breakdown.bingo.length === 0) && (!score.breakdown.social || score.breakdown.social.length === 0) && (
                         <p className="text-sand-warm/60 italic">No points this episode</p>
                     )}
+
+                    {bingoSeed && (
+                        <div className="mt-2 pt-2 border-t border-stone-700/50">
+                            <button
+                                onClick={() => setShowBingo(!showBingo)}
+                                className="flex items-center gap-1.5 text-purple-400 hover:text-purple-300 transition-colors"
+                            >
+                                <Icon name={showBingo ? 'expand_less' : 'grid_view'} className="text-sm" />
+                                {showBingo ? 'Hide Bingo Card' : 'View Bingo Card'}
+                            </button>
+                            {showBingo && (
+                                <div className="mt-2 max-w-xs mx-auto">
+                                    <BingoCard
+                                        seed={bingoSeed}
+                                        marked={bingoMarked}
+                                        disabled={true}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
         </div>
@@ -184,7 +211,7 @@ function SpoilerShield({ unwatchedEps, onNavigate }) {
                 Scores are hidden to keep things fresh.
             </p>
             <button
-                onClick={() => onNavigate?.('watch')}
+                onClick={() => onNavigate?.('episode')}
                 className="text-ochre text-sm underline hover:text-ochre/80 transition-colors font-sans"
             >
                 🔥 Light your torch to watch →
@@ -194,7 +221,7 @@ function SpoilerShield({ unwatchedEps, onNavigate }) {
 }
 
 export default function ScoreboardTab({ onTabChange }) {
-    const { episodes, rideOrDies, leagueMembers, hasWatched, bingo, postEpisode, league } = useApp();
+    const { user, episodes, rideOrDies, leagueMembers, hasWatched, bingo, postEpisode, league, leagueId } = useApp();
     const [expandedUid, setExpandedUid] = useState(null);
 
     const memberUids = useMemo(() => Object.keys(leagueMembers || {}), [leagueMembers]);
@@ -258,6 +285,9 @@ export default function ScoreboardTab({ onTabChange }) {
                                     expanded={expandedUid === entry.uid}
                                     onToggle={() => setExpandedUid(expandedUid === entry.uid ? null : entry.uid)}
                                     perEpisode={perEpisode}
+                                    leagueId={leagueId}
+                                    bingo={bingo}
+                                    isCurrentUser={entry.uid === user?.uid}
                                 />
                             );
                         })}

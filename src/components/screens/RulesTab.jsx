@@ -17,9 +17,9 @@ const HOW_IT_WORKS = [
     body: 'Before each episode, pick contestants to score for you that week and answer yes/no Tree Mail predictions.',
   },
   {
-    icon: '📺',
-    title: 'Start Watching',
-    body: 'When you\'re ready to watch, tap "Start Watching" on the Watch tab. This locks in your picks and predictions and activates your bingo card. Watch live or catch up later — you control your own timing.',
+    icon: '🔥',
+    title: 'Light Your Torch',
+    body: 'When you\'re ready to watch, tap "Light Your Torch" on the Episode tab. This locks in your picks and predictions and activates your bingo card. Watch live or catch up later — you control your own timing.',
   },
   {
     icon: '🗳️',
@@ -35,12 +35,12 @@ const HOW_IT_WORKS = [
 
 const EPISODE_FLOW = [
   {
-    title: 'Save Picks & Tree Mail (Play Tab)',
-    body: 'Choose your weekly contestants and answer Tree Mail questions. Do this before you start the episode.',
+    title: 'Make Picks & Tree Mail',
+    body: 'Choose your weekly contestants and answer Tree Mail predictions. Everything happens on the Episode tab.',
   },
   {
-    title: 'Start Watching (Watch Tab)',
-    body: 'Tap "Start Watching" when you\'re ready to press play. This locks your picks and predictions and activates your bingo card and tribal snap vote.',
+    title: 'Light Your Torch',
+    body: 'Tap "Light Your Torch" when you\'re ready to press play. This locks your picks and predictions and activates your bingo card and tribal snap vote.',
   },
   {
     title: 'Play Bingo While You Watch',
@@ -52,11 +52,11 @@ const EPISODE_FLOW = [
   },
   {
     title: 'Finish the Episode',
-    body: 'When the episode ends, tap "Done Watching" to lock in your bingo card. The host then enters the game results and scores the episode.',
+    body: 'When the episode ends, tap "Done Watching" to lock in your bingo card. The host enters results and scores the episode.',
   },
   {
-    title: 'Post-Episode Votes (After Scoring)',
-    body: 'Vote for Player of the Episode and rate the eliminated contestant\'s game impact. These social points add up over the season.',
+    title: 'Post-Episode Votes',
+    body: 'After scoring, vote for Player of the Episode and rate the eliminated contestant\'s game impact. Social points add up over the season.',
   },
 ];
 
