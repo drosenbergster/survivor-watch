@@ -3,10 +3,10 @@ import { useApp } from '../../AppContext';
 import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon, HintBadge } from '../fijian';
 
 export default function Predictions() {
-    const { user, currentEpisode, episodeData, submitPredictions } = useApp();
+    const { user, myEpisode, myEpisodeData, submitPredictions } = useApp();
 
-    const myPredictions = episodeData?.predictions?.[user?.uid];
-    const propBets = episodeData?.propBets || [];
+    const myPredictions = myEpisodeData?.predictions?.[user?.uid];
+    const propBets = myEpisodeData?.propBets || [];
 
     const [propAnswers, setPropAnswers] = useState(() => myPredictions?.propBets || {});
     const [saving, setSaving] = useState(false);
@@ -31,7 +31,7 @@ export default function Predictions() {
         setSaving(true);
         setError('');
         try {
-            await submitPredictions(currentEpisode, {
+            await submitPredictions(myEpisode, {
                 propBets: propAnswers,
             });
             setSaved(true);

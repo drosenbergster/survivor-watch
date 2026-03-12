@@ -120,16 +120,16 @@ function ScarcityInfo({ episodeData, user, rideOrDies }) {
 }
 
 export default function EpisodeLockScreen() {
-    const { user, currentEpisode, episodeData, rideOrDies } = useApp();
+    const { user, myEpisode, myEpisodeData, rideOrDies } = useApp();
 
-    const myPicks = episodeData?.picks?.[user?.uid] || [];
-    const myPredictions = episodeData?.predictions?.[user?.uid];
+    const myPicks = myEpisodeData?.picks?.[user?.uid] || [];
+    const myPredictions = myEpisodeData?.predictions?.[user?.uid];
 
     return (
         <div className="space-y-5">
             <FijianCard className="p-5 text-center border-fire-400/30 shadow-fire">
                 <div className="text-3xl mb-2 animate-flicker" aria-hidden>📺</div>
-                <p className="font-display text-2xl tracking-wider text-fire-400">Watching Episode {currentEpisode}</p>
+                <p className="font-display text-2xl tracking-wider text-fire-400">Watching Episode {myEpisode}</p>
                 <p className="text-sand-warm/60 text-sm mt-1 font-sans">
                     Your picks and predictions are locked in. Enjoy the show!
                 </p>
@@ -142,10 +142,10 @@ export default function EpisodeLockScreen() {
 
             <FijianCard className="p-4">
                 <FijianSectionHeader title="Your Predictions" />
-                <PredictionsSummary predictions={myPredictions} propBets={episodeData?.propBets} />
+                <PredictionsSummary predictions={myPredictions} propBets={myEpisodeData?.propBets} />
             </FijianCard>
 
-            <ScarcityInfo episodeData={episodeData} user={user} rideOrDies={rideOrDies} />
+            <ScarcityInfo episodeData={myEpisodeData} user={user} rideOrDies={rideOrDies} />
         </div>
     );
 }

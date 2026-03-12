@@ -1,6 +1,6 @@
 import { useApp } from '../../AppContext';
 import { ALL_CASTAWAYS } from '../../data';
-import { FijianCard, FijianSectionHeader, Icon, HintBadge } from '../fijian';
+import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon, HintBadge } from '../fijian';
 import AdminEpisodeCard from './AdminEpisodeCard';
 import AdminScoring from './AdminScoring';
 import WeeklyPicks from './WeeklyPicks';
@@ -97,20 +97,19 @@ function EpisodeScoredBanner({ episodeNum }) {
 
 export default function DraftTab() {
     const {
-        user, currentEpisode, episodeData, league,
+        user, myEpisode, myEpisodeData, league,
         isWatching, hasWatched, hasLockedPicks,
+        advanceEpisode,
         isMerged, mergePassports, finaleData,
     } = useApp();
 
-    const episodeStatus = episodeData?.status;
-    const hasEpisode = !!currentEpisode && !!episodeData;
+    const hasEpisode = !!myEpisode && !!myEpisodeData;
 
-    const watching = hasEpisode ? isWatching(currentEpisode) : false;
-    const watched = hasEpisode ? hasWatched(currentEpisode) : false;
-    const picksLocked = hasEpisode ? hasLockedPicks(currentEpisode) : false;
+    const watching = hasEpisode ? isWatching(myEpisode) : false;
+    const watched = hasEpisode ? hasWatched(myEpisode) : false;
+    const picksLocked = hasEpisode ? hasLockedPicks(myEpisode) : false;
 
-    const isOpen = episodeStatus === 'open';
-    const isScored = episodeStatus === 'scored';
+    const isScored = !!myEpisodeData?.scored;
     const isFinaleActive = !!finaleData?.status;
     const mergePassportSealed = !!mergePassports?.[user?.uid]?.sealedAt;
 
@@ -129,7 +128,7 @@ export default function DraftTab() {
         <div className="space-y-6">
             <header className="text-center">
                 <h2 className="font-display text-3xl tracking-wider text-sand-warm drop-shadow-text">
-                    {hasEpisode ? `Episode ${currentEpisode}` : 'Season 50'}
+                    {hasEpisode ? `Episode ${myEpisode}` : 'Season 50'}
                 </h2>
                 {hasEpisode && (
                     <p className="text-sand-warm/70 text-sm mt-1 font-sans inline-flex items-center justify-center">
@@ -150,28 +149,28 @@ export default function DraftTab() {
                 <MergePassport />
             )}
 
-            {/* Episode open, player hasn't started watching — show picks + predictions */}
-            {isOpen && !picksLocked && (
+            {/* Player hasn't locked picks — show picks + predictions */}
+            {hasEpisode && !picksLocked && !watching && !watched && (
                 <>
                     <WeeklyPicks />
                     <Predictions />
                 </>
             )}
 
-            {/* Episode open, player is actively watching — show locked picks + tribal vote */}
-            {isOpen && watching && (
+            {/* Player is actively watching — show locked picks + tribal vote */}
+            {hasEpisode && watching && (
                 <>
                     <EpisodeLockScreen />
-                    <TribalSnapVote episodeNum={currentEpisode} />
+                    <TribalSnapVote episodeNum={myEpisode} />
                 </>
             )}
 
-            {/* Episode open, player finished watching but episode not scored yet */}
-            {isOpen && watched && (
+            {/* Player finished watching, episode not scored yet */}
+            {hasEpisode && watched && !isScored && (
                 <FijianCard className="p-5 text-center space-y-2">
                     <Icon name="check_circle" className="text-jungle-400 text-3xl" />
                     <p className="text-sand-warm font-display text-lg tracking-wider">
-                        Episode {currentEpisode} Watched
+                        Episode {myEpisode} Watched
                     </p>
                     <p className="text-sand-warm/50 text-sm font-sans">
                         Scores will appear automatically once stats are imported.
@@ -179,21 +178,30 @@ export default function DraftTab() {
                 </FijianCard>
             )}
 
-            {/* Admin scoring — optional override for host, works in both open and scored states */}
-            {watched && <AdminScoring episodeNum={currentEpisode} />}
+            {/* Admin scoring — optional override for host */}
+            {watched && <AdminScoring episodeNum={myEpisode} />}
 
             {isScored && (
-                <EpisodeScoredBanner episodeNum={currentEpisode} />
+                <EpisodeScoredBanner episodeNum={myEpisode} />
             )}
 
             {isScored && watched && (
                 <>
-                    <ProbstRecap episodeNum={currentEpisode} />
-                    <PostEpisodeHub episodeNum={currentEpisode} />
+                    <ProbstRecap episodeNum={myEpisode} />
+                    <PostEpisodeHub episodeNum={myEpisode} />
                 </>
             )}
 
-            {hasEpisode && (!isOpen || picksLocked) && <SeasonOverview />}
+            {/* Continue to next episode — available after watching */}
+            {hasEpisode && watched && (
+                <FijianCard className="p-4 text-center">
+                    <FijianPrimaryButton onClick={advanceEpisode}>
+                        Continue to Episode {myEpisode + 1}
+                    </FijianPrimaryButton>
+                </FijianCard>
+            )}
+
+            {hasEpisode && picksLocked && <SeasonOverview />}
         </div>
     );
 }

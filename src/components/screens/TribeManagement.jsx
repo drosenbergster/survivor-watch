@@ -95,7 +95,7 @@ function TribeSwapPanel({ episodeNum }) {
 }
 
 function MergePanel() {
-    const { executeMerge, currentEpisode, isMerged, tribeSwaps } = useApp();
+    const { executeMerge, myEpisode, isMerged, tribeSwaps } = useApp();
     const [tribeName, setTribeName] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
@@ -116,7 +116,7 @@ function MergePanel() {
     const handleMerge = async () => {
         if (!tribeName.trim()) return;
         setSubmitting(true);
-        await executeMerge(currentEpisode, tribeName.trim());
+        await executeMerge(myEpisode, tribeName.trim());
         setSubmitting(false);
     };
 
@@ -142,7 +142,7 @@ function MergePanel() {
 }
 
 export default function TribeManagement() {
-    const { user, league, currentEpisode } = useApp();
+    const { user, league, myEpisode } = useApp();
 
     if (league?.createdBy !== user?.uid) return null;
 
@@ -152,7 +152,7 @@ export default function TribeManagement() {
                 <p className="font-display text-xl tracking-wider text-ochre">Tribe Management</p>
                 <p className="text-sand-warm/50 text-xs font-sans mt-1">Admin tools for tribe swaps and merge</p>
             </FijianCard>
-            <TribeSwapPanel episodeNum={currentEpisode} />
+            <TribeSwapPanel episodeNum={myEpisode} />
             <MergePanel />
         </div>
     );

@@ -68,6 +68,7 @@ export function AppProvider({ children }) {
     const [rideOrDies, setRideOrDies] = useState({});
     const [passports, setPassports] = useState({});
     const [currentEpisode, setCurrentEpisode] = useState(null);
+    const [playerEpisode, setPlayerEpisode] = useState({});
     const [episodes, setEpisodes] = useState({});
     const [eliminated, setEliminated] = useState([]);
     const [watchStatus, setWatchStatus] = useState({});
@@ -157,6 +158,7 @@ export function AppProvider({ children }) {
             setRideOrDies({});
             setPassports({});
             setCurrentEpisode(null);
+            setPlayerEpisode({});
             setEpisodes({});
             setEliminated([]);
             setWatchStatus({});
@@ -284,7 +286,7 @@ export function AppProvider({ children }) {
                 const {
                     members, draft, rideOrDies: rod, passports: pp,
                     episodes: eps, eliminated: elim, watchStatus: ws, bingo: bg,
-                    postEpisode: pe,
+                    postEpisode: pe, playerEpisode: pep,
                     tribeSwaps: ts, mergePassports: mp, auction: auc, finaleData: fd,
                     ...meta
                 } = data;
@@ -295,6 +297,7 @@ export function AppProvider({ children }) {
                 setPassports(pp || {});
                 setEpisodes(eps || {});
                 setCurrentEpisode(meta.currentEpisode || null);
+                setPlayerEpisode(pep || {});
                 setEliminated(elim || []);
                 setWatchStatus(ws || {});
                 setBingo(bg || {});
@@ -310,6 +313,7 @@ export function AppProvider({ children }) {
                 setRideOrDies({});
                 setPassports({});
                 setCurrentEpisode(null);
+                setPlayerEpisode({});
                 setEpisodes({});
                 setEliminated([]);
                 setWatchStatus({});
@@ -511,9 +515,9 @@ export function AppProvider({ children }) {
 
     const createEpisode = useCallback(async (episodeNum) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
-        if (league?.createdBy !== user.uid) throw new Error('Only the host can create episodes');
 
-        const propBets = generatePropBets(episodeNum, 5);
+        const isPostMerge = !!tribeSwaps?.merge;
+        const propBets = generatePropBets(episodeNum, 5, isPostMerge);
         const sideBets = generateSideBets(episodeNum, 3);
         await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}`), {
             status: 'open',
@@ -524,7 +528,7 @@ export function AppProvider({ children }) {
             predictions: {},
         });
         await set(ref(db, `leagues/${leagueId}/currentEpisode`), episodeNum);
-    }, [user, leagueId, league]);
+    }, [user, leagueId, tribeSwaps]);
 
     const updatePropBets = useCallback(async (episodeNum, propBets) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
@@ -644,6 +648,13 @@ export function AppProvider({ children }) {
             }));
         }
     }, [user, leagueId]);
+
+    const advanceEpisode = useCallback(async () => {
+        if (!db || !user || !leagueId) return;
+        const myEp = playerEpisode[user.uid];
+        if (!myEp) return;
+        await set(ref(db, `leagues/${leagueId}/playerEpisode/${user.uid}`), myEp + 1);
+    }, [user, leagueId, playerEpisode]);
 
     const saveBingoMarks = useCallback(async (episodeNum, marked) => {
         if (!user || !leagueId) return;
@@ -876,74 +887,118 @@ export function AppProvider({ children }) {
         return tribeSwaps[swapEps[0]]?.assignments || null;
     }, [tribeSwaps]);
 
+    const myEpisode = useMemo(() => {
+        if (!user) return null;
+        return playerEpisode[user.uid] || null;
+    }, [user, playerEpisode]);
+
+    const myEpisodeData = useMemo(() => {
+        if (!myEpisode || !episodes[myEpisode]) return null;
+        return episodes[myEpisode];
+    }, [myEpisode, episodes]);
+
     const episodeData = useMemo(() => {
         if (!currentEpisode || !episodes[currentEpisode]) return null;
         return episodes[currentEpisode];
     }, [currentEpisode, episodes]);
 
-    // --- Auto-scoring: detect import data and score without host intervention ---
+    // --- Per-player episode progression: init + ensure episode exists ---
+    const autoCreateAttempted = useRef({});
+
+    useEffect(() => {
+        if (!db || !user || !leagueId || !league) return;
+        if (league.status !== 'active') return;
+
+        const firstEp = league.startingEpisode || 1;
+        const myEp = playerEpisode[user.uid];
+
+        if (!myEp) {
+            const key = `${leagueId}_init_${user.uid}`;
+            if (autoCreateAttempted.current[key]) return;
+            autoCreateAttempted.current[key] = true;
+            set(ref(db, `leagues/${leagueId}/playerEpisode/${user.uid}`), firstEp).catch(() => {
+                autoCreateAttempted.current[key] = false;
+            });
+            return;
+        }
+
+        if (!episodes[myEp]) {
+            const key = `${leagueId}_create_${myEp}`;
+            if (autoCreateAttempted.current[key]) return;
+            autoCreateAttempted.current[key] = true;
+            createEpisode(myEp).catch(() => {
+                autoCreateAttempted.current[key] = false;
+            });
+        }
+    }, [db, user, leagueId, league, playerEpisode, episodes, createEpisode]);
+
+    // --- Auto-scoring: detect import data and score any unscored episode ---
     const autoScoreAttempted = useRef({});
 
     useEffect(() => {
-        if (!db || !user || !leagueId || !league || !currentEpisode) return;
+        if (!db || !user || !leagueId || !league) return;
         if (league.createdBy !== user.uid) return;
 
-        const epNum = currentEpisode;
-        const ep = episodes[epNum];
-        if (!ep || ep.status !== 'open' || ep.scored) return;
-        if (autoScoreAttempted.current[`${leagueId}_${epNum}`]) return;
+        const unscoredEps = Object.entries(episodes || {}).filter(([, ep]) => !ep.scored);
+        if (unscoredEps.length === 0) return;
 
-        const importRef = ref(db, `seasons/s50/autoImport/e${epNum}`);
-        get(importRef).then(snap => {
-            if (!snap.exists()) return;
-            const importData = snap.val();
-            if (!importData.eliminatedId && !importData.eliminationMethod) return;
+        for (const [epNumStr, ep] of unscoredEps) {
+            const epNum = Number(epNumStr);
+            const key = `${leagueId}_${epNum}`;
+            if (autoScoreAttempted.current[key]) continue;
 
-            autoScoreAttempted.current[`${leagueId}_${epNum}`] = true;
+            const importRef = ref(db, `seasons/s50/autoImport/e${epNum}`);
+            get(importRef).then(snap => {
+                if (!snap.exists()) return;
+                const importData = snap.val();
+                if (!importData.eliminatedId && !importData.eliminationMethod) return;
 
-            const remaining = ALL_CASTAWAYS.filter(c => !(eliminated || []).includes(c.id));
-            const { gameEvents } = deriveGameEvents({
-                eliminatedId: importData.eliminatedId,
-                eliminationMethod: importData.eliminationMethod || 'voted_out',
-                immunityWinners: importData.immunityWinners || [],
-                rewardWinners: importData.rewardWinners || [],
-                isPostMerge: importData.isPostMerge || false,
-                minorityVoters: importData.minorityVoters || [],
-                receivedVotes: importData.receivedVotes || [],
-                bigMoments: importData.bigMoments || {},
-                remaining,
-            });
+                autoScoreAttempted.current[key] = true;
 
-            const propBets = ep.propBets || [];
-            const sideBets = ep.sideBets || [];
-            let propBetResults = ep.autoResolvedPropBets || {};
-            let sideBetResults = ep.autoResolvedSideBets || {};
+                const remaining = ALL_CASTAWAYS.filter(c => !(eliminated || []).includes(c.id));
+                const { gameEvents } = deriveGameEvents({
+                    eliminatedId: importData.eliminatedId,
+                    eliminationMethod: importData.eliminationMethod || 'voted_out',
+                    immunityWinners: importData.immunityWinners || [],
+                    rewardWinners: importData.rewardWinners || [],
+                    isPostMerge: importData.isPostMerge || false,
+                    minorityVoters: importData.minorityVoters || [],
+                    receivedVotes: importData.receivedVotes || [],
+                    bigMoments: importData.bigMoments || {},
+                    remaining,
+                });
 
-            if (Object.keys(propBetResults).length === 0 && propBets.length > 0 && propBets[0].resolveType) {
-                propBetResults = resolveBets(importData, propBets);
-            }
-            if (Object.keys(sideBetResults).length === 0 && sideBets.length > 0 && sideBets[0].resolveType) {
-                sideBetResults = resolveBets(importData, sideBets);
-            }
+                const propBets = ep.propBets || [];
+                const sideBets = ep.sideBets || [];
+                let propBetResults = ep.autoResolvedPropBets || {};
+                let sideBetResults = ep.autoResolvedSideBets || {};
 
-            const eliminatedThisEp = importData.eliminatedId ? [importData.eliminatedId] : [];
+                if (Object.keys(propBetResults).length === 0 && propBets.length > 0 && propBets[0].resolveType) {
+                    propBetResults = resolveBets(importData, propBets);
+                }
+                if (Object.keys(sideBetResults).length === 0 && sideBets.length > 0 && sideBets[0].resolveType) {
+                    sideBetResults = resolveBets(importData, sideBets);
+                }
 
-            scoreEpisodeAction(epNum, {
-                gameEvents,
-                propBetResults,
-                sideBetResults,
-                eliminatedThisEp,
-                eliminationMethod: importData.eliminationMethod || 'voted_out',
-            }).then(() => {
-                console.log(`Auto-scored episode ${epNum} from imported data`);
+                const eliminatedThisEp = importData.eliminatedId ? [importData.eliminatedId] : [];
+
+                scoreEpisodeAction(epNum, {
+                    gameEvents,
+                    propBetResults,
+                    sideBetResults,
+                    eliminatedThisEp,
+                    eliminationMethod: importData.eliminationMethod || 'voted_out',
+                }).then(() => {
+                    console.log(`Auto-scored episode ${epNum} from imported data`);
+                }).catch(err => {
+                    console.warn('Auto-score failed:', err.message);
+                    delete autoScoreAttempted.current[key];
+                });
             }).catch(err => {
-                console.warn('Auto-score failed:', err.message);
-                delete autoScoreAttempted.current[`${leagueId}_${epNum}`];
+                console.warn('Auto-score import check failed:', err.message);
             });
-        }).catch(err => {
-            console.warn('Auto-score import check failed:', err.message);
-        });
-    }, [db, user, leagueId, league, currentEpisode, episodes, eliminated, scoreEpisodeAction]);
+        }
+    }, [db, user, leagueId, league, episodes, eliminated, scoreEpisodeAction]);
 
     // --- Spoiler protection: safeEliminated only includes eliminations from watched episodes ---
     const safeEliminated = useMemo(() => {
@@ -975,10 +1030,10 @@ export function AppProvider({ children }) {
         user, authLoading,
         league, leagueId, leagueMembers, leagueLoading,
         draftState, rideOrDies, passports, mergePassports,
-        currentEpisode, episodeData, episodes, eliminated, safeEliminated,
+        currentEpisode, episodeData, myEpisode, myEpisodeData, episodes, eliminated, safeEliminated,
         watchStatus, bingo, postEpisode,
         tribeSwaps, isMerged, currentTribes, auction, finaleData,
-        lightTorch, markWatched, saveBingoMarks, hasWatched, isWatching, hasLockedPicks,
+        lightTorch, markWatched, advanceEpisode, saveBingoMarks, hasWatched, isWatching, hasLockedPicks,
         syncStatus, onboardingComplete, userLeagues,
         createLeague, joinLeague, leaveLeague, switchLeague, updateLeagueName, completeOnboarding,
         startDraft, makeDraftPick, submitPassport, startSeason,

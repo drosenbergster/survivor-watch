@@ -4,9 +4,9 @@ import { TRIBES, ALL_CASTAWAYS, getMaxPicks } from '../../data';
 import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon } from '../fijian';
 
 export default function WeeklyPicks() {
-    const { user, currentEpisode, episodeData, safeEliminated, submitPicks } = useApp();
+    const { user, myEpisode, myEpisodeData, safeEliminated, submitPicks } = useApp();
 
-    const myPicks = useMemo(() => episodeData?.picks?.[user?.uid] || [], [episodeData?.picks, user?.uid]);
+    const myPicks = useMemo(() => myEpisodeData?.picks?.[user?.uid] || [], [myEpisodeData?.picks, user?.uid]);
     const [selected, setSelected] = useState(() => myPicks);
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(() => myPicks.length > 0);
@@ -38,7 +38,7 @@ export default function WeeklyPicks() {
         setSaving(true);
         setError('');
         try {
-            await submitPicks(currentEpisode, selected);
+            await submitPicks(myEpisode, selected);
             setSaved(true);
         } catch (err) {
             setError(err.message);

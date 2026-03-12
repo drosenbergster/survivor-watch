@@ -65,12 +65,12 @@ function BingoRecap({ episodeNum, leagueId, userId }) {
 
 export default function BingoTab() {
     const {
-        user, league, leagueId, currentEpisode, episodes,
+        user, league, leagueId, myEpisode, currentEpisode, episodes,
         isWatching, hasWatched, saveBingoMarks, bingo,
     } = useApp();
 
-    const [selectedEp, setSelectedEp] = useState(currentEpisode || 1);
-    const totalEpisodes = currentEpisode || 1;
+    const [selectedEp, setSelectedEp] = useState(myEpisode || 1);
+    const maxEpisode = Math.max(myEpisode || 1, currentEpisode || 1);
 
     const epData = episodes[selectedEp];
     const isOpen = epData?.status === 'open';
@@ -118,10 +118,10 @@ export default function BingoTab() {
                 </p>
             </header>
 
-            {totalEpisodes > 1 && (
+            {maxEpisode > 1 && (
                 <EpisodeSelector
-                    current={totalEpisodes}
-                    total={Math.max(totalEpisodes, 14)}
+                    current={maxEpisode}
+                    total={Math.max(maxEpisode, 14)}
                     selected={selectedEp}
                     onSelect={setSelectedEp}
                 />
@@ -164,11 +164,11 @@ export default function BingoTab() {
                 </FijianCard>
             )}
 
-            {currentEpisode && currentEpisode > 1 && selectedEp === currentEpisode && (
+            {myEpisode && myEpisode > 1 && selectedEp === myEpisode && (
                 <div className="space-y-3">
                     <FijianSectionHeader title="Past Episodes" />
                     <div className="space-y-2">
-                        {Array.from({ length: currentEpisode - 1 }, (_, i) => currentEpisode - 1 - i).map(ep => (
+                        {Array.from({ length: myEpisode - 1 }, (_, i) => myEpisode - 1 - i).map(ep => (
                             <button
                                 key={ep}
                                 onClick={() => setSelectedEp(ep)}

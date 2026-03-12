@@ -690,7 +690,8 @@ function ReviewStep({ derivedEvents, eliminatedPick, eliminationMethod, remainin
 /* ── main component ─────────────────────────────────────────── */
 
 export default function AdminScoring({ episodeNum }) {
-    const { user, league, episodeData, eliminated, scoreEpisodeAction } = useApp();
+    const { user, league, episodes, eliminated, scoreEpisodeAction } = useApp();
+    const episodeData = episodes?.[episodeNum] || null;
 
     const [expanded, setExpanded] = useState(false);
 

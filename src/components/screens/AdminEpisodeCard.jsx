@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useApp } from '../../AppContext';
-import { FijianCard, FijianPrimaryButton, Icon } from '../fijian';
+import { FijianCard, Icon } from '../fijian';
 import { PROP_BET_POOL } from '../../data';
 
 function PropBetEditor({ propBets, onSave }) {
@@ -58,67 +58,36 @@ function PropBetEditor({ propBets, onSave }) {
 
 export default function AdminEpisodeCard() {
     const {
-        user, league, currentEpisode, episodeData,
-        createEpisode, updatePropBets,
+        user, league, myEpisode, myEpisodeData,
+        updatePropBets,
     } = useApp();
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     const isAdmin = league?.createdBy === user?.uid;
     if (!isAdmin) return null;
 
-    const episodeStatus = episodeData?.status;
-    const firstEpisode = league?.startingEpisode || 1;
-    const nextEpisodeNum = currentEpisode ? currentEpisode + 1 : firstEpisode;
-    const needsNewEpisode = !currentEpisode || !episodeData || episodeStatus === 'scored';
-
-    const handleCreate = async () => {
-        setLoading(true);
-        setError('');
-        try {
-            const num = currentEpisode ? currentEpisode + 1 : firstEpisode;
-            await createEpisode(num);
-        } catch (err) { setError(err.message); }
-        setLoading(false);
-    };
+    if (!myEpisodeData || myEpisodeData.scored) return null;
 
     const handleSavePropBets = async (bets) => {
-        await updatePropBets(currentEpisode, bets);
+        try {
+            await updatePropBets(myEpisode, bets);
+        } catch (err) { setError(err.message); }
     };
 
-    if (needsNewEpisode) {
-        return (
-            <FijianCard className="p-4 border-fire-400/20">
-                <div className="flex items-center gap-2 mb-3">
-                    <Icon name="shield_person" className="text-fire-400" />
-                    <span className="text-fire-400 text-xs font-bold uppercase tracking-widest">Host Controls</span>
-                </div>
-                <FijianPrimaryButton onClick={handleCreate} disabled={loading}>
-                    {loading ? 'Creating...' : `Create Episode ${nextEpisodeNum}`}
-                </FijianPrimaryButton>
-                {error && <p className="text-amber text-xs mt-2" role="alert">{error}</p>}
-            </FijianCard>
-        );
-    }
-
-    if (episodeStatus === 'open') {
-        return (
-            <FijianCard className="p-4 border-fire-400/20">
-                <div className="flex items-center gap-2 mb-3">
-                    <Icon name="shield_person" className="text-fire-400" />
-                    <span className="text-fire-400 text-xs font-bold uppercase tracking-widest">Host Controls</span>
-                    <span className="ml-auto text-ochre/70 text-xs">Episode {currentEpisode}</span>
-                </div>
-                <p className="text-sand-warm/70 text-xs font-sans">
-                    Episode is open. Players lock their own picks when they light their torch.
-                </p>
-                {episodeData?.propBets && (
-                    <PropBetEditor propBets={episodeData.propBets} onSave={handleSavePropBets} />
-                )}
-                {error && <p className="text-amber text-xs mt-2" role="alert">{error}</p>}
-            </FijianCard>
-        );
-    }
-
-    return null;
+    return (
+        <FijianCard className="p-4 border-fire-400/20">
+            <div className="flex items-center gap-2 mb-3">
+                <Icon name="shield_person" className="text-fire-400" />
+                <span className="text-fire-400 text-xs font-bold uppercase tracking-widest">Host Controls</span>
+                <span className="ml-auto text-ochre/70 text-xs">Episode {myEpisode}</span>
+            </div>
+            <p className="text-sand-warm/70 text-xs font-sans">
+                Episode is open. Players lock their own picks when they light their torch.
+            </p>
+            {myEpisodeData?.propBets && (
+                <PropBetEditor propBets={myEpisodeData.propBets} onSave={handleSavePropBets} />
+            )}
+            {error && <p className="text-amber text-xs mt-2" role="alert">{error}</p>}
+        </FijianCard>
+    );
 }
