@@ -56,8 +56,8 @@ export default function WeeklyPicks() {
             </div>
 
             <p className="text-sand-warm/60 text-xs font-sans leading-relaxed">
-                Choose {maxPicks} contestants to score for you this episode. You can pick anyone still in the game.
-                If you&apos;re the only player who picks someone, you get a <strong className="text-ochre">1.5&times; bonus</strong> on their points.
+                Choose {maxPicks} contestants to score for you this episode.
+                If you&apos;re the only player who picks someone, you get a <strong className="text-ochre">1.5&times; bonus</strong>.
             </p>
 
             {saved && (
@@ -72,9 +72,9 @@ export default function WeeklyPicks() {
                     const activeMembers = tribe.members.filter(c => !eliminatedSet.has(c.id));
                     if (activeMembers.length === 0) return null;
                     return (
-                        <FijianCard key={tribeKey}>
+                        <FijianCard key={tribeKey} className="overflow-hidden">
                             <div
-                                className="px-3 py-2 text-center font-display text-sm tracking-widest border-b-2"
+                                className="px-3 py-1.5 font-display text-xs sm:text-sm tracking-widest border-b-2"
                                 style={{
                                     borderColor: `var(--color-${tribeKey})`,
                                     color: `var(--color-${tribeKey})`,
@@ -82,7 +82,7 @@ export default function WeeklyPicks() {
                             >
                                 {tribe.name}
                             </div>
-                            <div className="p-1.5 space-y-0.5">
+                            <div className="divide-y divide-stone-700/30">
                                 {tribe.members.map((c) => {
                                     const isEliminated = eliminatedSet.has(c.id);
                                     const isPicked = selected.includes(c.id);
@@ -94,16 +94,21 @@ export default function WeeklyPicks() {
                                             type="button"
                                             onClick={() => !isEliminated && togglePick(c.id)}
                                             disabled={isEliminated}
-                                            className={`w-full flex items-center gap-2 px-2.5 py-2 rounded text-left text-sm transition-all
-                                                ${isEliminated ? 'opacity-30 line-through cursor-default' : 'cursor-pointer'}
-                                                ${isPicked ? 'bg-ochre/15 border border-ochre/40 text-sand-warm' : ''}
-                                                ${!isPicked && !isEliminated ? 'border border-transparent hover:bg-stone-800/50' : ''}
-                                                ${!canPick && !isPicked && !isEliminated ? 'opacity-50' : ''}
+                                            className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm transition-all
+                                                ${isEliminated ? 'opacity-25 line-through cursor-default' : 'cursor-pointer'}
+                                                ${isPicked ? 'bg-ochre/15 text-sand-warm' : ''}
+                                                ${!isPicked && !isEliminated ? 'hover:bg-stone-800/50' : ''}
+                                                ${!canPick && !isPicked && !isEliminated ? 'opacity-40' : ''}
                                             `}
                                         >
-                                            {isPicked && <Icon name="check" className="text-ochre text-sm shrink-0" />}
+                                            <span className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
+                                                isPicked
+                                                    ? 'border-ochre bg-ochre/20'
+                                                    : 'border-stone-600'
+                                            }`}>
+                                                {isPicked && <Icon name="check" className="text-ochre text-xs" />}
+                                            </span>
                                             <span className="flex-1 font-medium">{c.name}</span>
-                                            <span className="text-stone-400 text-xs">{c.short}</span>
                                         </button>
                                     );
                                 })}

@@ -624,6 +624,6 @@ export function generateProbstRecap(epNum, episodes, standings, perEpisode, memb
         eliminationMethod,
         correctPredictors,
         challengeHighlights: { immunityWinners, rewardWinners, idolPlays, advantagePlays, survivedWithVotes, idolFinds },
-        newBadges: newBadges.map(b => ({ name: memberNames(b.uid), badge: b.badge?.name, emoji: b.badge?.emoji })),
+        newBadges: newBadges.map(b => ({ name: memberNames(b.uid), badge: b.badge?.name, emoji: b.badge?.emoji, description: b.badge?.description })),
     };
 }

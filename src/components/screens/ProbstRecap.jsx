@@ -220,7 +220,7 @@ function ImpactRating({ episodeNum }) {
     );
 }
 
-function WeeklyPicksScoreboard({ episodeNum }) {
+function WeeklyPicksScoreboard({ episodeNum, inline }) {
     const { episodes, leagueMembers, rideOrDies } = useApp();
     const ep = episodes[episodeNum];
     const epPicks = ep?.picks;
@@ -251,37 +251,46 @@ function WeeklyPicksScoreboard({ episodeNum }) {
 
     if (picksData.length === 0) return null;
 
+    const content = (
+        <div className="space-y-2.5">
+            {picksData.map(player => (
+                <div key={player.uid}>
+                    <div className="flex items-center justify-between mb-1">
+                        <span className="text-sand-warm text-xs sm:text-sm font-sans font-bold">{player.name}</span>
+                        <span className="text-ochre font-bold text-xs sm:text-sm font-sans">{player.total} pts</span>
+                    </div>
+                    <div className="space-y-0.5">
+                        {player.picks.map(pick => (
+                            <div
+                                key={pick.cid}
+                                className={`flex items-center justify-between text-xs font-sans px-2 py-1 rounded ${
+                                    pick.isExclusive
+                                        ? 'bg-ochre/10 text-ochre'
+                                        : 'bg-stone-800/30 text-sand-warm/70'
+                                }`}
+                            >
+                                <span>{pick.name}</span>
+                                <span className="font-bold">
+                                    {pick.points}
+                                    {pick.isExclusive && <span className="ml-0.5 text-ochre/80">×1.5</span>}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+
+    if (inline) return content;
+
     return (
         <FijianCard className="p-4 space-y-3">
             <div className="flex items-center gap-2">
                 <Icon name="groups" className="text-ochre text-sm" />
                 <p className="text-ochre text-[11px] font-bold uppercase tracking-widest">Weekly Picks</p>
             </div>
-            <div className="space-y-3">
-                {picksData.map(player => (
-                    <div key={player.uid}>
-                        <div className="flex items-center justify-between mb-1">
-                            <span className="text-sand-warm text-sm font-sans font-bold">{player.name}</span>
-                            <span className="text-ochre font-bold text-sm font-sans">{player.total} pts</span>
-                        </div>
-                        <div className="flex gap-1.5 flex-wrap">
-                            {player.picks.map(pick => (
-                                <span
-                                    key={pick.cid}
-                                    className={`text-xs font-sans px-2 py-1 rounded ${
-                                        pick.isExclusive
-                                            ? 'bg-ochre/15 text-ochre'
-                                            : 'bg-stone-800/50 text-sand-warm/70'
-                                    }`}
-                                >
-                                    {pick.name} {pick.points}
-                                    {pick.isExclusive && <span className="ml-0.5 text-ochre/80">×1.5</span>}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                ))}
-            </div>
+            {content}
         </FijianCard>
     );
 }
@@ -292,6 +301,7 @@ export default function ProbstRecap({ episodeNum }) {
         postEpisode, league,
     } = useApp();
 
+    const [picksOpen, setPicksOpen] = useState(false);
     const memberUids = useMemo(() => Object.keys(leagueMembers || {}), [leagueMembers]);
 
     const { standings, perEpisode } = useMemo(
@@ -315,149 +325,180 @@ export default function ProbstRecap({ episodeNum }) {
     const hasChallengeHighlights = ch.immunityWinners.length > 0 || ch.rewardWinners.length > 0
         || ch.idolPlays.length > 0 || ch.idolFinds.length > 0 || ch.advantagePlays.length > 0;
 
+    const hasSuperlatives = report.biggestMover || report.worstEpisode || report.bestPick;
+
     return (
         <div className="space-y-3">
-            {/* "Previously On" headline */}
-            <FijianCard className="p-5 bg-gradient-to-br from-stone-800/90 to-stone-900/80 border-ochre/30">
-                <div className="text-center space-y-2">
-                    <div className="flex items-center justify-center gap-2">
-                        <div className="h-[1px] w-6 bg-ochre/40" />
-                        <p className="text-ochre text-[10px] font-bold uppercase tracking-[0.3em]">
-                            Previously On... Survivor
+            {/* Unified recap card — Previously On through Standings */}
+            <FijianCard className="overflow-hidden">
+                {/* Previously On headline */}
+                <div className="p-5 bg-gradient-to-br from-stone-800/90 to-stone-900/80">
+                    <div className="text-center space-y-2">
+                        <div className="flex items-center justify-center gap-2">
+                            <div className="h-[1px] w-6 bg-ochre/40" />
+                            <p className="text-ochre text-[10px] font-bold uppercase tracking-[0.3em]">
+                                Previously On... Survivor
+                            </p>
+                            <div className="h-[1px] w-6 bg-ochre/40" />
+                        </div>
+                        <p className="font-display text-xl tracking-wider text-ochre leading-tight">
+                            {report.headline}
                         </p>
-                        <div className="h-[1px] w-6 bg-ochre/40" />
                     </div>
-                    <p className="font-display text-xl tracking-wider text-ochre leading-tight">
-                        {report.headline}
-                    </p>
                 </div>
+
+                {/* Key Moments */}
+                {hasChallengeHighlights && (
+                    <div className="px-4 py-3 border-t border-ochre/10">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Icon name="emoji_events" className="text-ochre text-sm" />
+                            <p className="text-ochre text-[11px] font-bold uppercase tracking-widest">Key Moments</p>
+                        </div>
+                        <div className="space-y-1.5">
+                            {ch.immunityWinners.map((name, i) => (
+                                <MomentRow key={`imm${i}`} emoji="🏅" text={`${name} won individual immunity`} />
+                            ))}
+                            {ch.rewardWinners.map((name, i) => (
+                                <MomentRow key={`rew${i}`} emoji="🎁" text={`${name} won reward`} />
+                            ))}
+                            {ch.idolFinds.map((name, i) => (
+                                <MomentRow key={`find${i}`} emoji="🗿" text={`${name} found a hidden immunity idol`} />
+                            ))}
+                            {ch.idolPlays.map((name, i) => (
+                                <MomentRow key={`idol${i}`} emoji="💎" text={`${name} played an idol successfully`} color="text-fire-400" />
+                            ))}
+                            {ch.advantagePlays.map((name, i) => (
+                                <MomentRow key={`adv${i}`} emoji="🃏" text={`${name} used an advantage`} />
+                            ))}
+                            {ch.survivedWithVotes.map((name, i) => (
+                                <MomentRow key={`surv${i}`} emoji="🛡️" text={`${name} survived with votes against`} />
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Elimination */}
+                {report.eliminated.length > 0 && (
+                    <div className="px-4 py-3 border-t border-ochre/10">
+                        <div className="flex items-center gap-2">
+                            <span className="text-lg">🔥</span>
+                            <div>
+                                <p className="text-sand-warm text-sm font-sans font-bold">
+                                    {report.eliminated.join(' & ')}
+                                </p>
+                                <p className="text-sand-warm/50 text-xs font-sans">
+                                    {report.eliminationMethod === 'medevac' ? 'Medical evacuation'
+                                        : report.eliminationMethod === 'quit' ? 'Quit the game'
+                                        : report.eliminationMethod === 'fire' ? 'Lost fire-making'
+                                        : 'Voted out'}
+                                </p>
+                            </div>
+                        </div>
+                        {report.correctPredictors.length > 0 && (
+                            <div className="flex items-center gap-2 ml-7 mt-1.5">
+                                <Icon name="check_circle" className="text-jungle-400 text-sm" />
+                                <p className="text-jungle-400 text-xs font-sans">
+                                    Called it: {report.correctPredictors.join(', ')}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Superlatives — inline within the recap flow */}
+                {hasSuperlatives && (
+                    <div className="px-4 py-3 border-t border-ochre/10">
+                        <div className="grid grid-cols-3 gap-2">
+                            {report.biggestMover && (
+                                <div className="text-center">
+                                    <p className="text-base">📈</p>
+                                    <p className="text-ochre text-xs font-bold font-sans truncate">{report.biggestMover.name}</p>
+                                    <p className="text-sand-warm/60 text-[10px] font-sans">+{report.biggestMover.points} pts</p>
+                                    <p className="text-sand-warm/40 text-[10px] uppercase tracking-wider">Top Scorer</p>
+                                </div>
+                            )}
+                            {report.worstEpisode && (
+                                <div className="text-center">
+                                    <p className="text-base">📉</p>
+                                    <p className="text-fire-400/80 text-xs font-bold font-sans truncate">{report.worstEpisode.name}</p>
+                                    <p className="text-sand-warm/60 text-[10px] font-sans">{report.worstEpisode.points} pts</p>
+                                    <p className="text-sand-warm/40 text-[10px] uppercase tracking-wider">Cold Week</p>
+                                </div>
+                            )}
+                            {report.bestPick && (
+                                <div className="text-center">
+                                    <p className="text-base">⭐</p>
+                                    <p className="text-sky-400 text-xs font-bold font-sans truncate">{report.bestPick.name}</p>
+                                    <p className="text-sand-warm/60 text-[10px] font-sans">{report.bestPick.points} pts</p>
+                                    <p className="text-sand-warm/40 text-[10px] uppercase tracking-wider">MVP Pick</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* Standings + collapsible Weekly Picks */}
+                {report.standings && report.standings.length > 0 && (
+                    <div className="px-4 py-3 border-t border-ochre/10">
+                        <p className="text-ochre text-[11px] font-bold uppercase tracking-widest mb-2">Standings</p>
+                        <div className="space-y-1">
+                            {report.standings.map(s => (
+                                <div key={s.rank} className="flex items-center gap-3 text-sm font-sans">
+                                    <span className={`w-6 text-center font-bold ${s.rank === 1 ? 'text-ochre' : 'text-sand-warm/60'}`}>
+                                        {s.rank === 1 ? '👑' : `#${s.rank}`}
+                                    </span>
+                                    <span className="flex-1 text-sand-warm">{s.name}</span>
+                                    <span className="text-jungle-400 text-xs">+{s.epPoints}</span>
+                                    <span className="text-ochre font-bold w-10 text-right">{s.total}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Weekly Picks dropdown */}
+                        <button
+                            onClick={() => setPicksOpen(p => !p)}
+                            className="flex items-center gap-1.5 mt-3 pt-2 border-t border-stone-700/40 w-full text-left"
+                        >
+                            <Icon name="groups" className="text-ochre/70 text-sm" />
+                            <span className="text-ochre/70 text-[11px] font-bold uppercase tracking-widest flex-1">
+                                Weekly Picks Breakdown
+                            </span>
+                            <Icon
+                                name="expand_more"
+                                className={`text-ochre/50 text-sm transition-transform ${picksOpen ? 'rotate-180' : ''}`}
+                            />
+                        </button>
+                        {picksOpen && (
+                            <div className="mt-2">
+                                <WeeklyPicksScoreboard episodeNum={episodeNum} inline />
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Badges — compact with descriptions so users know what they mean */}
+                {report.newBadges.length > 0 && (
+                    <div className="px-4 py-3 border-t border-ochre/10 space-y-1">
+                        {report.newBadges.map((b, i) => (
+                            <div key={i} className="flex items-start gap-1.5 text-xs font-sans">
+                                <span className="text-sm shrink-0">{b.emoji}</span>
+                                <span>
+                                    <span className="text-sand-warm/80">{b.name}</span>
+                                    {' '}
+                                    <span className="text-ochre/60">{b.badge}</span>
+                                    {b.description && (
+                                        <span className="text-sand-warm/40"> &mdash; {b.description}</span>
+                                    )}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </FijianCard>
 
-            {/* Challenge & Big Moments highlights */}
-            {hasChallengeHighlights && (
-                <FijianCard className="p-4 space-y-2">
-                    <div className="flex items-center gap-2">
-                        <Icon name="emoji_events" className="text-ochre text-sm" />
-                        <p className="text-ochre text-[11px] font-bold uppercase tracking-widest">Key Moments</p>
-                    </div>
-                    <div className="space-y-1.5">
-                        {ch.immunityWinners.map((name, i) => (
-                            <MomentRow key={`imm${i}`} emoji="🏅" text={`${name} won individual immunity`} />
-                        ))}
-                        {ch.rewardWinners.map((name, i) => (
-                            <MomentRow key={`rew${i}`} emoji="🎁" text={`${name} won reward`} />
-                        ))}
-                        {ch.idolFinds.map((name, i) => (
-                            <MomentRow key={`find${i}`} emoji="🗿" text={`${name} found a hidden immunity idol`} />
-                        ))}
-                        {ch.idolPlays.map((name, i) => (
-                            <MomentRow key={`idol${i}`} emoji="💎" text={`${name} played an idol successfully`} color="text-fire-400" />
-                        ))}
-                        {ch.advantagePlays.map((name, i) => (
-                            <MomentRow key={`adv${i}`} emoji="🃏" text={`${name} used an advantage`} />
-                        ))}
-                        {ch.survivedWithVotes.map((name, i) => (
-                            <MomentRow key={`surv${i}`} emoji="🛡️" text={`${name} survived with votes against`} />
-                        ))}
-                    </div>
-                </FijianCard>
-            )}
-
-            {/* Elimination */}
-            {report.eliminated.length > 0 && (
-                <FijianCard className="p-4 space-y-2">
-                    <div className="flex items-center gap-2">
-                        <span className="text-lg">🔥</span>
-                        <div>
-                            <p className="text-sand-warm text-sm font-sans font-bold">
-                                {report.eliminated.join(' & ')}
-                            </p>
-                            <p className="text-sand-warm/50 text-xs font-sans">
-                                {report.eliminationMethod === 'medevac' ? 'Medical evacuation'
-                                    : report.eliminationMethod === 'quit' ? 'Quit the game'
-                                    : report.eliminationMethod === 'fire' ? 'Lost fire-making'
-                                    : 'Voted out'}
-                            </p>
-                        </div>
-                    </div>
-                    {report.correctPredictors.length > 0 && (
-                        <div className="flex items-center gap-2 ml-7">
-                            <Icon name="check_circle" className="text-jungle-400 text-sm" />
-                            <p className="text-jungle-400 text-xs font-sans">
-                                Called it: {report.correctPredictors.join(', ')}
-                            </p>
-                        </div>
-                    )}
-                </FijianCard>
-            )}
-
-            {/* Player of the Episode vote */}
+            {/* Interactive post-episode votes live outside the recap card */}
             <PlayerOfEpisode episodeNum={episodeNum} />
-
-            {/* Impact Rating vote */}
             <ImpactRating episodeNum={episodeNum} />
-
-            {/* Weekly Picks scoreboard */}
-            <WeeklyPicksScoreboard episodeNum={episodeNum} />
-
-            {/* Standings snapshot */}
-            {report.standings && report.standings.length > 0 && (
-                <FijianCard className="p-4 space-y-2">
-                    <p className="text-ochre text-[11px] font-bold uppercase tracking-widest">Standings</p>
-                    {report.standings.map(s => (
-                        <div key={s.rank} className="flex items-center gap-3 text-sm font-sans">
-                            <span className={`w-6 text-center font-bold ${s.rank === 1 ? 'text-ochre' : 'text-sand-warm/60'}`}>
-                                {s.rank === 1 ? '👑' : `#${s.rank}`}
-                            </span>
-                            <span className="flex-1 text-sand-warm">{s.name}</span>
-                            <span className="text-jungle-400 text-xs">+{s.epPoints}</span>
-                            <span className="text-ochre font-bold w-10 text-right">{s.total}</span>
-                        </div>
-                    ))}
-                </FijianCard>
-            )}
-
-            {/* Superlatives row */}
-            <div className="grid grid-cols-3 gap-2">
-                {report.biggestMover && (
-                    <FijianCard className="p-3 text-center">
-                        <p className="text-lg">📈</p>
-                        <p className="text-ochre text-xs font-bold font-sans truncate">{report.biggestMover.name}</p>
-                        <p className="text-sand-warm/60 text-[10px] font-sans">+{report.biggestMover.points} pts</p>
-                        <p className="text-sand-warm/60 text-[11px] uppercase tracking-wider mt-0.5">Top Scorer</p>
-                    </FijianCard>
-                )}
-                {report.worstEpisode && (
-                    <FijianCard className="p-3 text-center">
-                        <p className="text-lg">📉</p>
-                        <p className="text-fire-400/80 text-xs font-bold font-sans truncate">{report.worstEpisode.name}</p>
-                        <p className="text-sand-warm/60 text-[10px] font-sans">{report.worstEpisode.points} pts</p>
-                        <p className="text-sand-warm/60 text-[11px] uppercase tracking-wider mt-0.5">Cold Week</p>
-                    </FijianCard>
-                )}
-                {report.bestPick && (
-                    <FijianCard className="p-3 text-center">
-                        <p className="text-lg">⭐</p>
-                        <p className="text-sky-400 text-xs font-bold font-sans truncate">{report.bestPick.name}</p>
-                        <p className="text-sand-warm/60 text-[10px] font-sans">{report.bestPick.points} pts</p>
-                        <p className="text-sand-warm/60 text-[11px] uppercase tracking-wider mt-0.5">MVP Pick</p>
-                    </FijianCard>
-                )}
-            </div>
-
-            {/* New achievements */}
-            {report.newBadges.length > 0 && (
-                <FijianCard className="p-4 space-y-2">
-                    <p className="text-ochre text-[11px] font-bold uppercase tracking-widest">Badges Earned</p>
-                    {report.newBadges.map((b, i) => (
-                        <div key={i} className="flex items-center gap-2 text-sm font-sans">
-                            <span className="text-lg">{b.emoji}</span>
-                            <span className="text-sand-warm">{b.name}</span>
-                            <span className="text-ochre/60 text-xs ml-auto">{b.badge}</span>
-                        </div>
-                    ))}
-                </FijianCard>
-            )}
         </div>
     );
 }
