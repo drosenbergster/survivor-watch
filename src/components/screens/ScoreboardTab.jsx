@@ -120,83 +120,101 @@ function EpisodeBreakdown({ epNum, score, bingoSeed, bingoMarked }) {
     const [open, setOpen] = useState(false);
     const [showBingo, setShowBingo] = useState(false);
 
+    const hasDetails = score.breakdown.weekly.length > 0
+        || score.breakdown.predictions.length > 0
+        || score.breakdown.rideOrDie.length > 0
+        || (score.breakdown.bingo || []).length > 0
+        || (score.breakdown.social || []).length > 0;
+
     return (
         <div>
             <button
                 onClick={() => setOpen(!open)}
                 className="w-full flex items-center justify-between px-3 py-2 bg-stone-900/60 rounded-lg hover:bg-stone-900/80 transition-all"
             >
-                <span className="text-xs font-sans text-sand-warm/70">Ep {epNum}</span>
-                <div className="flex gap-2 text-xs font-sans">
-                    <span className="text-fire-400">{score.weekly}</span>
-                    <span className="text-green-400">{score.predictions}</span>
-                    <span className="text-sky-400">{score.rideOrDie}</span>
-                    {(score.bingo || 0) > 0 && <span className="text-purple-400">{score.bingo}</span>}
-                    {(score.social || 0) > 0 && <span className="text-amber-400">{score.social}</span>}
-                    <span className="text-ochre font-bold">{score.total}</span>
+                <div className="flex items-center gap-2">
+                    <span className="text-xs font-sans text-sand-warm/70">Ep {epNum}</span>
+                    <Icon
+                        name="expand_more"
+                        className={`text-sand-warm/40 text-xs transition-transform ${open ? 'rotate-180' : ''}`}
+                    />
                 </div>
+                <span className="text-ochre font-bold text-xs font-sans">{score.total} pts</span>
             </button>
 
             {open && (
-                <div className="px-3 py-2 space-y-1.5 text-xs font-sans">
-                    {score.breakdown.weekly.map((w, i) => (
-                        <div key={i} className="flex justify-between text-sand-warm/60">
-                            <span>
-                                {w.name}
-                                {w.scarcityBonus && <span className="text-ochre ml-1">×1.5</span>}
-                                <span className="text-sand-warm/60 ml-1">
-                                    ({w.events.map(e => SCORE_EMOJI[e] || e).join(' ')})
-                                </span>
-                            </span>
-                            <span className="text-fire-400">+{w.points}</span>
+                <div className="px-3 py-2 space-y-2 text-xs font-sans">
+                    {/* Episode scoring summary */}
+                    <div className="grid grid-cols-5 gap-1.5 text-center">
+                        <EpSummaryCell label="W" value={score.weekly} color="text-fire-400" />
+                        <EpSummaryCell label="P" value={score.predictions} color="text-green-400" />
+                        <EpSummaryCell label="R" value={score.rideOrDie} color="text-sky-400" />
+                        <EpSummaryCell label="B" value={score.bingo || 0} color="text-purple-400" />
+                        <EpSummaryCell label="S" value={score.social || 0} color="text-amber-400" />
+                    </div>
+
+                    {/* Line item details */}
+                    {hasDetails ? (
+                        <div className="space-y-1 pt-1 border-t border-stone-700/30">
+                            {score.breakdown.weekly.map((w, i) => (
+                                <div key={i} className="flex justify-between text-sand-warm/60">
+                                    <span>
+                                        {w.name}
+                                        {w.scarcityBonus && <span className="text-ochre ml-1">×1.5</span>}
+                                        <span className="text-sand-warm/40 ml-1">
+                                            ({w.events.map(e => SCORE_EMOJI[e] || e).join(' ')})
+                                        </span>
+                                    </span>
+                                    <span className="text-fire-400">+{w.points}</span>
+                                </div>
+                            ))}
+                            {score.breakdown.predictions.map((p, i) => (
+                                <div key={`p${i}`} className="flex justify-between text-sand-warm/60">
+                                    <span>
+                                        {p.type === 'propBet' && `📬 ${p.text}`}
+                                        {p.type === 'snapVote' && '🔥 Snap vote correct'}
+                                        {p.type === 'sideBet' && `🤫 ${p.text}`}
+                                    </span>
+                                    <span className="text-green-400">+{p.points}</span>
+                                </div>
+                            ))}
+                            {score.breakdown.rideOrDie.map((r, i) => (
+                                <div key={`r${i}`} className="flex justify-between text-sand-warm/60">
+                                    <span>
+                                        {r.reason === 'events' ? '🤝' : '💀'} {r.name}
+                                        {r.reason === 'events' && ' events'}
+                                        {r.reason === 'survived' && ' survived'}
+                                        {r.reason === 'ftc' && ' made FTC'}
+                                        {r.reason === 'winner' && ' won!'}
+                                    </span>
+                                    <span className="text-sky-400">+{r.points}</span>
+                                </div>
+                            ))}
+                            {(score.breakdown.bingo || []).map((b, i) => (
+                                <div key={`b${i}`} className="flex justify-between text-sand-warm/60">
+                                    <span>
+                                        {b.type === 'lines' && `🎯 Bingo ${b.count} ${b.count === 1 ? 'line' : 'lines'}`}
+                                        {b.type === 'blackout' && '🔥 Bingo blackout!'}
+                                    </span>
+                                    <span className="text-purple-400">+{b.points}</span>
+                                </div>
+                            ))}
+                            {(score.breakdown.social || []).map((s, i) => (
+                                <div key={`s${i}`} className="flex justify-between text-sand-warm/60">
+                                    <span>
+                                        {s.type === 'playerOfEpisode' && '👑 Player of Episode vote'}
+                                        {s.type === 'impactRating' && `💔 Impact rating (avg ${s.avg})`}
+                                    </span>
+                                    <span className="text-amber-400">+{s.points}</span>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                    {score.breakdown.predictions.map((p, i) => (
-                        <div key={`p${i}`} className="flex justify-between text-sand-warm/60">
-                            <span>
-                                {p.type === 'propBet' && `📬 ${p.text}`}
-                                {p.type === 'snapVote' && '🔥 Snap vote correct'}
-                                {p.type === 'sideBet' && `🤫 ${p.text}`}
-                            </span>
-                            <span className="text-green-400">+{p.points}</span>
-                        </div>
-                    ))}
-                    {score.breakdown.rideOrDie.map((r, i) => (
-                        <div key={`r${i}`} className="flex justify-between text-sand-warm/60">
-                            <span>
-                                {r.reason === 'events' ? '🤝' : '💀'} {r.name}
-                                {r.reason === 'events' && ' events'}
-                                {r.reason === 'survived' && ' survived'}
-                                {r.reason === 'ftc' && ' made FTC'}
-                                {r.reason === 'winner' && ' won!'}
-                            </span>
-                            <span className="text-sky-400">+{r.points}</span>
-                        </div>
-                    ))}
-                    {(score.breakdown.bingo || []).map((b, i) => (
-                        <div key={`b${i}`} className="flex justify-between text-sand-warm/60">
-                            <span>
-                                {b.type === 'lines' && `🎯 Bingo ${b.count} ${b.count === 1 ? 'line' : 'lines'}`}
-                                {b.type === 'blackout' && '🔥 Bingo blackout!'}
-                            </span>
-                            <span className="text-purple-400">+{b.points}</span>
-                        </div>
-                    ))}
-                    {(score.breakdown.social || []).map((s, i) => (
-                        <div key={`s${i}`} className="flex justify-between text-sand-warm/60">
-                            <span>
-                                {s.type === 'playerOfEpisode' && '👑 Player of the Episode vote'}
-                                {s.type === 'impactRating' && `💔 Impact rating (avg ${s.avg})`}
-                            </span>
-                            <span className="text-amber-400">+{s.points}</span>
-                        </div>
-                    ))}
-                    {score.breakdown.weekly.length === 0 && score.breakdown.predictions.length === 0 && score.breakdown.rideOrDie.length === 0 && (!score.breakdown.bingo || score.breakdown.bingo.length === 0) && (!score.breakdown.social || score.breakdown.social.length === 0) && (
-                        <p className="text-sand-warm/60 italic">No points this episode</p>
+                    ) : (
+                        <p className="text-sand-warm/40 italic pt-1">No points this episode</p>
                     )}
 
                     {bingoSeed && (
-                        <div className="mt-2 pt-2 border-t border-stone-700/50">
+                        <div className="pt-1.5 border-t border-stone-700/30">
                             <button
                                 onClick={() => setShowBingo(!showBingo)}
                                 className="flex items-center gap-1.5 text-purple-400 hover:text-purple-300 transition-colors"
@@ -217,6 +235,15 @@ function EpisodeBreakdown({ epNum, score, bingoSeed, bingoMarked }) {
                     )}
                 </div>
             )}
+        </div>
+    );
+}
+
+function EpSummaryCell({ label, value, color }) {
+    return (
+        <div className={`rounded py-1 ${value > 0 ? 'bg-stone-800/60' : 'bg-stone-800/20'}`}>
+            <p className={`font-bold text-sm ${value > 0 ? color : 'text-sand-warm/20'}`}>{value}</p>
+            <p className={`text-[9px] uppercase ${value > 0 ? 'text-sand-warm/50' : 'text-sand-warm/20'}`}>{label}</p>
         </div>
     );
 }
