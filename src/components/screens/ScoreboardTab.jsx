@@ -5,8 +5,6 @@ import { SCORE_EVENTS, ALL_CASTAWAYS, PLAYER_COLORS } from '../../data';
 import { FijianCard, FijianSectionHeader, Icon, HintBadge } from '../fijian';
 import BingoCard from './BingoCard';
 
-const SCORE_EMOJI = Object.fromEntries(SCORE_EVENTS.map(e => [e.key, e.emoji]));
-
 const MILESTONE_KEYS = ['winner', 'ftc', 'merge', 'idol_played_success', 'fire_making_win', 'individual_immunity', 'advantage_used'];
 const MEDIUM_KEYS = ['individual_reward', 'idol_found', 'survived_with_votes', 'advantage_found', 'exile'];
 const SCORE_EVENT_MAP = Object.fromEntries(SCORE_EVENTS.map(e => [e.key, e]));
@@ -153,61 +151,83 @@ function EpisodeBreakdown({ epNum, score, bingoSeed, bingoMarked }) {
                         <EpSummaryCell label="S" value={score.social || 0} color="text-amber-400" />
                     </div>
 
-                    {/* Line item details */}
+                    {/* Line item details grouped by category */}
                     {hasDetails ? (
-                        <div className="space-y-1 pt-1 border-t border-stone-700/30">
-                            {score.breakdown.weekly.map((w, i) => (
-                                <div key={i} className="flex justify-between text-sand-warm/60">
-                                    <span>
-                                        {w.name}
-                                        {w.scarcityBonus && <span className="text-ochre ml-1">×1.5</span>}
-                                        <span className="text-sand-warm/40 ml-1">
-                                            ({w.events.map(e => SCORE_EMOJI[e] || e).join(' ')})
-                                        </span>
-                                    </span>
-                                    <span className="text-fire-400">+{w.points}</span>
+                        <div className="space-y-2 pt-1 border-t border-stone-700/30">
+                            {score.breakdown.weekly.length > 0 && (
+                                <div>
+                                    <p className="text-fire-400/70 text-[10px] font-bold uppercase tracking-wider mb-0.5">Weekly Picks</p>
+                                    {score.breakdown.weekly.map((w, i) => (
+                                        <div key={i} className="flex justify-between text-sand-warm/60 py-0.5">
+                                            <span>
+                                                {w.name}
+                                                {w.scarcityBonus && <span className="text-ochre ml-1">×1.5</span>}
+                                            </span>
+                                            <span className="text-fire-400">+{w.points}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                            {score.breakdown.predictions.map((p, i) => (
-                                <div key={`p${i}`} className="flex justify-between text-sand-warm/60">
-                                    <span>
-                                        {p.type === 'propBet' && `📬 ${p.text}`}
-                                        {p.type === 'snapVote' && '🔥 Snap vote correct'}
-                                        {p.type === 'sideBet' && `🤫 ${p.text}`}
-                                    </span>
-                                    <span className="text-green-400">+{p.points}</span>
+                            )}
+                            {score.breakdown.predictions.length > 0 && (
+                                <div>
+                                    <p className="text-green-400/70 text-[10px] font-bold uppercase tracking-wider mb-0.5">Predictions</p>
+                                    {score.breakdown.predictions.map((p, i) => (
+                                        <div key={`p${i}`} className="flex justify-between text-sand-warm/60 py-0.5">
+                                            <span>
+                                                {p.type === 'propBet' && `Tree Mail — ${p.text}`}
+                                                {p.type === 'snapVote' && 'Snap vote correct'}
+                                                {p.type === 'sideBet' && `Tribal Whisper — ${p.text}`}
+                                            </span>
+                                            <span className="text-green-400">+{p.points}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                            {score.breakdown.rideOrDie.map((r, i) => (
-                                <div key={`r${i}`} className="flex justify-between text-sand-warm/60">
-                                    <span>
-                                        {r.reason === 'events' ? '🤝' : '💀'} {r.name}
-                                        {r.reason === 'events' && ' events'}
-                                        {r.reason === 'survived' && ' survived'}
-                                        {r.reason === 'ftc' && ' made FTC'}
-                                        {r.reason === 'winner' && ' won!'}
-                                    </span>
-                                    <span className="text-sky-400">+{r.points}</span>
+                            )}
+                            {score.breakdown.rideOrDie.length > 0 && (
+                                <div>
+                                    <p className="text-sky-400/70 text-[10px] font-bold uppercase tracking-wider mb-0.5">Ride or Die</p>
+                                    {score.breakdown.rideOrDie.map((r, i) => (
+                                        <div key={`r${i}`} className="flex justify-between text-sand-warm/60 py-0.5">
+                                            <span>
+                                                {r.name}
+                                                {r.reason === 'events' && ' — game events'}
+                                                {r.reason === 'survived' && ' — survived'}
+                                                {r.reason === 'ftc' && ' — made FTC'}
+                                                {r.reason === 'winner' && ' — won!'}
+                                            </span>
+                                            <span className="text-sky-400">+{r.points}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                            {(score.breakdown.bingo || []).map((b, i) => (
-                                <div key={`b${i}`} className="flex justify-between text-sand-warm/60">
-                                    <span>
-                                        {b.type === 'lines' && `🎯 Bingo ${b.count} ${b.count === 1 ? 'line' : 'lines'}`}
-                                        {b.type === 'blackout' && '🔥 Bingo blackout!'}
-                                    </span>
-                                    <span className="text-purple-400">+{b.points}</span>
+                            )}
+                            {(score.breakdown.bingo || []).length > 0 && (
+                                <div>
+                                    <p className="text-purple-400/70 text-[10px] font-bold uppercase tracking-wider mb-0.5">Bingo</p>
+                                    {(score.breakdown.bingo || []).map((b, i) => (
+                                        <div key={`b${i}`} className="flex justify-between text-sand-warm/60 py-0.5">
+                                            <span>
+                                                {b.type === 'lines' && `${b.count} ${b.count === 1 ? 'line' : 'lines'} completed`}
+                                                {b.type === 'blackout' && 'Full blackout'}
+                                            </span>
+                                            <span className="text-purple-400">+{b.points}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                            {(score.breakdown.social || []).map((s, i) => (
-                                <div key={`s${i}`} className="flex justify-between text-sand-warm/60">
-                                    <span>
-                                        {s.type === 'playerOfEpisode' && '👑 Player of Episode vote'}
-                                        {s.type === 'impactRating' && `💔 Impact rating (avg ${s.avg})`}
-                                    </span>
-                                    <span className="text-amber-400">+{s.points}</span>
+                            )}
+                            {(score.breakdown.social || []).length > 0 && (
+                                <div>
+                                    <p className="text-amber-400/70 text-[10px] font-bold uppercase tracking-wider mb-0.5">Social</p>
+                                    {(score.breakdown.social || []).map((s, i) => (
+                                        <div key={`s${i}`} className="flex justify-between text-sand-warm/60 py-0.5">
+                                            <span>
+                                                {s.type === 'playerOfEpisode' && 'Player of Episode vote'}
+                                                {s.type === 'impactRating' && `Impact rating (avg ${s.avg})`}
+                                            </span>
+                                            <span className="text-amber-400">+{s.points}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            )}
                         </div>
                     ) : (
                         <p className="text-sand-warm/40 italic pt-1">No points this episode</p>
