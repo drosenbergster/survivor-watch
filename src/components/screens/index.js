@@ -8,7 +8,6 @@ export { default as DraftTab } from './DraftTab';
 export { default as ScoreboardTab } from './ScoreboardTab';
 export { default as RulesTab } from './RulesTab';
 export { default as TribalSnapVote } from './TribalSnapVote';
-export { default as PostEpisodeHub } from './PostEpisodeHub';
 export { default as ProbstRecap } from './ProbstRecap';
 export { default as PlayerProfile } from './PlayerProfile';
 export { default as TribeManagement } from './TribeManagement';

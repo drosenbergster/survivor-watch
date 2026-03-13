@@ -410,7 +410,7 @@ function EpisodeSummaryStep({
 /* ── step 2: tribal council ─────────────────────────────────── */
 
 function TribalCouncilStep({
-    eliminatedPick, remaining, unanimousVote, setUnanimousVote,
+    eliminatedPick, unanimousVote, setUnanimousVote,
     minorityVoters, setMinorityVoters,
     receivedVotes, setReceivedVotes,
     tribalAttendees,

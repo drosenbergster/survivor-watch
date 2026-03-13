@@ -15,7 +15,7 @@ function RankBadge({ rank }) {
     return <span className="text-lg text-sand-warm/60 font-bold font-sans">#{rank}</span>;
 }
 
-function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perEpisode, leagueId, bingo, isCurrentUser }) {
+function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perEpisode, leagueId, bingo, isCurrentUser, playerRideOrDies }) {
     const epNums = Object.keys(perEpisode || {}).map(Number).sort((a, b) => a - b);
 
     return (
@@ -60,6 +60,23 @@ function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perE
                         <ScoreBox label="Bingo" value={entry.bingo || 0} color="text-purple-400" />
                         <ScoreBox label="Social" value={entry.social || 0} color="text-amber-400" />
                     </div>
+
+                    {playerRideOrDies.length > 0 && (
+                        <div>
+                            <p className="text-xs text-sand-warm/50 font-sans font-semibold mb-1">Ride or Dies</p>
+                            <div className="flex gap-1.5 flex-wrap">
+                                {playerRideOrDies.map(cId => {
+                                    const c = ALL_CASTAWAYS.find(x => x.id === cId);
+                                    return (
+                                        <span key={cId} className="flex items-center gap-1.5 bg-stone-800/50 text-sand-warm/70 text-xs px-2 py-1 rounded font-sans">
+                                            <Icon name="handshake" className="text-sky-400 text-[10px]" />
+                                            {c?.name || cId}
+                                        </span>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
 
                     {epNums.length > 0 && (
                         <div className="space-y-2">
@@ -288,6 +305,7 @@ export default function ScoreboardTab({ onTabChange }) {
                                     leagueId={leagueId}
                                     bingo={bingo}
                                     isCurrentUser={entry.uid === user?.uid}
+                                    playerRideOrDies={rideOrDies?.[entry.uid] || []}
                                 />
                             );
                         })}

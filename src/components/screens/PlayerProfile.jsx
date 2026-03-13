@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useApp } from '../../AppContext';
 import { computeStandings, detectAchievements } from '../../scoring';
 import { ALL_CASTAWAYS, ACHIEVEMENTS, PLAYER_COLORS } from '../../data';

@@ -35,7 +35,7 @@ const COLOR_MAP = {
     'purple-400': { text: '#c084fc', bg20: 'rgba(192,132,252,0.2)', bg30: 'rgba(192,132,252,0.3)', border: 'rgba(192,132,252,0.2)' },
 };
 
-function PassportRevealCard({ uid, memberName, passport, questions, title, color }) {
+function PassportRevealCard({ memberName, passport, questions, color }) {
     const [revealed, setRevealed] = useState(false);
     const c = COLOR_MAP[color] || COLOR_MAP['ochre'];
 
@@ -99,7 +99,6 @@ function ReunionAwards() {
                     tally[nomineeUid] = (tally[nomineeUid] || 0) + 1;
                 }
                 const sorted = Object.entries(tally).sort(([, a], [, b]) => b - a);
-                const winner = sorted[0];
 
                 return (
                     <div key={cat.key} className="space-y-2">

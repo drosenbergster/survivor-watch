@@ -138,11 +138,9 @@ export function AppProvider({ children }) {
         const onboardRef = ref(db, `users/${user.uid}/onboardingComplete`);
         const leaguesRef = ref(db, `users/${user.uid}/leagues`);
         const unsub1 = onValue(onboardRef, (snap) => {
-            // eslint-disable-next-line react-hooks/set-state-in-effect -- async listener
             setOnboardingComplete(!!snap.val());
         });
         const unsub2 = onValue(leaguesRef, (snap) => {
-            // eslint-disable-next-line react-hooks/set-state-in-effect -- async listener
             setUserLeagues(snap.val() || {});
         });
         return () => { unsub1(); unsub2(); };
@@ -757,7 +755,6 @@ export function AppProvider({ children }) {
         if (!db || !user || !leagueId) throw new Error('Not connected');
         if (league?.createdBy !== user.uid) throw new Error('Only the host can start the auction');
         const memberUids = Object.keys(leagueMembers);
-        const standings = {}; // compute rank to set budgets
         const baseBudget = 100;
         const budgets = {};
         memberUids.forEach(uid => { budgets[uid] = baseBudget; });

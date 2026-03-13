@@ -608,38 +608,6 @@ export function generateProbstRecap(epNum, episodes, standings, perEpisode, memb
         headline = `${memberNames(standings[0].uid)} opens with ${standings[0].total} points`;
     }
 
-    // ── Confessional count (if available via autoImport) ──
-    const confessionals = ep.confessionals || null;
-    let confessionalKing = null;
-    if (confessionals && typeof confessionals === 'object') {
-        let maxCount = 0;
-        for (const [cid, count] of Object.entries(confessionals)) {
-            if (count > maxCount) { maxCount = count; confessionalKing = { name: contestantName(cid), count }; }
-        }
-    }
-
-    // ── Exclusive pick bonuses ──
-    const exclusivePicks = [];
-    const pickCounts = {};
-    for (const [, picks] of Object.entries(ep.picks || {})) {
-        for (const cid of (picks || [])) {
-            pickCounts[cid] = (pickCounts[cid] || 0) + 1;
-        }
-    }
-    for (const [cid, count] of Object.entries(pickCounts)) {
-        if (count === 1 && contestantScores[cid] > 0) {
-            const ownerUid = Object.entries(ep.picks || {}).find(([, p]) => p?.includes(cid))?.[0];
-            if (ownerUid) {
-                exclusivePicks.push({
-                    player: memberNames(ownerUid),
-                    contestant: contestantName(cid),
-                    points: contestantScores[cid],
-                    bonus: Math.round(contestantScores[cid] * 0.5),
-                });
-            }
-        }
-    }
-
     return {
         epNum,
         headline,
@@ -655,8 +623,6 @@ export function generateProbstRecap(epNum, episodes, standings, perEpisode, memb
         eliminated,
         eliminationMethod,
         correctPredictors,
-        confessionalKing,
-        exclusivePicks,
         challengeHighlights: { immunityWinners, rewardWinners, idolPlays, advantagePlays, survivedWithVotes, idolFinds },
         newBadges: newBadges.map(b => ({ name: memberNames(b.uid), badge: b.badge?.name, emoji: b.badge?.emoji })),
     };

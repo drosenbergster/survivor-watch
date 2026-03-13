@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useApp } from '../../AppContext';
 import { MasiBackground, FijianHero, FijianCard, FijianPrimaryButton, Icon } from '../fijian';
 
 const SLIDES = [

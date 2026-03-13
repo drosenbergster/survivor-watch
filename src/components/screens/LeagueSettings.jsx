@@ -42,7 +42,7 @@ function ShareButton({ text, title }) {
 }
 
 export default function LeagueSettings() {
-    const { league, leagueId, leagueMembers, user, updateLeagueName, leaveLeague } = useApp();
+    const { league, leagueMembers, user, updateLeagueName, leaveLeague } = useApp();
     const [editingName, setEditingName] = useState(false);
     const [nameValue, setNameValue] = useState(league?.name || '');
     const [saving, setSaving] = useState(false);

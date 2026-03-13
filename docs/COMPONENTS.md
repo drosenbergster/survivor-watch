@@ -51,8 +51,8 @@ Use these for all screens. See `src/components/fijian/` and `docs/STYLE_GUIDE.md
 ### Core Tabs
 | Component | File | Tab Label | Purpose |
 |-----------|------|-----------|---------|
-| **DraftTab** | `DraftTab.jsx` | Episode | Phase-driven episode hub — picks, predictions, torch, bingo, tribal, post-episode |
-| **ScoreboardTab** | `ScoreboardTab.jsx` | Scores | Season standings with per-episode breakdown + bingo card history |
+| **DraftTab** | `DraftTab.jsx` | Episode | Phase-driven episode hub — picks, predictions, torch, bingo, tribal, recap |
+| **ScoreboardTab** | `ScoreboardTab.jsx` | Scores | Season standings with per-episode breakdown, ride or dies, bingo card history |
 | **RulesTab** | `RulesTab.jsx` | Rules | Scoring rules + admin tools (tribe management, auction) |
 | **PlayerProfile** | `PlayerProfile.jsx` | Profile | Player stats, badges, prediction accuracy |
 
@@ -73,10 +73,10 @@ Use these for all screens. See `src/components/fijian/` and `docs/STYLE_GUIDE.md
 | **AdminScoring** | `AdminScoring.jsx` | Post-episode game event input |
 | **TribeManagement** | `TribeManagement.jsx` | Tribe swaps and merge |
 
-### Post-Episode & Social
+### Recap & Social
 | Component | File | Purpose |
 |-----------|------|---------|
-| **PostEpisodeHub** | `PostEpisodeHub.jsx` | Player of Episode + Impact Rating |
+| **ProbstRecap** | `ProbstRecap.jsx` | Full episode recap: Previously On headline, key moments, elimination, Player of Episode vote, Impact Rating vote, weekly picks scoreboard, standings, superlatives, badges |
 | **CommissionerReport** | `CommissionerReport.jsx` | Auto-generated weekly recap |
 
 ### Advanced

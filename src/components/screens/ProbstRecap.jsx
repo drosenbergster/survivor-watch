@@ -1,7 +1,290 @@
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useApp } from '../../AppContext';
-import { computeStandings, generateProbstRecap, detectAchievements } from '../../scoring';
-import { FijianCard, Icon } from '../fijian';
+import { ALL_CASTAWAYS } from '../../data';
+import { computeStandings, generateProbstRecap, detectAchievements, scoreContestants, computeScarcity } from '../../scoring';
+import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon } from '../fijian';
+
+function PlayerOfEpisode({ episodeNum }) {
+    const {
+        user, episodes, postEpisode, leagueMembers,
+        submitPlayerOfEpisodeVote,
+    } = useApp();
+
+    const epData = episodes[episodeNum];
+    const myVote = postEpisode[episodeNum]?.playerOfEpisode?.[user?.uid];
+    const allVotes = useMemo(() => postEpisode[episodeNum]?.playerOfEpisode || {}, [postEpisode, episodeNum]);
+    const [rankings, setRankings] = useState([null, null, null]);
+    const [submitting, setSubmitting] = useState(false);
+
+    const gameEvents = epData?.gameEvents;
+    const top3 = useMemo(() => {
+        if (!gameEvents) return [];
+        const scores = scoreContestants(gameEvents);
+        return Object.entries(scores)
+            .sort(([, a], [, b]) => b - a)
+            .slice(0, 3)
+            .map(([cid, pts]) => ({
+                ...ALL_CASTAWAYS.find(c => c.id === cid),
+                pts,
+            }))
+            .filter(c => c.id);
+    }, [gameEvents]);
+
+    const results = useMemo(() => {
+        const tally = {};
+        for (const [, ranks] of Object.entries(allVotes)) {
+            if (!Array.isArray(ranks)) continue;
+            ranks.forEach((cid, i) => {
+                if (!cid) return;
+                tally[cid] = (tally[cid] || 0) + (3 - i);
+            });
+        }
+        return Object.entries(tally).sort(([, a], [, b]) => b - a);
+    }, [allVotes]);
+
+    const totalVoters = Object.keys(allVotes).length;
+    const totalMembers = Object.keys(leagueMembers || {}).length;
+
+    if (top3.length === 0) {
+        return (
+            <FijianCard className="p-4">
+                <FijianSectionHeader title="Player of the Episode" />
+                <p className="text-sand-warm/50 text-sm font-sans italic">No game events scored yet.</p>
+            </FijianCard>
+        );
+    }
+
+    const handleRank = (cid, rank) => {
+        setRankings(prev => {
+            const next = [...prev];
+            const existingIdx = next.indexOf(cid);
+            if (existingIdx !== -1) next[existingIdx] = null;
+            next[rank] = cid;
+            return next;
+        });
+    };
+
+    const handleSubmit = async () => {
+        setSubmitting(true);
+        await submitPlayerOfEpisodeVote(episodeNum, rankings);
+        setSubmitting(false);
+    };
+
+    if (myVote) {
+        const winner = results[0];
+        const winnerName = winner ? ALL_CASTAWAYS.find(c => c.id === winner[0])?.name : null;
+        return (
+            <FijianCard className="p-4 space-y-3">
+                <FijianSectionHeader title="Player of the Episode" />
+                <div className="flex items-center gap-2">
+                    <Icon name="check_circle" className="text-jungle-400" />
+                    <span className="text-sand-warm text-sm font-sans">Vote submitted</span>
+                    <span className="text-sand-warm/60 text-xs ml-auto">{totalVoters}/{totalMembers} voted</span>
+                </div>
+                {results.length > 0 && (
+                    <div className="space-y-1">
+                        {results.map(([cid, score], i) => {
+                            const c = ALL_CASTAWAYS.find(x => x.id === cid);
+                            return (
+                                <div key={cid} className="flex items-center gap-2 text-sm font-sans">
+                                    <span className={i === 0 ? 'text-ochre font-bold' : 'text-sand-warm/60'}>
+                                        {i === 0 ? '👑' : `#${i + 1}`}
+                                    </span>
+                                    <span className={i === 0 ? 'text-ochre' : 'text-sand-warm/60'}>{c?.name}</span>
+                                    <span className="text-sand-warm/60 text-xs ml-auto">{score} pts</span>
+                                </div>
+                            );
+                        })}
+                        {winnerName && <p className="text-sand-warm/60 text-xs">Winner&apos;s pick owners get +7 pts</p>}
+                    </div>
+                )}
+            </FijianCard>
+        );
+    }
+
+    return (
+        <FijianCard className="p-4 space-y-4">
+            <FijianSectionHeader title="Player of the Episode" />
+            <p className="text-clay text-xs font-serif italic">
+                Rank the top 3 performers this episode. Whoever wins the vote earns +7 pts
+                for the player(s) who had them as a weekly pick. Tap the medals to assign 1st, 2nd, 3rd.
+            </p>
+            <div className="space-y-2">
+                {top3.map(c => {
+                    const rank = rankings.indexOf(c.id);
+                    const medals = ['🥇', '🥈', '🥉'];
+                    return (
+                        <div key={c.id} className="flex items-center gap-2 bg-stone-800/50 px-3 py-2.5 rounded-lg">
+                            <span className="text-sand-warm text-sm font-sans flex-1">{c.name}</span>
+                            <span className="text-ochre/70 text-xs">{c.pts} pts</span>
+                            <div className="flex gap-1">
+                                {[0, 1, 2].map(r => (
+                                    <button
+                                        key={r}
+                                        onClick={() => handleRank(c.id, r)}
+                                        className={`w-8 h-8 rounded-full text-lg flex items-center justify-center transition-all ${
+                                            rank === r
+                                                ? 'bg-ochre/20 scale-110'
+                                                : 'bg-stone-700/50 hover:bg-stone-600/50 opacity-40'
+                                        }`}
+                                    >
+                                        {medals[r]}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+            {rankings[0] && rankings[1] && rankings[2] && (
+                <FijianPrimaryButton onClick={handleSubmit} disabled={submitting}>
+                    {submitting ? 'Submitting...' : 'Lock In Rankings'}
+                </FijianPrimaryButton>
+            )}
+        </FijianCard>
+    );
+}
+
+function ImpactRating({ episodeNum }) {
+    const { user, episodes, postEpisode, submitImpactRating, leagueMembers } = useApp();
+
+    const epData = episodes[episodeNum];
+    const eliminatedThisEp = epData?.eliminatedThisEp || [];
+    const myRating = postEpisode[episodeNum]?.impactRating?.[user?.uid];
+    const allRatings = postEpisode[episodeNum]?.impactRating || {};
+    const [rating, setRating] = useState(0);
+    const [submitting, setSubmitting] = useState(false);
+
+    if (eliminatedThisEp.length === 0) return null;
+
+    const eliminated = ALL_CASTAWAYS.find(c => c.id === eliminatedThisEp[0]);
+    const ratingValues = Object.values(allRatings).filter(v => typeof v === 'number');
+    const avg = ratingValues.length > 0 ? (ratingValues.reduce((a, b) => a + b, 0) / ratingValues.length).toFixed(1) : null;
+    const totalMembers = Object.keys(leagueMembers || {}).length;
+
+    const handleSubmit = async () => {
+        setSubmitting(true);
+        await submitImpactRating(episodeNum, rating);
+        setSubmitting(false);
+    };
+
+    if (myRating) {
+        return (
+            <FijianCard className="p-4 space-y-2">
+                <FijianSectionHeader title="Impact Rating" />
+                <div className="flex items-center gap-2">
+                    <Icon name="check_circle" className="text-jungle-400" />
+                    <span className="text-sand-warm text-sm font-sans">
+                        You rated {eliminated?.name}&apos;s impact: {myRating}/5
+                    </span>
+                </div>
+                {avg && (
+                    <p className="text-sand-warm/50 text-xs font-sans">
+                        Group average: {avg}/5 ({ratingValues.length}/{totalMembers} rated) — goes to their pick owner(s)
+                    </p>
+                )}
+            </FijianCard>
+        );
+    }
+
+    return (
+        <FijianCard className="p-4 space-y-3">
+            <FijianSectionHeader title="Impact Rating" />
+            <p className="text-clay text-xs font-serif italic">
+                How much did {eliminated?.name} impact the game? The average rating becomes bonus points
+                for whoever had them as a weekly pick this episode.
+            </p>
+            <div className="flex gap-2 justify-center">
+                {[1, 2, 3, 4, 5].map(v => (
+                    <button
+                        key={v}
+                        onClick={() => setRating(v)}
+                        className={`w-12 h-12 rounded-xl text-lg font-bold font-display transition-all ${
+                            rating === v
+                                ? 'bg-fire-400 text-white shadow-fire scale-110'
+                                : rating > 0 && v <= rating
+                                    ? 'bg-fire-400/40 text-fire-400'
+                                    : 'bg-stone-800 text-sand-warm/50 hover:bg-stone-700'
+                        }`}
+                    >
+                        {v}
+                    </button>
+                ))}
+            </div>
+            {rating > 0 && (
+                <FijianPrimaryButton onClick={handleSubmit} disabled={submitting}>
+                    {submitting ? 'Submitting...' : `Rate ${rating}/5`}
+                </FijianPrimaryButton>
+            )}
+        </FijianCard>
+    );
+}
+
+function WeeklyPicksScoreboard({ episodeNum }) {
+    const { episodes, leagueMembers, rideOrDies } = useApp();
+    const ep = episodes[episodeNum];
+    const epPicks = ep?.picks;
+    const epGameEvents = ep?.gameEvents;
+
+    const picksData = useMemo(() => {
+        if (!epPicks || !epGameEvents) return [];
+        const contestantScores = scoreContestants(epGameEvents);
+        const scarcity = computeScarcity(epPicks);
+
+        return Object.entries(epPicks).map(([uid, playerPicks]) => {
+            const picks = (playerPicks || []).map(cid => {
+                const castaway = ALL_CASTAWAYS.find(c => c.id === cid);
+                const raw = contestantScores[cid] || 0;
+                const isSolePicker = scarcity[cid]?.exclusiveOwner === uid;
+                const isOthersRoD = Object.entries(rideOrDies || {}).some(
+                    ([rodUid, rods]) => rodUid !== uid && (rods || []).includes(cid)
+                );
+                const isExclusive = isSolePicker && !isOthersRoD;
+                const points = isExclusive ? Math.round(raw * 1.5) : raw;
+                return { cid, name: castaway?.name || cid, points, isExclusive };
+            });
+            const total = picks.reduce((sum, p) => sum + p.points, 0);
+            const name = leagueMembers[uid]?.displayName || uid;
+            return { uid, name, picks, total };
+        }).sort((a, b) => b.total - a.total);
+    }, [epPicks, epGameEvents, leagueMembers, rideOrDies]);
+
+    if (picksData.length === 0) return null;
+
+    return (
+        <FijianCard className="p-4 space-y-3">
+            <div className="flex items-center gap-2">
+                <Icon name="groups" className="text-ochre text-sm" />
+                <p className="text-ochre text-[11px] font-bold uppercase tracking-widest">Weekly Picks</p>
+            </div>
+            <div className="space-y-3">
+                {picksData.map(player => (
+                    <div key={player.uid}>
+                        <div className="flex items-center justify-between mb-1">
+                            <span className="text-sand-warm text-sm font-sans font-bold">{player.name}</span>
+                            <span className="text-ochre font-bold text-sm font-sans">{player.total} pts</span>
+                        </div>
+                        <div className="flex gap-1.5 flex-wrap">
+                            {player.picks.map(pick => (
+                                <span
+                                    key={pick.cid}
+                                    className={`text-xs font-sans px-2 py-1 rounded ${
+                                        pick.isExclusive
+                                            ? 'bg-ochre/15 text-ochre'
+                                            : 'bg-stone-800/50 text-sand-warm/70'
+                                    }`}
+                                >
+                                    {pick.name} {pick.points}
+                                    {pick.isExclusive && <span className="ml-0.5 text-ochre/80">×1.5</span>}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </FijianCard>
+    );
+}
 
 export default function ProbstRecap({ episodeNum }) {
     const {
@@ -108,35 +391,14 @@ export default function ProbstRecap({ episodeNum }) {
                 </FijianCard>
             )}
 
-            {/* Confessional King/Queen */}
-            {report.confessionalKing && (
-                <FijianCard className="p-3 flex items-center gap-3">
-                    <span className="text-lg">🎬</span>
-                    <div className="flex-1">
-                        <p className="text-sand-warm text-sm font-sans font-bold">{report.confessionalKing.name}</p>
-                        <p className="text-sand-warm/50 text-[10px] font-sans uppercase tracking-wider">Confessional King/Queen</p>
-                    </div>
-                    <span className="text-ochre font-display text-lg">{report.confessionalKing.count}</span>
-                </FijianCard>
-            )}
+            {/* Player of the Episode vote */}
+            <PlayerOfEpisode episodeNum={episodeNum} />
 
-            {/* Exclusive pick bonuses */}
-            {report.exclusivePicks.length > 0 && (
-                <FijianCard className="p-4 space-y-2">
-                    <div className="flex items-center gap-2">
-                        <Icon name="diamond" className="text-ochre text-sm" />
-                        <p className="text-ochre text-[11px] font-bold uppercase tracking-widest">Solo Pick Bonus</p>
-                    </div>
-                    {report.exclusivePicks.map((ep, i) => (
-                        <div key={i} className="flex items-center gap-2 text-xs font-sans">
-                            <span className="text-sand-warm">{ep.player}</span>
-                            <span className="text-sand-warm/40">→</span>
-                            <span className="text-sand-warm/70">{ep.contestant}</span>
-                            <span className="text-ochre ml-auto font-bold">+{ep.bonus} bonus</span>
-                        </div>
-                    ))}
-                </FijianCard>
-            )}
+            {/* Impact Rating vote */}
+            <ImpactRating episodeNum={episodeNum} />
+
+            {/* Weekly Picks scoreboard */}
+            <WeeklyPicksScoreboard episodeNum={episodeNum} />
 
             {/* Standings snapshot */}
             {report.standings && report.standings.length > 0 && (
