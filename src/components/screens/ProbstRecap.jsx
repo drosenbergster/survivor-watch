@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useApp } from '../../AppContext';
 import { ALL_CASTAWAYS } from '../../data';
-import { computeStandings, generateProbstRecap, detectAchievements, scoreContestants, computeScarcity } from '../../scoring';
+import { computeStandings, generateProbstRecap, scoreContestants } from '../../scoring';
 import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon } from '../fijian';
 
 function PlayerOfEpisode({ episodeNum, inline }) {
@@ -227,89 +227,12 @@ function ImpactRating({ episodeNum, inline }) {
     );
 }
 
-function WeeklyPicksScoreboard({ episodeNum, inline }) {
-    const { episodes, leagueMembers, rideOrDies } = useApp();
-    const ep = episodes[episodeNum];
-    const epPicks = ep?.picks;
-    const epGameEvents = ep?.gameEvents;
-
-    const picksData = useMemo(() => {
-        if (!epPicks || !epGameEvents) return [];
-        const contestantScores = scoreContestants(epGameEvents);
-        const scarcity = computeScarcity(epPicks);
-
-        return Object.entries(epPicks).map(([uid, playerPicks]) => {
-            const picks = (playerPicks || []).map(cid => {
-                const castaway = ALL_CASTAWAYS.find(c => c.id === cid);
-                const raw = contestantScores[cid] || 0;
-                const isSolePicker = scarcity[cid]?.exclusiveOwner === uid;
-                const isOthersRoD = Object.entries(rideOrDies || {}).some(
-                    ([rodUid, rods]) => rodUid !== uid && (rods || []).includes(cid)
-                );
-                const isExclusive = isSolePicker && !isOthersRoD;
-                const points = isExclusive ? Math.round(raw * 1.5) : raw;
-                return { cid, name: castaway?.name || cid, points, isExclusive };
-            });
-            const total = picks.reduce((sum, p) => sum + p.points, 0);
-            const name = leagueMembers[uid]?.displayName || uid;
-            return { uid, name, picks, total };
-        }).sort((a, b) => b.total - a.total);
-    }, [epPicks, epGameEvents, leagueMembers, rideOrDies]);
-
-    if (picksData.length === 0) return null;
-
-    const content = (
-        <div className="space-y-2.5">
-            {picksData.map(player => (
-                <div key={player.uid}>
-                    <div className="flex items-center justify-between mb-1">
-                        <span className="text-sand-warm text-xs sm:text-sm font-sans font-bold">{player.name}</span>
-                        <span className="text-ochre font-bold text-xs sm:text-sm font-sans">{player.total} pts</span>
-                    </div>
-                    <div className="space-y-0.5">
-                        {player.picks.map(pick => (
-                            <div
-                                key={pick.cid}
-                                className={`flex items-center justify-between text-xs font-sans px-2 py-1 rounded ${
-                                    pick.isExclusive
-                                        ? 'bg-ochre/10 text-ochre'
-                                        : 'bg-stone-800/30 text-sand-warm/70'
-                                }`}
-                            >
-                                <span>{pick.name}</span>
-                                <span className="font-bold">
-                                    {pick.points}
-                                    {pick.isExclusive && <span className="ml-0.5 text-ochre/80">×1.5</span>}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
-
-    if (inline) return content;
-
-    return (
-        <FijianCard className="p-4 space-y-3">
-            <div className="flex items-center gap-2">
-                <Icon name="groups" className="text-ochre text-sm" />
-                <p className="text-ochre text-[11px] font-bold uppercase tracking-widest">Weekly Picks</p>
-            </div>
-            {content}
-        </FijianCard>
-    );
-}
-
 export default function ProbstRecap({ episodeNum }) {
     const {
         episodes, rideOrDies, leagueMembers, bingo,
         postEpisode, league,
     } = useApp();
 
-    const [picksOpen, setPicksOpen] = useState(false);
-    const [badgesOpen, setBadgesOpen] = useState(false);
     const memberUids = useMemo(() => Object.keys(leagueMembers || {}), [leagueMembers]);
 
     const { standings, perEpisode } = useMemo(
@@ -317,14 +240,9 @@ export default function ProbstRecap({ episodeNum }) {
         [episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated]
     );
 
-    const achievements = useMemo(
-        () => detectAchievements(episodes, rideOrDies, memberUids, bingo, postEpisode, perEpisode),
-        [episodes, rideOrDies, memberUids, bingo, postEpisode, perEpisode]
-    );
-
     const report = useMemo(
-        () => generateProbstRecap(episodeNum, episodes, standings, perEpisode, leagueMembers, achievements),
-        [episodeNum, episodes, standings, perEpisode, leagueMembers, achievements]
+        () => generateProbstRecap(episodeNum, episodes, standings, perEpisode, leagueMembers, null),
+        [episodeNum, episodes, standings, perEpisode, leagueMembers]
     );
 
     if (!report) return null;
@@ -450,7 +368,7 @@ export default function ProbstRecap({ episodeNum }) {
                     </div>
                 )}
 
-                {/* Standings + collapsible Weekly Picks */}
+                {/* Standings */}
                 {report.standings && report.standings.length > 0 && (
                     <div className="px-4 py-3 border-t border-ochre/10">
                         <p className="text-ochre text-[11px] font-bold uppercase tracking-widest mb-2">Standings</p>
@@ -466,62 +384,6 @@ export default function ProbstRecap({ episodeNum }) {
                                 </div>
                             ))}
                         </div>
-
-                        {/* Weekly Picks dropdown */}
-                        <button
-                            onClick={() => setPicksOpen(p => !p)}
-                            className="flex items-center gap-1.5 mt-3 pt-2 border-t border-stone-700/40 w-full text-left"
-                        >
-                            <Icon name="groups" className="text-ochre/70 text-sm" />
-                            <span className="text-ochre/70 text-[11px] font-bold uppercase tracking-widest flex-1">
-                                Weekly Picks Breakdown
-                            </span>
-                            <Icon
-                                name="expand_more"
-                                className={`text-ochre/50 text-sm transition-transform ${picksOpen ? 'rotate-180' : ''}`}
-                            />
-                        </button>
-                        {picksOpen && (
-                            <div className="mt-2">
-                                <WeeklyPicksScoreboard episodeNum={episodeNum} inline />
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {/* Badges — collapsible dropdown */}
-                {report.newBadges.length > 0 && (
-                    <div className="px-4 py-3 border-t border-ochre/10">
-                        <button
-                            onClick={() => setBadgesOpen(p => !p)}
-                            className="flex items-center gap-1.5 w-full text-left"
-                        >
-                            <span className="text-sm">🏅</span>
-                            <span className="text-ochre/70 text-[11px] font-bold uppercase tracking-widest flex-1">
-                                Badges Earned ({report.newBadges.length})
-                            </span>
-                            <Icon
-                                name="expand_more"
-                                className={`text-ochre/50 text-sm transition-transform ${badgesOpen ? 'rotate-180' : ''}`}
-                            />
-                        </button>
-                        {badgesOpen && (
-                            <div className="mt-2 space-y-1.5">
-                                {report.newBadges.map((b, i) => (
-                                    <div key={i} className="flex items-start gap-1.5 text-xs font-sans">
-                                        <span className="text-sm shrink-0">{b.emoji}</span>
-                                        <span>
-                                            <span className="text-sand-warm/80">{b.name}</span>
-                                            {' '}
-                                            <span className="text-ochre/60">{b.badge}</span>
-                                            {b.description && (
-                                                <span className="text-sand-warm/40"> &mdash; {b.description}</span>
-                                            )}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
                     </div>
                 )}
             </FijianCard>

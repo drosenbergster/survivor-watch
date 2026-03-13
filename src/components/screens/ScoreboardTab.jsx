@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useApp } from '../../AppContext';
-import { computeStandings } from '../../scoring';
-import { SCORE_EVENTS, ALL_CASTAWAYS, PLAYER_COLORS } from '../../data';
+import { computeStandings, detectAchievements } from '../../scoring';
+import { SCORE_EVENTS, ALL_CASTAWAYS, PLAYER_COLORS, ACHIEVEMENT_MAP } from '../../data';
 import { FijianCard, FijianSectionHeader, Icon, HintBadge } from '../fijian';
 import BingoCard from './BingoCard';
 
@@ -16,7 +16,7 @@ function RankBadge({ rank }) {
     return <span className="text-lg text-sand-warm/60 font-bold font-sans">#{rank}</span>;
 }
 
-function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perEpisode, leagueId, bingo, isCurrentUser, playerRideOrDies }) {
+function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perEpisode, leagueId, bingo, isCurrentUser, playerRideOrDies, playerBadges }) {
     const epNums = Object.keys(perEpisode || {}).map(Number).sort((a, b) => a - b);
 
     return (
@@ -75,6 +75,20 @@ function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perE
                                         </span>
                                     );
                                 })}
+                            </div>
+                        </div>
+                    )}
+
+                    {playerBadges.length > 0 && (
+                        <div>
+                            <p className="text-xs text-sand-warm/50 font-sans font-semibold mb-1">Badges</p>
+                            <div className="flex gap-1.5 flex-wrap">
+                                {playerBadges.map(b => (
+                                    <span key={b.id} className="bg-stone-800/50 text-xs px-2 py-1 rounded font-sans text-sand-warm/70" title={b.description}>
+                                        {b.name}
+                                        <span className="text-sand-warm/30 ml-1">&mdash; {b.description}</span>
+                                    </span>
+                                ))}
                             </div>
                         </div>
                     )}
@@ -310,6 +324,11 @@ export default function ScoreboardTab({ onTabChange }) {
         [episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated]
     );
 
+    const achievements = useMemo(
+        () => detectAchievements(episodes, rideOrDies, memberUids, bingo, postEpisode, perEpisode),
+        [episodes, rideOrDies, memberUids, bingo, postEpisode, perEpisode]
+    );
+
     const hasScoredEpisodes = scoredEpNums.length > 0;
 
     const [guideOpen, setGuideOpen] = useState(false);
@@ -349,6 +368,8 @@ export default function ScoreboardTab({ onTabChange }) {
                         <FijianSectionHeader title="Season Standings" />
                         {standings.map((entry, i) => {
                             const colorIndex = memberUids.indexOf(entry.uid);
+                            const badgeIds = achievements[entry.uid] || [];
+                            const playerBadges = badgeIds.map(id => ACHIEVEMENT_MAP[id]).filter(Boolean);
                             return (
                                 <StandingsRow
                                     key={entry.uid}
@@ -363,6 +384,7 @@ export default function ScoreboardTab({ onTabChange }) {
                                     bingo={bingo}
                                     isCurrentUser={entry.uid === user?.uid}
                                     playerRideOrDies={rideOrDies?.[entry.uid] || []}
+                                    playerBadges={playerBadges}
                                 />
                             );
                         })}
