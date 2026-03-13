@@ -4,7 +4,7 @@ import { ALL_CASTAWAYS } from '../../data';
 import { computeStandings, generateProbstRecap, detectAchievements, scoreContestants, computeScarcity } from '../../scoring';
 import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon } from '../fijian';
 
-function PlayerOfEpisode({ episodeNum }) {
+function PlayerOfEpisode({ episodeNum, inline }) {
     const {
         user, episodes, postEpisode, leagueMembers,
         submitPlayerOfEpisodeVote,
@@ -45,14 +45,7 @@ function PlayerOfEpisode({ episodeNum }) {
     const totalVoters = Object.keys(allVotes).length;
     const totalMembers = Object.keys(leagueMembers || {}).length;
 
-    if (top3.length === 0) {
-        return (
-            <FijianCard className="p-4">
-                <FijianSectionHeader title="Player of the Episode" />
-                <p className="text-sand-warm/50 text-sm font-sans italic">No game events scored yet.</p>
-            </FijianCard>
-        );
-    }
+    if (top3.length === 0) return null;
 
     const handleRank = (cid, rank) => {
         setRankings(prev => {
@@ -70,16 +63,19 @@ function PlayerOfEpisode({ episodeNum }) {
         setSubmitting(false);
     };
 
+    const Wrap = inline
+        ? ({ children }) => <div className="px-4 py-3 border-t border-ochre/10 space-y-3">{children}</div>
+        : ({ children }) => <FijianCard className="p-4 space-y-3">{children}</FijianCard>;
+
     if (myVote) {
         const winner = results[0];
         const winnerName = winner ? ALL_CASTAWAYS.find(c => c.id === winner[0])?.name : null;
         return (
-            <FijianCard className="p-4 space-y-3">
-                <FijianSectionHeader title="Player of the Episode" />
+            <Wrap>
                 <div className="flex items-center gap-2">
-                    <Icon name="check_circle" className="text-jungle-400" />
-                    <span className="text-sand-warm text-sm font-sans">Vote submitted</span>
-                    <span className="text-sand-warm/60 text-xs ml-auto">{totalVoters}/{totalMembers} voted</span>
+                    <Icon name="emoji_events" className="text-ochre text-sm" />
+                    <p className="text-ochre text-[11px] font-bold uppercase tracking-widest">Player of the Episode</p>
+                    <span className="text-sand-warm/40 text-xs ml-auto">{totalVoters}/{totalMembers} voted</span>
                 </div>
                 {results.length > 0 && (
                     <div className="space-y-1">
@@ -95,19 +91,21 @@ function PlayerOfEpisode({ episodeNum }) {
                                 </div>
                             );
                         })}
-                        {winnerName && <p className="text-sand-warm/60 text-xs">Winner&apos;s pick owners get +7 pts</p>}
+                        {winnerName && <p className="text-sand-warm/40 text-xs">Winner&apos;s pick owners get +7 pts</p>}
                     </div>
                 )}
-            </FijianCard>
+            </Wrap>
         );
     }
 
     return (
-        <FijianCard className="p-4 space-y-4">
-            <FijianSectionHeader title="Player of the Episode" />
+        <Wrap>
+            <div className="flex items-center gap-2">
+                <Icon name="emoji_events" className="text-ochre text-sm" />
+                <p className="text-ochre text-[11px] font-bold uppercase tracking-widest">Player of the Episode</p>
+            </div>
             <p className="text-clay text-xs font-serif italic">
-                Rank the top 3 performers this episode. Whoever wins the vote earns +7 pts
-                for the player(s) who had them as a weekly pick. Tap the medals to assign 1st, 2nd, 3rd.
+                Rank the top 3 performers. Winner earns +7 pts for their pick owners.
             </p>
             <div className="space-y-2">
                 {top3.map(c => {
@@ -141,11 +139,11 @@ function PlayerOfEpisode({ episodeNum }) {
                     {submitting ? 'Submitting...' : 'Lock In Rankings'}
                 </FijianPrimaryButton>
             )}
-        </FijianCard>
+        </Wrap>
     );
 }
 
-function ImpactRating({ episodeNum }) {
+function ImpactRating({ episodeNum, inline }) {
     const { user, episodes, postEpisode, submitImpactRating, leagueMembers } = useApp();
 
     const epData = episodes[episodeNum];
@@ -168,31 +166,40 @@ function ImpactRating({ episodeNum }) {
         setSubmitting(false);
     };
 
+    const Wrap = inline
+        ? ({ children }) => <div className="px-4 py-3 border-t border-ochre/10 space-y-2">{children}</div>
+        : ({ children }) => <FijianCard className="p-4 space-y-2">{children}</FijianCard>;
+
     if (myRating) {
         return (
-            <FijianCard className="p-4 space-y-2">
-                <FijianSectionHeader title="Impact Rating" />
+            <Wrap>
                 <div className="flex items-center gap-2">
-                    <Icon name="check_circle" className="text-jungle-400" />
+                    <Icon name="star_half" className="text-fire-400 text-sm" />
+                    <p className="text-ochre text-[11px] font-bold uppercase tracking-widest">Impact Rating</p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Icon name="check_circle" className="text-jungle-400 text-sm" />
                     <span className="text-sand-warm text-sm font-sans">
                         You rated {eliminated?.name}&apos;s impact: {myRating}/5
                     </span>
                 </div>
                 {avg && (
-                    <p className="text-sand-warm/50 text-xs font-sans">
+                    <p className="text-sand-warm/40 text-xs font-sans">
                         Group average: {avg}/5 ({ratingValues.length}/{totalMembers} rated) — goes to their pick owner(s)
                     </p>
                 )}
-            </FijianCard>
+            </Wrap>
         );
     }
 
     return (
-        <FijianCard className="p-4 space-y-3">
-            <FijianSectionHeader title="Impact Rating" />
+        <Wrap>
+            <div className="flex items-center gap-2">
+                <Icon name="star_half" className="text-fire-400 text-sm" />
+                <p className="text-ochre text-[11px] font-bold uppercase tracking-widest">Impact Rating</p>
+            </div>
             <p className="text-clay text-xs font-serif italic">
-                How much did {eliminated?.name} impact the game? The average rating becomes bonus points
-                for whoever had them as a weekly pick this episode.
+                How much did {eliminated?.name} impact the game? Average goes to their pick owner(s).
             </p>
             <div className="flex gap-2 justify-center">
                 {[1, 2, 3, 4, 5].map(v => (
@@ -216,7 +223,7 @@ function ImpactRating({ episodeNum }) {
                     {submitting ? 'Submitting...' : `Rate ${rating}/5`}
                 </FijianPrimaryButton>
             )}
-        </FijianCard>
+        </Wrap>
     );
 }
 
@@ -302,6 +309,7 @@ export default function ProbstRecap({ episodeNum }) {
     } = useApp();
 
     const [picksOpen, setPicksOpen] = useState(false);
+    const [badgesOpen, setBadgesOpen] = useState(false);
     const memberUids = useMemo(() => Object.keys(leagueMembers || {}), [leagueMembers]);
 
     const { standings, perEpisode } = useMemo(
@@ -329,7 +337,6 @@ export default function ProbstRecap({ episodeNum }) {
 
     return (
         <div className="space-y-3">
-            {/* Unified recap card — Previously On through Standings */}
             <FijianCard className="overflow-hidden">
                 {/* Previously On headline */}
                 <div className="p-5 bg-gradient-to-br from-stone-800/90 to-stone-900/80">
@@ -377,6 +384,9 @@ export default function ProbstRecap({ episodeNum }) {
                     </div>
                 )}
 
+                {/* Player of the Episode — before the elimination */}
+                <PlayerOfEpisode episodeNum={episodeNum} inline />
+
                 {/* Elimination */}
                 {report.eliminated.length > 0 && (
                     <div className="px-4 py-3 border-t border-ochre/10">
@@ -405,7 +415,10 @@ export default function ProbstRecap({ episodeNum }) {
                     </div>
                 )}
 
-                {/* Superlatives — inline within the recap flow */}
+                {/* Impact Rating — right after elimination */}
+                <ImpactRating episodeNum={episodeNum} inline />
+
+                {/* Superlatives */}
                 {hasSuperlatives && (
                     <div className="px-4 py-3 border-t border-ochre/10">
                         <div className="grid grid-cols-3 gap-2">
@@ -476,29 +489,42 @@ export default function ProbstRecap({ episodeNum }) {
                     </div>
                 )}
 
-                {/* Badges — compact with descriptions so users know what they mean */}
+                {/* Badges — collapsible dropdown */}
                 {report.newBadges.length > 0 && (
-                    <div className="px-4 py-3 border-t border-ochre/10 space-y-1">
-                        {report.newBadges.map((b, i) => (
-                            <div key={i} className="flex items-start gap-1.5 text-xs font-sans">
-                                <span className="text-sm shrink-0">{b.emoji}</span>
-                                <span>
-                                    <span className="text-sand-warm/80">{b.name}</span>
-                                    {' '}
-                                    <span className="text-ochre/60">{b.badge}</span>
-                                    {b.description && (
-                                        <span className="text-sand-warm/40"> &mdash; {b.description}</span>
-                                    )}
-                                </span>
+                    <div className="px-4 py-3 border-t border-ochre/10">
+                        <button
+                            onClick={() => setBadgesOpen(p => !p)}
+                            className="flex items-center gap-1.5 w-full text-left"
+                        >
+                            <span className="text-sm">🏅</span>
+                            <span className="text-ochre/70 text-[11px] font-bold uppercase tracking-widest flex-1">
+                                Badges Earned ({report.newBadges.length})
+                            </span>
+                            <Icon
+                                name="expand_more"
+                                className={`text-ochre/50 text-sm transition-transform ${badgesOpen ? 'rotate-180' : ''}`}
+                            />
+                        </button>
+                        {badgesOpen && (
+                            <div className="mt-2 space-y-1.5">
+                                {report.newBadges.map((b, i) => (
+                                    <div key={i} className="flex items-start gap-1.5 text-xs font-sans">
+                                        <span className="text-sm shrink-0">{b.emoji}</span>
+                                        <span>
+                                            <span className="text-sand-warm/80">{b.name}</span>
+                                            {' '}
+                                            <span className="text-ochre/60">{b.badge}</span>
+                                            {b.description && (
+                                                <span className="text-sand-warm/40"> &mdash; {b.description}</span>
+                                            )}
+                                        </span>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
+                        )}
                     </div>
                 )}
             </FijianCard>
-
-            {/* Interactive post-episode votes live outside the recap card */}
-            <PlayerOfEpisode episodeNum={episodeNum} />
-            <ImpactRating episodeNum={episodeNum} />
         </div>
     );
 }
