@@ -3,7 +3,7 @@
  */
 export default function MasiBackground({ children, className = '' }) {
   return (
-    <div className={`relative flex min-h-screen w-full flex-col overflow-hidden masi-pattern ${className}`}>
+    <div className={`relative flex min-h-screen w-full flex-col overflow-clip masi-pattern ${className}`}>
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-earth/20 to-stone-dark pointer-events-none" aria-hidden />
       <div className="bure-silhouette absolute -left-10 bottom-20 w-64 h-64 rotate-12" aria-hidden />
       <div className="bure-silhouette absolute -right-16 top-10 w-80 h-80 -rotate-12" aria-hidden />

@@ -62,7 +62,7 @@ export default function RulesTab() {
   const [openCat, setOpenCat] = useState(null);
 
   return (
-    <article className="max-w-2xl mx-auto space-y-4 sm:space-y-5 magimagi-border-rules px-3 py-4 sm:p-6 scroll-container overflow-x-hidden">
+    <article className="max-w-2xl mx-auto space-y-4 sm:space-y-5 magimagi-border-rules px-3 py-4 sm:p-6 scroll-container">
       <header className="text-center py-4 sm:py-6">
         <h1 className="font-wood-serif font-bold text-4xl sm:text-5xl text-sand-warm uppercase tracking-tighter drop-shadow-text">
           LAWA
