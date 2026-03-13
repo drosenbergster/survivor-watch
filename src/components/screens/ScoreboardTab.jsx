@@ -18,6 +18,8 @@ function RankBadge({ rank }) {
 
 function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perEpisode, leagueId, bingo, isCurrentUser, playerRideOrDies, playerBadges }) {
     const epNums = Object.keys(perEpisode || {}).map(Number).sort((a, b) => a - b);
+    const [episodesOpen, setEpisodesOpen] = useState(false);
+    const [badgesOpen, setBadgesOpen] = useState(false);
 
     return (
         <div className="space-y-0">
@@ -79,38 +81,68 @@ function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perE
                         </div>
                     )}
 
-                    {playerBadges.length > 0 && (
+                    {/* Episodes — caret dropdown */}
+                    {epNums.length > 0 && (
                         <div>
-                            <p className="text-xs text-sand-warm/50 font-sans font-semibold mb-1">Badges</p>
-                            <div className="flex gap-1.5 flex-wrap">
-                                {playerBadges.map(b => (
-                                    <span key={b.id} className="bg-stone-800/50 text-xs px-2 py-1 rounded font-sans text-sand-warm/70" title={b.description}>
-                                        {b.name}
-                                        <span className="text-sand-warm/30 ml-1">&mdash; {b.description}</span>
-                                    </span>
-                                ))}
-                            </div>
+                            <button
+                                onClick={() => setEpisodesOpen(e => !e)}
+                                className="flex items-center gap-1.5 w-full text-left"
+                            >
+                                <span className="text-xs text-sand-warm/50 font-sans font-semibold flex-1">
+                                    Per Episode ({epNums.length})
+                                </span>
+                                <Icon
+                                    name="expand_more"
+                                    className={`text-sand-warm/40 text-sm transition-transform ${episodesOpen ? 'rotate-180' : ''}`}
+                                />
+                            </button>
+                            {episodesOpen && (
+                                <div className="mt-1.5 space-y-2">
+                                    {epNums.map(epNum => {
+                                        const epScore = perEpisode[epNum]?.[entry.uid];
+                                        if (!epScore) return null;
+                                        const bingoSeed = isCurrentUser ? `${leagueId}-${epNum}-${entry.uid}` : null;
+                                        const bingoMarked = isCurrentUser ? bingo?.[epNum]?.[entry.uid] : null;
+                                        return (
+                                            <EpisodeBreakdown
+                                                key={epNum}
+                                                epNum={epNum}
+                                                score={epScore}
+                                                bingoSeed={bingoSeed}
+                                                bingoMarked={bingoMarked}
+                                            />
+                                        );
+                                    })}
+                                </div>
+                            )}
                         </div>
                     )}
 
-                    {epNums.length > 0 && (
-                        <div className="space-y-2">
-                            <p className="text-xs text-sand-warm/50 font-sans font-semibold">Per Episode</p>
-                            {epNums.map(epNum => {
-                                const epScore = perEpisode[epNum]?.[entry.uid];
-                                if (!epScore) return null;
-                                const bingoSeed = isCurrentUser ? `${leagueId}-${epNum}-${entry.uid}` : null;
-                                const bingoMarked = isCurrentUser ? bingo?.[epNum]?.[entry.uid] : null;
-                                return (
-                                    <EpisodeBreakdown
-                                        key={epNum}
-                                        epNum={epNum}
-                                        score={epScore}
-                                        bingoSeed={bingoSeed}
-                                        bingoMarked={bingoMarked}
-                                    />
-                                );
-                            })}
+                    {/* Badges — caret dropdown */}
+                    {playerBadges.length > 0 && (
+                        <div>
+                            <button
+                                onClick={() => setBadgesOpen(b => !b)}
+                                className="flex items-center gap-1.5 w-full text-left"
+                            >
+                                <span className="text-xs text-sand-warm/50 font-sans font-semibold flex-1">
+                                    Badges ({playerBadges.length})
+                                </span>
+                                <Icon
+                                    name="expand_more"
+                                    className={`text-sand-warm/40 text-sm transition-transform ${badgesOpen ? 'rotate-180' : ''}`}
+                                />
+                            </button>
+                            {badgesOpen && (
+                                <div className="mt-1.5 space-y-1">
+                                    {playerBadges.map(b => (
+                                        <div key={b.id} className="flex items-start gap-1.5 text-xs font-sans py-0.5">
+                                            <span className="text-sand-warm/70 font-medium">{b.name}</span>
+                                            <span className="text-sand-warm/30">&mdash; {b.description}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
