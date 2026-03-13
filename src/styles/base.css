@@ -3,12 +3,9 @@
  */
 
 /* Softer font rendering — matches Stitch aesthetic */
-html,
-body {
+html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
-  width: 100%;
 }
 
 /* Focus visible for accessibility */
