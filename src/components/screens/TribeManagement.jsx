@@ -64,9 +64,9 @@ function TribeSwapPanel({ episodeNum }) {
                         {(assignments[tribeName] || []).map(cid => {
                             const c = ALL_CASTAWAYS.find(x => x.id === cid);
                             return (
-                                <div key={cid} className="flex items-center gap-2 bg-stone-800/50 px-3 py-2 rounded-lg">
-                                    <span className="text-sand-warm text-sm font-sans flex-1">{c?.name}</span>
-                                    <div className="flex gap-1">
+                                <div key={cid} className="flex items-center gap-2 bg-stone-800/50 px-3 py-2 rounded-lg min-w-0">
+                                    <span className="text-sand-warm text-sm font-sans flex-1 min-w-0 truncate">{c?.name}</span>
+                                    <div className="flex gap-1 flex-wrap shrink-0">
                                         {tribeNames.filter(t => t !== tribeName).map(t => (
                                             <button
                                                 key={t}

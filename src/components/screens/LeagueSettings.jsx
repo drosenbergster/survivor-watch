@@ -133,7 +133,7 @@ export default function LeagueSettings() {
                 <span className="text-xs text-sand-warm/60 uppercase tracking-widest font-bold block mb-2">
                     Invite Code
                 </span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-display text-2xl tracking-[0.3em] text-ochre bg-stone-dark/60 px-4 py-2 rounded border border-ochre/20">
                         {joinCode}
                     </span>
@@ -143,25 +143,25 @@ export default function LeagueSettings() {
                         title={league.name}
                     />
                 </div>
-                <div className="mt-3 flex items-center gap-2">
-                    <span className="text-xs text-sand-warm/60">Invite link:</span>
-                    <span className="text-xs text-ochre/70 truncate flex-1">{inviteUrl}</span>
+                <div className="mt-3 flex items-center gap-2 min-w-0">
+                    <span className="text-xs text-sand-warm/60 shrink-0">Invite link:</span>
+                    <span className="text-xs text-ochre/70 truncate min-w-0">{inviteUrl}</span>
                     <CopyButton text={inviteUrl} label="Copy invite link" />
                 </div>
             </FijianCard>
 
             {/* Members */}
             <FijianCard>
-                <div className="px-4 py-3 border-b border-ochre/20 flex items-center justify-between">
+                <div className="px-4 py-3 border-b border-ochre/20 flex items-center justify-between min-w-0">
                     <FijianSectionHeader title="Members" className="!mb-0" />
-                    <span className="text-ochre/60 text-xs font-bold">{members.length}/6</span>
+                    <span className="text-ochre/60 text-xs font-bold shrink-0">{members.length}/6</span>
                 </div>
                 <div>
                     {sortedMembers.map(([uid, member]) => {
                         const isAdmin = member.role === 'admin';
                         const isYou = uid === user?.uid;
                         return (
-                            <div key={uid} className="flex items-center gap-3 px-4 py-3 border-b border-ochre/10 last:border-b-0">
+                            <div key={uid} className="flex items-center gap-3 px-4 py-3 border-b border-ochre/10 last:border-b-0 min-w-0">
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
                                     isAdmin ? 'bg-fire-400/20 text-fire-400' : 'bg-ochre/10 text-ochre'
                                 }`}>
@@ -174,7 +174,7 @@ export default function LeagueSettings() {
                                     </span>
                                 </div>
                                 {isAdmin && (
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-fire-400 bg-fire-400/10 px-2 py-0.5 rounded">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-fire-400 bg-fire-400/10 px-2 py-0.5 rounded shrink-0">
                                         Host
                                     </span>
                                 )}

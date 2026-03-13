@@ -62,7 +62,7 @@ export default function RulesTab() {
   const [openCat, setOpenCat] = useState(null);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-hidden">
       <header className="text-center py-4 sm:py-6">
         <h1 className="font-wood-serif font-bold text-4xl sm:text-5xl text-sand-warm uppercase tracking-tighter drop-shadow-text">
           LAWA
