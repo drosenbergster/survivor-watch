@@ -536,8 +536,11 @@ export function AppProvider({ children }) {
 
     const submitPicks = useCallback(async (episodeNum, contestantIds) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
+        const myRoDs = rideOrDies[user.uid] || [];
+        const blocked = contestantIds.filter(cid => myRoDs.includes(cid));
+        if (blocked.length > 0) throw new Error('You cannot weekly-pick your own ride or dies');
         await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}/picks/${user.uid}`), contestantIds);
-    }, [user, leagueId]);
+    }, [user, leagueId, rideOrDies]);
 
     const submitPredictions = useCallback(async (episodeNum, predictions) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
