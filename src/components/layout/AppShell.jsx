@@ -13,10 +13,7 @@ export default function AppShell({ activeTab, onTabChange, tabs, children, onSho
     <MasiBackground className="min-h-screen">
       <UserBar onShowTutorial={onShowTutorial} />
       <AppHeader />
-      <main
-        className="max-w-5xl mx-auto py-4 relative z-10 flex-1 pb-24"
-        style={{ paddingLeft: 'max(1rem, env(safe-area-inset-left))', paddingRight: 'max(1rem, env(safe-area-inset-right))' }}
-      >
+      <main className="max-w-5xl mx-auto px-4 py-4 relative z-10 flex-1 pb-24">
         {children}
       </main>
       <AppFooter />
