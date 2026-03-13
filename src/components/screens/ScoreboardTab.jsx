@@ -6,7 +6,10 @@ import { FijianCard, FijianSectionHeader, Icon, HintBadge } from '../fijian';
 import BingoCard from './BingoCard';
 
 const SCORE_EMOJI = Object.fromEntries(SCORE_EVENTS.map(e => [e.key, e.emoji]));
-const SCORE_LABEL = Object.fromEntries(SCORE_EVENTS.map(e => [e.key, e.label]));
+
+const MILESTONE_KEYS = ['winner', 'ftc', 'merge', 'idol_played_success', 'fire_making_win', 'individual_immunity', 'advantage_used'];
+const MEDIUM_KEYS = ['individual_reward', 'idol_found', 'survived_with_votes', 'advantage_found', 'exile'];
+const SCORE_EVENT_MAP = Object.fromEntries(SCORE_EVENTS.map(e => [e.key, e]));
 
 function RankBadge({ rank }) {
     if (rank === 1) return <span className="text-2xl">🥇</span>;
@@ -262,14 +265,21 @@ export default function ScoreboardTab({ onTabChange }) {
 
     const hasScoredEpisodes = scoredEpNums.length > 0;
 
+    const [guideOpen, setGuideOpen] = useState(false);
+    const [eventsOpen, setEventsOpen] = useState(false);
+
+    const milestoneEvents = MILESTONE_KEYS.map(k => SCORE_EVENT_MAP[k]).filter(Boolean);
+    const mediumEvents = MEDIUM_KEYS.map(k => SCORE_EVENT_MAP[k]).filter(Boolean);
+    const minorEvents = SCORE_EVENTS.filter(e => !MILESTONE_KEYS.includes(e.key) && !MEDIUM_KEYS.includes(e.key));
+
     return (
         <div className="space-y-6">
             <header className="text-center">
                 <h2 className="font-display text-3xl tracking-wider text-sand-warm drop-shadow-text">Scores</h2>
-                <p className="text-sand-warm/70 text-sm mt-1 font-sans inline-flex items-center justify-center">
-                    Scores
+                <p className="text-sand-warm/50 text-xs mt-1 font-sans inline-flex items-center justify-center gap-1">
+                    Tap a player to see breakdown
                     <HintBadge hintKey="scores">
-                        W = Weekly picks, P = Predictions, R = Ride or Die, B = Bingo, S = Social votes. Tap a player row to see their episode-by-episode breakdown.
+                        W = Weekly picks, P = Predictions, R = Ride or Die, B = Bingo, S = Social. Tap any player row for details.
                     </HintBadge>
                 </p>
             </header>
@@ -311,67 +321,125 @@ export default function ScoreboardTab({ onTabChange }) {
                         })}
                     </FijianCard>
 
-                    <FijianCard className="p-4">
-                        <FijianSectionHeader title="Scoring Guide" />
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs font-sans text-sand-warm/60 mt-2">
-                            {SCORE_EVENTS.map(e => (
-                                <div key={e.key} className="flex justify-between">
-                                    <span>{e.emoji} {e.label}</span>
-                                    <span className="text-ochre">+{e.points}</span>
+                    <FijianCard className="overflow-hidden">
+                        <button
+                            onClick={() => setGuideOpen(g => !g)}
+                            className="w-full flex items-center gap-2 p-4 text-left"
+                        >
+                            <Icon name="menu_book" className="text-ochre text-sm" />
+                            <span className="text-ochre text-[11px] font-bold uppercase tracking-widest flex-1">
+                                Scoring Guide
+                            </span>
+                            <Icon
+                                name="expand_more"
+                                className={`text-ochre/50 text-sm transition-transform ${guideOpen ? 'rotate-180' : ''}`}
+                            />
+                        </button>
+
+                        {guideOpen && (
+                            <div className="px-4 pb-4 space-y-4 text-xs font-sans text-sand-warm/60">
+                                {/* Weekly Picks (W) */}
+                                <div>
+                                    <p className="text-fire-400 text-[11px] font-bold uppercase tracking-widest mb-1.5">
+                                        Weekly Picks (W)
+                                    </p>
+                                    <p className="text-sand-warm/40 text-[10px] mb-2">
+                                        Your picks earn points based on what their castaways do in the episode. Only picker = 1.5x bonus.
+                                    </p>
+                                    <div className="space-y-0.5">
+                                        {milestoneEvents.map(e => (
+                                            <ScoreGuideRow key={e.key} emoji={e.emoji} label={e.label} value={`+${e.points}`} />
+                                        ))}
+                                    </div>
+                                    <div className="mt-1 space-y-0.5">
+                                        {mediumEvents.map(e => (
+                                            <ScoreGuideRow key={e.key} emoji={e.emoji} label={e.label} value={`+${e.points}`} />
+                                        ))}
+                                    </div>
+                                    <button
+                                        onClick={() => setEventsOpen(e => !e)}
+                                        className="flex items-center gap-1 mt-1.5 text-sand-warm/40 hover:text-sand-warm/60 transition-colors"
+                                    >
+                                        <Icon name={eventsOpen ? 'expand_less' : 'expand_more'} className="text-xs" />
+                                        <span className="text-[10px]">{eventsOpen ? 'Hide' : 'Show'} {minorEvents.length} minor events (1-3 pts)</span>
+                                    </button>
+                                    {eventsOpen && (
+                                        <div className="mt-1 space-y-0.5">
+                                            {minorEvents.map(e => (
+                                                <ScoreGuideRow key={e.key} emoji={e.emoji} label={e.label} value={`+${e.points}`} />
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
-                            ))}
-                            <div className="col-span-2 border-t border-stone-700 mt-2 pt-2">
-                                <div className="flex justify-between">
-                                    <span>📬 Correct Tree Mail</span>
-                                    <span className="text-ochre">+3</span>
+
+                                <div className="border-t border-stone-700/50" />
+
+                                {/* Predictions (P) */}
+                                <div>
+                                    <p className="text-green-400 text-[11px] font-bold uppercase tracking-widest mb-1.5">
+                                        Predictions (P)
+                                    </p>
+                                    <div className="space-y-0.5">
+                                        <ScoreGuideRow emoji="⚡" label="Snap Vote correct" value="+8" />
+                                        <ScoreGuideRow emoji="📬" label="Tree Mail correct" value="+3" />
+                                        <ScoreGuideRow emoji="🤫" label="Tribal Whisper correct" value="+3" />
+                                    </div>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span>🔥 Tribal snap vote correct</span>
-                                    <span className="text-ochre">+8</span>
+
+                                <div className="border-t border-stone-700/50" />
+
+                                {/* Ride or Die (R) */}
+                                <div>
+                                    <p className="text-sky-400 text-[11px] font-bold uppercase tracking-widest mb-1.5">
+                                        Ride or Die (R)
+                                    </p>
+                                    <div className="space-y-0.5">
+                                        <ScoreGuideRow emoji="✅" label="Survived episode" value="+2/ep" />
+                                        <ScoreGuideRow emoji="🤝" label="Game event points (same as weekly)" value="pts" />
+                                        <ScoreGuideRow emoji="🏛️" label="Made FTC" value="+15" />
+                                        <ScoreGuideRow emoji="👑" label="Won the season" value="+30" />
+                                    </div>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span>🤫 Tribal Whisper correct</span>
-                                    <span className="text-ochre">+3</span>
+
+                                <div className="border-t border-stone-700/50" />
+
+                                {/* Bingo (B) */}
+                                <div>
+                                    <p className="text-purple-400 text-[11px] font-bold uppercase tracking-widest mb-1.5">
+                                        Bingo (B)
+                                    </p>
+                                    <div className="space-y-0.5">
+                                        <ScoreGuideRow emoji="🎯" label="Complete a line (5 in a row)" value="+5" />
+                                        <ScoreGuideRow emoji="🌑" label="Blackout (all 25 squares)" value="+50" />
+                                    </div>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span>💀 Ride or Die survived</span>
-                                    <span className="text-ochre">+2/ep</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>⭐ Exclusive pick bonus</span>
-                                    <span className="text-ochre">×1.5</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>🎯 Bingo line (5 in a row)</span>
-                                    <span className="text-ochre">+5</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>🔥 Bingo blackout (all 25)</span>
-                                    <span className="text-ochre">+50</span>
+
+                                <div className="border-t border-stone-700/50" />
+
+                                {/* Social (S) */}
+                                <div>
+                                    <p className="text-amber-400 text-[11px] font-bold uppercase tracking-widest mb-1.5">
+                                        Social (S)
+                                    </p>
+                                    <div className="space-y-0.5">
+                                        <ScoreGuideRow emoji="👑" label="Player of Episode (voted #1)" value="+7" />
+                                        <ScoreGuideRow emoji="💔" label="Impact rating (avg to pick owner)" value="avg" />
+                                    </div>
                                 </div>
                             </div>
-                            <div className="col-span-2 border-t border-stone-700 mt-2 pt-2">
-                                <div className="flex justify-between">
-                                    <span>👑 Player of Episode (voted #1)</span>
-                                    <span className="text-ochre">+7</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>💔 Impact rating (avg to owner)</span>
-                                    <span className="text-ochre">avg</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>🔥 Hot take confirmed (3 ep)</span>
-                                    <span className="text-ochre">+8</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>🕯️ Slow burn confirmed (season)</span>
-                                    <span className="text-ochre">+12</span>
-                                </div>
-                            </div>
-                        </div>
+                        )}
                     </FijianCard>
                 </>
             )}
+        </div>
+    );
+}
+
+function ScoreGuideRow({ emoji, label, value }) {
+    return (
+        <div className="flex justify-between py-0.5">
+            <span>{emoji} {label}</span>
+            <span className="text-ochre font-medium ml-2 shrink-0">{value}</span>
         </div>
     );
 }
