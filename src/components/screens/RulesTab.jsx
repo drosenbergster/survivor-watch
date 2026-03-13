@@ -62,7 +62,7 @@ export default function RulesTab() {
   const [openCat, setOpenCat] = useState(null);
 
   return (
-    <article className="space-y-4 sm:space-y-5 max-w-md mx-auto">
+    <div className="space-y-6">
       <header className="text-center py-4 sm:py-6">
         <h1 className="font-wood-serif font-bold text-4xl sm:text-5xl text-sand-warm uppercase tracking-tighter drop-shadow-text">
           LAWA
@@ -269,6 +269,6 @@ export default function RulesTab() {
       <section className="space-y-4 pt-6 border-t border-stone-700/50 mb-12">
         <LeagueSettings />
       </section>
-    </article>
+    </div>
   );
 }
