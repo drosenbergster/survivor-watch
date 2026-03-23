@@ -33,11 +33,12 @@ function Accordion({ title, icon, defaultOpen = false, children }) {
 }
 
 const GAMEPLAY_STEPS = [
-  { icon: '🤝', label: 'Draft two Ride or Die contestants before the season — they earn passive points all season.' },
-  { icon: '🎯', label: 'Pick two contestants each episode + answer Tree Mail predictions.' },
-  { icon: '🔥', label: 'Tap "Light Your Torch" when ready to watch — this locks picks and activates bingo.' },
-  { icon: '🗳️', label: 'At tribal council, pause and snap vote who\'s going home (+8 pts if correct).' },
-  { icon: '📊', label: 'Tap "Done Watching" after the episode. Host scores results, social votes open.' },
+  { icon: '🤝', label: 'Draft two Ride or Die contestants and seal your Season Passport before the season starts.' },
+  { icon: '🎯', label: 'Each episode, pick up to 5 weekly contestants and answer Tree Mail predictions.' },
+  { icon: '🔥', label: 'Tap "Light Your Torch" when ready to watch — locks your picks, opens bingo and tribal voting.' },
+  { icon: '🎱', label: 'Mark bingo squares as events happen. When tribal starts, pause and snap vote who\'s going home.' },
+  { icon: '🤫', label: 'Answer Tribal Whispers — quick yes/no calls during tribal council (+3 pts each).' },
+  { icon: '📊', label: 'Tap "Done Watching" after the episode. Vote on Player of the Episode and rate the boot\'s impact.' },
 ];
 
 const SCORING_CATEGORIES = (() => {
@@ -76,11 +77,17 @@ export default function RulesTab() {
 
       {/* ── How to Play ── */}
       <Accordion title="How to Play" icon="🏝️" defaultOpen>
+        <p className="text-xs text-bleached-sand/60 font-sans pb-1">
+          Every week follows the same rhythm: pick → predict → watch → vote → score.
+        </p>
         <ol className="space-y-2.5">
           {GAMEPLAY_STEPS.map((step, i) => (
             <li key={i} className="flex gap-3 items-start">
-              <span className="shrink-0 text-base mt-0.5">{step.icon}</span>
-              <p className="text-sm text-bleached-sand/80 leading-relaxed font-sans">{step.label}</p>
+              <span className="shrink-0 w-5 h-5 rounded-full bg-terracotta/20 text-terracotta text-[10px] font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
+              <div className="flex items-start gap-2 flex-1">
+                <span className="shrink-0 text-base mt-0.5">{step.icon}</span>
+                <p className="text-sm text-bleached-sand/80 leading-relaxed font-sans">{step.label}</p>
+              </div>
             </li>
           ))}
         </ol>
@@ -110,8 +117,8 @@ export default function RulesTab() {
               <span>🎯</span> Weekly Picks
             </h4>
             <ul className="text-xs text-bleached-sand/70 font-sans space-y-1">
-              <li>Pick <strong className="text-sand-warm">2 contestants</strong> each episode — anyone still in the game</li>
-              <li>Change every week</li>
+              <li>Pick <strong className="text-sand-warm">up to 5 contestants</strong> each episode — anyone still in the game except your Ride or Dies</li>
+              <li>Change every week — max picks shrink as the cast gets smaller</li>
               <li>Earn event points based on what happens that episode</li>
             </ul>
           </div>
@@ -199,6 +206,37 @@ export default function RulesTab() {
         </div>
       </Accordion>
 
+      {/* ── Tribal Whispers & Snap Vote ── */}
+      <Accordion title="Tribal Council Voting" icon="🗳️">
+        <div className="space-y-3">
+          <div className="flex items-start gap-3">
+            <span className="text-lg">⚡</span>
+            <div className="text-sm text-bleached-sand/70 font-sans leading-relaxed space-y-1">
+              <p>
+                <strong className="text-sand-warm">Snap Vote:</strong> When tribal council starts, pause the show and
+                pick who you think is going home. <strong className="text-terracotta">+8 pts</strong> if you nail it.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="text-lg">🤫</span>
+            <div className="text-sm text-bleached-sand/70 font-sans leading-relaxed space-y-1">
+              <p>
+                <strong className="text-sand-warm">Tribal Whispers:</strong> Quick yes/no predictions that
+                appear during tribal — &quot;Someone pulls out an idol,&quot; &quot;The vote is decisive,&quot; etc.
+                <strong className="text-terracotta"> +3 pts</strong> for each correct call.
+              </p>
+            </div>
+          </div>
+          <div className="bg-terracotta/5 border border-dashed border-terracotta/25 rounded-lg p-3">
+            <p className="text-xs text-bleached-sand/60 font-sans">
+              Both open after you Light Your Torch and close when you mark Done Watching.
+              The snap vote and whispers are only available while your torch is lit.
+            </p>
+          </div>
+        </div>
+      </Accordion>
+
       {/* ── Bingo & Watch Party ── */}
       <Accordion title="Bingo & Watch Party" icon="🎱">
         <div className="space-y-3">
@@ -227,20 +265,50 @@ export default function RulesTab() {
         </div>
       </Accordion>
 
-      {/* ── Draft Format ── */}
-      <Accordion title="Draft Format" icon="📝">
-        <ul className="space-y-2 text-sm text-bleached-sand/70 font-sans">
+      {/* ── Passports ── */}
+      <Accordion title="Passports" icon="📜">
+        <div className="space-y-3">
+          <div className="flex items-start gap-3">
+            <span className="text-lg">🛂</span>
+            <div className="text-sm text-bleached-sand/70 font-sans leading-relaxed space-y-1">
+              <p>
+                <strong className="text-sand-warm">Season Passport:</strong> Sealed before the season starts.
+                Five predictions — Sole Survivor, First Boot, Fan Favorite, Biggest Villain, and
+                Fire-Making Winner. Worth <strong className="text-terracotta">15–25 pts</strong> each, scored at the finale.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="text-lg">📋</span>
+            <div className="text-sm text-bleached-sand/70 font-sans leading-relaxed space-y-1">
+              <p>
+                <strong className="text-sand-warm">Merge Passport:</strong> Sealed after the merge.
+                Same five categories with updated context — worth <strong className="text-terracotta">8–12 pts</strong> each.
+                Both passports are revealed together at the finale.
+              </p>
+            </div>
+          </div>
+        </div>
+      </Accordion>
+
+      {/* ── Draft & Pre-Season ── */}
+      <Accordion title="Draft & Pre-Season" icon="📝">
+        <ul className="space-y-2.5 text-sm text-bleached-sand/70 font-sans">
           <li className="flex items-start gap-2">
             <Icon name="swap_vert" className="text-terracotta text-sm mt-0.5 shrink-0" />
             <span><strong className="text-sand-warm">Snake draft</strong> — order reverses each round (1→8, then 8→1).</span>
           </li>
           <li className="flex items-start gap-2">
             <Icon name="people" className="text-terracotta text-sm mt-0.5 shrink-0" />
-            <span>Each player drafts <strong className="text-sand-warm">2 exclusive</strong> Ride or Die contestants.</span>
+            <span>Each player drafts <strong className="text-sand-warm">2 exclusive</strong> Ride or Die contestants locked for the whole season.</span>
           </li>
           <li className="flex items-start gap-2">
-            <Icon name="schedule" className="text-terracotta text-sm mt-0.5 shrink-0" />
-            <span>Draft closes <strong className="text-sand-warm">1 hour before</strong> the season premiere.</span>
+            <Icon name="lock" className="text-terracotta text-sm mt-0.5 shrink-0" />
+            <span>Seal your <strong className="text-sand-warm">Season Passport</strong> after the draft — five pre-season predictions scored at the finale.</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <Icon name="play_arrow" className="text-terracotta text-sm mt-0.5 shrink-0" />
+            <span>The host starts the season once everyone has drafted and sealed their passports.</span>
           </li>
         </ul>
       </Accordion>

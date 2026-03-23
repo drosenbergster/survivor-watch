@@ -11,6 +11,22 @@ export function useApp() {
     return useContext(AppContext);
 }
 
+/**
+ * Get the effective tribe assignments for a given episode, considering swaps.
+ * Returns the assignments object from the most recent swap on or before episodeNum,
+ * or null if no swap applies.
+ */
+export function getEffectiveTribeAssignments(tribeSwaps, episodeNum) {
+    if (!tribeSwaps) return null;
+    const swapEps = Object.keys(tribeSwaps)
+        .filter(k => k !== 'merge')
+        .map(Number)
+        .filter(n => !isNaN(n) && n <= episodeNum)
+        .sort((a, b) => b - a);
+    if (swapEps.length === 0) return null;
+    return tribeSwaps[swapEps[0]]?.assignments || null;
+}
+
 const DEMO_LEAGUE = {
     name: 'Demo Island',
     joinCode: 'DEMO00',
@@ -736,6 +752,102 @@ export function AppProvider({ children }) {
         });
     }, [user, leagueId, league]);
 
+    const moveTribeSwap = useCallback(async (fromEpisode, toEpisode) => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can manage tribes');
+        const snap = await get(ref(db, `leagues/${leagueId}/tribeSwaps/${fromEpisode}`));
+        const swapData = snap.val();
+        if (!swapData) throw new Error(`No tribe swap found at episode ${fromEpisode}`);
+        await set(ref(db, `leagues/${leagueId}/tribeSwaps/${toEpisode}`), swapData);
+        await remove(ref(db, `leagues/${leagueId}/tribeSwaps/${fromEpisode}`));
+    }, [user, leagueId, league]);
+
+    const deleteTribeSwap = useCallback(async (episodeNum) => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can manage tribes');
+        await remove(ref(db, `leagues/${leagueId}/tribeSwaps/${episodeNum}`));
+    }, [user, leagueId, league]);
+
+    const fixElimination = useCallback(async (episodeNum, contestantId, method) => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can fix eliminations');
+
+        const epSnap = await get(ref(db, `leagues/${leagueId}/episodes/${episodeNum}`));
+        const epData = epSnap.val();
+
+        const prevEliminated = epData?.eliminatedThisEp || [];
+        const newEliminated = contestantId
+            ? [...new Set([...prevEliminated, contestantId])]
+            : prevEliminated;
+
+        await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}/eliminatedThisEp`), newEliminated);
+        await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}/eliminationMethod`), method);
+
+        if (contestantId) {
+            const gameEvents = epData?.gameEvents || {};
+            const existingEvents = gameEvents[contestantId] || [];
+            const surviveIdx = existingEvents.indexOf('survived');
+            const updatedEvents = surviveIdx >= 0
+                ? [...existingEvents.slice(0, surviveIdx), ...existingEvents.slice(surviveIdx + 1)]
+                : [...existingEvents];
+            if (method === 'medevac' && !updatedEvents.includes('medevac')) {
+                updatedEvents.push('medevac');
+            }
+            await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}/gameEvents/${contestantId}`), updatedEvents);
+
+            const currentEliminated = eliminated || [];
+            if (!currentEliminated.includes(contestantId)) {
+                await set(ref(db, `leagues/${leagueId}/eliminated`), [...currentEliminated, contestantId]);
+            }
+        }
+    }, [user, leagueId, league, eliminated]);
+
+    const rescoreEpisode = useCallback(async (episodeNum) => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can re-score episodes');
+
+        const epSnap = await get(ref(db, `leagues/${leagueId}/episodes/${episodeNum}`));
+        const epData = epSnap.val();
+        if (!epData?.scored) throw new Error(`Episode ${episodeNum} has not been scored yet`);
+
+        const tribeOverrides = getEffectiveTribeAssignments(tribeSwaps, episodeNum);
+
+        const prevEliminated = [];
+        const epNums = Object.keys(episodes || {}).map(Number).filter(n => n < episodeNum).sort((a, b) => a - b);
+        for (const n of epNums) {
+            const ep = episodes[n];
+            if (ep?.eliminatedThisEp) prevEliminated.push(...ep.eliminatedThisEp);
+        }
+        const elimSet = new Set(prevEliminated);
+        const remaining = ALL_CASTAWAYS.filter(c => !elimSet.has(c.id));
+
+        let importData = null;
+        try {
+            const importSnap = await get(ref(db, `seasons/s50/autoImport/e${episodeNum}`));
+            if (importSnap.exists()) importData = importSnap.val();
+        } catch { /* proceed with stored episode data */ }
+
+        const eliminatedId = epData.eliminatedThisEp?.[0] || importData?.eliminatedId || null;
+        const eliminationMethod = epData.eliminationMethod || importData?.eliminationMethod || 'voted_out';
+
+        const source = importData || epData;
+        const { gameEvents } = deriveGameEvents({
+            eliminatedId,
+            eliminationMethod,
+            immunityWinners: source.immunityWinners || epData.immunityWinners || [],
+            rewardWinners: source.rewardWinners || epData.rewardWinners || [],
+            isPostMerge: source.isPostMerge || !!tribeSwaps?.merge,
+            minorityVoters: source.minorityVoters || [],
+            receivedVotes: source.receivedVotes || [],
+            bigMoments: source.bigMoments || {},
+            remaining,
+            tribeOverrides,
+        });
+
+        await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}/gameEvents`), gameEvents);
+        await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}/rescoredAt`), Date.now());
+    }, [user, leagueId, league, tribeSwaps, episodes]);
+
     const executeMerge = useCallback(async (episodeNum, mergeTribeName) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
         if (league?.createdBy !== user.uid) throw new Error('Only the host can merge tribes');
@@ -956,6 +1068,7 @@ export function AppProvider({ children }) {
                 autoScoreAttempted.current[key] = true;
 
                 const remaining = ALL_CASTAWAYS.filter(c => !(eliminated || []).includes(c.id));
+                const tribeOverrides = getEffectiveTribeAssignments(tribeSwaps, epNum);
                 const { gameEvents } = deriveGameEvents({
                     eliminatedId: importData.eliminatedId,
                     eliminationMethod: importData.eliminationMethod || 'voted_out',
@@ -966,6 +1079,7 @@ export function AppProvider({ children }) {
                     receivedVotes: importData.receivedVotes || [],
                     bigMoments: importData.bigMoments || {},
                     remaining,
+                    tribeOverrides,
                 });
 
                 const propBets = ep.propBets || [];
@@ -998,7 +1112,7 @@ export function AppProvider({ children }) {
                 console.warn('Auto-score import check failed:', err.message);
             });
         }
-    }, [db, user, leagueId, league, episodes, eliminated, scoreEpisodeAction]);
+    }, [db, user, leagueId, league, episodes, eliminated, scoreEpisodeAction, tribeSwaps]);
 
     // --- Spoiler protection: safeEliminated only includes eliminations from watched episodes ---
     const safeEliminated = useMemo(() => {
@@ -1040,7 +1154,8 @@ export function AppProvider({ children }) {
         createEpisode, updatePropBets, submitPicks, submitPredictions,
         submitSnapVote, submitSideBets, scoreEpisodeAction,
         submitPlayerOfEpisodeVote, submitImpactRating,
-        executeTribeSwap, executeMerge, submitMergePassport,
+        executeTribeSwap, moveTribeSwap, deleteTribeSwap, fixElimination, rescoreEpisode,
+        executeMerge, submitMergePassport,
         startAuction, placeBid, closeAuctionItem,
         startFinale, revealPassport, revealMergePassport, submitReunionVote, crownChampion,
         getSeasonImportData, enterLeague,

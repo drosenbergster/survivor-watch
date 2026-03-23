@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { useApp } from '../../AppContext';
+import { useApp, getEffectiveTribeAssignments } from '../../AppContext';
 import { ALL_CASTAWAYS, TRIBES, SCORE_EVENTS } from '../../data';
 import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon } from '../fijian';
 import { parseTDT } from '../../importers/parseTDT';
@@ -29,6 +29,9 @@ function Chip({ active, color, onClick, children }) {
 }
 
 function TribeChip({ tribeKey, active, onClick }) {
+    const staticKey = Object.keys(TRIBES).find(k => k === tribeKey || TRIBES[k].name.toLowerCase() === tribeKey.toLowerCase());
+    const displayName = TRIBES[staticKey]?.name || tribeKey;
+    const colorKey = staticKey || tribeKey;
     return (
         <button
             onClick={onClick}
@@ -36,9 +39,9 @@ function TribeChip({ tribeKey, active, onClick }) {
                 ? 'border-fire-400 bg-fire-400/20 text-fire-400'
                 : 'border-stone-600 bg-stone-800 text-sand-warm/60 hover:bg-stone-700'
                 }`}
-            style={!active ? { borderColor: `var(--color-${tribeKey})`, color: `var(--color-${tribeKey})` } : undefined}
+            style={!active ? { borderColor: `var(--color-${colorKey})`, color: `var(--color-${colorKey})` } : undefined}
         >
-            {TRIBES[tribeKey]?.name}
+            {displayName}
         </button>
     );
 }
@@ -690,8 +693,9 @@ function ReviewStep({ derivedEvents, eliminatedPick, eliminationMethod, remainin
 /* ── main component ─────────────────────────────────────────── */
 
 export default function AdminScoring({ episodeNum }) {
-    const { user, league, episodes, eliminated, scoreEpisodeAction } = useApp();
+    const { user, league, episodes, eliminated, scoreEpisodeAction, tribeSwaps } = useApp();
     const episodeData = episodes?.[episodeNum] || null;
+    const tribeOverrides = useMemo(() => getEffectiveTribeAssignments(tribeSwaps, episodeNum), [tribeSwaps, episodeNum]);
 
     const [expanded, setExpanded] = useState(false);
 
@@ -741,12 +745,23 @@ export default function AdminScoring({ episodeNum }) {
     const remainingByTribe = useMemo(() => {
         const result = {};
         const elimSet = new Set(eliminated || []);
-        for (const [tribeKey, tribe] of Object.entries(TRIBES)) {
-            const members = tribe.members.filter(c => !elimSet.has(c.id));
-            if (members.length > 0) result[tribeKey] = members;
+        if (tribeOverrides) {
+            for (const [tribeName, memberIds] of Object.entries(tribeOverrides)) {
+                const members = (memberIds || [])
+                    .filter(id => !elimSet.has(id))
+                    .map(id => ALL_CASTAWAYS.find(c => c.id === id))
+                    .filter(Boolean);
+                const tribeKey = Object.keys(TRIBES).find(k => TRIBES[k].name.toLowerCase() === tribeName.toLowerCase()) || tribeName.toLowerCase();
+                if (members.length > 0) result[tribeKey] = members;
+            }
+        } else {
+            for (const [tribeKey, tribe] of Object.entries(TRIBES)) {
+                const members = tribe.members.filter(c => !elimSet.has(c.id));
+                if (members.length > 0) result[tribeKey] = members;
+            }
         }
         return result;
-    }, [eliminated]);
+    }, [eliminated, tribeOverrides]);
 
     // Auto-load imported stats from RTDB on mount
     useEffect(() => {
@@ -819,16 +834,25 @@ export default function AdminScoring({ episodeNum }) {
             if (!ids.includes(eliminatedPick)) ids.push(eliminatedPick);
             return ids;
         }
+        const elimSet = new Set(eliminated || []);
+        if (tribeOverrides) {
+            for (const [, memberIds] of Object.entries(tribeOverrides)) {
+                if (Array.isArray(memberIds) && memberIds.includes(eliminatedPick)) {
+                    const members = memberIds.filter(id => !elimSet.has(id));
+                    if (!members.includes(eliminatedPick)) members.push(eliminatedPick);
+                    return members;
+                }
+            }
+        }
         for (const [, tribe] of Object.entries(TRIBES)) {
             if (tribe.members.some(m => m.id === eliminatedPick)) {
-                const elimSet = new Set(eliminated || []);
                 const members = tribe.members.filter(c => !elimSet.has(c.id)).map(c => c.id);
                 if (!members.includes(eliminatedPick)) members.push(eliminatedPick);
                 return members;
             }
         }
         return remaining.map(c => c.id);
-    }, [eliminatedPick, eliminated, remaining, isPostMerge]);
+    }, [eliminatedPick, eliminated, remaining, isPostMerge, tribeOverrides]);
 
     const derivedEvents = useMemo(() => {
         return deriveGameEvents({
@@ -841,9 +865,10 @@ export default function AdminScoring({ episodeNum }) {
             receivedVotes,
             bigMoments,
             remaining,
+            tribeOverrides,
         });
     }, [eliminatedPick, eliminationMethod, immunityWinners, rewardWinners, noReward,
-        unanimousVote, minorityVoters, receivedVotes, bigMoments, remaining]);
+        unanimousVote, minorityVoters, receivedVotes, bigMoments, remaining, tribeOverrides]);
 
     const handleImport = useCallback((parsed) => {
         if (parsed.eliminatedId) setEliminatedPick(parsed.eliminatedId);

@@ -72,6 +72,11 @@
             "eliminationMethod": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
             "scored": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
             "scoredAt": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+            "rescoredAt": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+            "immunityWinners": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+            "rewardWinners": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+            "autoResolvedPropBets": { ".write": false },
+            "autoResolvedSideBets": { ".write": false },
             ".write": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists() && !data.exists()"
           }
         },

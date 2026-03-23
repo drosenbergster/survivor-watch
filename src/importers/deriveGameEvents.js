@@ -1,14 +1,32 @@
 import { ALL_CASTAWAYS, TRIBES } from '../data';
 
-function getTribeForContestant(contestantId) {
+function getTribeForContestant(contestantId, tribeOverrides) {
+    if (tribeOverrides) {
+        for (const [name, members] of Object.entries(tribeOverrides)) {
+            if (Array.isArray(members) && members.includes(contestantId)) {
+                return name;
+            }
+        }
+    }
     for (const [tribeKey, tribe] of Object.entries(TRIBES)) {
         if (tribe.members.some(m => m.id === contestantId)) return tribeKey;
     }
     return null;
 }
 
-function getTribeMembers(tribeKey, remaining) {
+function getTribeMembers(tribeKey, remaining, tribeOverrides) {
     const remainingIds = new Set(remaining.map(c => c.id));
+
+    if (tribeOverrides) {
+        for (const [name, members] of Object.entries(tribeOverrides)) {
+            const matchesKey = name.toLowerCase() === tribeKey.toLowerCase();
+            const matchesStaticName = TRIBES[tribeKey]?.name?.toLowerCase() === name.toLowerCase();
+            if (matchesKey || matchesStaticName) {
+                return (Array.isArray(members) ? members : []).filter(id => remainingIds.has(id));
+            }
+        }
+    }
+
     return TRIBES[tribeKey]?.members.filter(m => remainingIds.has(m.id)).map(m => m.id) || [];
 }
 
@@ -25,6 +43,7 @@ function getTribeMembers(tribeKey, remaining) {
  * @param {string[]}      input.receivedVotes        - contestant IDs who got votes but survived
  * @param {Object}        input.bigMoments           - { [contestantId]: string[] } manual event assignments
  * @param {Object[]}      input.remaining            - array of remaining contestant objects
+ * @param {Object|null}   input.tribeOverrides       - { tribeName: [contestantId, ...] } from tribe swaps
  * @returns {{ gameEvents: Object, tribalAttendees: string[] }}
  */
 export function deriveGameEvents({
@@ -37,6 +56,7 @@ export function deriveGameEvents({
     receivedVotes = [],
     bigMoments = {},
     remaining = [],
+    tribeOverrides = null,
 }) {
     const gameEvents = {};
     const ensure = (cid) => { if (!gameEvents[cid]) gameEvents[cid] = []; };
@@ -46,7 +66,7 @@ export function deriveGameEvents({
     // Tribal Immunity
     if (!isPostMerge) {
         for (const tribeKey of immunityWinners) {
-            const members = getTribeMembers(tribeKey, remaining);
+            const members = getTribeMembers(tribeKey, remaining, tribeOverrides);
             for (const cid of members) {
                 ensure(cid);
                 gameEvents[cid].push('tribal_immunity');
@@ -64,7 +84,7 @@ export function deriveGameEvents({
     // Tribal Reward
     if (!isPostMerge) {
         for (const tribeKey of rewardWinners) {
-            const members = getTribeMembers(tribeKey, remaining);
+            const members = getTribeMembers(tribeKey, remaining, tribeOverrides);
             for (const cid of members) {
                 ensure(cid);
                 gameEvents[cid].push('tribal_reward');
@@ -85,10 +105,10 @@ export function deriveGameEvents({
     let tribalAttendees = [];
 
     if (hadTribal) {
-        const elimTribe = getTribeForContestant(eliminatedId);
+        const elimTribe = getTribeForContestant(eliminatedId, tribeOverrides);
 
         if (!isPostMerge && elimTribe) {
-            tribalAttendees = getTribeMembers(elimTribe, remaining);
+            tribalAttendees = getTribeMembers(elimTribe, remaining, tribeOverrides);
             if (!tribalAttendees.includes(eliminatedId)) {
                 tribalAttendees.push(eliminatedId);
             }
