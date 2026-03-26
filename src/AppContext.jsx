@@ -975,7 +975,7 @@ export function AppProvider({ children }) {
         if (nextIndex >= 0) {
             await set(ref(db, `leagues/${leagueId}/auction/currentItemIndex`), nextIndex);
         } else {
-            const perkEp = (currentEpisode || 0) + 1;
+            const perkEp = currentEpisode || 1;
             await set(ref(db, `leagues/${leagueId}/auction/status`), 'complete');
             await set(ref(db, `leagues/${leagueId}/auction/perkEpisode`), perkEp);
         }
@@ -1004,7 +1004,7 @@ export function AppProvider({ children }) {
         if (nextIndex >= 0) {
             await set(ref(db, `leagues/${leagueId}/auction/currentItemIndex`), nextIndex);
         } else {
-            const perkEp = (currentEpisode || 0) + 1;
+            const perkEp = currentEpisode || 1;
             await set(ref(db, `leagues/${leagueId}/auction/status`), 'complete');
             await set(ref(db, `leagues/${leagueId}/auction/perkEpisode`), perkEp);
         }

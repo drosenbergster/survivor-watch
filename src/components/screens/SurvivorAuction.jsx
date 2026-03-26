@@ -372,7 +372,7 @@ function AuctionComplete({ items, leagueMembers, perkEpisode }) {
                 <span className="text-4xl">🎉</span>
                 <p className="font-display text-2xl tracking-wider text-ochre mt-2">Auction Complete</p>
                 <p className="text-sand-warm/50 text-xs font-sans mt-1">
-                    Perks activate for <span className="text-ochre font-bold">Episode {perkEpisode || '?'}</span> only.
+                    Perks are active now for <span className="text-ochre font-bold">Episode {perkEpisode || '?'}</span>.
                 </p>
             </FijianCard>
 
