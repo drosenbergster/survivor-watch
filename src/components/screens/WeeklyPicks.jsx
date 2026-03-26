@@ -8,7 +8,7 @@ function SpyGlassPanel() {
     const { user, leagueMembers, myEpisode, myEpisodeData, auction } = useApp();
     const [targetUid, setTargetUid] = useState('');
 
-    const hasSpyGlass = userHasPerk(auction, user?.uid, 'spy_glass');
+    const hasSpyGlass = userHasPerk(auction, user?.uid, 'spy_glass', myEpisode);
     if (!hasSpyGlass) return null;
 
     const opponents = Object.entries(leagueMembers || {}).filter(([uid]) => uid !== user?.uid);
@@ -86,7 +86,7 @@ export default function WeeklyPicks() {
 
     const eliminatedSet = new Set(safeEliminated || []);
     const remaining = ALL_CASTAWAYS.filter(c => !eliminatedSet.has(c.id));
-    const hasExtraPick = userHasPerk(auction, user?.uid, 'extra_pick');
+    const hasExtraPick = userHasPerk(auction, user?.uid, 'extra_pick', myEpisode);
     const maxPicks = getMaxPicks(remaining.length) + (hasExtraPick ? 1 : 0);
 
     useEffect(() => {

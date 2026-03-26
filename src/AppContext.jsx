@@ -975,9 +975,11 @@ export function AppProvider({ children }) {
         if (nextIndex >= 0) {
             await set(ref(db, `leagues/${leagueId}/auction/currentItemIndex`), nextIndex);
         } else {
+            const perkEp = (currentEpisode || 0) + 1;
             await set(ref(db, `leagues/${leagueId}/auction/status`), 'complete');
+            await set(ref(db, `leagues/${leagueId}/auction/perkEpisode`), perkEp);
         }
-    }, [user, leagueId, league]);
+    }, [user, leagueId, league, currentEpisode]);
 
     const skipAuctionItem = useCallback(async (itemId) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
@@ -1002,9 +1004,11 @@ export function AppProvider({ children }) {
         if (nextIndex >= 0) {
             await set(ref(db, `leagues/${leagueId}/auction/currentItemIndex`), nextIndex);
         } else {
+            const perkEp = (currentEpisode || 0) + 1;
             await set(ref(db, `leagues/${leagueId}/auction/status`), 'complete');
+            await set(ref(db, `leagues/${leagueId}/auction/perkEpisode`), perkEp);
         }
-    }, [user, leagueId, league]);
+    }, [user, leagueId, league, currentEpisode]);
 
     const startFinale = useCallback(async () => {
         if (!db || !user || !leagueId) throw new Error('Not connected');

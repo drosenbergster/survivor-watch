@@ -62,7 +62,7 @@ export function computeScarcity(picks) {
  *
  * Returns: { [uid]: { weekly, predictions, rideOrDie, total, breakdown } }
  */
-export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUids, bingoData, auctionData) {
+export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUids, bingoData, auctionData, episodeNum) {
     const {
         picks = {},
         predictions = {},
@@ -116,7 +116,7 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
         const playerPred = predictions[uid] || {};
 
         // Prop bets — only score when admin has explicitly set a result
-        const hasTreeMailPerk = userHasPerk(auctionData, uid, 'tree_mail_insider');
+        const hasTreeMailPerk = userHasPerk(auctionData, uid, 'tree_mail_insider', episodeNum);
         const propBetPts = hasTreeMailPerk ? CORRECT_PROP_BET_POINTS * 2 : CORRECT_PROP_BET_POINTS;
         const playerProps = playerPred.propBets || {};
         for (const prop of propBets) {
@@ -136,7 +136,7 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
         }
 
         // --- Snap vote scoring ---
-        const hasDoubleDown = userHasPerk(auctionData, uid, 'double_down');
+        const hasDoubleDown = userHasPerk(auctionData, uid, 'double_down', episodeNum);
         const snapVotePts = hasDoubleDown ? CORRECT_SNAP_VOTE_POINTS * 2 : CORRECT_SNAP_VOTE_POINTS;
         const playerSnapVote = snapVotes[uid];
         if (playerSnapVote?.contestantId && eliminatedThisEp.includes(playerSnapVote.contestantId)) {
@@ -214,7 +214,7 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
 
         // --- Bingo scoring ---
         let bingoTotal = 0;
-        const hasBingoFrenzy = userHasPerk(auctionData, uid, 'bingo_frenzy');
+        const hasBingoFrenzy = userHasPerk(auctionData, uid, 'bingo_frenzy', episodeNum);
         const bingoMultiplier = hasBingoFrenzy ? 2 : 1;
         breakdown.bingo = [];
         const playerBingo = bingoData?.[uid];
@@ -234,7 +234,7 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
 
         // --- Steal a Pick: retroactively add the best opponent pick's points ---
         let stealBonus = 0;
-        if (userHasPerk(auctionData, uid, 'steal_pick')) {
+        if (userHasPerk(auctionData, uid, 'steal_pick', episodeNum)) {
             const myPickSet = new Set(playerPicks);
             let bestStolenPts = 0;
             let bestStolenCid = null;
@@ -345,7 +345,7 @@ export function computeStandings(episodes, rideOrDies, memberUids, bingoAllEpiso
     for (const epNum of epNums) {
         const ep = episodes[epNum];
         const epBingo = bingoAllEpisodes?.[epNum] || {};
-        const epScores = scoreEpisode(ep, rideOrDies, eliminatedSoFar, memberUids, epBingo, auctionData);
+        const epScores = scoreEpisode(ep, rideOrDies, eliminatedSoFar, memberUids, epBingo, auctionData, epNum);
         perEpisode[epNum] = epScores;
 
         // Post-episode scoring

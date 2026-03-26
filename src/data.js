@@ -322,8 +322,9 @@ export const AUCTION_DUDS = [
     { perkType: 'dud_coconut', name: 'Coconut of Doom', description: "It's just a coconut. A very expensive coconut.", emoji: '🥥' },
 ];
 
-export function getAuctionPerks(auction) {
+export function getAuctionPerks(auction, episodeNum) {
     if (!auction || auction.status !== 'complete') return {};
+    if (episodeNum != null && auction.perkEpisode != null && Number(episodeNum) !== Number(auction.perkEpisode)) return {};
     const perks = {};
     for (const item of (auction.items || [])) {
         if (item.winner && item.perkType && !item.perkType.startsWith('dud_')) {
@@ -334,8 +335,8 @@ export function getAuctionPerks(auction) {
     return perks;
 }
 
-export function userHasPerk(auction, uid, perkType) {
-    const perks = getAuctionPerks(auction);
+export function userHasPerk(auction, uid, perkType, episodeNum) {
+    const perks = getAuctionPerks(auction, episodeNum);
     return (perks[uid] || []).includes(perkType);
 }
 

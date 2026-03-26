@@ -362,7 +362,7 @@ function ProgressBar({ items, currentIndex }) {
     );
 }
 
-function AuctionComplete({ items, leagueMembers }) {
+function AuctionComplete({ items, leagueMembers, perkEpisode }) {
     const realWins = items.filter(i => i.winner && !i.perkType?.startsWith('dud_'));
     const dudWins = items.filter(i => i.winner && i.perkType?.startsWith('dud_'));
 
@@ -372,7 +372,7 @@ function AuctionComplete({ items, leagueMembers }) {
                 <span className="text-4xl">🎉</span>
                 <p className="font-display text-2xl tracking-wider text-ochre mt-2">Auction Complete</p>
                 <p className="text-sand-warm/50 text-xs font-sans mt-1">
-                    All items have been sold! Perks are active for the next episode.
+                    Perks activate for <span className="text-ochre font-bold">Episode {perkEpisode || '?'}</span> only.
                 </p>
             </FijianCard>
 
@@ -462,7 +462,7 @@ export default function SurvivorAuction() {
     }
 
     if (isComplete) {
-        return <AuctionComplete items={auction.items || []} leagueMembers={leagueMembers} />;
+        return <AuctionComplete items={auction.items || []} leagueMembers={leagueMembers} perkEpisode={auction.perkEpisode} />;
     }
 
     const items = auction.items || [];
