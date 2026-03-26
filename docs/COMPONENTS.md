@@ -53,8 +53,9 @@ Use these for all screens. See `src/components/fijian/` and `docs/STYLE_GUIDE.md
 |-----------|------|-----------|---------|
 | **DraftTab** | `DraftTab.jsx` | Episode | Phase-driven episode hub — picks, predictions, torch, bingo, tribal, recap |
 | **ScoreboardTab** | `ScoreboardTab.jsx` | Scores | Season standings with per-episode breakdown, ride or dies, bingo card history |
-| **RulesTab** | `RulesTab.jsx` | Rules | Scoring rules + admin tools (tribe management, auction) |
+| **RulesTab** | `RulesTab.jsx` | Rules | Scoring rules + admin tools (tribe management) |
 | **PlayerProfile** | `PlayerProfile.jsx` | Profile | Player stats, badges, prediction accuracy |
+| **SurvivorAuction** | `SurvivorAuction.jsx` | Auction (temporary) | Appears when auction is active; auto-navigates all players. Disappears after perks expire. |
 
 ### Episode Flow
 | Component | File | Purpose |
@@ -83,7 +84,7 @@ Use these for all screens. See `src/components/fijian/` and `docs/STYLE_GUIDE.md
 | Component | File | Purpose |
 |-----------|------|---------|
 | **MergePassport** | `MergePassport.jsx` | Mid-season sealed predictions |
-| **SurvivorAuction** | `SurvivorAuction.jsx` | Bidding event with slider + number input |
+| **SurvivorAuction** | `SurvivorAuction.jsx` | Mid-season live auction: sequential cloche reveals, incremental +5 bidding with custom raise, standings-based budgets, 6 perks + 2 duds. Gets its own temporary tab during the event. |
 | **FinaleMode** | `FinaleMode.jsx` | Passport reveals, reunion awards, legacy cards, crowning |
 
 ## React Conventions

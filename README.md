@@ -18,7 +18,7 @@ A web app for Survivor Season 50 watch parties. Pick contestants, make predictio
 - **Achievements** — 10 badges (Prophet, Beast Mode, Contrarian, etc.)
 - **Auto-Commissioner** — Weekly recap with headlines, superlatives, and standings
 - **Tribe Management** — Admin tools for tribe swaps and merge
-- **Survivor Auction** — Mid-season bidding event with fake currency
+- **Survivor Auction** — Mid-season live auction with sequential cloche reveals, incremental bidding, standings-based budgets, 6 game-modifying perks (Extra Pick, Double Down, Tree Mail Insider, Bingo Frenzy, Spy Glass, Steal a Pick), and 2 hidden duds. Perks activate immediately for the current episode.
 - **Finale Mode** — Passport reveals, reunion awards, legacy cards, champion crowning
 - **Async Support** — Player-driven episode flow so everyone plays at their own pace
 
@@ -75,8 +75,8 @@ React 19, Vite 7, Tailwind CSS v4, Firebase (Auth + Realtime DB + Cloud Function
 |------|---------|
 | `src/App.jsx` | Main app, tab routing, league flow |
 | `src/AppContext.jsx` | Global state, Firebase sync, auto-scoring, all game actions |
-| `src/data.js` | Season 50 cast, tribes, scoring events, structured prop bets, bet resolution |
-| `src/scoring.js` | Scoring engine, standings, achievements, commissioner report |
+| `src/data.js` | Season 50 cast, tribes, scoring events, structured prop bets, bet resolution, auction perks |
+| `src/scoring.js` | Scoring engine, standings, achievements, commissioner report, auction perk multipliers |
 | `src/importers/` | Client-side parsers (TDT, InsideSurvivor) and game event derivation |
 | `functions/` | Firebase Cloud Functions for scheduled auto-import and bet resolution |
 | `src/theme.js` | Color constants for JS |
