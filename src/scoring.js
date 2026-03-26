@@ -1,4 +1,4 @@
-import { SCORE_EVENTS, ALL_CASTAWAYS, detectBingoLines, isBingoBlackout, ACHIEVEMENT_MAP } from './data';
+import { SCORE_EVENTS, ALL_CASTAWAYS, detectBingoLines, isBingoBlackout, ACHIEVEMENT_MAP, userHasPerk } from './data';
 
 const SCORE_MAP = Object.fromEntries(SCORE_EVENTS.map(e => [e.key, e.points]));
 
@@ -62,7 +62,7 @@ export function computeScarcity(picks) {
  *
  * Returns: { [uid]: { weekly, predictions, rideOrDie, total, breakdown } }
  */
-export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUids, bingoData) {
+export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUids, bingoData, auctionData) {
     const {
         picks = {},
         predictions = {},
@@ -116,27 +116,32 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
         const playerPred = predictions[uid] || {};
 
         // Prop bets — only score when admin has explicitly set a result
+        const hasTreeMailPerk = userHasPerk(auctionData, uid, 'tree_mail_insider');
+        const propBetPts = hasTreeMailPerk ? CORRECT_PROP_BET_POINTS * 2 : CORRECT_PROP_BET_POINTS;
         const playerProps = playerPred.propBets || {};
         for (const prop of propBets) {
             const correctAnswer = propBetResults[prop.id];
             if (correctAnswer === undefined || correctAnswer === null) continue;
             const playerAnswer = !!playerProps[prop.id];
             if (playerAnswer === !!correctAnswer) {
-                predictionTotal += CORRECT_PROP_BET_POINTS;
+                predictionTotal += propBetPts;
                 breakdown.predictions.push({
                     type: 'propBet',
                     text: prop.text,
                     correct: true,
-                    points: CORRECT_PROP_BET_POINTS,
+                    points: propBetPts,
+                    perkBoost: hasTreeMailPerk,
                 });
             }
         }
 
         // --- Snap vote scoring ---
+        const hasDoubleDown = userHasPerk(auctionData, uid, 'double_down');
+        const snapVotePts = hasDoubleDown ? CORRECT_SNAP_VOTE_POINTS * 2 : CORRECT_SNAP_VOTE_POINTS;
         const playerSnapVote = snapVotes[uid];
         if (playerSnapVote?.contestantId && eliminatedThisEp.includes(playerSnapVote.contestantId)) {
-            predictionTotal += CORRECT_SNAP_VOTE_POINTS;
-            breakdown.predictions.push({ type: 'snapVote', correct: true, points: CORRECT_SNAP_VOTE_POINTS });
+            predictionTotal += snapVotePts;
+            breakdown.predictions.push({ type: 'snapVote', correct: true, points: snapVotePts, perkBoost: hasDoubleDown });
         }
 
         // --- Side bet scoring — only score when admin has explicitly set a result ---
@@ -209,20 +214,53 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
 
         // --- Bingo scoring ---
         let bingoTotal = 0;
+        const hasBingoFrenzy = userHasPerk(auctionData, uid, 'bingo_frenzy');
+        const bingoMultiplier = hasBingoFrenzy ? 2 : 1;
         breakdown.bingo = [];
         const playerBingo = bingoData?.[uid];
         if (playerBingo && Array.isArray(playerBingo) && playerBingo.length === 25) {
             const lines = detectBingoLines(playerBingo);
             if (lines.length > 0) {
-                const linePoints = lines.length * BINGO_LINE_POINTS;
+                const linePoints = lines.length * BINGO_LINE_POINTS * bingoMultiplier;
                 bingoTotal += linePoints;
-                breakdown.bingo.push({ type: 'lines', count: lines.length, points: linePoints });
+                breakdown.bingo.push({ type: 'lines', count: lines.length, points: linePoints, perkBoost: hasBingoFrenzy });
             }
             if (isBingoBlackout(playerBingo)) {
-                bingoTotal += BINGO_BLACKOUT_POINTS;
-                breakdown.bingo.push({ type: 'blackout', points: BINGO_BLACKOUT_POINTS });
+                const blackoutPts = BINGO_BLACKOUT_POINTS * bingoMultiplier;
+                bingoTotal += blackoutPts;
+                breakdown.bingo.push({ type: 'blackout', points: blackoutPts, perkBoost: hasBingoFrenzy });
             }
         }
+
+        // --- Steal a Pick: retroactively add the best opponent pick's points ---
+        let stealBonus = 0;
+        if (userHasPerk(auctionData, uid, 'steal_pick')) {
+            const myPickSet = new Set(playerPicks);
+            let bestStolenPts = 0;
+            let bestStolenCid = null;
+            for (const [otherUid, otherPicks] of Object.entries(picks)) {
+                if (otherUid === uid) continue;
+                for (const cid of (otherPicks || [])) {
+                    if (myPickSet.has(cid)) continue;
+                    const pts = contestantScores[cid] || 0;
+                    if (pts > bestStolenPts) { bestStolenPts = pts; bestStolenCid = cid; }
+                }
+            }
+            if (bestStolenCid && bestStolenPts > 0) {
+                stealBonus = bestStolenPts;
+                const castaway = ALL_CASTAWAYS.find(c => c.id === bestStolenCid);
+                breakdown.weekly.push({
+                    contestantId: bestStolenCid,
+                    name: castaway?.name || bestStolenCid,
+                    raw: bestStolenPts,
+                    scarcityBonus: false,
+                    points: bestStolenPts,
+                    events: gameEvents[bestStolenCid] || [],
+                    stolen: true,
+                });
+            }
+        }
+        weeklyTotal += stealBonus;
 
         playerScores[uid] = {
             weekly: weeklyTotal,
@@ -290,7 +328,7 @@ function computeImpactRatingAvg(ratings) {
     return Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 10) / 10;
 }
 
-export function computeStandings(episodes, rideOrDies, memberUids, bingoAllEpisodes, postEpisodeData, preSeasonEliminated) {
+export function computeStandings(episodes, rideOrDies, memberUids, bingoAllEpisodes, postEpisodeData, preSeasonEliminated, auctionData) {
     const perEpisode = {};
     const cumulative = {};
     for (const uid of memberUids) {
@@ -307,7 +345,7 @@ export function computeStandings(episodes, rideOrDies, memberUids, bingoAllEpiso
     for (const epNum of epNums) {
         const ep = episodes[epNum];
         const epBingo = bingoAllEpisodes?.[epNum] || {};
-        const epScores = scoreEpisode(ep, rideOrDies, eliminatedSoFar, memberUids, epBingo);
+        const epScores = scoreEpisode(ep, rideOrDies, eliminatedSoFar, memberUids, epBingo, auctionData);
         perEpisode[epNum] = epScores;
 
         // Post-episode scoring

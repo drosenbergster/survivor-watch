@@ -136,6 +136,7 @@
           "status": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
           "items": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
           "budgets": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+          "currentItemIndex": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
           "bids": {
             "$itemId": {
               "$uid": {

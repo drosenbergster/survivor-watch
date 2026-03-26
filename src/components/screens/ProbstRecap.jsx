@@ -230,14 +230,14 @@ function ImpactRating({ episodeNum, inline }) {
 export default function ProbstRecap({ episodeNum }) {
     const {
         episodes, rideOrDies, leagueMembers, bingo,
-        postEpisode, league,
+        postEpisode, league, auction,
     } = useApp();
 
     const memberUids = useMemo(() => Object.keys(leagueMembers || {}), [leagueMembers]);
 
     const { standings, perEpisode } = useMemo(
-        () => computeStandings(episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated),
-        [episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated]
+        () => computeStandings(episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated, auction),
+        [episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated, auction]
     );
 
     const report = useMemo(

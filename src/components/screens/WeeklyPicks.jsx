@@ -1,11 +1,62 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useApp } from '../../AppContext';
-import { TRIBES, ALL_CASTAWAYS, getMaxPicks } from '../../data';
+import { TRIBES, ALL_CASTAWAYS, getMaxPicks, userHasPerk } from '../../data';
 import { computeScarcity } from '../../scoring';
 import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon } from '../fijian';
 
+function SpyGlassPanel() {
+    const { user, leagueMembers, myEpisode, myEpisodeData, auction } = useApp();
+    const [targetUid, setTargetUid] = useState('');
+
+    const hasSpyGlass = userHasPerk(auction, user?.uid, 'spy_glass');
+    if (!hasSpyGlass) return null;
+
+    const opponents = Object.entries(leagueMembers || {}).filter(([uid]) => uid !== user?.uid);
+    const targetPicks = targetUid ? (myEpisodeData?.picks?.[targetUid] || []) : [];
+
+    return (
+        <FijianCard className="p-4 space-y-3 border-ochre/20">
+            <div className="flex items-center gap-2">
+                <span className="text-lg">🔍</span>
+                <span className="text-ochre text-sm font-bold font-sans">Spy Glass</span>
+            </div>
+            <p className="text-sand-warm/50 text-xs font-sans">
+                Pick an opponent to peek at their current picks for this episode.
+            </p>
+            <select
+                value={targetUid}
+                onChange={e => setTargetUid(e.target.value)}
+                className="w-full bg-stone-800 text-sand-warm border border-stone-600 rounded-lg px-3 py-2 text-sm font-sans"
+            >
+                <option value="">Select opponent...</option>
+                {opponents.map(([uid, m]) => (
+                    <option key={uid} value={uid}>{m.displayName}</option>
+                ))}
+            </select>
+            {targetUid && (
+                <div className="space-y-1">
+                    {targetPicks.length === 0 ? (
+                        <p className="text-sand-warm/40 text-xs font-sans italic">
+                            {leagueMembers?.[targetUid]?.displayName} hasn&apos;t locked picks yet.
+                        </p>
+                    ) : (
+                        targetPicks.map(cid => {
+                            const c = ALL_CASTAWAYS.find(x => x.id === cid);
+                            return (
+                                <div key={cid} className="flex items-center gap-2 px-2 py-1.5 rounded bg-ochre/5 text-xs font-sans">
+                                    <span className="text-sand-warm">{c?.name || cid}</span>
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
+            )}
+        </FijianCard>
+    );
+}
+
 export default function WeeklyPicks() {
-    const { user, myEpisode, myEpisodeData, safeEliminated, rideOrDies, episodes, submitPicks } = useApp();
+    const { user, myEpisode, myEpisodeData, safeEliminated, rideOrDies, episodes, submitPicks, auction } = useApp();
     const myRoDs = useMemo(() => new Set(rideOrDies?.[user?.uid] || []), [rideOrDies, user?.uid]);
 
     const othersRoDs = useMemo(() => {
@@ -35,7 +86,8 @@ export default function WeeklyPicks() {
 
     const eliminatedSet = new Set(safeEliminated || []);
     const remaining = ALL_CASTAWAYS.filter(c => !eliminatedSet.has(c.id));
-    const maxPicks = getMaxPicks(remaining.length);
+    const hasExtraPick = userHasPerk(auction, user?.uid, 'extra_pick');
+    const maxPicks = getMaxPicks(remaining.length) + (hasExtraPick ? 1 : 0);
 
     useEffect(() => {
         if (myPicks.length > 0 && !hydrated.current) {
@@ -81,6 +133,15 @@ export default function WeeklyPicks() {
                 you get a <strong className="text-ochre">1.5&times; bonus</strong>.
                 Your ride or dies score passively — pick someone else!
             </p>
+
+            {hasExtraPick && (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-ochre/10 border border-ochre/20">
+                    <span>➕</span>
+                    <span className="text-ochre text-xs font-bold">Extra Pick active! You get +1 pick this episode.</span>
+                </div>
+            )}
+
+            <SpyGlassPanel />
 
             {saved && (
                 <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-jungle-400/10 border border-jungle-400/20">

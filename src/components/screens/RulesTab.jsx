@@ -3,7 +3,6 @@ import { SCORE_EVENTS, ENGAGEMENT_SCORING } from '../../data';
 import { useApp } from '../../AppContext';
 import { Icon } from '../fijian';
 import TribeManagement from './TribeManagement';
-import SurvivorAuction from './SurvivorAuction';
 import LeagueSettings from './LeagueSettings';
 
 function Accordion({ title, icon, defaultOpen = false, children }) {
@@ -321,16 +320,6 @@ export default function RulesTab() {
             <p className="text-sand-warm/50 text-xs font-sans mt-1">Host-only game management</p>
           </div>
           <TribeManagement />
-        </section>
-      )}
-
-      {isActive && (
-        <section className="space-y-4 pt-6 border-t border-stone-700/50">
-          <div className="text-center">
-            <h3 className="font-display text-xl tracking-wider text-ochre">Survivor Auction</h3>
-            <p className="text-sand-warm/50 text-xs font-sans mt-1">Mid-season catch-up event</p>
-          </div>
-          <SurvivorAuction />
         </section>
       )}
 

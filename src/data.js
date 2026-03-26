@@ -306,6 +306,39 @@ export function getMaxPicks(remainingCount) {
     return Math.min(5, Math.floor(remainingCount / 2));
 }
 
+// ── Survivor Auction ──
+
+export const AUCTION_PERKS = [
+    { perkType: 'extra_pick', name: 'Extra Pick', description: 'Pick 1 extra contestant next episode', emoji: '➕' },
+    { perkType: 'double_down', name: 'Double Down', description: 'Double your snap vote points next tribal (8 → 16)', emoji: '🔥' },
+    { perkType: 'tree_mail_insider', name: 'Tree Mail Insider', description: 'Double your Tree Mail points next episode (+6 each)', emoji: '📬' },
+    { perkType: 'bingo_frenzy', name: 'Bingo Frenzy', description: 'Double your bingo points next episode', emoji: '🎱' },
+    { perkType: 'spy_glass', name: 'Spy Glass', description: "See one opponent's picks before locking yours", emoji: '🔍' },
+    { perkType: 'steal_pick', name: 'Steal a Pick', description: "Copy one opponent's best pick as a bonus pick", emoji: '🃏' },
+];
+
+export const AUCTION_DUDS = [
+    { perkType: 'dud_feast', name: 'The Merge Feast', description: "A covered platter of... rice. No game advantage whatsoever.", emoji: '🍖' },
+    { perkType: 'dud_coconut', name: 'Coconut of Doom', description: "It's just a coconut. A very expensive coconut.", emoji: '🥥' },
+];
+
+export function getAuctionPerks(auction) {
+    if (!auction || auction.status !== 'complete') return {};
+    const perks = {};
+    for (const item of (auction.items || [])) {
+        if (item.winner && item.perkType && !item.perkType.startsWith('dud_')) {
+            if (!perks[item.winner]) perks[item.winner] = [];
+            perks[item.winner].push(item.perkType);
+        }
+    }
+    return perks;
+}
+
+export function userHasPerk(auction, uid, perkType) {
+    const perks = getAuctionPerks(auction);
+    return (perks[uid] || []).includes(perkType);
+}
+
 // Island Bingo squares pool (119 items)
 export const BINGO_ITEMS = [
     // Jeff Probst (11)

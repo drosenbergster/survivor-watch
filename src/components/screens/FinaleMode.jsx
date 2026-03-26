@@ -246,7 +246,7 @@ function ChampionCrowning() {
 export default function FinaleMode() {
     const {
         user, league, leagueMembers, passports, mergePassports,
-        episodes, rideOrDies, bingo, postEpisode,
+        episodes, rideOrDies, bingo, postEpisode, auction,
         finaleData, startFinale,
     } = useApp();
 
@@ -254,8 +254,8 @@ export default function FinaleMode() {
     const memberUids = useMemo(() => Object.keys(leagueMembers || {}), [leagueMembers]);
 
     const { standings, perEpisode } = useMemo(
-        () => computeStandings(episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated),
-        [episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated]
+        () => computeStandings(episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated, auction),
+        [episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated, auction]
     );
 
     const achievements = useMemo(

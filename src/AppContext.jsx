@@ -2,7 +2,8 @@ import { createContext, useContext, useState, useEffect, useCallback, useMemo, u
 import { onAuthStateChanged, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, signOut } from 'firebase/auth';
 import { ref, onValue, set, get, push, remove } from 'firebase/database';
 import { auth, db } from './firebase';
-import { generatePropBets, generateSideBets, ALL_CASTAWAYS, resolveBets } from './data';
+import { generatePropBets, generateSideBets, ALL_CASTAWAYS, resolveBets, getAuctionPerks } from './data';
+import { computeStandings } from './scoring';
 import { deriveGameEvents } from './importers/deriveGameEvents';
 
 const AppContext = createContext(null);
@@ -869,19 +870,39 @@ export function AppProvider({ children }) {
     const startAuction = useCallback(async (items) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
         if (league?.createdBy !== user.uid) throw new Error('Only the host can start the auction');
+
         const memberUids = Object.keys(leagueMembers);
         const baseBudget = 100;
         const budgets = {};
-        memberUids.forEach(uid => { budgets[uid] = baseBudget; });
+
+        // Compute standings-based budget bonuses (everyone except 1st gets a bonus)
+        const { standings } = computeStandings(episodes, rideOrDies, memberUids, bingo, postEpisode, []);
+        const n = standings.length;
+
+        memberUids.forEach(uid => {
+            if (n <= 1) {
+                budgets[uid] = { base: baseBudget, bonus: 0, total: baseBudget };
+                return;
+            }
+            const rank = standings.findIndex(s => s.uid === uid);
+            // 1st place (rank 0): no bonus. Others: linear scale up to 50% for last place.
+            const bonusPct = rank === 0 ? 0 : (rank / (n - 1)) * 0.5;
+            const bonus = Math.round(baseBudget * bonusPct);
+            budgets[uid] = { base: baseBudget, bonus, total: baseBudget + bonus };
+        });
 
         await set(ref(db, `leagues/${leagueId}/auction`), {
             status: 'active',
-            items: items.map((item, i) => ({ id: `auc_${i}`, ...item, winner: null, winningBid: null })),
+            items: items.map((item, i) => ({
+                id: `auc_${i}`, ...item,
+                revealed: false, winner: null, winningBid: null, skipped: false,
+            })),
+            currentItemIndex: 0,
             budgets,
             bids: {},
             startedAt: Date.now(),
         });
-    }, [user, leagueId, league, leagueMembers]);
+    }, [user, leagueId, league, leagueMembers, episodes, rideOrDies, bingo, postEpisode]);
 
     const placeBid = useCallback(async (itemId, amount) => {
         if (!user || !leagueId) throw new Error('Not connected');
@@ -913,16 +934,74 @@ export function AppProvider({ children }) {
         const items = (auctionData.items || []).map(item =>
             item.id === itemId ? { ...item, winner: winnerUid, winningBid } : item
         );
-        const budgets = { ...(auctionData.budgets || {}) };
-        if (winnerUid && winningBid) {
-            budgets[winnerUid] = (budgets[winnerUid] || 0) - winningBid;
+
+        // Deduct from winner's budget
+        const budgets = {};
+        for (const [uid, b] of Object.entries(auctionData.budgets || {})) {
+            const prev = typeof b === 'object' ? { ...b } : { base: b, bonus: 0, total: b };
+            if (uid === winnerUid && winningBid) {
+                prev.total = (prev.total || 0) - winningBid;
+            }
+            budgets[uid] = prev;
         }
 
         await set(ref(db, `leagues/${leagueId}/auction/items`), items);
         await set(ref(db, `leagues/${leagueId}/auction/budgets`), budgets);
 
-        const allClosed = items.every(i => i.winner !== null);
-        if (allClosed) {
+        // Don't auto-advance yet -- host reveals the cloche first
+    }, [user, leagueId, league]);
+
+    const revealAuctionItem = useCallback(async (itemId) => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can reveal items');
+
+        const snap = await get(ref(db, `leagues/${leagueId}/auction`));
+        const auctionData = snap.val();
+        if (!auctionData) throw new Error('No auction running');
+
+        const items = (auctionData.items || []).map(item =>
+            item.id === itemId ? { ...item, revealed: true } : item
+        );
+
+        // Find next un-sold/un-skipped item to advance to
+        const currentIdx = items.findIndex(i => i.id === itemId);
+        let nextIndex = -1;
+        for (let i = currentIdx + 1; i < items.length; i++) {
+            if (!items[i].winner && !items[i].skipped) { nextIndex = i; break; }
+        }
+
+        await set(ref(db, `leagues/${leagueId}/auction/items`), items);
+
+        if (nextIndex >= 0) {
+            await set(ref(db, `leagues/${leagueId}/auction/currentItemIndex`), nextIndex);
+        } else {
+            await set(ref(db, `leagues/${leagueId}/auction/status`), 'complete');
+        }
+    }, [user, leagueId, league]);
+
+    const skipAuctionItem = useCallback(async (itemId) => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can skip items');
+
+        const snap = await get(ref(db, `leagues/${leagueId}/auction`));
+        const auctionData = snap.val();
+        if (!auctionData) throw new Error('No auction running');
+
+        const items = (auctionData.items || []).map(item =>
+            item.id === itemId ? { ...item, skipped: true, revealed: true } : item
+        );
+
+        const currentIdx = items.findIndex(i => i.id === itemId);
+        let nextIndex = -1;
+        for (let i = currentIdx + 1; i < items.length; i++) {
+            if (!items[i].winner && !items[i].skipped) { nextIndex = i; break; }
+        }
+
+        await set(ref(db, `leagues/${leagueId}/auction/items`), items);
+
+        if (nextIndex >= 0) {
+            await set(ref(db, `leagues/${leagueId}/auction/currentItemIndex`), nextIndex);
+        } else {
             await set(ref(db, `leagues/${leagueId}/auction/status`), 'complete');
         }
     }, [user, leagueId, league]);
@@ -1156,7 +1235,7 @@ export function AppProvider({ children }) {
         submitPlayerOfEpisodeVote, submitImpactRating,
         executeTribeSwap, moveTribeSwap, deleteTribeSwap, fixElimination, rescoreEpisode,
         executeMerge, submitMergePassport,
-        startAuction, placeBid, closeAuctionItem,
+        startAuction, placeBid, closeAuctionItem, revealAuctionItem, skipAuctionItem,
         startFinale, revealPassport, revealMergePassport, submitReunionVote, crownChampion,
         getSeasonImportData, enterLeague,
         sendMagicLink, logout,

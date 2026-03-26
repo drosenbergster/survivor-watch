@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useApp } from './AppContext';
 import {
     AuthScreen, LeagueGate, LeagueLobby,
     RideOrDieDraft, SeasonPassport,
     DraftTab, ScoreboardTab, RulesTab, PlayerProfile,
-    WelcomeCarousel,
+    SurvivorAuction, WelcomeCarousel,
 } from './components/screens';
 import { AppShell } from './components/layout';
 
@@ -12,12 +12,14 @@ function ProfileTab() {
     return <PlayerProfile />;
 }
 
-const TABS = [
+const BASE_TABS = [
     { key: 'episode', label: 'Episode', icon: 'local_fire_department', Component: DraftTab },
     { key: 'scores', label: 'Scores', icon: 'leaderboard', Component: ScoreboardTab },
     { key: 'profile', label: 'Profile', icon: 'person', Component: ProfileTab },
     { key: 'rules', label: 'Rules', icon: 'menu_book', Component: RulesTab },
 ];
+
+const AUCTION_TAB = { key: 'auction', label: 'Auction', icon: 'gavel', Component: SurvivorAuction };
 
 function LoadingScreen() {
     return (
@@ -28,7 +30,7 @@ function LoadingScreen() {
 }
 
 export default function App() {
-    const { user, authLoading, league, leagueId, leagueLoading, draftState, passports, onboardingComplete, completeOnboarding } = useApp();
+    const { user, authLoading, league, leagueId, leagueLoading, draftState, passports, onboardingComplete, completeOnboarding, auction } = useApp();
     const [activeTab, setActiveTab] = useState('episode');
     const [joinParam, setJoinParam] = useState(null);
     useEffect(() => {
@@ -40,13 +42,29 @@ export default function App() {
         }
     }, []);
 
+    const isHost = league?.createdBy === user?.uid;
+    const auctionVisible = auction || isHost;
+    const isActive = league?.status === 'active';
+
+    const TABS = useMemo(() => {
+        if (isActive && auctionVisible) {
+            return [...BASE_TABS.slice(0, 2), AUCTION_TAB, ...BASE_TABS.slice(2)];
+        }
+        return BASE_TABS;
+    }, [isActive, auctionVisible]);
+
+    useEffect(() => {
+        if (auction?.status === 'active' && activeTab !== 'auction') {
+            setActiveTab('auction');
+        }
+    }, [auction?.status]);
+
     if (authLoading) return <LoadingScreen />;
     if (!user) return <AuthScreen />;
     if (!onboardingComplete) return <WelcomeCarousel onComplete={completeOnboarding} />;
     if (leagueLoading) return <LoadingScreen />;
     if (!leagueId) return <LeagueGate prefillCode={joinParam} />;
 
-    // League status: lobby → draft → active
     const status = league?.status || 'lobby';
 
     const shellProps = { tabs: TABS, activeTab, onTabChange: setActiveTab, onShowTutorial: () => setActiveTab('rules') };

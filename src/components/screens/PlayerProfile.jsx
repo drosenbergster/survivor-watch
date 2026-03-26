@@ -102,7 +102,7 @@ function SnapVoteAccuracy({ episodes, uid }) {
 export default function PlayerProfile({ uid: profileUid, onClose }) {
     const {
         user, episodes, rideOrDies, leagueMembers, safeEliminated, bingo,
-        postEpisode, league,
+        postEpisode, league, auction,
     } = useApp();
 
     const targetUid = profileUid || user?.uid;
@@ -111,8 +111,8 @@ export default function PlayerProfile({ uid: profileUid, onClose }) {
     const memberUids = useMemo(() => Object.keys(leagueMembers || {}), [leagueMembers]);
 
     const { standings, perEpisode } = useMemo(
-        () => computeStandings(episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated),
-        [episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated]
+        () => computeStandings(episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated, auction),
+        [episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated, auction]
     );
 
     const achievements = useMemo(
