@@ -351,7 +351,11 @@ export function AppProvider({ children }) {
         const data = snap.val();
         return Object.keys(data)
             .filter(k => k.startsWith('e'))
-            .map(k => ({ episodeNum: parseInt(k.slice(1), 10), eliminatedId: data[k].eliminatedId || null }))
+            .map(k => ({
+                episodeNum: parseInt(k.slice(1), 10),
+                eliminatedId: data[k].eliminatedId || null,
+                eliminatedIds: data[k].eliminatedIds || (data[k].eliminatedId ? [data[k].eliminatedId] : []),
+            }))
             .sort((a, b) => a.episodeNum - b.episodeNum);
     }, []);
 
@@ -375,8 +379,8 @@ export function AppProvider({ children }) {
         if (startingEpisode > 1) {
             const importData = await getSeasonImportData();
             preSeasonEliminated = importData
-                .filter(ep => ep.episodeNum < startingEpisode && ep.eliminatedId)
-                .map(ep => ep.eliminatedId);
+                .filter(ep => ep.episodeNum < startingEpisode)
+                .flatMap(ep => ep.eliminatedIds || (ep.eliminatedId ? [ep.eliminatedId] : []));
         }
 
         const leagueData = {
@@ -619,12 +623,15 @@ export function AppProvider({ children }) {
             [`leagues/${leagueId}/episodes/${episodeNum}/status`]: 'scored',
         };
 
-        // Update the eliminated list (merge with existing)
-        if (eliminatedThisEp?.length > 0) {
-            const currentEliminated = eliminated || [];
-            const merged = [...new Set([...currentEliminated, ...eliminatedThisEp])];
-            updates[`leagues/${leagueId}/eliminated`] = merged;
+        // Rebuild eliminated list from all episodes to avoid stale entries
+        const rebuiltEliminated = new Set(league?.preSeasonEliminated || []);
+        for (const [epN, epData] of Object.entries(episodes || {})) {
+            const epElims = Number(epN) === episodeNum
+                ? (eliminatedThisEp || [])
+                : (epData.eliminatedThisEp || []);
+            for (const id of epElims) rebuiltEliminated.add(id);
         }
+        updates[`leagues/${leagueId}/eliminated`] = [...rebuiltEliminated];
 
         // Use individual set calls (multi-path update via set requires root ref)
         for (const [path, value] of Object.entries(updates)) {
@@ -828,15 +835,21 @@ export function AppProvider({ children }) {
             if (importSnap.exists()) importData = importSnap.val();
         } catch { /* proceed with stored episode data */ }
 
-        const eliminatedId = epData.eliminatedThisEp?.[0] || importData?.eliminatedId || null;
+        const eliminatedIds = epData.eliminatedThisEp?.length > 0
+            ? epData.eliminatedThisEp
+            : importData?.eliminatedIds?.length > 0
+                ? importData.eliminatedIds
+                : (importData?.eliminatedId ? [importData.eliminatedId] : []);
         const eliminationMethod = epData.eliminationMethod || importData?.eliminationMethod || 'voted_out';
 
         const source = importData || epData;
         const { gameEvents } = deriveGameEvents({
-            eliminatedId,
+            eliminatedIds,
             eliminationMethod,
             immunityWinners: source.immunityWinners || epData.immunityWinners || [],
+            immunityWinnerIds: source.immunityWinnerIds || [],
             rewardWinners: source.rewardWinners || epData.rewardWinners || [],
+            rewardWinnerIds: source.rewardWinnerIds || [],
             isPostMerge: source.isPostMerge || !!tribeSwaps?.merge,
             minorityVoters: source.minorityVoters || [],
             receivedVotes: source.receivedVotes || [],
@@ -1152,11 +1165,16 @@ export function AppProvider({ children }) {
 
                 const remaining = ALL_CASTAWAYS.filter(c => !(eliminated || []).includes(c.id));
                 const tribeOverrides = getEffectiveTribeAssignments(tribeSwaps, epNum);
+                const eliminatedIds = importData.eliminatedIds?.length > 0
+                    ? importData.eliminatedIds
+                    : (importData.eliminatedId ? [importData.eliminatedId] : []);
                 const { gameEvents } = deriveGameEvents({
-                    eliminatedId: importData.eliminatedId,
+                    eliminatedIds,
                     eliminationMethod: importData.eliminationMethod || 'voted_out',
                     immunityWinners: importData.immunityWinners || [],
+                    immunityWinnerIds: importData.immunityWinnerIds || [],
                     rewardWinners: importData.rewardWinners || [],
+                    rewardWinnerIds: importData.rewardWinnerIds || [],
                     isPostMerge: importData.isPostMerge || false,
                     minorityVoters: importData.minorityVoters || [],
                     receivedVotes: importData.receivedVotes || [],
@@ -1177,7 +1195,7 @@ export function AppProvider({ children }) {
                     sideBetResults = resolveBets(importData, sideBets);
                 }
 
-                const eliminatedThisEp = importData.eliminatedId ? [importData.eliminatedId] : [];
+                const eliminatedThisEp = eliminatedIds;
 
                 scoreEpisodeAction(epNum, {
                     gameEvents,

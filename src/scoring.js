@@ -364,20 +364,21 @@ export function computeStandings(episodes, rideOrDies, memberUids, bingoAllEpiso
             }
         }
 
-        // Impact Rating
+        // Impact Rating — award for each eliminated contestant a player picked
         if (peData.impactRating && ep.eliminatedThisEp?.length > 0) {
             const avg = computeImpactRatingAvg(peData.impactRating);
             if (avg > 0) {
-                const eliminatedId = ep.eliminatedThisEp[0];
-                for (const uid of memberUids) {
-                    const playerPicks = ep.picks?.[uid] || [];
-                    if (playerPicks.includes(eliminatedId)) {
-                        const pts = Math.round(avg);
-                        if (epScores[uid]) {
-                            epScores[uid].social = (epScores[uid].social || 0) + pts;
-                            epScores[uid].total += pts;
-                            epScores[uid].breakdown.social = epScores[uid].breakdown.social || [];
-                            epScores[uid].breakdown.social.push({ type: 'impactRating', avg, points: pts });
+                const pts = Math.round(avg);
+                for (const eliminatedId of ep.eliminatedThisEp) {
+                    for (const uid of memberUids) {
+                        const playerPicks = ep.picks?.[uid] || [];
+                        if (playerPicks.includes(eliminatedId)) {
+                            if (epScores[uid]) {
+                                epScores[uid].social = (epScores[uid].social || 0) + pts;
+                                epScores[uid].total += pts;
+                                epScores[uid].breakdown.social = epScores[uid].breakdown.social || [];
+                                epScores[uid].breakdown.social.push({ type: 'impactRating', avg, points: pts, eliminatedId });
+                            }
                         }
                     }
                 }

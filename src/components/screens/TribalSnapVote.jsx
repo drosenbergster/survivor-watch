@@ -1,19 +1,27 @@
 import { useState, useMemo } from 'react';
-import { useApp } from '../../AppContext';
+import { useApp, getEffectiveTribeAssignments } from '../../AppContext';
 import { ALL_CASTAWAYS, TRIBES } from '../../data';
 import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon } from '../fijian';
 
-function SnapVoteSelector({ remaining, selected, onSelect, disabled }) {
+function SnapVoteSelector({ remaining, selected, onSelect, disabled, tribeOverrides }) {
     const byTribe = useMemo(() => {
         const map = {};
-        for (const [tribeKey, tribe] of Object.entries(TRIBES)) {
-            const members = tribe.members.filter(c => remaining.some(r => r.id === c.id));
-            if (members.length > 0) {
-                map[tribeKey] = { name: tribe.name, members };
+        if (tribeOverrides) {
+            for (const [tribeName, memberIds] of Object.entries(tribeOverrides)) {
+                const members = (memberIds || [])
+                    .map(id => ALL_CASTAWAYS.find(c => c.id === id))
+                    .filter(c => c && remaining.some(r => r.id === c.id));
+                const tribeKey = Object.keys(TRIBES).find(k => TRIBES[k].name.toLowerCase() === tribeName.toLowerCase()) || tribeName.toLowerCase();
+                if (members.length > 0) map[tribeKey] = { name: tribeName, members };
+            }
+        } else {
+            for (const [tribeKey, tribe] of Object.entries(TRIBES)) {
+                const members = tribe.members.filter(c => remaining.some(r => r.id === c.id));
+                if (members.length > 0) map[tribeKey] = { name: tribe.name, members };
             }
         }
         return map;
-    }, [remaining]);
+    }, [remaining, tribeOverrides]);
 
     return (
         <div className="space-y-3">
@@ -63,8 +71,13 @@ function SideBetToggle({ bet, value, onChange, disabled }) {
 export default function TribalSnapVote({ episodeNum }) {
     const {
         user, myEpisodeData, safeEliminated,
-        submitSnapVote, submitSideBets,
+        submitSnapVote, submitSideBets, tribeSwaps,
     } = useApp();
+
+    const tribeOverrides = useMemo(
+        () => getEffectiveTribeAssignments(tribeSwaps, episodeNum),
+        [tribeSwaps, episodeNum]
+    );
 
     const [showTribal, setShowTribal] = useState(false);
     const [selectedVote, setSelectedVote] = useState('');
@@ -173,6 +186,7 @@ export default function TribalSnapVote({ episodeNum }) {
                         selected={selectedVote}
                         onSelect={setSelectedVote}
                         disabled={submittingVote}
+                        tribeOverrides={tribeOverrides}
                     />
                     {selectedVote && (
                         <FijianPrimaryButton

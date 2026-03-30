@@ -155,7 +155,10 @@ function ImpactRating({ episodeNum, inline }) {
 
     if (eliminatedThisEp.length === 0) return null;
 
-    const eliminated = ALL_CASTAWAYS.find(c => c.id === eliminatedThisEp[0]);
+    const eliminatedNames = eliminatedThisEp
+        .map(id => ALL_CASTAWAYS.find(c => c.id === id)?.name)
+        .filter(Boolean);
+    const eliminatedLabel = eliminatedNames.join(' & ') || 'Unknown';
     const ratingValues = Object.values(allRatings).filter(v => typeof v === 'number');
     const avg = ratingValues.length > 0 ? (ratingValues.reduce((a, b) => a + b, 0) / ratingValues.length).toFixed(1) : null;
     const totalMembers = Object.keys(leagueMembers || {}).length;
@@ -180,7 +183,7 @@ function ImpactRating({ episodeNum, inline }) {
                 <div className="flex items-center gap-2">
                     <Icon name="check_circle" className="text-jungle-400 text-sm" />
                     <span className="text-sand-warm text-sm font-sans">
-                        You rated {eliminated?.name}&apos;s impact: {myRating}/5
+                        You rated {eliminatedLabel}&apos;s impact: {myRating}/5
                     </span>
                 </div>
                 {avg && (
@@ -199,7 +202,7 @@ function ImpactRating({ episodeNum, inline }) {
                 <p className="text-ochre text-[11px] font-bold uppercase tracking-widest">Impact Rating</p>
             </div>
             <p className="text-clay text-xs font-serif italic">
-                How much did {eliminated?.name} impact the game? Average goes to their pick owner(s).
+                How much did {eliminatedLabel} impact the game? Average goes to their pick owner(s).
             </p>
             <div className="flex gap-2 justify-center">
                 {[1, 2, 3, 4, 5].map(v => (

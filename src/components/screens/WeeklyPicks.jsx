@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { useApp } from '../../AppContext';
+import { useApp, getEffectiveTribeAssignments } from '../../AppContext';
 import { TRIBES, ALL_CASTAWAYS, getMaxPicks, userHasPerk } from '../../data';
 import { computeScarcity } from '../../scoring';
 import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon } from '../fijian';
@@ -56,7 +56,7 @@ function SpyGlassPanel() {
 }
 
 export default function WeeklyPicks() {
-    const { user, myEpisode, myEpisodeData, safeEliminated, rideOrDies, episodes, submitPicks, auction } = useApp();
+    const { user, myEpisode, myEpisodeData, safeEliminated, rideOrDies, episodes, submitPicks, auction, tribeSwaps } = useApp();
     const myRoDs = useMemo(() => new Set(rideOrDies?.[user?.uid] || []), [rideOrDies, user?.uid]);
 
     const othersRoDs = useMemo(() => {
@@ -88,6 +88,30 @@ export default function WeeklyPicks() {
     const remaining = ALL_CASTAWAYS.filter(c => !eliminatedSet.has(c.id));
     const hasExtraPick = userHasPerk(auction, user?.uid, 'extra_pick', myEpisode);
     const maxPicks = getMaxPicks(remaining.length) + (hasExtraPick ? 1 : 0);
+
+    const tribeOverrides = useMemo(
+        () => getEffectiveTribeAssignments(tribeSwaps, myEpisode),
+        [tribeSwaps, myEpisode]
+    );
+
+    const tribeGroups = useMemo(() => {
+        if (tribeOverrides) {
+            const groups = [];
+            for (const [tribeName, memberIds] of Object.entries(tribeOverrides)) {
+                const members = (memberIds || [])
+                    .map(id => ALL_CASTAWAYS.find(c => c.id === id))
+                    .filter(Boolean);
+                const tribeKey = Object.keys(TRIBES).find(k => TRIBES[k].name.toLowerCase() === tribeName.toLowerCase()) || tribeName.toLowerCase();
+                if (members.length > 0) groups.push({ key: tribeKey, name: tribeName, members });
+            }
+            return groups;
+        }
+        return Object.entries(TRIBES).map(([key, tribe]) => ({
+            key,
+            name: tribe.name,
+            members: tribe.members,
+        }));
+    }, [tribeOverrides]);
 
     useEffect(() => {
         if (myPicks.length > 0 && !hydrated.current) {
@@ -151,8 +175,8 @@ export default function WeeklyPicks() {
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                {Object.entries(TRIBES).map(([tribeKey, tribe]) => {
-                    const activeMembers = tribe.members.filter(c => !eliminatedSet.has(c.id));
+                {tribeGroups.map(({ key: tribeKey, name: tribeName, members: tribeMembers }) => {
+                    const activeMembers = tribeMembers.filter(c => !eliminatedSet.has(c.id));
                     if (activeMembers.length === 0) return null;
                     return (
                         <FijianCard key={tribeKey} className="overflow-hidden">
@@ -163,10 +187,10 @@ export default function WeeklyPicks() {
                                     color: `var(--color-${tribeKey})`,
                                 }}
                             >
-                                {tribe.name}
+                                {tribeName}
                             </div>
                             <div className="divide-y divide-stone-700/30">
-                                {tribe.members.map((c) => {
+                                {tribeMembers.map((c) => {
                                     const isEliminated = eliminatedSet.has(c.id);
                                     const isMyRoD = myRoDs.has(c.id);
                                     const isOthersRoD = othersRoDs.has(c.id);

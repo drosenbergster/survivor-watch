@@ -3,6 +3,7 @@ import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { initializeApp } from 'firebase-admin/app';
 import { getDatabase } from 'firebase-admin/database';
 import { parseTDTHtml, findInsiderStatsUrl, parseInsiderHtml, mergeResults, parseFSGHtml, mergeFSGResults, resolvePropBets } from './parsers.js';
+import { autoScoreLeagues } from './scoring.js';
 
 initializeApp();
 
@@ -22,32 +23,63 @@ async function fetchPage(url) {
 async function getEliminatedBefore(db, episodeNum) {
     const prevEliminated = [];
     for (let i = 1; i < episodeNum; i++) {
-        const snap = await db.ref(`${SEASON_PATH}/e${i}/eliminatedId`).get();
-        if (snap.exists() && snap.val()) prevEliminated.push(snap.val());
+        const idsSnap = await db.ref(`${SEASON_PATH}/e${i}/eliminatedIds`).get();
+        if (idsSnap.exists() && Array.isArray(idsSnap.val())) {
+            prevEliminated.push(...idsSnap.val());
+        } else {
+            const snap = await db.ref(`${SEASON_PATH}/e${i}/eliminatedId`).get();
+            if (snap.exists() && snap.val()) prevEliminated.push(snap.val());
+        }
     }
     return prevEliminated;
 }
 
+/**
+ * Find the next episode to process. Checks for:
+ * 1. Episodes that were imported but have unscored leagues (need re-scoring)
+ * 2. The next episode number that hasn't been imported yet
+ */
 async function determineNextEpisode(db) {
     const snap = await db.ref(SEASON_PATH).get();
-    if (!snap.exists()) return 1;
+    if (!snap.exists()) return { episodeNum: 1, reason: 'no_imports' };
 
     const imported = snap.val();
     const nums = Object.keys(imported)
         .filter(k => k.startsWith('e'))
         .map(k => parseInt(k.slice(1), 10))
-        .filter(n => !isNaN(n));
+        .filter(n => !isNaN(n))
+        .sort((a, b) => a - b);
 
-    return nums.length > 0 ? Math.max(...nums) + 1 : 1;
+    if (nums.length === 0) return { episodeNum: 1, reason: 'no_imports' };
+
+    // Check if any imported episodes still have unscored leagues
+    const leaguesSnap = await db.ref('leagues').get();
+    if (leaguesSnap.exists()) {
+        for (const epNum of nums) {
+            for (const [, league] of Object.entries(leaguesSnap.val())) {
+                const ep = league.episodes?.[epNum];
+                if (ep && !ep.scored) {
+                    return { episodeNum: epNum, reason: 'unscored_leagues', hasImport: true };
+                }
+            }
+        }
+    }
+
+    return { episodeNum: Math.max(...nums) + 1, reason: 'next_new' };
 }
 
-async function fetchAndParse(episodeNum) {
+async function fetchAndParse(episodeNum, { force = false } = {}) {
     const db = getDatabase();
 
-    // Check if already fetched
+    // Check if already fetched — allow re-processing if forced or if leagues are unscored
     const existing = await db.ref(`${SEASON_PATH}/e${episodeNum}`).get();
-    if (existing.exists()) {
-        return { skipped: true, reason: `Episode ${episodeNum} already imported` };
+    if (existing.exists() && !force) {
+        const importData = existing.val();
+        const scoreResult = await autoScoreLeagues(db, episodeNum, importData, resolvePropBets);
+        if (scoreResult.scored > 0) {
+            return { alreadyImported: true, autoScored: scoreResult.scored, episodeNum };
+        }
+        return { skipped: true, reason: `Episode ${episodeNum} already imported and all leagues scored` };
     }
 
     const eliminatedBefore = await getEliminatedBefore(db, episodeNum);
@@ -107,9 +139,13 @@ async function fetchAndParse(episodeNum) {
         source,
         episodeNum,
         eliminatedId: result.eliminatedId || null,
+        eliminatedIds: result.eliminatedIds || (result.eliminatedId ? [result.eliminatedId] : []),
         eliminationMethod: result.eliminationMethod || 'voted_out',
+        eliminationMethods: result.eliminationMethods || {},
         immunityWinners: result.immunityWinners || [],
+        immunityWinnerIds: result.immunityWinnerIds || [],
         rewardWinners: result.rewardWinners || [],
+        rewardWinnerIds: result.rewardWinnerIds || [],
         isPostMerge: result.isPostMerge || false,
         minorityVoters: result.minorityVoters || [],
         receivedVotes: result.receivedVotes || [],
@@ -155,13 +191,23 @@ async function fetchAndParse(episodeNum) {
 
     await db.ref(`${SEASON_PATH}/e${episodeNum}`).set(importData);
 
-    return { success: true, episodeNum, source, eliminatedId: result.eliminatedId };
+    // Auto-score all leagues that have an unscored episode for this number
+    let scoreResult = { scored: 0 };
+    try {
+        scoreResult = await autoScoreLeagues(db, episodeNum, importData, resolvePropBets, { forceRescore: force });
+        console.log(`Auto-scored ${scoreResult.scored} league(s) for episode ${episodeNum}`);
+    } catch (err) {
+        console.warn('Auto-score after import failed (non-blocking):', err.message);
+    }
+
+    return { success: true, episodeNum, source, eliminatedId: result.eliminatedId, eliminatedIds: importData.eliminatedIds || [result.eliminatedId].filter(Boolean), autoScored: scoreResult.scored };
 }
 
-// Scheduled: runs every Thursday at 11:30pm Pacific
+// Scheduled: runs Thu 6pm, Thu 11pm, Fri 8am, Fri 6pm (Pacific)
+// Multiple windows to catch when stats sites publish results.
 export const fetchEpisodeStats = onSchedule(
     {
-        schedule: 'every thursday 23:30',
+        schedule: '0 18,23 * * 4',
         timeZone: 'America/Los_Angeles',
         region: 'us-central1',
         timeoutSeconds: 120,
@@ -169,22 +215,19 @@ export const fetchEpisodeStats = onSchedule(
     },
     async () => {
         const db = getDatabase();
-        const episodeNum = await determineNextEpisode(db);
+        const { episodeNum, reason, hasImport } = await determineNextEpisode(db);
 
-        console.log(`Scheduled fetch: attempting episode ${episodeNum}`);
-        const result = await fetchAndParse(episodeNum);
+        console.log(`Scheduled fetch: episode ${episodeNum} (${reason})`);
+        const result = await fetchAndParse(episodeNum, { force: false });
         console.log('Result:', JSON.stringify(result));
-
-        // If the episode isn't available yet, try again Friday morning
-        // (the retry is handled by the Friday schedule below)
         return result;
     }
 );
 
-// Retry: runs Friday morning in case Thursday night was too early
+// Retry: runs Friday morning & evening as fallback
 export const fetchEpisodeStatsRetry = onSchedule(
     {
-        schedule: 'every friday 08:00',
+        schedule: '0 8,18 * * 5',
         timeZone: 'America/Los_Angeles',
         region: 'us-central1',
         timeoutSeconds: 120,
@@ -192,10 +235,10 @@ export const fetchEpisodeStatsRetry = onSchedule(
     },
     async () => {
         const db = getDatabase();
-        const episodeNum = await determineNextEpisode(db);
+        const { episodeNum, reason } = await determineNextEpisode(db);
 
-        console.log(`Retry fetch: attempting episode ${episodeNum}`);
-        const result = await fetchAndParse(episodeNum);
+        console.log(`Retry fetch: episode ${episodeNum} (${reason})`);
+        const result = await fetchAndParse(episodeNum, { force: false });
         console.log('Result:', JSON.stringify(result));
         return result;
     }
@@ -220,7 +263,7 @@ export const fetchEpisodeStatsManual = onCall(
             await db.ref(`${SEASON_PATH}/e${episodeNum}`).remove();
         }
 
-        const result = await fetchAndParse(episodeNum);
+        const result = await fetchAndParse(episodeNum, { force: !!force });
 
         if (result.error) {
             throw new HttpsError('internal', result.error);

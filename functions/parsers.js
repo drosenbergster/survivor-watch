@@ -149,7 +149,14 @@ export function parseTDTHtml(html, eliminatedBefore = []) {
         const rawName = cells[ci.contestant];
         if (!rawName) continue;
 
-        const isMedevac = rawName.includes('*');
+        // TDT marks medevacs with asterisks on stats AND a null VFB (they never voted).
+        // Other special situations (idols, revotes) also get asterisked stats but retain a real VFB.
+        const hasAsteriskName = rawName.includes('*');
+        const hasAsteriskStats = [cells[ci.vap], cells[ci.tca], cells[ci.totV]]
+            .some(v => v && v.includes('*'));
+        const rawVfb = cells[ci.vfb]?.trim();
+        const vfbIsNull = !rawVfb || rawVfb === '-' || rawVfb.toUpperCase() === 'NA';
+        const isMedevac = hasAsteriskName || (hasAsteriskStats && vfbIsNull);
         const contestantId = resolveContestant(rawName);
         if (!contestantId) continue;
 
@@ -167,27 +174,53 @@ export function parseTDTHtml(html, eliminatedBefore = []) {
         });
     }
 
-    // Determine who was eliminated this episode
-    let eliminatedId = null;
-    let eliminationMethod = 'voted_out';
+    // Determine who was eliminated this episode (supports double boots)
+    const eliminatedIds = [];
+    const eliminationMethods = {};
 
     const medevacs = rows.filter(r => r.isMedevac && !r.eliminated);
-    if (medevacs.length > 0) {
-        eliminatedId = medevacs[0].id;
-        eliminationMethod = 'medevac';
+    for (const med of medevacs) {
+        eliminatedIds.push(med.id);
+        eliminationMethods[med.id] = 'medevac';
     }
 
-    if (!eliminatedId) {
-        const tribalRows = rows.filter(r => r.tca !== null && r.tca > 0 && !r.eliminated);
-        const bootCandidate = tribalRows
-            .filter(r => r.vap !== null && r.vap > 0)
-            .sort((a, b) => (b.vap || 0) - (a.vap || 0))[0];
-        if (bootCandidate) {
-            eliminatedId = bootCandidate.id;
-        }
+    // Find vote-out boot(s): group tribal attendees by TotV to detect
+    // separate tribal councils (each tribal has a distinct total vote count),
+    // then pick the highest-VAP contestant within each group as the boot.
+    const tribalRows = rows.filter(r => r.tca !== null && r.tca > 0 && !r.eliminated);
+    const vapCandidates = tribalRows
+        .filter(r => r.vap !== null && r.vap > 0 && !eliminatedIds.includes(r.id))
+        .sort((a, b) => (b.vap || 0) - (a.vap || 0));
+
+    // Group by TotV — each distinct TotV value indicates a separate tribal council
+    const tribalsByTotV = {};
+    for (const candidate of vapCandidates) {
+        const totV = candidate.totV || 0;
+        if (!tribalsByTotV[totV]) tribalsByTotV[totV] = [];
+        tribalsByTotV[totV].push(candidate);
     }
 
-    // Challenge winners by tribe
+    // The boot is the highest-VAP contestant in each TotV group
+    for (const group of Object.values(tribalsByTotV)) {
+        const boot = group[0]; // already sorted by VAP desc
+        eliminatedIds.push(boot.id);
+        eliminationMethods[boot.id] = 'voted_out';
+    }
+
+    // Legacy single-ID fields for backward compatibility
+    const eliminatedId = eliminatedIds[0] || null;
+    const eliminationMethod = eliminatedId ? (eliminationMethods[eliminatedId] || 'voted_out') : 'voted_out';
+    const elimIdSet = new Set(eliminatedIds);
+
+    // Challenge winners — contestant-level IDs (works correctly post-swap)
+    const immunityWinnerIds = rows
+        .filter(r => !r.eliminated && r.icChW !== null && r.icChW > 0)
+        .map(r => r.id);
+    const rewardWinnerIds = rows
+        .filter(r => !r.eliminated && r.rcChW !== null && r.rcChW > 0)
+        .map(r => r.id);
+
+    // Legacy tribe-key arrays (only reliable pre-swap; kept for backward compat)
     const immunityWinners = [];
     const rewardWinners = [];
 
@@ -204,14 +237,14 @@ export function parseTDTHtml(html, eliminatedBefore = []) {
         if (avgRcChW > 0) rewardWinners.push(tribeKey);
     }
 
-    // Minority voters (VFB = 0 at tribal, not the boot)
+    // Minority voters (VFB = 0 at tribal, not any boot this episode)
     const minorityVoters = rows
-        .filter(r => r.tca !== null && r.tca > 0 && r.vfb === 0 && r.id !== eliminatedId && !r.eliminated)
+        .filter(r => r.tca !== null && r.tca > 0 && r.vfb === 0 && !elimIdSet.has(r.id) && !r.eliminated)
         .map(r => r.id);
 
-    // Survived with votes (VAP > 0, not boot)
+    // Survived with votes (VAP > 0, not any boot this episode)
     const receivedVotes = rows
-        .filter(r => r.vap !== null && r.vap > 0 && r.id !== eliminatedId && !r.eliminated)
+        .filter(r => r.vap !== null && r.vap > 0 && !elimIdSet.has(r.id) && !r.eliminated)
         .map(r => r.id);
 
     // Extract idol/advantage mentions from the page notes
@@ -235,9 +268,13 @@ export function parseTDTHtml(html, eliminatedBefore = []) {
 
     return {
         eliminatedId,
+        eliminatedIds,
         eliminationMethod,
+        eliminationMethods,
         immunityWinners,
+        immunityWinnerIds,
         rewardWinners,
+        rewardWinnerIds,
         isPostMerge: false,
         minorityVoters,
         receivedVotes,
@@ -465,7 +502,11 @@ export function parseFSGHtml(html, episodeNum) {
     const result = {
         events: {},
         eliminatedId: null,
+        eliminatedIds: [],
         eliminationMethod: null,
+        eliminationMethods: {},
+        immunityWinnerIds: [],
+        rewardWinnerIds: [],
     };
 
     const addEvent = (cid, evt) => {
@@ -510,12 +551,17 @@ export function parseFSGHtml(html, episodeNum) {
         const quitEvacMatch = text.match(/quit\/evac/i);
 
         if (votedOutMatch || quitEvacMatch) {
+            const method = quitEvacMatch ? 'medevac' : 'voted_out';
             const links = elem.find('a');
             links.each((_, a) => {
                 const cid = resolveFsgLink($(a).attr('href'));
-                if (cid) {
-                    result.eliminatedId = cid;
-                    result.eliminationMethod = quitEvacMatch ? 'medevac' : 'voted_out';
+                if (cid && !result.eliminatedIds.includes(cid)) {
+                    result.eliminatedIds.push(cid);
+                    result.eliminationMethods[cid] = method;
+                    if (!result.eliminatedId) {
+                        result.eliminatedId = cid;
+                        result.eliminationMethod = method;
+                    }
                 }
             });
             continue;
@@ -527,7 +573,15 @@ export function parseFSGHtml(html, episodeNum) {
                 const links = elem.find('a');
                 links.each((_, a) => {
                     const cid = resolveFsgLink($(a).attr('href'));
-                    if (cid) addEvent(cid, event);
+                    if (cid) {
+                        addEvent(cid, event);
+                        if (event === 'tribal_immunity' && !result.immunityWinnerIds.includes(cid)) {
+                            result.immunityWinnerIds.push(cid);
+                        }
+                        if (event === 'tribal_reward' && !result.rewardWinnerIds.includes(cid)) {
+                            result.rewardWinnerIds.push(cid);
+                        }
+                    }
                 });
                 break;
             }
@@ -546,8 +600,8 @@ const FSG_EXCLUSIVE_EVENTS = new Set([
 
 /**
  * Merge FSG data into an existing combined result (TDT + InsideSurvivor).
- * Only adds FSG-exclusive events (camp life, journey, etc.).
- * Uses overlapping events (idol_found, etc.) as confirmation without duplicating.
+ * Adds FSG-exclusive events (camp life, journey, etc.) and supplements
+ * immunity/reward winner IDs (FSG includes all tribe members, even sit-outs).
  */
 export function mergeFSGResults(combinedResult, fsgResult) {
     if (!fsgResult) return combinedResult;
@@ -556,21 +610,27 @@ export function mergeFSGResults(combinedResult, fsgResult) {
 
     for (const [cid, events] of Object.entries(fsgResult.events || {})) {
         for (const evt of events) {
-            // Always add FSG-exclusive events
             if (FSG_EXCLUSIVE_EVENTS.has(evt)) {
                 if (!merged.bigMoments[cid]) merged.bigMoments[cid] = [];
                 if (!merged.bigMoments[cid].includes(evt)) {
                     merged.bigMoments[cid].push(evt);
                 }
-            }
-            // For shared events, only add if not already detected
-            else if (['idol_found', 'advantage_found', 'advantage_used', 'exile', 'merge'].includes(evt)) {
+            } else if (['idol_found', 'advantage_found', 'advantage_used', 'exile', 'merge'].includes(evt)) {
                 if (!merged.bigMoments[cid]) merged.bigMoments[cid] = [];
                 if (!merged.bigMoments[cid].includes(evt)) {
                     merged.bigMoments[cid].push(evt);
                 }
             }
         }
+    }
+
+    // FSG lists all tribe members for immunity/reward wins (including sit-outs),
+    // so prefer FSG's lists when available — they're more complete than TDT ChW > 0.
+    if (fsgResult.immunityWinnerIds?.length > 0) {
+        merged.immunityWinnerIds = fsgResult.immunityWinnerIds;
+    }
+    if (fsgResult.rewardWinnerIds?.length > 0) {
+        merged.rewardWinnerIds = fsgResult.rewardWinnerIds;
     }
 
     return merged;

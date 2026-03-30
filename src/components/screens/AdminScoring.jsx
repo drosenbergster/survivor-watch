@@ -272,8 +272,8 @@ function ImportPanel({ onImport, eliminated }) {
 /* ── step 1: episode summary ────────────────────────────────── */
 
 function EpisodeSummaryStep({
-    remaining, remainingByTribe, eliminatedPick, setEliminatedPick,
-    eliminationMethod, setEliminationMethod,
+    remaining, remainingByTribe, eliminatedPicks, setEliminatedPicks,
+    eliminationMethods, setEliminationMethods,
     immunityWinners, setImmunityWinners,
     rewardWinners, setRewardWinners,
     noReward, setNoReward,
@@ -285,6 +285,21 @@ function EpisodeSummaryStep({
 
     const toggleContestant = (list, setList, id) => {
         setList(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+    };
+
+    const toggleEliminated = (id) => {
+        setEliminatedPicks(prev => {
+            if (prev.includes(id)) {
+                setEliminationMethods(m => { const next = { ...m }; delete next[id]; return next; });
+                return prev.filter(x => x !== id);
+            }
+            setEliminationMethods(m => ({ ...m, [id]: 'voted_out' }));
+            return [...prev, id];
+        });
+    };
+
+    const setMethodForElim = (id, method) => {
+        setEliminationMethods(prev => ({ ...prev, [id]: method }));
     };
 
     return (
@@ -301,26 +316,37 @@ function EpisodeSummaryStep({
 
             <div className="space-y-3">
                 <SectionLabel>Who was eliminated?</SectionLabel>
-                <select
-                    value={eliminatedPick}
-                    onChange={(e) => setEliminatedPick(e.target.value)}
-                    className="w-full bg-stone-800 text-sand-warm border border-stone-600 rounded-lg px-3 py-2 text-sm font-sans"
-                >
-                    <option value="">No elimination this episode</option>
+                <HelpText>Tap one or more contestants. For double eliminations, tap both.</HelpText>
+                <div className="flex flex-wrap gap-1.5">
                     {remaining.map(c => (
-                        <option key={c.id} value={c.id}>{c.name} ({c.short})</option>
+                        <Chip
+                            key={c.id}
+                            active={eliminatedPicks.includes(c.id)}
+                            color="red"
+                            onClick={() => toggleEliminated(c.id)}
+                        >
+                            {c.name}
+                        </Chip>
                     ))}
-                </select>
-                {eliminatedPick && (
-                    <div className="space-y-2">
-                        <HelpText>How?</HelpText>
-                        <div className="flex gap-2 flex-wrap">
-                            {[['voted_out', 'Voted Out'], ['medevac', 'Medevac'], ['quit', 'Quit'], ['fire', 'Fire-Making']].map(([val, label]) => (
-                                <Chip key={val} active={eliminationMethod === val} color="fire" onClick={() => setEliminationMethod(val)}>
-                                    {label}
-                                </Chip>
-                            ))}
-                        </div>
+                </div>
+                {eliminatedPicks.length > 0 && (
+                    <div className="space-y-3 pt-1">
+                        {eliminatedPicks.map(id => {
+                            const name = ALL_CASTAWAYS.find(c => c.id === id)?.name || id;
+                            const method = eliminationMethods[id] || 'voted_out';
+                            return (
+                                <div key={id} className="space-y-1.5 px-3 py-2 rounded-lg bg-stone-800/60">
+                                    <span className="text-fire-400 text-sm font-sans font-semibold">{name}</span>
+                                    <div className="flex gap-2 flex-wrap">
+                                        {[['voted_out', 'Voted Out'], ['medevac', 'Medevac'], ['quit', 'Quit'], ['fire', 'Fire-Making']].map(([val, label]) => (
+                                            <Chip key={val} active={method === val} color="fire" onClick={() => setMethodForElim(id, val)}>
+                                                {label}
+                                            </Chip>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
             </div>
@@ -413,22 +439,28 @@ function EpisodeSummaryStep({
 /* ── step 2: tribal council ─────────────────────────────────── */
 
 function TribalCouncilStep({
-    eliminatedPick, unanimousVote, setUnanimousVote,
+    eliminatedPicks, eliminationMethods, unanimousVote, setUnanimousVote,
     minorityVoters, setMinorityVoters,
     receivedVotes, setReceivedVotes,
     tribalAttendees,
 }) {
-    if (!eliminatedPick) {
+    const votedOutPicks = eliminatedPicks.filter(id => {
+        const m = eliminationMethods[id] || 'voted_out';
+        return m === 'voted_out' || m === 'fire';
+    });
+
+    if (votedOutPicks.length === 0) {
         return (
             <div className="space-y-3">
                 <SectionLabel>Tribal Council</SectionLabel>
-                <HelpText>No elimination selected -- skip this step or go back and pick one.</HelpText>
+                <HelpText>No voted-out elimination selected -- skip this step or go back and pick one.</HelpText>
             </div>
         );
     }
 
-    const elimName = ALL_CASTAWAYS.find(c => c.id === eliminatedPick)?.name || 'Unknown';
-    const attendees = tribalAttendees.filter(id => id !== eliminatedPick);
+    const elimNames = votedOutPicks.map(id => ALL_CASTAWAYS.find(c => c.id === id)?.name || 'Unknown');
+    const elimSet = new Set(eliminatedPicks);
+    const attendees = tribalAttendees.filter(id => !elimSet.has(id));
 
     const toggleMinority = (id) => {
         setMinorityVoters(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
@@ -438,16 +470,18 @@ function TribalCouncilStep({
         setReceivedVotes(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
     };
 
+    const elimLabel = elimNames.join(' & ');
+
     return (
         <div className="space-y-5">
             <SectionLabel>Tribal Council</SectionLabel>
             <HelpText>
-                {attendees.length} players attended tribal. {elimName} was eliminated.
+                {attendees.length} players attended tribal. {elimLabel} {votedOutPicks.length === 1 ? 'was' : 'were'} eliminated.
             </HelpText>
 
             <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                    <span className="text-sm text-sand-warm/80 font-sans">Did everyone vote for {elimName}?</span>
+                    <span className="text-sm text-sand-warm/80 font-sans">Was the vote unanimous?</span>
                     <div className="flex gap-1.5">
                         <Chip active={unanimousVote} color="green" onClick={() => setUnanimousVote(true)}>Yes</Chip>
                         <Chip active={!unanimousVote} color="red" onClick={() => setUnanimousVote(false)}>No</Chip>
@@ -456,7 +490,7 @@ function TribalCouncilStep({
 
                 {!unanimousVote && (
                     <div className="space-y-2">
-                        <HelpText>Who voted WRONG? (did NOT vote for {elimName})</HelpText>
+                        <HelpText>Who voted WRONG? (did NOT vote with the majority)</HelpText>
                         <div className="flex flex-wrap gap-1.5">
                             {attendees.map(id => {
                                 const c = ALL_CASTAWAYS.find(x => x.id === id);
@@ -640,11 +674,13 @@ function BetResultsStep({ propBets, propBetResults, setPropBetResults, sideBets,
 
 /* ── step 5: review ─────────────────────────────────────────── */
 
-function ReviewStep({ derivedEvents, eliminatedPick, eliminationMethod, remaining }) {
+function ReviewStep({ derivedEvents, eliminatedPicks, eliminationMethods, remaining }) {
     const { gameEvents } = derivedEvents;
     const scoreMap = Object.fromEntries(SCORE_EVENTS.map(e => [e.key, e]));
 
-    const elimContestant = eliminatedPick ? ALL_CASTAWAYS.find(c => c.id === eliminatedPick) : null;
+    const elimContestants = eliminatedPicks
+        .map(id => ({ ...ALL_CASTAWAYS.find(c => c.id === id), method: eliminationMethods[id] || 'voted_out' }))
+        .filter(c => c.id);
 
     const contestantRows = remaining
         .filter(c => gameEvents[c.id]?.length > 0)
@@ -664,16 +700,16 @@ function ReviewStep({ derivedEvents, eliminatedPick, eliminationMethod, remainin
                 {totalEvents} events derived for {contestantRows.length} contestants. Verify before finalizing.
             </HelpText>
 
-            {elimContestant && (
-                <div className="px-4 py-2 rounded-lg bg-fire-400/10 border border-fire-400/30 text-fire-400 text-sm font-sans">
-                    {elimContestant.name} eliminated ({eliminationMethod.replace('_', ' ')})
-                    {gameEvents[elimContestant.id]?.length > 0 && (
+            {elimContestants.map(ec => (
+                <div key={ec.id} className="px-4 py-2 rounded-lg bg-fire-400/10 border border-fire-400/30 text-fire-400 text-sm font-sans">
+                    {ec.name} eliminated ({ec.method.replace('_', ' ')})
+                    {gameEvents[ec.id]?.length > 0 && (
                         <span className="text-sand-warm/60 ml-2">
-                            [{gameEvents[elimContestant.id].map(k => scoreMap[k]?.label || k).join(', ')}]
+                            [{gameEvents[ec.id].map(k => scoreMap[k]?.label || k).join(', ')}]
                         </span>
                     )}
                 </div>
-            )}
+            ))}
 
             <div className="space-y-1 max-h-80 overflow-y-auto">
                 {contestantRows.map(c => (
@@ -702,9 +738,9 @@ export default function AdminScoring({ episodeNum }) {
     // Input mode
     const [mode, setMode] = useState('manual'); // 'manual' | 'import'
 
-    // Step 1: Episode Summary
-    const [eliminatedPick, setEliminatedPick] = useState('');
-    const [eliminationMethod, setEliminationMethod] = useState('voted_out');
+    // Step 1: Episode Summary (supports multiple eliminations)
+    const [eliminatedPicks, setEliminatedPicks] = useState([]);
+    const [eliminationMethods, setEliminationMethods] = useState({});
     const [immunityWinners, setImmunityWinners] = useState([]);
     const [rewardWinners, setRewardWinners] = useState([]);
     const [noReward, setNoReward] = useState(false);
@@ -785,10 +821,50 @@ export default function AdminScoring({ episodeNum }) {
     }, [episodeNum, autoImportApplied]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const applyAutoImport = useCallback((data) => {
-        if (data.eliminatedId) setEliminatedPick(data.eliminatedId);
-        if (data.eliminationMethod) setEliminationMethod(data.eliminationMethod);
-        if (data.immunityWinners?.length) setImmunityWinners(data.immunityWinners);
-        if (data.rewardWinners?.length) setRewardWinners(data.rewardWinners);
+        if (data.eliminatedIds?.length) {
+            setEliminatedPicks(data.eliminatedIds);
+            const methods = {};
+            for (const id of data.eliminatedIds) {
+                methods[id] = data.eliminationMethods?.[id] || data.eliminationMethod || 'voted_out';
+            }
+            setEliminationMethods(methods);
+        } else if (data.eliminatedId) {
+            setEliminatedPicks([data.eliminatedId]);
+            setEliminationMethods({ [data.eliminatedId]: data.eliminationMethod || 'voted_out' });
+        }
+
+        // Derive correct tribe keys from contestant-level winner IDs when available
+        const deriveTribes = (winnerIds) => {
+            if (!winnerIds?.length) return null;
+            const tribes = new Set();
+            for (const cid of winnerIds) {
+                if (tribeOverrides) {
+                    for (const [name, members] of Object.entries(tribeOverrides)) {
+                        if (Array.isArray(members) && members.includes(cid)) { tribes.add(name.toLowerCase()); break; }
+                    }
+                } else {
+                    for (const [key, tribe] of Object.entries(TRIBES)) {
+                        if (tribe.members.some(m => m.id === cid)) { tribes.add(key); break; }
+                    }
+                }
+            }
+            return tribes.size > 0 ? [...tribes] : null;
+        };
+
+        const immunityFromIds = deriveTribes(data.immunityWinnerIds);
+        if (immunityFromIds) {
+            setImmunityWinners(immunityFromIds);
+        } else if (data.immunityWinners?.length) {
+            setImmunityWinners(data.immunityWinners);
+        }
+
+        const rewardFromIds = deriveTribes(data.rewardWinnerIds);
+        if (rewardFromIds) {
+            setRewardWinners(rewardFromIds);
+        } else if (data.rewardWinners?.length) {
+            setRewardWinners(data.rewardWinners);
+        }
+
         if (data.isPostMerge) setIsPostMerge(true);
         if (data.minorityVoters?.length) {
             setUnanimousVote(false);
@@ -797,7 +873,7 @@ export default function AdminScoring({ episodeNum }) {
         if (data.receivedVotes?.length) setReceivedVotes(data.receivedVotes);
         if (data.bigMoments && Object.keys(data.bigMoments).length > 0) setBigMoments(data.bigMoments);
         setStep('review');
-    }, []);
+    }, [tribeOverrides]);
 
     const handleFetchNow = useCallback(async () => {
         if (!functions) return;
@@ -826,38 +902,56 @@ export default function AdminScoring({ episodeNum }) {
         }
     }, [episodeNum, applyAutoImport]);
 
-    // Compute tribal attendees from eliminated pick's tribe (pre-merge) or everyone (post-merge)
     const tribalAttendees = useMemo(() => {
-        if (!eliminatedPick) return [];
+        if (eliminatedPicks.length === 0) return [];
         if (isPostMerge) {
             const ids = remaining.map(c => c.id);
-            if (!ids.includes(eliminatedPick)) ids.push(eliminatedPick);
+            for (const ep of eliminatedPicks) {
+                if (!ids.includes(ep)) ids.push(ep);
+            }
             return ids;
         }
         const elimSet = new Set(eliminated || []);
-        if (tribeOverrides) {
-            for (const [, memberIds] of Object.entries(tribeOverrides)) {
-                if (Array.isArray(memberIds) && memberIds.includes(eliminatedPick)) {
-                    const members = memberIds.filter(id => !elimSet.has(id));
-                    if (!members.includes(eliminatedPick)) members.push(eliminatedPick);
-                    return members;
+        const allAttendees = new Set();
+
+        for (const elimPick of eliminatedPicks) {
+            let found = false;
+            if (tribeOverrides) {
+                for (const [, memberIds] of Object.entries(tribeOverrides)) {
+                    if (Array.isArray(memberIds) && memberIds.includes(elimPick)) {
+                        for (const id of memberIds) {
+                            if (!elimSet.has(id)) allAttendees.add(id);
+                        }
+                        allAttendees.add(elimPick);
+                        found = true;
+                        break;
+                    }
                 }
             }
-        }
-        for (const [, tribe] of Object.entries(TRIBES)) {
-            if (tribe.members.some(m => m.id === eliminatedPick)) {
-                const members = tribe.members.filter(c => !elimSet.has(c.id)).map(c => c.id);
-                if (!members.includes(eliminatedPick)) members.push(eliminatedPick);
-                return members;
+            if (!found) {
+                for (const [, tribe] of Object.entries(TRIBES)) {
+                    if (tribe.members.some(m => m.id === elimPick)) {
+                        for (const c of tribe.members) {
+                            if (!elimSet.has(c.id)) allAttendees.add(c.id);
+                        }
+                        allAttendees.add(elimPick);
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (!found) {
+                for (const c of remaining) allAttendees.add(c.id);
             }
         }
-        return remaining.map(c => c.id);
-    }, [eliminatedPick, eliminated, remaining, isPostMerge, tribeOverrides]);
+        return [...allAttendees];
+    }, [eliminatedPicks, eliminated, remaining, isPostMerge, tribeOverrides]);
 
     const derivedEvents = useMemo(() => {
         return deriveGameEvents({
-            eliminatedId: eliminatedPick || null,
-            eliminationMethod,
+            eliminatedIds: eliminatedPicks,
+            eliminationMethod: 'voted_out',
+            eliminationMethods,
             immunityWinners,
             rewardWinners: noReward ? [] : rewardWinners,
             isPostMerge,
@@ -867,12 +961,14 @@ export default function AdminScoring({ episodeNum }) {
             remaining,
             tribeOverrides,
         });
-    }, [eliminatedPick, eliminationMethod, immunityWinners, rewardWinners, noReward,
+    }, [eliminatedPicks, eliminationMethods, immunityWinners, rewardWinners, noReward,
         unanimousVote, minorityVoters, receivedVotes, bigMoments, remaining, tribeOverrides]);
 
     const handleImport = useCallback((parsed) => {
-        if (parsed.eliminatedId) setEliminatedPick(parsed.eliminatedId);
-        if (parsed.eliminationMethod) setEliminationMethod(parsed.eliminationMethod);
+        if (parsed.eliminatedId) {
+            setEliminatedPicks([parsed.eliminatedId]);
+            setEliminationMethods({ [parsed.eliminatedId]: parsed.eliminationMethod || 'voted_out' });
+        }
         if (parsed.immunityWinners?.length) setImmunityWinners(parsed.immunityWinners);
         if (parsed.rewardWinners?.length) setRewardWinners(parsed.rewardWinners);
         if (parsed.minorityVoters?.length) {
@@ -893,14 +989,16 @@ export default function AdminScoring({ episodeNum }) {
         setSaving(true);
         try {
             const { gameEvents } = derivedEvents;
-            const eliminatedThisEp = eliminatedPick ? [eliminatedPick] : [];
+            const primaryMethod = eliminatedPicks.length > 0
+                ? (eliminationMethods[eliminatedPicks[0]] || 'voted_out')
+                : 'voted_out';
 
             await scoreEpisodeAction(episodeNum, {
                 gameEvents,
                 propBetResults,
                 sideBetResults: sideBetResultsState,
-                eliminatedThisEp,
-                eliminationMethod,
+                eliminatedThisEp: eliminatedPicks,
+                eliminationMethod: primaryMethod,
             });
         } catch (err) {
             setError(err.message || 'Failed to score episode');
@@ -911,11 +1009,10 @@ export default function AdminScoring({ episodeNum }) {
     if (!isAdmin) return null;
     if (episodeData?.status !== 'open' && !isAutoScored) return null;
 
-    // Auto-scored compact banner (episode already scored)
     if (isAutoScored && !expanded) {
-        const elimName = episodeData.eliminatedThisEp?.[0]
-            ? ALL_CASTAWAYS.find(c => c.id === episodeData.eliminatedThisEp[0])?.name
-            : null;
+        const elimNames = (episodeData.eliminatedThisEp || [])
+            .map(id => ALL_CASTAWAYS.find(c => c.id === id)?.name)
+            .filter(Boolean);
         return (
             <FijianCard className="p-4 space-y-2">
                 <div className="flex items-center justify-between">
@@ -931,7 +1028,7 @@ export default function AdminScoring({ episodeNum }) {
                     </button>
                 </div>
                 <div className="text-xs text-sand-warm/60 font-sans flex flex-wrap gap-x-4 gap-y-1">
-                    {elimName && <span>Eliminated: <span className="text-fire-400">{elimName}</span></span>}
+                    {elimNames.length > 0 && <span>Eliminated: <span className="text-fire-400">{elimNames.join(' & ')}</span></span>}
                     <span>Method: {episodeData.eliminationMethod?.replace('_', ' ') || 'voted out'}</span>
                 </div>
             </FijianCard>
@@ -943,8 +1040,8 @@ export default function AdminScoring({ episodeNum }) {
     const hasBets = propBets.length > 0 || sideBets.length > 0;
 
     const steps = [
-        { key: 'summary', label: 'Episode', done: !!eliminatedPick || immunityWinners.length > 0 },
-        { key: 'tribal', label: 'Tribal', done: eliminatedPick && (unanimousVote || minorityVoters.length > 0) },
+        { key: 'summary', label: 'Episode', done: eliminatedPicks.length > 0 || immunityWinners.length > 0 },
+        { key: 'tribal', label: 'Tribal', done: eliminatedPicks.length > 0 && (unanimousVote || minorityVoters.length > 0) },
         { key: 'moments', label: 'Moments', done: Object.keys(bigMoments).length > 0 },
         ...(hasBets ? [{ key: 'bets', label: 'Bets', done: Object.keys(propBetResults).length > 0 }] : []),
         { key: 'review', label: 'Review', done: false },
@@ -1000,10 +1097,10 @@ export default function AdminScoring({ episodeNum }) {
                         <EpisodeSummaryStep
                             remaining={remaining}
                             remainingByTribe={remainingByTribe}
-                            eliminatedPick={eliminatedPick}
-                            setEliminatedPick={setEliminatedPick}
-                            eliminationMethod={eliminationMethod}
-                            setEliminationMethod={setEliminationMethod}
+                            eliminatedPicks={eliminatedPicks}
+                            setEliminatedPicks={setEliminatedPicks}
+                            eliminationMethods={eliminationMethods}
+                            setEliminationMethods={setEliminationMethods}
                             immunityWinners={immunityWinners}
                             setImmunityWinners={setImmunityWinners}
                             rewardWinners={rewardWinners}
@@ -1017,8 +1114,8 @@ export default function AdminScoring({ episodeNum }) {
 
                     {step === 'tribal' && (
                         <TribalCouncilStep
-                            eliminatedPick={eliminatedPick}
-                            remaining={remaining}
+                            eliminatedPicks={eliminatedPicks}
+                            eliminationMethods={eliminationMethods}
                             unanimousVote={unanimousVote}
                             setUnanimousVote={setUnanimousVote}
                             minorityVoters={minorityVoters}
@@ -1051,8 +1148,8 @@ export default function AdminScoring({ episodeNum }) {
                     {step === 'review' && (
                         <ReviewStep
                             derivedEvents={derivedEvents}
-                            eliminatedPick={eliminatedPick}
-                            eliminationMethod={eliminationMethod}
+                            eliminatedPicks={eliminatedPicks}
+                            eliminationMethods={eliminationMethods}
                             remaining={remaining}
                         />
                     )}
