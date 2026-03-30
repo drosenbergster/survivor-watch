@@ -252,10 +252,14 @@ export const fetchEpisodeStatsManual = onCall(
         memory: '256MiB',
     },
     async (request) => {
+        if (!request.auth) {
+            throw new HttpsError('unauthenticated', 'Must be signed in');
+        }
+
         const { episodeNum, force } = request.data || {};
 
-        if (!episodeNum || typeof episodeNum !== 'number') {
-            throw new HttpsError('invalid-argument', 'episodeNum is required and must be a number');
+        if (!episodeNum || typeof episodeNum !== 'number' || episodeNum < 1 || episodeNum > 20) {
+            throw new HttpsError('invalid-argument', 'episodeNum is required and must be a number between 1 and 20');
         }
 
         if (force) {

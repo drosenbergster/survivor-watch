@@ -5,7 +5,7 @@
         ".read": "auth != null && data.child('members').child(auth.uid).exists()",
         "name": { ".write": "auth != null && data.parent().child('createdBy').val() === auth.uid" },
         "status": { ".write": "auth != null && data.parent().child('createdBy').val() === auth.uid" },
-        "currentEpisode": { ".write": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()" },
+        "currentEpisode": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
         "joinCode": { ".write": false },
         "createdBy": { ".write": false },
         "createdAt": { ".write": false },
@@ -17,11 +17,11 @@
           ".read": "auth != null && data.parent().child('members').child(auth.uid).exists()"
         },
         "draft": {
-          ".write": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()",
+          ".write": "auth != null && (root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid || (data.exists() && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()))",
           ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
         },
         "rideOrDies": {
-          ".write": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()",
+          ".write": "auth != null && (root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid || (!data.exists() && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()))",
           ".read": "auth != null && root.child('leagues').child($leagueId).child('members').child(auth.uid).exists()"
         },
         "passports": {
@@ -44,12 +44,14 @@
             "propBets": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
             "picks": {
               "$uid": {
-                ".write": "auth != null && auth.uid === $uid && !root.child('leagues').child($leagueId).child('watchStatus').child($epNum).child(auth.uid).child('picksLockedAt').exists()"
+                ".write": "auth != null && auth.uid === $uid && !root.child('leagues').child($leagueId).child('watchStatus').child($epNum).child(auth.uid).child('picksLockedAt').exists()",
+                ".validate": "newData.hasChildren()"
               }
             },
             "predictions": {
               "$uid": {
-                ".write": "auth != null && auth.uid === $uid && !root.child('leagues').child($leagueId).child('watchStatus').child($epNum).child(auth.uid).child('picksLockedAt').exists()"
+                ".write": "auth != null && auth.uid === $uid && !root.child('leagues').child($leagueId).child('watchStatus').child($epNum).child(auth.uid).child('picksLockedAt').exists()",
+                ".validate": "newData.hasChildren()"
               }
             },
             "snapVotes": {
@@ -141,7 +143,8 @@
           "bids": {
             "$itemId": {
               "$uid": {
-                ".write": "auth != null && auth.uid === $uid"
+                ".write": "auth != null && auth.uid === $uid",
+                ".validate": "newData.child('amount').isNumber() && newData.child('amount').val() > 0 && newData.child('amount').val() <= root.child('leagues').child($leagueId).child('auction').child('budgets').child($uid).child('total').val()"
               }
             }
           },

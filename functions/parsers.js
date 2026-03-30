@@ -127,13 +127,29 @@ export function parseTDTHtml(html, eliminatedBefore = []) {
         return { error: 'Could not find header row in TDT table' };
     }
 
-    // Map column positions (handles duplicate ChW/ChA/SO for RC vs IC)
+    // Build a column→section mapping from the top-level header row (with colspans).
+    // This tells us whether a ChW column falls under "Reward challenge" or "Immunity challenge".
+    const sectionForCol = {};
+    if (headerIdx > 0) {
+        const topRow = $(tableData).find('tr').eq(headerIdx - 1);
+        let col = 0;
+        topRow.find('th, td').each((_, cell) => {
+            const text = $(cell).text().trim().toLowerCase();
+            const span = parseInt($(cell).attr('colspan')) || 1;
+            for (let c = col; c < col + span; c++) sectionForCol[c] = text;
+            col += span;
+        });
+    }
+
+    // Map column positions — use section context to correctly assign ChW to reward vs immunity
     const ci = { contestant: headers.indexOf('Contestant') };
-    let chWCount = 0;
     for (let i = 0; i < headers.length; i++) {
         if (headers[i] === 'ChW') {
-            if (chWCount === 0) ci.rcChW = i; else ci.icChW = i;
-            chWCount++;
+            const section = sectionForCol[i] || '';
+            if (section.includes('reward')) ci.rcChW = i;
+            else if (section.includes('immunity')) ci.icChW = i;
+            else if (ci.rcChW == null) ci.rcChW = i;
+            else ci.icChW = i;
         }
         if (headers[i] === 'VFB') ci.vfb = i;
         if (headers[i] === 'VAP') ci.vap = i;
