@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useMemo, u
 import { onAuthStateChanged, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, signOut } from 'firebase/auth';
 import { ref, onValue, set, get, push, remove } from 'firebase/database';
 import { auth, db } from './firebase';
-import { generatePropBets, generateSideBets, ALL_CASTAWAYS, resolveBets, getAuctionPerks } from './data';
+import { generatePropBets, generateSideBets, ALL_CASTAWAYS, resolveBets, getAuctionPerks, getMaxPicks } from './data';
 import { computeStandings } from './scoring';
 import { deriveGameEvents } from './importers/deriveGameEvents';
 
@@ -641,6 +641,17 @@ export function AppProvider({ children }) {
 
     const lightTorch = useCallback(async (episodeNum) => {
         if (!user || !leagueId) return;
+
+        // Validate picks are complete before locking
+        const ep = episodes?.[episodeNum];
+        const playerPicks = ep?.picks?.[user.uid] || [];
+        const elimSet = new Set(safeEliminated || []);
+        const remainingCount = ALL_CASTAWAYS.filter(c => !elimSet.has(c.id)).length;
+        const maxPicks = getMaxPicks(remainingCount);
+        if (playerPicks.length < maxPicks) {
+            throw new Error(`You need ${maxPicks} picks before lighting your torch (currently ${playerPicks.length})`);
+        }
+
         const basePath = `leagues/${leagueId}/watchStatus/${episodeNum}/${user.uid}`;
         if (db) {
             await set(ref(db, `${basePath}/watching`), true);
@@ -658,7 +669,7 @@ export function AppProvider({ children }) {
                 },
             }));
         }
-    }, [user, leagueId]);
+    }, [user, leagueId, episodes, safeEliminated]);
 
     const markWatched = useCallback(async (episodeNum) => {
         if (!user || !leagueId) return;
@@ -1163,7 +1174,14 @@ export function AppProvider({ children }) {
 
                 autoScoreAttempted.current[key] = true;
 
-                const remaining = ALL_CASTAWAYS.filter(c => !(eliminated || []).includes(c.id));
+                // Build remaining from eliminations BEFORE this episode only
+                const eliminatedBefore = new Set();
+                for (const [en, ed] of Object.entries(episodes || {})) {
+                    if (Number(en) < epNum) {
+                        for (const id of (ed.eliminatedThisEp || [])) eliminatedBefore.add(id);
+                    }
+                }
+                const remaining = ALL_CASTAWAYS.filter(c => !eliminatedBefore.has(c.id));
                 const tribeOverrides = getEffectiveTribeAssignments(tribeSwaps, epNum);
                 const eliminatedIds = importData.eliminatedIds?.length > 0
                     ? importData.eliminatedIds

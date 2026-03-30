@@ -251,9 +251,9 @@ export default function WeeklyPicks() {
 
             <FijianPrimaryButton
                 onClick={handleSubmit}
-                disabled={selected.length === 0 || saving}
+                disabled={selected.length !== maxPicks || saving}
             >
-                {saving ? 'Saving...' : saved ? 'Update Picks' : 'Save Picks'}
+                {saving ? 'Saving...' : selected.length !== maxPicks ? `Select ${maxPicks - selected.length} more` : saved ? 'Update Picks' : 'Save Picks'}
             </FijianPrimaryButton>
 
             {error && <p className="text-amber text-xs text-center" role="alert">{error}</p>}

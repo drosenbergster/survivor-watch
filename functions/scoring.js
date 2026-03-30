@@ -213,8 +213,15 @@ export async function autoScoreLeagues(db, episodeNum, importData, resolvePropBe
             const tribeSwaps = league.tribeSwaps || {};
             const tribeOverrides = getEffectiveTribeAssignments(tribeSwaps, episodeNum);
 
-            const currentEliminated = league.eliminated || [];
-            const remaining = ALL_IDS.filter(id => !currentEliminated.includes(id));
+            // Build remaining from eliminations BEFORE this episode only
+            const allEps = league.episodes || {};
+            const eliminatedBefore = new Set(league.preSeasonEliminated || []);
+            for (const [epN, epData] of Object.entries(allEps)) {
+                if (Number(epN) < episodeNum) {
+                    for (const id of (epData.eliminatedThisEp || [])) eliminatedBefore.add(id);
+                }
+            }
+            const remaining = ALL_IDS.filter(id => !eliminatedBefore.has(id));
 
             const { gameEvents } = deriveGameEvents({
                 eliminatedIds,
@@ -260,7 +267,6 @@ export async function autoScoreLeagues(db, episodeNum, importData, resolvePropBe
 
             // Rebuild eliminated list from all episodes' eliminatedThisEp arrays
             // to avoid stale entries from previous incorrect scoring runs
-            const allEps = league.episodes || {};
             const rebuiltEliminated = new Set(league.preSeasonEliminated || []);
             for (const [epN, epData] of Object.entries(allEps)) {
                 const epElims = Number(epN) === episodeNum
