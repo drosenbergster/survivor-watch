@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useMemo, u
 import { onAuthStateChanged, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, signOut } from 'firebase/auth';
 import { ref, onValue, set, get, push, remove } from 'firebase/database';
 import { auth, db } from './firebase';
-import { generatePropBets, generateSideBets, ALL_CASTAWAYS, resolveBets, getAuctionPerks, getMaxPicks } from './data';
+import { generatePropBets, generateSideBets, ALL_CASTAWAYS, resolveBets, getAuctionPerks } from './data';
 import { computeStandings } from './scoring';
 import { deriveGameEvents } from './importers/deriveGameEvents';
 
@@ -645,9 +645,9 @@ export function AppProvider({ children }) {
         // Validate picks are complete before locking
         const ep = episodes?.[episodeNum];
         const playerPicks = ep?.picks?.[user.uid] || [];
-        const elimSet = new Set(safeEliminated || []);
+        const elimSet = new Set(eliminated || []);
         const remainingCount = ALL_CASTAWAYS.filter(c => !elimSet.has(c.id)).length;
-        const maxPicks = getMaxPicks(remainingCount);
+        const maxPicks = Math.min(5, Math.floor(remainingCount / 2));
         if (playerPicks.length < maxPicks) {
             throw new Error(`You need ${maxPicks} picks before lighting your torch (currently ${playerPicks.length})`);
         }
@@ -669,7 +669,7 @@ export function AppProvider({ children }) {
                 },
             }));
         }
-    }, [user, leagueId, episodes, safeEliminated]);
+    }, [user, leagueId, episodes, eliminated]);
 
     const markWatched = useCallback(async (episodeNum) => {
         if (!user || !leagueId) return;
