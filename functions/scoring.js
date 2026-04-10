@@ -122,10 +122,14 @@ export function deriveGameEvents({
         assignTribalChallengeEvent(immunityWinnerIds, immunityWinners, 'tribal_immunity', remainingIds, tribeOverrides, gameEvents, ensure);
         assignTribalChallengeEvent(rewardWinnerIds, rewardWinners, 'tribal_reward', remainingIds, tribeOverrides, gameEvents, ensure);
     } else {
-        for (const cid of immunityWinners) {
+        // Post-merge: use contestant IDs (immunityWinnerIds) for individual immunity.
+        // Fall back to immunityWinners only if winnerIds aren't available.
+        const indivImmunity = immunityWinnerIds.length > 0 ? immunityWinnerIds : immunityWinners;
+        const indivReward = rewardWinnerIds.length > 0 ? rewardWinnerIds : rewardWinners;
+        for (const cid of indivImmunity) {
             if (remainingIds.has(cid)) { ensure(cid); gameEvents[cid].push('individual_immunity'); }
         }
-        for (const cid of rewardWinners) {
+        for (const cid of indivReward) {
             if (remainingIds.has(cid)) { ensure(cid); gameEvents[cid].push('individual_reward'); }
         }
     }

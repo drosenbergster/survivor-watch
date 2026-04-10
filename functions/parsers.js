@@ -200,12 +200,11 @@ export function parseTDTHtml(html, eliminatedBefore = []) {
         eliminationMethods[med.id] = 'medevac';
     }
 
-    // Find vote-out boot(s): the eliminated contestant at each tribal has
-    // TCA > 0 (attended tribal), VAP > 0 (received votes), and VFB = 0
-    // (didn't vote with the majority / couldn't vote). This reliably detects
-    // multiple boots even when separate tribals have identical total vote counts.
+    // Find vote-out boot(s): the eliminated contestant has VAP > 0 (received
+    // votes) and VFB = 0 (didn't vote with the majority / couldn't vote).
+    // Note: TCA can be 0 for contestants who couldn't vote (no-vote status,
+    // Shot in the Dark), so we don't require TCA > 0.
     const bootCandidates = rows.filter(r =>
-        r.tca !== null && r.tca > 0 &&
         r.vap !== null && r.vap > 0 &&
         (r.vfb === null || r.vfb === 0) &&
         !r.eliminated &&
@@ -285,13 +284,34 @@ export function parseTDTHtml(html, eliminatedBefore = []) {
         immunityWinnerIds,
         rewardWinners,
         rewardWinnerIds,
-        isPostMerge: false,
+        isPostMerge: detectPostMerge(eliminatedIds, immunityWinnerIds),
         minorityVoters,
         receivedVotes,
         bigMoments,
         voteCountMap,
         parsed: rows,
     };
+}
+
+/**
+ * Heuristic post-merge detection from TDT data alone.
+ * Post-merge indicators: 3+ eliminations in one episode, or individual
+ * immunity winners spanning 3 different original tribes.
+ */
+function detectPostMerge(eliminatedIds, immunityWinnerIds) {
+    if (eliminatedIds.length >= 3) return true;
+
+    if (immunityWinnerIds.length > 0) {
+        const tribes = new Set();
+        for (const cid of immunityWinnerIds) {
+            for (const [key, tribe] of Object.entries(TRIBES)) {
+                if (tribe.members.some(m => m.id === cid)) { tribes.add(key); break; }
+            }
+        }
+        if (tribes.size >= 3) return true;
+    }
+
+    return false;
 }
 
 
