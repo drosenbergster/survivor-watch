@@ -165,14 +165,10 @@ export function parseTDTHtml(html, eliminatedBefore = []) {
         const rawName = cells[ci.contestant];
         if (!rawName) continue;
 
-        // TDT marks medevacs with asterisks on stats AND a null VFB (they never voted).
-        // Other special situations (idols, revotes) also get asterisked stats but retain a real VFB.
-        const hasAsteriskName = rawName.includes('*');
-        const hasAsteriskStats = [cells[ci.vap], cells[ci.tca], cells[ci.totV]]
-            .some(v => v && v.includes('*'));
-        const rawVfb = cells[ci.vfb]?.trim();
-        const vfbIsNull = !rawVfb || rawVfb === '-' || rawVfb.toUpperCase() === 'NA';
-        const isMedevac = hasAsteriskName || (hasAsteriskStats && vfbIsNull);
+        // TDT marks medevacs with an asterisk on the contestant's NAME.
+        // Asterisks on stats (TCA*, VAP*) indicate other situations like
+        // Shot in the Dark or idol plays — not medevacs.
+        const isMedevac = rawName.includes('*');
         const contestantId = resolveContestant(rawName);
         if (!contestantId) continue;
 
