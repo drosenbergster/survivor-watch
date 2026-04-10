@@ -3,7 +3,7 @@ import { onAuthStateChanged, sendSignInLinkToEmail, isSignInWithEmailLink, signI
 import { ref, onValue, set, get, push, remove } from 'firebase/database';
 import { auth, db } from './firebase';
 import { generatePropBets, generateSideBets, ALL_CASTAWAYS, resolveBets, getAuctionPerks } from './data';
-import { computeStandings } from './scoring';
+import { computeStandings, computeSocialScores } from './scoring';
 import { deriveGameEvents } from './importers/deriveGameEvents';
 
 const AppContext = createContext(null);
@@ -535,6 +535,16 @@ export function AppProvider({ children }) {
     const createEpisode = useCallback(async (episodeNum) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
 
+        // Lock social scores for the previous episode so they stop fluctuating
+        const prevEpNum = episodeNum - 1;
+        const prevEp = episodes?.[prevEpNum];
+        if (prevEp?.scored && !prevEp?.lockedSocial) {
+            const memberUids = Object.keys(leagueMembers || {});
+            const peData = postEpisode?.[prevEpNum] || {};
+            const socialScores = computeSocialScores(prevEp, peData, memberUids);
+            await set(ref(db, `leagues/${leagueId}/episodes/${prevEpNum}/lockedSocial`), socialScores);
+        }
+
         const isPostMerge = !!tribeSwaps?.merge;
         const propBets = generatePropBets(episodeNum, 5, isPostMerge);
         const sideBets = generateSideBets(episodeNum, 3);
@@ -547,7 +557,7 @@ export function AppProvider({ children }) {
             predictions: {},
         });
         await set(ref(db, `leagues/${leagueId}/currentEpisode`), episodeNum);
-    }, [user, leagueId, tribeSwaps]);
+    }, [user, leagueId, tribeSwaps, episodes, leagueMembers, postEpisode]);
 
     const updatePropBets = useCallback(async (episodeNum, propBets) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');

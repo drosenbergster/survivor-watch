@@ -833,39 +833,40 @@ export default function AdminScoring({ episodeNum }) {
             setEliminationMethods({ [data.eliminatedId]: data.eliminationMethod || 'voted_out' });
         }
 
-        // Derive correct tribe keys from contestant-level winner IDs when available
-        const deriveTribes = (winnerIds) => {
-            if (!winnerIds?.length) return null;
-            const tribes = new Set();
-            for (const cid of winnerIds) {
-                if (tribeOverrides) {
-                    for (const [name, members] of Object.entries(tribeOverrides)) {
-                        if (Array.isArray(members) && members.includes(cid)) { tribes.add(name.toLowerCase()); break; }
-                    }
-                } else {
-                    for (const [key, tribe] of Object.entries(TRIBES)) {
-                        if (tribe.members.some(m => m.id === cid)) { tribes.add(key); break; }
+        if (data.isPostMerge) {
+            setIsPostMerge(true);
+            // Post-merge: immunity/reward winners are contestant IDs, not tribe keys
+            if (data.immunityWinnerIds?.length) setImmunityWinners(data.immunityWinnerIds);
+            else if (data.immunityWinners?.length) setImmunityWinners(data.immunityWinners);
+            if (data.rewardWinnerIds?.length) setRewardWinners(data.rewardWinnerIds);
+            else if (data.rewardWinners?.length) setRewardWinners(data.rewardWinners);
+        } else {
+            // Pre-merge: derive tribe keys from contestant-level winner IDs
+            const deriveTribes = (winnerIds) => {
+                if (!winnerIds?.length) return null;
+                const tribes = new Set();
+                for (const cid of winnerIds) {
+                    if (tribeOverrides) {
+                        for (const [name, members] of Object.entries(tribeOverrides)) {
+                            if (Array.isArray(members) && members.includes(cid)) { tribes.add(name.toLowerCase()); break; }
+                        }
+                    } else {
+                        for (const [key, tribe] of Object.entries(TRIBES)) {
+                            if (tribe.members.some(m => m.id === cid)) { tribes.add(key); break; }
+                        }
                     }
                 }
-            }
-            return tribes.size > 0 ? [...tribes] : null;
-        };
+                return tribes.size > 0 ? [...tribes] : null;
+            };
 
-        const immunityFromIds = deriveTribes(data.immunityWinnerIds);
-        if (immunityFromIds) {
-            setImmunityWinners(immunityFromIds);
-        } else if (data.immunityWinners?.length) {
-            setImmunityWinners(data.immunityWinners);
+            const immunityFromIds = deriveTribes(data.immunityWinnerIds);
+            if (immunityFromIds) setImmunityWinners(immunityFromIds);
+            else if (data.immunityWinners?.length) setImmunityWinners(data.immunityWinners);
+
+            const rewardFromIds = deriveTribes(data.rewardWinnerIds);
+            if (rewardFromIds) setRewardWinners(rewardFromIds);
+            else if (data.rewardWinners?.length) setRewardWinners(data.rewardWinners);
         }
-
-        const rewardFromIds = deriveTribes(data.rewardWinnerIds);
-        if (rewardFromIds) {
-            setRewardWinners(rewardFromIds);
-        } else if (data.rewardWinners?.length) {
-            setRewardWinners(data.rewardWinners);
-        }
-
-        if (data.isPostMerge) setIsPostMerge(true);
         if (data.minorityVoters?.length) {
             setUnanimousVote(false);
             setMinorityVoters(data.minorityVoters);
@@ -965,10 +966,18 @@ export default function AdminScoring({ episodeNum }) {
         unanimousVote, minorityVoters, receivedVotes, bigMoments, remaining, tribeOverrides]);
 
     const handleImport = useCallback((parsed) => {
-        if (parsed.eliminatedId) {
+        if (parsed.eliminatedIds?.length) {
+            setEliminatedPicks(parsed.eliminatedIds);
+            const methods = {};
+            for (const id of parsed.eliminatedIds) {
+                methods[id] = parsed.eliminationMethods?.[id] || parsed.eliminationMethod || 'voted_out';
+            }
+            setEliminationMethods(methods);
+        } else if (parsed.eliminatedId) {
             setEliminatedPicks([parsed.eliminatedId]);
             setEliminationMethods({ [parsed.eliminatedId]: parsed.eliminationMethod || 'voted_out' });
         }
+        if (parsed.isPostMerge) setIsPostMerge(true);
         if (parsed.immunityWinners?.length) setImmunityWinners(parsed.immunityWinners);
         if (parsed.rewardWinners?.length) setRewardWinners(parsed.rewardWinners);
         if (parsed.minorityVoters?.length) {

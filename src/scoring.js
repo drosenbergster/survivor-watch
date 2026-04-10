@@ -285,6 +285,48 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
  * Returns: { standings: [{ uid, total, weekly, predictions, rideOrDie }], perEpisode: { [epNum]: playerScores } }
  */
 /**
+ * Compute social scores (Player of Episode + Impact Rating) for an episode.
+ * Used both inline during computeStandings and to snapshot/lock scores.
+ * Returns: { [uid]: { social: number, breakdown: [] } }
+ */
+export function computeSocialScores(episodeData, postEpData, memberUids) {
+    const result = {};
+    for (const uid of memberUids) result[uid] = { social: 0, breakdown: [] };
+
+    if (!postEpData) return result;
+
+    // Player of Episode
+    if (postEpData.playerOfEpisode) {
+        const { scores: poeScores } = computePlayerOfEpisode(postEpData.playerOfEpisode, episodeData?.picks, memberUids);
+        for (const [uid, pts] of Object.entries(poeScores)) {
+            if (result[uid]) {
+                result[uid].social += pts;
+                result[uid].breakdown.push({ type: 'playerOfEpisode', points: pts });
+            }
+        }
+    }
+
+    // Impact Rating
+    if (postEpData.impactRating && episodeData?.eliminatedThisEp?.length > 0) {
+        const avg = computeImpactRatingAvg(postEpData.impactRating);
+        if (avg > 0) {
+            const pts = Math.round(avg);
+            for (const eliminatedId of episodeData.eliminatedThisEp) {
+                for (const uid of memberUids) {
+                    const playerPicks = episodeData.picks?.[uid] || [];
+                    if (playerPicks.includes(eliminatedId) && result[uid]) {
+                        result[uid].social += pts;
+                        result[uid].breakdown.push({ type: 'impactRating', avg, points: pts, eliminatedId });
+                    }
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
+/**
  * Compute Player of Episode winner and scoring from votes.
  * votes: { [uid]: [cid1, cid2, cid3] }
  * Returns: { winnerId, scores: { [uid]: number } }
@@ -348,39 +390,28 @@ export function computeStandings(episodes, rideOrDies, memberUids, bingoAllEpiso
         const epScores = scoreEpisode(ep, rideOrDies, eliminatedSoFar, memberUids, epBingo, auctionData, epNum);
         perEpisode[epNum] = epScores;
 
-        // Post-episode scoring
-        const peData = postEpisodeData?.[epNum] || {};
-
-        // Player of Episode
-        if (peData.playerOfEpisode) {
-            const { scores: poeScores } = computePlayerOfEpisode(peData.playerOfEpisode, ep.picks, memberUids);
-            for (const [uid, pts] of Object.entries(poeScores)) {
-                if (epScores[uid]) {
-                    epScores[uid].social = (epScores[uid].social || 0) + pts;
-                    epScores[uid].total += pts;
-                    epScores[uid].breakdown.social = epScores[uid].breakdown.social || [];
-                    epScores[uid].breakdown.social.push({ type: 'playerOfEpisode', points: pts });
+        // Post-episode social scoring — use locked snapshot if available,
+        // otherwise compute live (only the latest episode should be unlocked).
+        if (ep.lockedSocial) {
+            // Use the frozen scores from when the next episode was opened
+            for (const uid of memberUids) {
+                const locked = ep.lockedSocial[uid];
+                if (locked && epScores[uid]) {
+                    epScores[uid].social = (epScores[uid].social || 0) + locked.social;
+                    epScores[uid].total += locked.social;
+                    epScores[uid].breakdown.social = locked.breakdown || [];
                 }
             }
-        }
-
-        // Impact Rating — award for each eliminated contestant a player picked
-        if (peData.impactRating && ep.eliminatedThisEp?.length > 0) {
-            const avg = computeImpactRatingAvg(peData.impactRating);
-            if (avg > 0) {
-                const pts = Math.round(avg);
-                for (const eliminatedId of ep.eliminatedThisEp) {
-                    for (const uid of memberUids) {
-                        const playerPicks = ep.picks?.[uid] || [];
-                        if (playerPicks.includes(eliminatedId)) {
-                            if (epScores[uid]) {
-                                epScores[uid].social = (epScores[uid].social || 0) + pts;
-                                epScores[uid].total += pts;
-                                epScores[uid].breakdown.social = epScores[uid].breakdown.social || [];
-                                epScores[uid].breakdown.social.push({ type: 'impactRating', avg, points: pts, eliminatedId });
-                            }
-                        }
-                    }
+        } else {
+            // Live computation — scores may shift as votes trickle in
+            const peData = postEpisodeData?.[epNum] || {};
+            const socialScores = computeSocialScores(ep, peData, memberUids);
+            for (const uid of memberUids) {
+                const ss = socialScores[uid];
+                if (ss && ss.social > 0 && epScores[uid]) {
+                    epScores[uid].social = (epScores[uid].social || 0) + ss.social;
+                    epScores[uid].total += ss.social;
+                    epScores[uid].breakdown.social = ss.breakdown;
                 }
             }
         }

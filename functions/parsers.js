@@ -200,25 +200,19 @@ export function parseTDTHtml(html, eliminatedBefore = []) {
         eliminationMethods[med.id] = 'medevac';
     }
 
-    // Find vote-out boot(s): group tribal attendees by TotV to detect
-    // separate tribal councils (each tribal has a distinct total vote count),
-    // then pick the highest-VAP contestant within each group as the boot.
-    const tribalRows = rows.filter(r => r.tca !== null && r.tca > 0 && !r.eliminated);
-    const vapCandidates = tribalRows
-        .filter(r => r.vap !== null && r.vap > 0 && !eliminatedIds.includes(r.id))
-        .sort((a, b) => (b.vap || 0) - (a.vap || 0));
+    // Find vote-out boot(s): the eliminated contestant at each tribal has
+    // TCA > 0 (attended tribal), VAP > 0 (received votes), and VFB = 0
+    // (didn't vote with the majority / couldn't vote). This reliably detects
+    // multiple boots even when separate tribals have identical total vote counts.
+    const bootCandidates = rows.filter(r =>
+        r.tca !== null && r.tca > 0 &&
+        r.vap !== null && r.vap > 0 &&
+        (r.vfb === null || r.vfb === 0) &&
+        !r.eliminated &&
+        !eliminatedIds.includes(r.id)
+    ).sort((a, b) => (b.vap || 0) - (a.vap || 0));
 
-    // Group by TotV — each distinct TotV value indicates a separate tribal council
-    const tribalsByTotV = {};
-    for (const candidate of vapCandidates) {
-        const totV = candidate.totV || 0;
-        if (!tribalsByTotV[totV]) tribalsByTotV[totV] = [];
-        tribalsByTotV[totV].push(candidate);
-    }
-
-    // The boot is the highest-VAP contestant in each TotV group
-    for (const group of Object.values(tribalsByTotV)) {
-        const boot = group[0]; // already sorted by VAP desc
+    for (const boot of bootCandidates) {
         eliminatedIds.push(boot.id);
         eliminationMethods[boot.id] = 'voted_out';
     }
@@ -649,6 +643,29 @@ export function mergeFSGResults(combinedResult, fsgResult) {
         merged.rewardWinnerIds = fsgResult.rewardWinnerIds;
     }
 
+    // Supplement elimination data: if FSG detected boots that TDT missed
+    // (e.g., due to TotV collision), add them to the combined result.
+    if (fsgResult.eliminatedIds?.length > 0) {
+        const existingElims = new Set(merged.eliminatedIds || (merged.eliminatedId ? [merged.eliminatedId] : []));
+        for (const cid of fsgResult.eliminatedIds) {
+            if (!existingElims.has(cid)) {
+                if (!merged.eliminatedIds) merged.eliminatedIds = [...existingElims];
+                merged.eliminatedIds.push(cid);
+                if (!merged.eliminationMethods) merged.eliminationMethods = {};
+                merged.eliminationMethods[cid] = fsgResult.eliminationMethods?.[cid] || 'voted_out';
+            }
+        }
+    }
+
+    // Detect post-merge: if any contestant has a 'merge' event from FSG,
+    // this episode is the merge or post-merge — switch to individual challenges
+    const hasMergeEvent = Object.values(merged.bigMoments || {}).some(
+        events => Array.isArray(events) && events.includes('merge')
+    );
+    if (hasMergeEvent) {
+        merged.isPostMerge = true;
+    }
+
     return merged;
 }
 
@@ -668,6 +685,10 @@ export function resolvePropBets(importData, bets) {
     const allEvents = Object.values(importData.bigMoments || {}).flat();
     const confessionals = importData.confessionals || {};
     const voteCountMap = importData.voteCountMap || {};
+    const allEliminatedIds = importData.eliminatedIds?.length > 0
+        ? importData.eliminatedIds
+        : (importData.eliminatedId ? [importData.eliminatedId] : []);
+    const elimIdSet = new Set(allEliminatedIds);
 
     for (const bet of bets) {
         const { id, resolveType, resolveParams } = bet;
@@ -697,7 +718,7 @@ export function resolvePropBets(importData, bets) {
                 break;
             }
             case 'vote_unanimous':
-                results[id] = (importData.minorityVoters || []).length === 0 && !!importData.eliminatedId;
+                results[id] = (importData.minorityVoters || []).length === 0 && allEliminatedIds.length > 0;
                 break;
             case 'vote_split':
                 results[id] = (importData.minorityVoters || []).length > 0;
@@ -709,13 +730,15 @@ export function resolvePropBets(importData, bets) {
                 results[id] = (importData.rewardWinners || []).length > 0;
                 break;
             case 'eliminated_vap_gte': {
-                const bootVap = importData.eliminatedId ? (voteCountMap[importData.eliminatedId] || 0) : 0;
-                results[id] = bootVap >= resolveParams.threshold;
+                const maxBootVap = allEliminatedIds.reduce(
+                    (max, cid) => Math.max(max, voteCountMap[cid] || 0), 0
+                );
+                results[id] = maxBootVap >= resolveParams.threshold;
                 break;
             }
             case 'survived_with_vap_gte': {
                 results[id] = Object.entries(voteCountMap).some(
-                    ([cid, vap]) => cid !== importData.eliminatedId && vap >= resolveParams.threshold
+                    ([cid, vap]) => !elimIdSet.has(cid) && vap >= resolveParams.threshold
                 );
                 break;
             }

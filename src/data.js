@@ -244,6 +244,10 @@ export function resolveBets(importData, bets) {
     const combinedEvents = [...allEvents, ...allGameEvents];
     const confessionals = importData.confessionals || {};
     const voteCountMap = importData.voteCountMap || {};
+    const allEliminatedIds = importData.eliminatedIds?.length > 0
+        ? importData.eliminatedIds
+        : (importData.eliminatedId ? [importData.eliminatedId] : []);
+    const elimIdSet = new Set(allEliminatedIds);
 
     for (const bet of bets) {
         const { id, resolveType, resolveParams } = bet;
@@ -273,7 +277,7 @@ export function resolveBets(importData, bets) {
                 break;
             }
             case 'vote_unanimous':
-                results[id] = (importData.minorityVoters || []).length === 0 && !!importData.eliminatedId;
+                results[id] = (importData.minorityVoters || []).length === 0 && allEliminatedIds.length > 0;
                 break;
             case 'vote_split':
                 results[id] = (importData.minorityVoters || []).length > 0;
@@ -285,13 +289,15 @@ export function resolveBets(importData, bets) {
                 results[id] = (importData.rewardWinners || []).length > 0;
                 break;
             case 'eliminated_vap_gte': {
-                const bootVap = importData.eliminatedId ? (voteCountMap[importData.eliminatedId] || 0) : 0;
-                results[id] = bootVap >= resolveParams.threshold;
+                const maxBootVap = allEliminatedIds.reduce(
+                    (max, cid) => Math.max(max, voteCountMap[cid] || 0), 0
+                );
+                results[id] = maxBootVap >= resolveParams.threshold;
                 break;
             }
             case 'survived_with_vap_gte': {
                 results[id] = Object.entries(voteCountMap).some(
-                    ([cid, vap]) => cid !== importData.eliminatedId && vap >= resolveParams.threshold
+                    ([cid, vap]) => !elimIdSet.has(cid) && vap >= resolveParams.threshold
                 );
                 break;
             }

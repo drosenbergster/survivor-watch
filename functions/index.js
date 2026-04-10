@@ -133,6 +133,19 @@ async function fetchAndParse(episodeNum, { force = false } = {}) {
         console.warn('FSG fetch failed (non-blocking):', err.message);
     }
 
+    // Post-merge detection: if FSG merge events flagged this episode as post-merge,
+    // great. Otherwise, check if any prior episode was already marked post-merge —
+    // once merged, all subsequent episodes are post-merge too.
+    if (!result.isPostMerge && episodeNum > 1) {
+        for (let i = episodeNum - 1; i >= 1; i--) {
+            const prevSnap = await db.ref(`${SEASON_PATH}/e${i}/isPostMerge`).get();
+            if (prevSnap.exists() && prevSnap.val() === true) {
+                result.isPostMerge = true;
+                break;
+            }
+        }
+    }
+
     // Store in RTDB
     const importData = {
         fetchedAt: Date.now(),
