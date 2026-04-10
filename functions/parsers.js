@@ -200,20 +200,38 @@ export function parseTDTHtml(html, eliminatedBefore = []) {
         eliminationMethods[med.id] = 'medevac';
     }
 
-    // Find vote-out boot(s): the eliminated contestant has VAP > 0 (received
-    // votes) and VFB = 0 (didn't vote with the majority / couldn't vote).
-    // Note: TCA can be 0 for contestants who couldn't vote (no-vote status,
-    // Shot in the Dark), so we don't require TCA > 0.
-    const bootCandidates = rows.filter(r =>
+    // Find vote-out boot(s) by grouping tribal attendees by TotV (each distinct
+    // TotV = a separate tribal council), then selecting the highest-VAP person
+    // with VFB=0 as the boot in each group. When multiple people are tied for
+    // the highest VAP with VFB=0, all are boots (separate tribals with identical
+    // total vote counts, e.g. two 4-0 votes). TCA is not required since some
+    // eliminated contestants have TCA=0 (no-vote status).
+    const vapCandidates = rows.filter(r =>
         r.vap !== null && r.vap > 0 &&
-        (r.vfb === null || r.vfb === 0) &&
         !r.eliminated &&
         !eliminatedIds.includes(r.id)
-    ).sort((a, b) => (b.vap || 0) - (a.vap || 0));
+    );
 
-    for (const boot of bootCandidates) {
-        eliminatedIds.push(boot.id);
-        eliminationMethods[boot.id] = 'voted_out';
+    const tribalsByTotV = {};
+    for (const c of vapCandidates) {
+        const totV = c.totV || 0;
+        if (!tribalsByTotV[totV]) tribalsByTotV[totV] = [];
+        tribalsByTotV[totV].push(c);
+    }
+
+    for (const group of Object.values(tribalsByTotV)) {
+        // Sort by VAP descending within each tribal group
+        group.sort((a, b) => (b.vap || 0) - (a.vap || 0));
+        const maxVap = group[0].vap;
+        // The boot(s) are those with the highest VAP AND VFB=0.
+        // Ties at max VAP with VFB=0 indicate separate tribals with same TotV.
+        for (const c of group) {
+            if (c.vap < maxVap) break;
+            if (c.vfb === null || c.vfb === 0) {
+                eliminatedIds.push(c.id);
+                eliminationMethods[c.id] = 'voted_out';
+            }
+        }
     }
 
     // Legacy single-ID fields for backward compatibility

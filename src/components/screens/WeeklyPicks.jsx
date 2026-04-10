@@ -174,7 +174,7 @@ export default function WeeklyPicks() {
                 </div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+            <div className={`grid grid-cols-1 ${tribeGroups.length > 1 ? 'lg:grid-cols-3' : ''} gap-3`}>
                 {tribeGroups.map(({ key: tribeKey, name: tribeName, members: tribeMembers }) => {
                     const activeMembers = tribeMembers.filter(c => !eliminatedSet.has(c.id));
                     if (activeMembers.length === 0) return null;

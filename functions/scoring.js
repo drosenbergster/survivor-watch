@@ -35,6 +35,14 @@ const ALL_IDS = Object.values(TRIBES).flatMap(t => t.members.map(m => m.id));
 
 export function getEffectiveTribeAssignments(tribeSwaps, episodeNum) {
     if (!tribeSwaps) return null;
+
+    // If merged and this episode is at or after the merge, return all contestants
+    // under the merged tribe name
+    if (tribeSwaps.merge && tribeSwaps.merge.episodeNum <= episodeNum) {
+        const tribeName = tribeSwaps.merge.tribeName || 'Merged Tribe';
+        return { [tribeName]: ALL_IDS };
+    }
+
     const swapEps = Object.keys(tribeSwaps)
         .filter(k => k !== 'merge')
         .map(Number)

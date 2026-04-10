@@ -65,10 +65,11 @@
   --color-surface-dark: #292524;
   --color-sand-warm: #d4b483;
 
-  /* Tribe colors — Cila, Vatu, Kalo */
+  /* Tribe colors — Cila, Vatu, Kalo, Manulevu (merge) */
   --color-cila: #e0a030;
   --color-vatu: #c43e1c;
   --color-kalo: #1a8cbb;
+  --color-manulevu: #d4a843;
 
   /* Player colors — draft/scoreboard */
   --color-player-1: #e8722a;
