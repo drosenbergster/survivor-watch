@@ -39,11 +39,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      # Node 22: the functions still declare the Node 20 runtime for Cloud Functions,
+      # but this job only needs a runtime new enough for the parsers, and Node 20 is
+      # past end of life on the runners.
+      - uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
           cache-dependency-path: functions/package-lock.json
 
