@@ -1,0 +1,81 @@
+name: Import episode stats
+
+# Replaces the Cloud Functions schedule, which needs Firebase's paid Blaze plan.
+# GitHub Actions is free for public repositories, and this job takes well under a minute.
+#
+# The stat sites publish a boxscore a day or two after an episode airs, so this checks
+# several times across Thursday, Friday and Saturday. Runs are idempotent: an episode
+# that is already imported and scored is skipped, and a boxscore that is not published
+# yet exits quietly rather than failing.
+on:
+  schedule:
+    # Times are UTC. Pacific is UTC-7 in summer and UTC-8 in winter, so these are spread
+    # widely enough that the daylight saving change partway through the season is harmless.
+    - cron: '0 2,8,16 * * 4,5,6'
+  workflow_dispatch:
+    inputs:
+      episode:
+        description: 'Episode number (leave blank to auto-detect)'
+        required: false
+        type: string
+      force:
+        description: 'Re-import and re-score even if already done'
+        required: false
+        type: boolean
+        default: false
+      dry_run:
+        description: 'Scrape and parse only, write nothing to the database'
+        required: false
+        type: boolean
+        default: false
+
+# Never let two imports write at the same time.
+concurrency:
+  group: import-episode
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Install dependencies
+        working-directory: functions
+        run: npm ci
+
+      - name: Run importer
+        working-directory: functions
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
+          # Passed as environment rather than interpolated into the script, so a crafted
+          # input cannot inject shell commands.
+          INPUT_EPISODE: ${{ inputs.episode }}
+          INPUT_FORCE: ${{ inputs.force }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          ARGS=()
+          if [ -n "${INPUT_EPISODE:-}" ]; then
+            if ! [[ "$INPUT_EPISODE" =~ ^[0-9]+$ ]]; then
+              echo "episode must be a number, got: $INPUT_EPISODE" >&2
+              exit 1
+            fi
+            ARGS+=(--episode "$INPUT_EPISODE")
+          fi
+          if [ "${INPUT_FORCE:-}" = "true" ]; then
+            ARGS+=(--force)
+          fi
+          if [ "${INPUT_DRY_RUN:-}" = "true" ]; then
+            ARGS+=(--dry-run)
+          fi
+          echo "Running: node scripts/run-import.mjs ${ARGS[*]:-(auto-detect)}"
+          node scripts/run-import.mjs ${ARGS[@]+"${ARGS[@]}"}
