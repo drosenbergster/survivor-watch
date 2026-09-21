@@ -1,59 +1,8 @@
 import { useMemo } from 'react';
 import { useApp } from '../../AppContext';
-import { computeStandings, detectAchievements } from '../../scoring';
-import { ALL_CASTAWAYS, ACHIEVEMENTS, PLAYER_COLORS } from '../../data';
+import { computeStandings } from '../../scoring';
+import { PLAYER_COLORS } from '../../data';
 import { FijianCard, FijianSectionHeader, Icon } from '../fijian';
-import { HistoricalStatBars } from './HistoricalStats';
-
-function BadgeWall({ earned }) {
-    return (
-        <div className="grid grid-cols-4 gap-2">
-            {ACHIEVEMENTS.map(a => {
-                const unlocked = earned.includes(a.id);
-                return (
-                    <div
-                        key={a.id}
-                        className={`flex flex-col items-center p-2 rounded-lg text-center transition-all ${
-                            unlocked ? 'bg-ochre/10' : 'bg-stone-800/30 opacity-30'
-                        }`}
-                    >
-                        <span className="text-2xl">{a.emoji}</span>
-                        <span className={`text-[10px] font-sans mt-1 leading-tight ${
-                            unlocked ? 'text-ochre' : 'text-sand-warm/60'
-                        }`}>
-                            {a.name}
-                        </span>
-                    </div>
-                );
-            })}
-        </div>
-    );
-}
-
-function RideOrDieCard({ contestantId, isEliminated, showStats = false }) {
-    const c = ALL_CASTAWAYS.find(x => x.id === contestantId);
-    if (!c) return null;
-
-    return (
-        <div className={`p-3 rounded-lg space-y-2 ${
-            isEliminated ? 'bg-red-950/30 border border-red-900/30' : 'bg-stone-800/50'
-        }`}>
-            <div className="flex items-center gap-3">
-                <span className="text-xl">{isEliminated ? '💀' : '🔥'}</span>
-                <div className="flex-1">
-                    <p className={`text-sm font-sans font-bold ${isEliminated ? 'text-red-400/60 line-through' : 'text-sand-warm'}`}>
-                        {c.name}
-                    </p>
-                    <p className="text-[10px] text-sand-warm/60 font-sans">{c.seasons}</p>
-                </div>
-                <span className={`text-xs font-sans ${isEliminated ? 'text-red-400/50' : 'text-jungle-400'}`}>
-                    {isEliminated ? 'Eliminated' : 'Active'}
-                </span>
-            </div>
-            {showStats && <HistoricalStatBars contestantId={contestantId} />}
-        </div>
-    );
-}
 
 function StatBox({ label, value, sub }) {
     return (
@@ -101,13 +50,12 @@ function SnapVoteAccuracy({ episodes, uid }) {
 
 export default function PlayerProfile({ uid: profileUid, onClose }) {
     const {
-        user, episodes, rideOrDies, leagueMembers, safeEliminated, bingo,
+        user, episodes, rideOrDies, leagueMembers, bingo,
         postEpisode, league, auction,
     } = useApp();
 
     const targetUid = profileUid || user?.uid;
     const member = leagueMembers?.[targetUid];
-    const rods = rideOrDies?.[targetUid] || [];
     const memberUids = useMemo(() => Object.keys(leagueMembers || {}), [leagueMembers]);
 
     const { standings, perEpisode } = useMemo(
@@ -115,14 +63,8 @@ export default function PlayerProfile({ uid: profileUid, onClose }) {
         [episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated, auction]
     );
 
-    const achievements = useMemo(
-        () => detectAchievements(episodes, rideOrDies, memberUids, bingo, postEpisode, perEpisode),
-        [episodes, rideOrDies, memberUids, bingo, postEpisode, perEpisode]
-    );
-
     const myStanding = standings?.find(s => s.uid === targetUid);
     const myRank = standings?.findIndex(s => s.uid === targetUid) + 1;
-    const myAchievements = achievements?.[targetUid] || [];
     const colorIndex = memberUids.indexOf(targetUid);
     const color = PLAYER_COLORS[colorIndex] || PLAYER_COLORS[0];
 
@@ -156,38 +98,15 @@ export default function PlayerProfile({ uid: profileUid, onClose }) {
                     <span className="text-sand-warm/60">
                         {myStanding?.total || 0} pts
                     </span>
-                    <span className="text-sand-warm/60">·</span>
-                    <span className="text-sand-warm/60">
-                        {myAchievements.length} badges
-                    </span>
                 </div>
             </FijianCard>
 
             {/* Score breakdown */}
-            <div className="grid grid-cols-5 gap-2">
-                <StatBox label="Weekly" value={myStanding?.weekly || 0} />
-                <StatBox label="Predict" value={myStanding?.predictions || 0} />
-                <StatBox label="RoD" value={myStanding?.rideOrDie || 0} />
+            <div className="grid grid-cols-3 gap-2">
                 <StatBox label="Bingo" value={myStanding?.bingo || 0} />
-                <StatBox label="Social" value={myStanding?.social || 0} />
+                <StatBox label="Predict" value={myStanding?.predictions || 0} />
+                <StatBox label="Picks" value={myStanding?.weekly || 0} />
             </div>
-
-            {/* Ride or Dies */}
-            <FijianCard className="p-4 space-y-2">
-                <FijianSectionHeader title="Ride or Dies" />
-                {rods.length === 0 ? (
-                    <p className="text-sand-warm/60 text-sm font-sans italic">No ride or dies drafted</p>
-                ) : (
-                    rods.map(cid => (
-                        <RideOrDieCard
-                            key={cid}
-                            contestantId={cid}
-                            isEliminated={(safeEliminated || []).includes(cid)}
-                            showStats
-                        />
-                    ))
-                )}
-            </FijianCard>
 
             {/* Prediction accuracy */}
             <FijianCard className="p-4 space-y-3">
@@ -196,12 +115,6 @@ export default function PlayerProfile({ uid: profileUid, onClose }) {
                     <p className="text-sand-warm/50 text-xs font-sans mb-1">Tribal Council Votes</p>
                     <SnapVoteAccuracy episodes={episodes} uid={targetUid} />
                 </div>
-            </FijianCard>
-
-            {/* Badge Wall */}
-            <FijianCard className="p-4 space-y-3">
-                <FijianSectionHeader title="Badges" />
-                <BadgeWall earned={myAchievements} />
             </FijianCard>
 
             {/* Season stats */}

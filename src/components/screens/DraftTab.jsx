@@ -12,16 +12,19 @@ import MergePassport from './MergePassport';
 import FinaleMode from './FinaleMode';
 import LightYourTorch from './LightYourTorch';
 import BingoCard from './BingoCard';
+import SeasonPassport from './SeasonPassport';
+import { PICKS_START_EPISODE, SEASON_LABEL } from '../../data';
 
 export default function DraftTab() {
     const {
         user, myEpisode, myEpisodeData, leagueId,
         isWatching, hasWatched, hasLockedPicks,
         advanceEpisode, saveBingoMarks, bingo,
-        isMerged, mergePassports, finaleData,
+        isMerged, mergePassports, finaleData, passports,
     } = useApp();
 
     const hasEpisode = !!myEpisode && !!myEpisodeData;
+    const episodePendingSync = !!myEpisode && !myEpisodeData;
 
     const watching = hasEpisode ? isWatching(myEpisode) : false;
     const watched = hasEpisode ? hasWatched(myEpisode) : false;
@@ -31,6 +34,13 @@ export default function DraftTab() {
     const isFinaleActive = !!finaleData?.status;
     const mergePassportSealed = !!mergePassports?.[user?.uid]?.sealedAt;
 
+    // Castaway picks begin in Episode 2 — the premiere is the group's first look at this cast.
+    const picksOpen = !!myEpisode && Number(myEpisode) >= PICKS_START_EPISODE;
+
+    // The Season Passport is sealed after the premiere, once you have actually met everyone.
+    const seasonPassportSealed = !!passports?.[user?.uid]?.sealedAt;
+    const passportDue = Number(myEpisode) === 1 && watched && !seasonPassportSealed;
+
     const bingoSeed = user ? `${leagueId}-${myEpisode}-${user.uid}` : 'fallback';
     const bingoMarked = bingo?.[myEpisode]?.[user?.uid];
     const handleBingoSave = useCallback((marked) => {
@@ -38,12 +48,15 @@ export default function DraftTab() {
     }, [saveBingoMarks, myEpisode]);
 
     const headerSubtitle = useMemo(() => {
+        if (episodePendingSync) return 'Loading episode data…';
         if (!hasEpisode) return null;
         if (watching) return 'Your torch is lit — enjoy the show.';
         if (watched && isScored) return 'Episode complete. Review your results below.';
         if (watched) return 'Waiting for the host to score this episode.';
-        return 'Make your picks and Tree Mail, then light your torch.';
-    }, [hasEpisode, watching, watched, isScored]);
+        return picksOpen
+            ? 'Make your picks and Tree Mail, then light your torch.'
+            : 'Answer your Tree Mail, then light your torch. No castaway picks tonight — you meet them first.';
+    }, [episodePendingSync, hasEpisode, watching, watched, isScored, picksOpen]);
 
     if (isFinaleActive) {
         return (
@@ -60,14 +73,16 @@ export default function DraftTab() {
         <div className="space-y-6">
             <header className="text-center">
                 <h2 className="font-display text-3xl tracking-wider text-sand-warm drop-shadow-text">
-                    {hasEpisode ? `Episode ${myEpisode}` : 'Season 50'}
+                    {myEpisode ? `Episode ${myEpisode}` : SEASON_LABEL}
                 </h2>
                 {headerSubtitle && (
                     <p className="text-sand-warm/70 text-sm mt-1 font-sans inline-flex items-center justify-center">
                         {headerSubtitle}
-                        {!watching && !watched && (
+                        {!episodePendingSync && !watching && !watched && (
                             <HintBadge hintKey="picks">
-                                Pick contestants and answer Tree Mail, then tap &quot;Light Your Torch&quot; to lock everything in, activate your bingo card, and start the episode.
+                                {picksOpen
+                                    ? 'Pick castaways and answer Tree Mail, then tap "Light Your Torch" to lock everything in, activate your bingo card, and start the episode.'
+                                    : 'Answer your Tree Mail, then tap "Light Your Torch" to activate your bingo card and start the episode. Castaway picks open in Episode 2.'}
                             </HintBadge>
                         )}
                     </p>
@@ -76,14 +91,23 @@ export default function DraftTab() {
 
             <AdminEpisodeCard />
 
+            {episodePendingSync && (
+                <FijianCard className="p-6 text-center space-y-2">
+                    <Icon name="hourglass_empty" className="text-ochre text-3xl mx-auto animate-pulse" />
+                    <p className="text-sand-warm/80 text-sm font-sans">
+                        Setting up Episode {myEpisode}. If this lingers, ask the host to open the league once (they sync the season week).
+                    </p>
+                </FijianCard>
+            )}
+
             {isMerged && !mergePassportSealed && (
                 <MergePassport />
             )}
 
-            {/* Pre-watch: picks, predictions, then torch */}
+            {/* Pre-watch: picks (Episode 2+), predictions, then torch */}
             {hasEpisode && !picksLocked && !watching && !watched && (
                 <>
-                    <WeeklyPicks />
+                    {picksOpen && <WeeklyPicks />}
                     <Predictions />
                     <LightYourTorch episodeNum={myEpisode} />
                 </>
@@ -96,6 +120,7 @@ export default function DraftTab() {
                     <div className="max-w-md mx-auto">
                         <BingoCard
                             seed={bingoSeed}
+                            episodeNum={myEpisode}
                             marked={bingoMarked}
                             onSave={handleBingoSave}
                             disabled={false}
@@ -105,6 +130,9 @@ export default function DraftTab() {
                     <EpisodeLockScreen />
                 </>
             )}
+
+            {/* Premiere done — now you've met everyone, so seal your season calls */}
+            {passportDue && <SeasonPassport />}
 
             {/* Watched, not yet scored */}
             {hasEpisode && watched && !isScored && (
@@ -127,7 +155,7 @@ export default function DraftTab() {
             )}
 
             {/* Hard stop — continue to next episode */}
-            {hasEpisode && watched && (
+            {hasEpisode && watched && !passportDue && (
                 <FijianCard className="p-4 text-center">
                     <FijianPrimaryButton onClick={advanceEpisode}>
                         Continue to Episode {myEpisode + 1}

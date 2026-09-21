@@ -1,5 +1,5 @@
 /**
- * FijianHero — Torch logo + SURVIVOR 50 title block
+ * FijianHero — Torch logo + SURVIVOR 51 title block
  */
 export default function FijianHero({ subtitle = 'WATCH PARTY HQ' }) {
   return (
@@ -19,7 +19,7 @@ export default function FijianHero({ subtitle = 'WATCH PARTY HQ' }) {
         SURVIVOR
       </h1>
       <h1 className="text-8xl font-display tracking-tighter text-transparent bg-gradient-to-b from-sand-warm via-clay to-ochre wood-texture bg-clip-text leading-[0.85] mt-1 drop-shadow-text-lg">
-        50
+        51
       </h1>
       <div className="flex items-center justify-center gap-2 mt-8">
         <div className="h-[1px] w-8 bg-ochre/40" />

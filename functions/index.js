@@ -7,10 +7,19 @@ import { autoScoreLeagues } from './scoring.js';
 
 initializeApp();
 
-const TDT_BASE = 'https://www.truedorktimes.com/s50/boxscores';
+const SEASON_ID = 's51';
+const SEASON_NUMBER = 51;
+
+// Verified against the live Season 51 index: episode boxscores are published at
+// /s51/boxscores/e{N}.htm, the same shape Season 50 used.
+const TDT_BASE = `https://www.truedorktimes.com/${SEASON_ID}/boxscores`;
 const INSIDER_WEEKLIES = 'https://insidesurvivor.com/category/weeklies';
-const FSG_RECAP = 'https://www.fantasysurvivorgame.com/episode-recap/season/50';
-const SEASON_PATH = 'seasons/s50/autoImport';
+const FSG_RECAP = `https://www.fantasysurvivorgame.com/episode-recap/season/${SEASON_NUMBER}`;
+const SEASON_PATH = `seasons/${SEASON_ID}/autoImport`;
+
+function tdtEpisodeUrl(episodeNum) {
+    return `${TDT_BASE}/e${episodeNum}.htm`;
+}
 
 async function fetchPage(url) {
     const res = await fetch(url, {
@@ -85,7 +94,7 @@ async function fetchAndParse(episodeNum, { force = false } = {}) {
     const eliminatedBefore = await getEliminatedBefore(db, episodeNum);
 
     // Fetch TDT boxscore
-    const tdtUrl = `${TDT_BASE}/e${episodeNum}.htm`;
+    const tdtUrl = tdtEpisodeUrl(episodeNum);
     const tdtHtml = await fetchPage(tdtUrl);
 
     if (!tdtHtml) {
@@ -169,7 +178,7 @@ async function fetchAndParse(episodeNum, { force = false } = {}) {
 
     // Resolve prop/side bets for all leagues referencing this season
     try {
-        let leaguesSnap = await db.ref('leagues').orderByChild('season').equalTo('s50').get();
+        let leaguesSnap = await db.ref('leagues').orderByChild('season').equalTo(SEASON_ID).get();
         // Fallback: if no leagues have the season field yet, scan all leagues
         if (!leaguesSnap.exists()) {
             leaguesSnap = await db.ref('leagues').get();

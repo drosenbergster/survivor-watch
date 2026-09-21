@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useApp } from '../../AppContext';
-import { ALL_CASTAWAYS } from '../../data';
+import { ALL_CASTAWAYS, SEASON_LABEL } from '../../data';
 import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon } from '../fijian';
 
 const MERGE_QUESTIONS = [
-    { key: 'winner', label: 'Sole Survivor', prompt: 'Who wins Season 50?', points: '12 pts', icon: 'emoji_events' },
-    { key: 'firstJury', label: 'First Juror', prompt: 'Who is the first jury member?', points: '8 pts', icon: 'gavel' },
-    { key: 'fanFavorite', label: 'Fan Favorite', prompt: 'Who will be the fan favorite post-merge?', points: '8 pts', icon: 'favorite' },
-    { key: 'biggestVillain', label: 'Biggest Villain', prompt: 'Who plays the dirtiest post-merge game?', points: '8 pts', icon: 'mood_bad' },
-    { key: 'fireMakingWinner', label: 'Fire-Making Winner', prompt: 'Who wins fire at Final 4?', points: '12 pts', icon: 'local_fire_department' },
+    { key: 'winner', label: 'Sole Survivor', prompt: `Who wins ${SEASON_LABEL}?`, icon: 'emoji_events' },
+    { key: 'firstJury', label: 'First Juror', prompt: 'Who is the first jury member?', icon: 'gavel' },
+    { key: 'fanFavorite', label: 'Fan Favorite', prompt: 'Who will be the fan favorite post-merge?', icon: 'favorite' },
+    { key: 'biggestVillain', label: 'Biggest Villain', prompt: 'Who plays the dirtiest post-merge game?', icon: 'mood_bad' },
+    { key: 'fireMakingWinner', label: 'Fire-Making Winner', prompt: 'Who wins fire at Final 4?', icon: 'local_fire_department' },
 ];
 
 function ContestantSelect({ value, onChange, label, excludeIds = [] }) {
@@ -89,7 +89,6 @@ export default function MergePassport() {
                             <Icon name={q.icon} className="text-purple-400 text-lg" />
                             <div className="flex-1">
                                 <span className="text-sand-warm text-sm font-bold">{q.label}</span>
-                                <span className="text-purple-400/50 text-xs ml-2">{q.points}</span>
                             </div>
                         </div>
                         <p className="text-clay text-xs mb-2 font-serif italic">{q.prompt}</p>

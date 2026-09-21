@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useMemo, u
 import { onAuthStateChanged, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, signOut } from 'firebase/auth';
 import { ref, onValue, set, get, push, remove } from 'firebase/database';
 import { auth, db } from './firebase';
-import { generatePropBets, generateSideBets, ALL_CASTAWAYS, resolveBets, getAuctionPerks } from './data';
+import { generatePropBets, generateSideBets, ALL_CASTAWAYS, resolveBets, SEASON_ID, MAX_LEAGUE_MEMBERS, PICKS_START_EPISODE, getMaxPicks } from './data';
 import { computeStandings, computeSocialScores } from './scoring';
 import { deriveGameEvents } from './importers/deriveGameEvents';
 
@@ -59,24 +59,6 @@ function generateJoinCode() {
     for (let i = 0; i < 4; i++) code += CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)];
     code += String(Math.floor(Math.random() * 100)).padStart(2, '0');
     return code;
-}
-
-export function getSnakeOrder(playerOrder, rounds = 2) {
-    const snake = [];
-    for (let r = 0; r < rounds; r++) {
-        if (r % 2 === 0) snake.push(...playerOrder);
-        else snake.push(...[...playerOrder].reverse());
-    }
-    return snake;
-}
-
-function shuffleArray(arr) {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
 }
 
 const actionCodeSettings = {
@@ -355,7 +337,7 @@ export function AppProvider({ children }) {
 
     const getSeasonImportData = useCallback(async () => {
         if (!db) return [];
-        const snap = await get(ref(db, 'seasons/s50/autoImport'));
+        const snap = await get(ref(db, `seasons/${SEASON_ID}/autoImport`));
         if (!snap.exists()) return [];
         const data = snap.val();
         return Object.keys(data)
@@ -395,7 +377,7 @@ export function AppProvider({ children }) {
         const leagueData = {
             name,
             joinCode,
-            season: 's50',
+            season: SEASON_ID,
             createdBy: user.uid,
             createdAt: Date.now(),
             status: 'lobby',
@@ -435,7 +417,7 @@ export function AppProvider({ children }) {
         if (leagueData.members && leagueData.members[user.uid]) throw new Error('You are already in this league.');
 
         const memberCount = leagueData.members ? Object.keys(leagueData.members).length : 0;
-        if (memberCount >= 6) throw new Error('This league is full (max 6 players).');
+        if (memberCount >= MAX_LEAGUE_MEMBERS) throw new Error(`This league is full (max ${MAX_LEAGUE_MEMBERS} players).`);
 
         await set(ref(db, `leagues/${targetId}/members/${user.uid}`), {
             displayName,
@@ -482,51 +464,6 @@ export function AppProvider({ children }) {
         await set(ref(db, `users/${user.uid}/onboardingComplete`), true);
     }, [user]);
 
-    const startDraft = useCallback(async () => {
-        if (!db || !user || !leagueId) throw new Error('Not connected');
-        if (league?.createdBy !== user.uid) throw new Error('Only the host can start the draft');
-
-        const memberUids = Object.keys(leagueMembers);
-        if (memberUids.length < 2) throw new Error('Need at least 2 players to draft');
-
-        const order = shuffleArray(memberUids);
-        await set(ref(db, `leagues/${leagueId}/draft`), {
-            status: 'active',
-            order,
-            picks: [],
-            currentPick: 0,
-        });
-        await set(ref(db, `leagues/${leagueId}/status`), 'draft');
-    }, [user, leagueId, league, leagueMembers]);
-
-    const makeDraftPick = useCallback(async (contestantId) => {
-        if (!db || !user || !leagueId || !draftState) throw new Error('Not connected');
-        if (draftState.status !== 'active') throw new Error('Draft is not active');
-
-        const snake = getSnakeOrder(draftState.order);
-        const expectedUid = snake[draftState.currentPick];
-        if (expectedUid !== user.uid) throw new Error('Not your turn');
-
-        const picks = [...(draftState.picks || []), { uid: user.uid, contestantId }];
-        const nextPick = draftState.currentPick + 1;
-        const isComplete = nextPick >= snake.length;
-
-        await set(ref(db, `leagues/${leagueId}/draft/picks`), picks);
-        await set(ref(db, `leagues/${leagueId}/draft/currentPick`), nextPick);
-
-        if (isComplete) {
-            await set(ref(db, `leagues/${leagueId}/draft/status`), 'complete');
-
-            // Compute ride-or-dies per player from picks
-            const rod = {};
-            for (const pick of picks) {
-                if (!rod[pick.uid]) rod[pick.uid] = [];
-                rod[pick.uid].push(pick.contestantId);
-            }
-            await set(ref(db, `leagues/${leagueId}/rideOrDies`), rod);
-        }
-    }, [user, leagueId, draftState]);
-
     const submitPassport = useCallback(async (answers) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
         await set(ref(db, `leagues/${leagueId}/passports/${user.uid}`), {
@@ -544,10 +481,12 @@ export function AppProvider({ children }) {
     const createEpisode = useCallback(async (episodeNum) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
 
-        // Lock social scores for the previous episode so they stop fluctuating
+        const isHost = league?.createdBy === user.uid;
+
+        // Lock social scores for the previous episode (host-only per DB rules)
         const prevEpNum = episodeNum - 1;
         const prevEp = episodes?.[prevEpNum];
-        if (prevEp?.scored && !prevEp?.lockedSocial) {
+        if (isHost && prevEp?.scored && !prevEp?.lockedSocial) {
             const memberUids = Object.keys(leagueMembers || {});
             const peData = postEpisode?.[prevEpNum] || {};
             const socialScores = computeSocialScores(prevEp, peData, memberUids);
@@ -565,8 +504,10 @@ export function AppProvider({ children }) {
             picks: {},
             predictions: {},
         });
-        await set(ref(db, `leagues/${leagueId}/currentEpisode`), episodeNum);
-    }, [user, leagueId, tribeSwaps, episodes, leagueMembers, postEpisode]);
+        if (isHost) {
+            await set(ref(db, `leagues/${leagueId}/currentEpisode`), episodeNum);
+        }
+    }, [user, leagueId, league, tribeSwaps, episodes, leagueMembers, postEpisode]);
 
     const updatePropBets = useCallback(async (episodeNum, propBets) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
@@ -576,11 +517,8 @@ export function AppProvider({ children }) {
 
     const submitPicks = useCallback(async (episodeNum, contestantIds) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
-        const myRoDs = rideOrDies[user.uid] || [];
-        const blocked = contestantIds.filter(cid => myRoDs.includes(cid));
-        if (blocked.length > 0) throw new Error('You cannot weekly-pick your own ride or dies');
         await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}/picks/${user.uid}`), contestantIds);
-    }, [user, leagueId, rideOrDies]);
+    }, [user, leagueId]);
 
     const submitPredictions = useCallback(async (episodeNum, predictions) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
@@ -661,14 +599,16 @@ export function AppProvider({ children }) {
     const lightTorch = useCallback(async (episodeNum) => {
         if (!user || !leagueId) return;
 
-        // Validate picks are complete before locking
-        const ep = episodes?.[episodeNum];
-        const playerPicks = ep?.picks?.[user.uid] || [];
-        const elimSet = new Set(eliminated || []);
-        const remainingCount = ALL_CASTAWAYS.filter(c => !elimSet.has(c.id)).length;
-        const maxPicks = Math.min(5, Math.floor(remainingCount / 2));
-        if (playerPicks.length < maxPicks) {
-            throw new Error(`You need ${maxPicks} picks before lighting your torch (currently ${playerPicks.length})`);
+        // Episode 1 has no castaway picks — nobody has seen this cast play yet.
+        if (Number(episodeNum) >= PICKS_START_EPISODE) {
+            const ep = episodes?.[episodeNum];
+            const playerPicks = ep?.picks?.[user.uid] || [];
+            const elimSet = new Set(eliminated || []);
+            const remainingCount = ALL_CASTAWAYS.filter(c => !elimSet.has(c.id)).length;
+            const maxPicks = getMaxPicks(remainingCount);
+            if (playerPicks.length < maxPicks) {
+                throw new Error(`You need ${maxPicks} picks before lighting your torch (currently ${playerPicks.length})`);
+            }
         }
 
         const basePath = `leagues/${leagueId}/watchStatus/${episodeNum}/${user.uid}`;
@@ -861,7 +801,7 @@ export function AppProvider({ children }) {
 
         let importData = null;
         try {
-            const importSnap = await get(ref(db, `seasons/s50/autoImport/e${episodeNum}`));
+            const importSnap = await get(ref(db, `seasons/${SEASON_ID}/autoImport/e${episodeNum}`));
             if (importSnap.exists()) importData = importSnap.val();
         } catch { /* proceed with stored episode data */ }
 
@@ -1170,6 +1110,46 @@ export function AppProvider({ children }) {
         }
     }, [db, user, leagueId, league, playerEpisode, episodes, createEpisode]);
 
+    // Host: freeze social scores on scored episodes (non-hosts skip this in createEpisode)
+    const lockedSocialBackfill = useRef({});
+    useEffect(() => {
+        if (!db || !user || !leagueId || !league) return;
+        if (league.status !== 'active') return;
+        if (league.createdBy !== user.uid) return;
+
+        for (const [epStr, ep] of Object.entries(episodes || {})) {
+            const epNum = Number(epStr);
+            if (!ep?.scored || ep?.lockedSocial) continue;
+            const key = `${leagueId}_lockSocial_${epNum}`;
+            if (lockedSocialBackfill.current[key]) continue;
+            lockedSocialBackfill.current[key] = true;
+            const memberUids = Object.keys(leagueMembers || {});
+            const peData = postEpisode?.[epNum] || {};
+            const socialScores = computeSocialScores(ep, peData, memberUids);
+            set(ref(db, `leagues/${leagueId}/episodes/${epNum}/lockedSocial`), socialScores).catch(() => {
+                lockedSocialBackfill.current[key] = false;
+            });
+        }
+    }, [db, user, leagueId, league, episodes, postEpisode, leagueMembers]);
+
+    // Host: keep currentEpisode aligned when a member opened a new week first
+    useEffect(() => {
+        if (!db || !user || !leagueId || !league) return;
+        if (league.status !== 'active') return;
+        if (league.createdBy !== user.uid) return;
+
+        const openNums = Object.entries(episodes || {})
+            .filter(([, ep]) => ep?.status === 'open' && !ep?.scored)
+            .map(([n]) => Number(n))
+            .filter(n => !Number.isNaN(n));
+        if (openNums.length === 0) return;
+        const maxOpen = Math.max(...openNums);
+        const cur = league.currentEpisode || 0;
+        if (maxOpen > cur) {
+            set(ref(db, `leagues/${leagueId}/currentEpisode`), maxOpen).catch(() => {});
+        }
+    }, [db, user, leagueId, league, episodes]);
+
     // --- Auto-scoring: detect import data and score any unscored episode ---
     const autoScoreAttempted = useRef({});
 
@@ -1185,7 +1165,7 @@ export function AppProvider({ children }) {
             const key = `${leagueId}_${epNum}`;
             if (autoScoreAttempted.current[key]) continue;
 
-            const importRef = ref(db, `seasons/s50/autoImport/e${epNum}`);
+            const importRef = ref(db, `seasons/${SEASON_ID}/autoImport/e${epNum}`);
             get(importRef).then(snap => {
                 if (!snap.exists()) return;
                 const importData = snap.val();
@@ -1288,7 +1268,7 @@ export function AppProvider({ children }) {
         lightTorch, markWatched, advanceEpisode, saveBingoMarks, hasWatched, isWatching, hasLockedPicks,
         syncStatus, onboardingComplete, userLeagues,
         createLeague, joinLeague, leaveLeague, switchLeague, updateLeagueName, completeOnboarding,
-        startDraft, makeDraftPick, submitPassport, startSeason,
+        submitPassport, startSeason,
         createEpisode, updatePropBets, submitPicks, submitPredictions,
         submitSnapVote, submitSideBets, scoreEpisodeAction,
         submitPlayerOfEpisodeVote, submitImpactRating,

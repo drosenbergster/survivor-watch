@@ -5,22 +5,27 @@ const SLIDES = [
     {
         icon: '🏝️',
         title: 'Welcome to Watch Party HQ',
-        body: 'Your Survivor Season 50 companion app. Pick contestants, make predictions, play bingo, and compete with your friends across the entire season.',
+        body: 'Your Survivor 51 companion app. Play bingo, make calls, pick castaways, and see how your read on the season holds up.',
     },
     {
-        icon: '🤝',
-        title: 'Pick Your Tribe',
-        body: 'Draft two exclusive Ride or Dies before the season starts. Then each episode, choose which contestants will score points for you that week.',
+        icon: '🎱',
+        title: 'Bingo Is the Main Event',
+        body: 'Every episode you get your own card. Mark squares as things happen — every square you catch scores, and lines and blackouts pay bonuses on top.',
     },
     {
         icon: '🔮',
-        title: 'Predict & Play',
-        body: 'Answer Tree Mail, vote at tribal council, and fill out your bingo card — all while watching the show.',
+        title: 'Make Your Calls',
+        body: 'Answer Tree Mail before the episode, then guess who gets voted out. After the premiere you seal a Passport of season-long predictions.',
     },
     {
-        icon: '🏆',
-        title: 'Score & Compete',
-        body: 'Points come from contestant performance, correct predictions, bingo lines, and social votes. Check the scoreboard to see who leads the tribe.',
+        icon: '🎯',
+        title: 'Pick Castaways from Episode 2',
+        body: 'No draft this season — you meet all 21 first. From Episode 2 you pick three each week, and being the only one on someone is worth more.',
+    },
+    {
+        icon: '📺',
+        title: 'Watch on Your Own Time',
+        body: 'Nothing is spoiled before you watch. Mark an episode done and everything unlocks at once — results, standings, and how your card stacked up.',
     },
 ];
 

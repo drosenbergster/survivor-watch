@@ -1,61 +1,52 @@
 import * as cheerio from 'cheerio';
 
 // Minimal cast data duplicated from src/data.js for server-side use.
-// Only the fields needed for parsing are included.
+// Only the fields needed for parsing are included. Keep in sync with CONTESTANTS there.
+//
+// `aliases` cover the short names the stat sites actually print, which do not always
+// match the first word of the official name: True Dork Times lists "Dan" and
+// "Thien An", Fantasy Survivor Game lists "Kilby".
+const CAST = [
+    { id: 'aaliyah_puglia', name: 'Aaliyah Puglia', fsgId: '536' },
+    { id: 'alexis_levine', name: 'Alexis Levine', fsgId: '537' },
+    { id: 'an_nguyen', name: 'An Nguyen', fsgId: '538', aliases: ['thien an', 'thien'] },
+    { id: 'ana_sani', name: 'Ana Sani', fsgId: '539' },
+    { id: 'jelly_loblack', name: 'Angelica Loblack', fsgId: '540', aliases: ['jelly'] },
+    { id: 'brady_booker', name: 'Brady Booker', fsgId: '541' },
+    { id: 'carter_krull', name: 'Carter Krull', fsgId: '542' },
+    { id: 'cristian_chavez', name: 'Cristian Chavez', fsgId: '543' },
+    { id: 'danny_kilby', name: 'Danny Kilby', fsgId: '544', aliases: ['kilby', 'dan'] },
+    { id: 'devin_way', name: 'Devin Way', fsgId: '545' },
+    { id: 'eric_macksoud', name: 'Eric Macksoud', fsgId: '546' },
+    { id: 'jenna_doore', name: 'Jenna Doore', fsgId: '547' },
+    { id: 'kristin_flickinger', name: 'Kristin Flickinger', fsgId: '548' },
+    { id: 'lewis_kelly', name: 'Lewis Kelly', fsgId: '549' },
+    { id: 'linnea_capobianco', name: 'Linnea Capobianco', fsgId: '550' },
+    { id: 'maggie_nestor', name: 'Maggie Nestor', fsgId: '551' },
+    { id: 'mike_pinsky', name: 'Mike Pinsky', fsgId: '552' },
+    { id: 'ori_jean_charles', name: 'Ori Jean-Charles', fsgId: '553', aliases: ['ori'] },
+    { id: 'patt_cannaday', name: 'Patt Cannaday', fsgId: '554', aliases: ['pat'] },
+    { id: 'rob_antonson', name: 'Rob Antonson', fsgId: '555' },
+    { id: 'sharonda_cox', name: 'Sharonda Cox', fsgId: '556' },
+];
+
+// Production reveals the two starting tribes in the premiere, so everyone ships
+// unassigned. Once the host assigns tribes in the app, those overrides take
+// precedence over this baseline everywhere it is consulted.
 const TRIBES = {
-    cila: {
-        name: 'Cila',
-        members: [
-            { id: 'rick_devens', name: 'Rick Devens' },
-            { id: 'cirie_fields', name: 'Cirie Fields' },
-            { id: 'emily_flippen', name: 'Emily Flippen' },
-            { id: 'christian_hubicki', name: 'Christian Hubicki' },
-            { id: 'joe_hunter', name: 'Joe Hunter' },
-            { id: 'jenna_lewis', name: 'Jenna Lewis' },
-            { id: 'savannah_louie', name: 'Savannah Louie' },
-            { id: 'ozzy_lusth', name: 'Ozzy Lusth' },
-        ],
-    },
-    vatu: {
-        name: 'Vatu',
-        members: [
-            { id: 'aubry_bracco', name: 'Aubry Bracco' },
-            { id: 'q_burdette', name: 'Q Burdette' },
-            { id: 'colby_donaldson', name: 'Colby Donaldson' },
-            { id: 'kyle_fraser', name: 'Kyle Fraser' },
-            { id: 'angelina_keeley', name: 'Angelina Keeley' },
-            { id: 'stephenie_lagrossa', name: 'Stephenie LaGrossa' },
-            { id: 'genevieve_mushaluk', name: 'Genevieve Mushaluk' },
-            { id: 'rizo_velovic', name: 'Rizo Velovic' },
-        ],
-    },
-    kalo: {
-        name: 'Kalo',
-        members: [
-            { id: 'charlie_davis', name: 'Charlie Davis' },
-            { id: 'tiffany_ervin', name: 'Tiffany Ervin' },
-            { id: 'chrissy_hofbeck', name: 'Chrissy Hofbeck' },
-            { id: 'kamilla_karthigesu', name: 'Kamilla Karthigesu' },
-            { id: 'dee_valladares', name: 'Dee Valladares' },
-            { id: 'coach_wade', name: 'Coach Wade' },
-            { id: 'mike_white', name: 'Mike White' },
-            { id: 'jonathan_young', name: 'Jonathan Young' },
-        ],
-    },
+    unassigned: { name: 'Unassigned', members: CAST.map(c => ({ id: c.id, name: c.name })) },
 };
 
-const ALL_CASTAWAYS = Object.values(TRIBES).flatMap(t => t.members);
-
-// Build first-name -> id lookup
 const NAME_MAP = {};
-for (const c of ALL_CASTAWAYS) {
-    NAME_MAP[c.name.split(' ')[0].toLowerCase()] = c.id;
+for (const c of CAST) {
     NAME_MAP[c.name.toLowerCase()] = c.id;
+    NAME_MAP[c.name.split(' ')[0].toLowerCase()] = c.id;
+    for (const alias of (c.aliases || [])) NAME_MAP[alias.toLowerCase()] = c.id;
 }
-NAME_MAP['q'] = 'q_burdette';
 
 function resolveContestant(raw) {
-    const clean = raw.replace(/[*'"]/g, '').trim().toLowerCase();
+    if (!raw) return null;
+    const clean = String(raw).replace(/[*'"]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
     return NAME_MAP[clean] || NAME_MAP[clean.split(' ')[0]] || null;
 }
 
@@ -478,32 +469,11 @@ export function mergeResults(tdtResult, insiderResult) {
    FantasySurvivorGame (FSG) Episode Recap Parser
    ═══════════════════════════════════════════════════════════ */
 
-const FSG_ID_MAP = {
-    '512': 'jenna_lewis',
-    '513': 'colby_donaldson',
-    '514': 'stephenie_lagrossa',
-    '515': 'cirie_fields',
-    '516': 'ozzy_lusth',
-    '517': 'coach_wade',
-    '518': 'aubry_bracco',
-    '519': 'chrissy_hofbeck',
-    '520': 'christian_hubicki',
-    '521': 'angelina_keeley',
-    '522': 'mike_white',
-    '523': 'rick_devens',
-    '524': 'jonathan_young',
-    '525': 'emily_flippen',
-    '526': 'dee_valladares',
-    '527': 'q_burdette',
-    '528': 'charlie_davis',
-    '529': 'tiffany_ervin',
-    '530': 'genevieve_mushaluk',
-    '531': 'kyle_fraser',
-    '532': 'joe_hunter',
-    '533': 'kamilla_karthigesu',
-    '534': 'savannah_louie',
-    '535': 'rizo_velovic',
-};
+// Fantasy Survivor Game numbers its contestants globally across seasons; Season 51
+// occupies 536-556. Derived from CAST so there is one place to correct a bad id.
+const FSG_ID_MAP = Object.fromEntries(
+    CAST.filter(c => c.fsgId).map(c => [c.fsgId, c.id])
+);
 
 const FSG_EVENT_PATTERNS = [
     { pattern: /win the marooning challenge/i, event: 'marooning_win' },

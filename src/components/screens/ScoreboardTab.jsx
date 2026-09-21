@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useApp } from '../../AppContext';
-import { computeStandings, detectAchievements } from '../../scoring';
-import { SCORE_EVENTS, ALL_CASTAWAYS, PLAYER_COLORS, ACHIEVEMENT_MAP } from '../../data';
+import { computeStandings } from '../../scoring';
+import { SCORE_EVENTS, ALL_CASTAWAYS, PLAYER_COLORS } from '../../data';
 import { FijianCard, FijianSectionHeader, Icon, HintBadge } from '../fijian';
 import BingoCard from './BingoCard';
 
@@ -16,10 +16,9 @@ function RankBadge({ rank }) {
     return <span className="text-lg text-sand-warm/60 font-bold font-sans">#{rank}</span>;
 }
 
-function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perEpisode, leagueId, bingo, isCurrentUser, playerRideOrDies, playerBadges }) {
+function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perEpisode, leagueId, bingo, isCurrentUser }) {
     const epNums = Object.keys(perEpisode || {}).map(Number).sort((a, b) => a - b);
     const [episodesOpen, setEpisodesOpen] = useState(false);
-    const [badgesOpen, setBadgesOpen] = useState(false);
 
     return (
         <div className="space-y-0">
@@ -56,30 +55,11 @@ function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perE
 
             {expanded && (
                 <div className="ml-12 mr-3 pb-3 space-y-3">
-                    <div className="grid grid-cols-5 gap-2 text-center">
-                        <ScoreBox label="Weekly" value={entry.weekly} color="text-fire-400" />
-                        <ScoreBox label="Predict" value={entry.predictions} color="text-green-400" />
-                        <ScoreBox label="RoD" value={entry.rideOrDie} color="text-sky-400" />
+                    <div className="grid grid-cols-3 gap-2 text-center">
                         <ScoreBox label="Bingo" value={entry.bingo || 0} color="text-purple-400" />
-                        <ScoreBox label="Social" value={entry.social || 0} color="text-amber-400" />
+                        <ScoreBox label="Predict" value={entry.predictions} color="text-green-400" />
+                        <ScoreBox label="Picks" value={entry.weekly} color="text-fire-400" />
                     </div>
-
-                    {playerRideOrDies.length > 0 && (
-                        <div>
-                            <p className="text-xs text-sand-warm/50 font-sans font-semibold mb-1">Ride or Dies</p>
-                            <div className="flex gap-1.5 flex-wrap">
-                                {playerRideOrDies.map(cId => {
-                                    const c = ALL_CASTAWAYS.find(x => x.id === cId);
-                                    return (
-                                        <span key={cId} className="flex items-center gap-1.5 bg-stone-800/50 text-sand-warm/70 text-xs px-2 py-1 rounded font-sans">
-                                            <Icon name="handshake" className="text-sky-400 text-[10px]" />
-                                            {c?.name || cId}
-                                        </span>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
 
                     {/* Episodes — caret dropdown */}
                     {epNums.length > 0 && (
@@ -118,33 +98,6 @@ function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perE
                         </div>
                     )}
 
-                    {/* Badges — caret dropdown */}
-                    {playerBadges.length > 0 && (
-                        <div>
-                            <button
-                                onClick={() => setBadgesOpen(b => !b)}
-                                className="flex items-center gap-1.5 w-full text-left"
-                            >
-                                <span className="text-xs text-sand-warm/50 font-sans font-semibold flex-1">
-                                    Badges ({playerBadges.length})
-                                </span>
-                                <Icon
-                                    name="expand_more"
-                                    className={`text-sand-warm/40 text-sm transition-transform ${badgesOpen ? 'rotate-180' : ''}`}
-                                />
-                            </button>
-                            {badgesOpen && (
-                                <div className="mt-1.5 space-y-1">
-                                    {playerBadges.map(b => (
-                                        <div key={b.id} className="flex items-start gap-1.5 text-xs font-sans py-0.5">
-                                            <span className="text-sand-warm/70 font-medium">{b.name}</span>
-                                            <span className="text-sand-warm/30">&mdash; {b.description}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    )}
                 </div>
             )}
         </div>
@@ -229,47 +182,17 @@ function EpisodeBreakdown({ epNum, score, bingoSeed, bingoMarked }) {
                                     ))}
                                 </div>
                             )}
-                            {score.breakdown.rideOrDie.length > 0 && (
-                                <div>
-                                    <p className="text-sky-400/70 text-[10px] font-bold uppercase tracking-wider mb-0.5">Ride or Die</p>
-                                    {score.breakdown.rideOrDie.map((r, i) => (
-                                        <div key={`r${i}`} className="flex justify-between text-sand-warm/60 py-0.5">
-                                            <span>
-                                                {r.name}
-                                                {r.reason === 'events' && ' — game events'}
-                                                {r.reason === 'survived' && ' — survived'}
-                                                {r.reason === 'ftc' && ' — made FTC'}
-                                                {r.reason === 'winner' && ' — won!'}
-                                            </span>
-                                            <span className="text-sky-400">+{r.points}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
                             {(score.breakdown.bingo || []).length > 0 && (
                                 <div>
                                     <p className="text-purple-400/70 text-[10px] font-bold uppercase tracking-wider mb-0.5">Bingo</p>
                                     {(score.breakdown.bingo || []).map((b, i) => (
                                         <div key={`b${i}`} className="flex justify-between text-sand-warm/60 py-0.5">
                                             <span>
+                                                {b.type === 'squares' && `${b.count} ${b.count === 1 ? 'square' : 'squares'} hit`}
                                                 {b.type === 'lines' && `${b.count} ${b.count === 1 ? 'line' : 'lines'} completed`}
                                                 {b.type === 'blackout' && 'Full blackout'}
                                             </span>
                                             <span className="text-purple-400">+{b.points}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                            {(score.breakdown.social || []).length > 0 && (
-                                <div>
-                                    <p className="text-amber-400/70 text-[10px] font-bold uppercase tracking-wider mb-0.5">Social</p>
-                                    {(score.breakdown.social || []).map((s, i) => (
-                                        <div key={`s${i}`} className="flex justify-between text-sand-warm/60 py-0.5">
-                                            <span>
-                                                {s.type === 'playerOfEpisode' && 'Player of Episode vote'}
-                                                {s.type === 'impactRating' && `Impact rating (avg ${s.avg})`}
-                                            </span>
-                                            <span className="text-amber-400">+{s.points}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -356,11 +279,6 @@ export default function ScoreboardTab({ onTabChange }) {
         [episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated, auction]
     );
 
-    const achievements = useMemo(
-        () => detectAchievements(episodes, rideOrDies, memberUids, bingo, postEpisode, perEpisode),
-        [episodes, rideOrDies, memberUids, bingo, postEpisode, perEpisode]
-    );
-
     const hasScoredEpisodes = scoredEpNums.length > 0;
 
     const [guideOpen, setGuideOpen] = useState(false);
@@ -377,7 +295,7 @@ export default function ScoreboardTab({ onTabChange }) {
                 <p className="text-sand-warm/50 text-xs mt-1 font-sans inline-flex items-center justify-center gap-1">
                     Tap a player to see breakdown
                     <HintBadge hintKey="scores">
-                        W = Weekly picks, P = Predictions, R = Ride or Die, B = Bingo, S = Social. Tap any player row for details.
+                        B = Bingo, P = Predictions, W = Weekly picks. Tap any player row for details.
                     </HintBadge>
                 </p>
             </header>
@@ -400,8 +318,6 @@ export default function ScoreboardTab({ onTabChange }) {
                         <FijianSectionHeader title="Season Standings" />
                         {standings.map((entry, i) => {
                             const colorIndex = memberUids.indexOf(entry.uid);
-                            const badgeIds = achievements[entry.uid] || [];
-                            const playerBadges = badgeIds.map(id => ACHIEVEMENT_MAP[id]).filter(Boolean);
                             return (
                                 <StandingsRow
                                     key={entry.uid}
@@ -415,8 +331,6 @@ export default function ScoreboardTab({ onTabChange }) {
                                     leagueId={leagueId}
                                     bingo={bingo}
                                     isCurrentUser={entry.uid === user?.uid}
-                                    playerRideOrDies={rideOrDies?.[entry.uid] || []}
-                                    playerBadges={playerBadges}
                                 />
                             );
                         })}
@@ -489,42 +403,15 @@ export default function ScoreboardTab({ onTabChange }) {
 
                                 <div className="border-t border-stone-700/50" />
 
-                                {/* Ride or Die (R) */}
-                                <div>
-                                    <p className="text-sky-400 text-[11px] font-bold uppercase tracking-widest mb-1.5">
-                                        Ride or Die (R)
-                                    </p>
-                                    <div className="space-y-0.5">
-                                        <ScoreGuideRow emoji="✅" label="Survived episode" value="+2/ep" />
-                                        <ScoreGuideRow emoji="🤝" label="Game event points (same as weekly)" value="pts" />
-                                        <ScoreGuideRow emoji="🏛️" label="Made FTC" value="+15" />
-                                        <ScoreGuideRow emoji="👑" label="Won the season" value="+30" />
-                                    </div>
-                                </div>
-
-                                <div className="border-t border-stone-700/50" />
-
                                 {/* Bingo (B) */}
                                 <div>
                                     <p className="text-purple-400 text-[11px] font-bold uppercase tracking-widest mb-1.5">
                                         Bingo (B)
                                     </p>
                                     <div className="space-y-0.5">
-                                        <ScoreGuideRow emoji="🎯" label="Complete a line (5 in a row)" value="+5" />
+                                        <ScoreGuideRow emoji="🎯" label="Each square you hit" value="+2" />
+                                        <ScoreGuideRow emoji="➖" label="Complete a line (5 in a row)" value="+5" />
                                         <ScoreGuideRow emoji="🌑" label="Blackout (all 25 squares)" value="+50" />
-                                    </div>
-                                </div>
-
-                                <div className="border-t border-stone-700/50" />
-
-                                {/* Social (S) */}
-                                <div>
-                                    <p className="text-amber-400 text-[11px] font-bold uppercase tracking-widest mb-1.5">
-                                        Social (S)
-                                    </p>
-                                    <div className="space-y-0.5">
-                                        <ScoreGuideRow emoji="👑" label="Player of Episode (voted #1)" value="+7" />
-                                        <ScoreGuideRow emoji="💔" label="Impact rating (avg to pick owner)" value="avg" />
                                     </div>
                                 </div>
                             </div>

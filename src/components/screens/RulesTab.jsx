@@ -32,12 +32,12 @@ function Accordion({ title, icon, defaultOpen = false, children }) {
 }
 
 const GAMEPLAY_STEPS = [
-  { icon: '🤝', label: 'Draft two Ride or Die contestants and seal your Season Passport before the season starts.' },
-  { icon: '🎯', label: 'Each episode, pick up to 5 weekly contestants and answer Tree Mail predictions.' },
-  { icon: '🔥', label: 'Tap "Light Your Torch" when ready to watch — locks your picks, opens bingo and tribal voting.' },
-  { icon: '🎱', label: 'Mark bingo squares as events happen. When tribal starts, pause and snap vote who\'s going home.' },
-  { icon: '🤫', label: 'Answer Tribal Whispers — quick yes/no calls during tribal council (+3 pts each).' },
-  { icon: '📊', label: 'Tap "Done Watching" after the episode. Vote on Player of the Episode and rate the boot\'s impact.' },
+  { icon: '🔮', label: 'Before the episode, answer your Tree Mail — five yes/no calls on what happens tonight.' },
+  { icon: '🎯', label: 'From Episode 2 on, also pick 3 castaways who score their event points for you.' },
+  { icon: '🔥', label: 'Tap "Light Your Torch" when you sit down to watch — this locks everything and opens your bingo card.' },
+  { icon: '🎱', label: 'Mark bingo squares as things happen. Every square you catch is worth points, lines and blackouts pay bonuses.' },
+  { icon: '⚡', label: 'When tribal starts, pause and call who is going home. Answer Tribal Whispers while you are there.' },
+  { icon: '📊', label: 'Tap "Done Watching" when the episode ends. Results, standings, and your card unlock then — not before.' },
 ];
 
 const SCORING_CATEGORIES = (() => {
@@ -77,7 +77,8 @@ export default function RulesTab() {
       {/* ── How to Play ── */}
       <Accordion title="How to Play" icon="🏝️" defaultOpen>
         <p className="text-xs text-bleached-sand/60 font-sans pb-1">
-          Every week follows the same rhythm: pick → predict → watch → vote → score.
+          Every week follows the same rhythm: call it, watch it, mark it, score it. Watch
+          whenever you want — nothing is revealed until you say you are done.
         </p>
         <ol className="space-y-2.5">
           {GAMEPLAY_STEPS.map((step, i) => (
@@ -92,44 +93,56 @@ export default function RulesTab() {
         </ol>
       </Accordion>
 
-      {/* ── Ride or Die vs Weekly Picks ── */}
-      <Accordion title="Ride or Die vs Weekly Picks" icon="🤝">
+      {/* ── Bingo ── */}
+      <Accordion title="Bingo — The Main Event" icon="🎱">
         <p className="text-sm text-bleached-sand/70 leading-relaxed font-sans">
-          You earn points from contestants two ways — think of Ride or Dies as{' '}
-          <strong className="text-sand-warm">long-term investments</strong> and Weekly Picks as{' '}
-          <strong className="text-sand-warm">weekly bets</strong>.
+          Bingo is the heart of the game this season. Everyone gets their own card each
+          episode, drawn from a pool written for Season 51.
         </p>
-
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="bg-black/20 rounded-lg p-3 border border-terracotta/15 space-y-2">
-            <h4 className="font-wood-serif text-sand-warm text-base flex items-center gap-2">
-              <span>🤝</span> Ride or Die
-            </h4>
-            <ul className="text-xs text-bleached-sand/70 font-sans space-y-1">
-              <li>Draft <strong className="text-sand-warm">2 exclusive</strong> contestants before the season</li>
-              <li>Locked all season — can't change them</li>
-              <li>Earn event points + survival bonuses (+2/ep, +15 finale, +30 winner)</li>
-            </ul>
-          </div>
-          <div className="bg-black/20 rounded-lg p-3 border border-terracotta/15 space-y-2">
-            <h4 className="font-wood-serif text-sand-warm text-base flex items-center gap-2">
-              <span>🎯</span> Weekly Picks
-            </h4>
-            <ul className="text-xs text-bleached-sand/70 font-sans space-y-1">
-              <li>Pick <strong className="text-sand-warm">up to 5 contestants</strong> each episode — anyone still in the game except your Ride or Dies</li>
-              <li>Change every week — max picks shrink as the cast gets smaller</li>
-              <li>Earn event points based on what happens that episode</li>
-            </ul>
-          </div>
-        </div>
-
+        <ul className="text-xs text-bleached-sand/70 font-sans space-y-1">
+          <li><strong className="text-sand-warm">Every square you hit</strong> is worth 2 points — you do not need a line to score</li>
+          <li><strong className="text-sand-warm">Each completed line</strong> pays a 5 point bonus on top</li>
+          <li><strong className="text-sand-warm">Blackout</strong> — every square on the card — pays 50</li>
+          <li>Long-press any square to read the full text</li>
+        </ul>
         <div className="bg-terracotta/5 rounded-lg p-3 border border-dashed border-terracotta/25">
           <p className="text-xs text-bleached-sand/70 font-sans">
-            <strong className="text-terracotta">Exclusivity Bonus (Weekly Picks):</strong>{' '}
-            If you're the only player who picked a contestant, their episode points are multiplied by{' '}
-            <strong className="text-terracotta">1.5×</strong>.
+            Because every square counts, paying attention beats getting lucky with card layout.
           </p>
         </div>
+      </Accordion>
+
+      {/* ── Weekly Picks ── */}
+      <Accordion title="Picking Castaways" icon="🎯">
+        <p className="text-sm text-bleached-sand/70 leading-relaxed font-sans">
+          There is <strong className="text-sand-warm">no draft</strong> this season. Nobody
+          has seen these 21 play before, so the premiere is just for watching. Picks open in
+          Episode 2.
+        </p>
+        <ul className="text-xs text-bleached-sand/70 font-sans space-y-1">
+          <li>Pick <strong className="text-sand-warm">3 castaways</strong> each episode from anyone still in the game</li>
+          <li>Change them every week — the limit shrinks as the cast gets smaller</li>
+          <li>They earn you their event points for that episode</li>
+        </ul>
+        <div className="bg-terracotta/5 rounded-lg p-3 border border-dashed border-terracotta/25">
+          <p className="text-xs text-bleached-sand/70 font-sans">
+            <strong className="text-terracotta">Sole Picker Bonus:</strong>{' '}
+            If you are the only player who picked a castaway, their episode points are multiplied by{' '}
+            <strong className="text-terracotta">1.5×</strong>. Going against the room pays.
+          </p>
+        </div>
+      </Accordion>
+
+      {/* ── Passports ── */}
+      <Accordion title="Passports" icon="📜">
+        <p className="text-sm text-bleached-sand/70 leading-relaxed font-sans">
+          Your long-term read on the season, sealed so nobody can see it until the finale.
+        </p>
+        <ul className="text-xs text-bleached-sand/70 font-sans space-y-1">
+          <li><strong className="text-sand-warm">Season Passport</strong> — sealed right after the premiere, once you have actually met everyone</li>
+          <li><strong className="text-sand-warm">Merge Passport</strong> — a second set of calls once the merge hits</li>
+          <li>Once sealed, they cannot be changed</li>
+        </ul>
       </Accordion>
 
       {/* ── Scoring: Contestant Events ── */}
@@ -242,9 +255,10 @@ export default function RulesTab() {
           <div className="flex items-start gap-3">
             <span className="text-lg">📋</span>
             <p className="text-sm text-bleached-sand/70 font-sans leading-relaxed">
-              Each episode generates a unique bingo card. Mark off squares as events happen while you watch.
-              Complete a line for <strong className="text-sand-warm">+5 pts</strong>, or blackout the whole card
-              for <strong className="text-sand-warm">+50 pts</strong>.
+              Each episode generates a unique bingo card. Mark off squares as events happen while you watch —
+              <strong className="text-sand-warm"> +2 pts per square</strong>, a{' '}
+              <strong className="text-sand-warm">+5</strong> bonus per line, and{' '}
+              <strong className="text-sand-warm">+50</strong> for a blackout.
             </p>
           </div>
           <div className="bg-terracotta/5 border border-dashed border-terracotta/25 rounded-xl p-3 sm:p-4 text-center">
@@ -262,54 +276,6 @@ export default function RulesTab() {
             </p>
           </div>
         </div>
-      </Accordion>
-
-      {/* ── Passports ── */}
-      <Accordion title="Passports" icon="📜">
-        <div className="space-y-3">
-          <div className="flex items-start gap-3">
-            <span className="text-lg">🛂</span>
-            <div className="text-sm text-bleached-sand/70 font-sans leading-relaxed space-y-1">
-              <p>
-                <strong className="text-sand-warm">Season Passport:</strong> Sealed before the season starts.
-                Five predictions — Sole Survivor, First Boot, Fan Favorite, Biggest Villain, and
-                Fire-Making Winner. Worth <strong className="text-terracotta">15–25 pts</strong> each, scored at the finale.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="text-lg">📋</span>
-            <div className="text-sm text-bleached-sand/70 font-sans leading-relaxed space-y-1">
-              <p>
-                <strong className="text-sand-warm">Merge Passport:</strong> Sealed after the merge.
-                Same five categories with updated context — worth <strong className="text-terracotta">8–12 pts</strong> each.
-                Both passports are revealed together at the finale.
-              </p>
-            </div>
-          </div>
-        </div>
-      </Accordion>
-
-      {/* ── Draft & Pre-Season ── */}
-      <Accordion title="Draft & Pre-Season" icon="📝">
-        <ul className="space-y-2.5 text-sm text-bleached-sand/70 font-sans">
-          <li className="flex items-start gap-2">
-            <Icon name="swap_vert" className="text-terracotta text-sm mt-0.5 shrink-0" />
-            <span><strong className="text-sand-warm">Snake draft</strong> — order reverses each round (1→8, then 8→1).</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <Icon name="people" className="text-terracotta text-sm mt-0.5 shrink-0" />
-            <span>Each player drafts <strong className="text-sand-warm">2 exclusive</strong> Ride or Die contestants locked for the whole season.</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <Icon name="lock" className="text-terracotta text-sm mt-0.5 shrink-0" />
-            <span>Seal your <strong className="text-sand-warm">Season Passport</strong> after the draft — five pre-season predictions scored at the finale.</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <Icon name="play_arrow" className="text-terracotta text-sm mt-0.5 shrink-0" />
-            <span>The host starts the season once everyone has drafted and sealed their passports.</span>
-          </li>
-        </ul>
       </Accordion>
 
       {/* ── Admin / Auction / Settings ── */}

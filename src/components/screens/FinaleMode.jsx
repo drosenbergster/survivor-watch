@@ -200,7 +200,7 @@ function ChampionCrowning() {
             <FijianCard className="p-6 text-center bg-gradient-to-b from-ochre/10 to-transparent border-ochre/40">
                 <span className="text-5xl">👑</span>
                 <p className="font-display text-3xl tracking-wider text-ochre mt-2">{name}</p>
-                <p className="text-sand-warm/60 text-sm font-sans mt-1">Season 50 Champion</p>
+                <p className="text-sand-warm/60 text-sm font-sans mt-1">Season 51 Champion</p>
             </FijianCard>
         );
     }
@@ -301,7 +301,7 @@ export default function FinaleMode() {
         <div className="space-y-4">
             <FijianCard className="p-5 text-center bg-gradient-to-b from-stone-800/90 to-stone-900/80 border-ochre/30">
                 <p className="font-display text-3xl tracking-wider text-ochre">Finale</p>
-                <p className="text-sand-warm/50 text-xs font-sans mt-1">Season 50 — The Final Chapter</p>
+                <p className="text-sand-warm/50 text-xs font-sans mt-1">Season 51 — The Final Chapter</p>
             </FijianCard>
 
             {/* Season Passport Reveals */}

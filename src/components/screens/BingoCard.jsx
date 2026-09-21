@@ -1,14 +1,19 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { BingoSquare, FijianCard, Icon } from '../fijian';
-import { generateBingoCard, detectBingoLines, isBingoBlackout, BINGO_LINES } from '../../data';
+import { generateBingoCard, detectBingoLines, isBingoBlackout, countBingoSquares, BINGO_LINES } from '../../data';
 
 const BULA_DURATION = 5000;
 const LONG_PRESS_MS = 500;
 const TOOLTIP_DURATION = 2500;
 const BINGO_HEADERS = ['B', 'I', 'N', 'G', 'O'];
 
-export default function BingoCard({ seed, marked: savedMarked, onSave, disabled }) {
-    const card = useMemo(() => generateBingoCard(seed), [seed]);
+// Mirrors the values in scoring.js so the card can show a running total.
+const SQUARE_POINTS = 2;
+const LINE_POINTS = 5;
+const BLACKOUT_POINTS = 50;
+
+export default function BingoCard({ seed, episodeNum, marked: savedMarked, onSave, disabled }) {
+    const card = useMemo(() => generateBingoCard(seed, episodeNum), [seed, episodeNum]);
 
     const [marked, setMarked] = useState(() => {
         if (savedMarked && savedMarked.length === 25) return savedMarked;
@@ -29,6 +34,10 @@ export default function BingoCard({ seed, marked: savedMarked, onSave, disabled 
 
     const lines = useMemo(() => detectBingoLines(marked), [marked]);
     const blackout = useMemo(() => isBingoBlackout(marked), [marked]);
+    const squaresHit = useMemo(() => countBingoSquares(marked), [marked]);
+    const points = squaresHit * SQUARE_POINTS
+        + lines.length * LINE_POINTS
+        + (blackout ? BLACKOUT_POINTS : 0);
 
     const winningSquares = useMemo(() => {
         const s = new Set();
@@ -112,7 +121,7 @@ export default function BingoCard({ seed, marked: savedMarked, onSave, disabled 
                             {bulaType === 'blackout' ? '🔥 BLACKOUT 🔥' : '🌺 BULA! 🌺'}
                         </p>
                         <p className="text-white/80 text-sm mt-2 font-sans">
-                            {bulaType === 'blackout' ? 'Every square! +50 bonus points!' : `Line ${lines.length}! +5 points each!`}
+                            {bulaType === 'blackout' ? 'Every square! +50 bonus points!' : `Line ${lines.length}! +5 bonus on top of your squares.`}
                         </p>
                         <p className="text-white/50 text-xs mt-3 font-sans">Tap to dismiss</p>
                     </div>
@@ -165,14 +174,16 @@ export default function BingoCard({ seed, marked: savedMarked, onSave, disabled 
                     )}
                     {nearestSquares.size > 0 && <span>Almost!</span>}
                 </div>
-                <div className="text-xs text-sand-warm/60">
+                <div className="text-xs text-sand-warm/60 text-right">
                     {lines.length > 0 && (
                         <span className="text-ochre font-semibold">
                             <Icon name="star" className="text-sm align-text-bottom" /> {lines.length} {lines.length === 1 ? 'line' : 'lines'}
                             {blackout && ' + BLACKOUT'}
                         </span>
                     )}
-                    {lines.length === 0 && `${marked.filter(Boolean).length}/25 marked`}
+                    <span className={lines.length > 0 ? 'block' : ''}>
+                        {squaresHit} {squaresHit === 1 ? 'square' : 'squares'} · {points} pts
+                    </span>
                 </div>
             </div>
         </div>

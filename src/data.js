@@ -1,79 +1,82 @@
-// Survivor Season 50 cast data — all 24 returning players
+// Survivor Season 51 — "The Open Era" — 21 new castaways, two tribes, Fiji.
+// Premiere: Wed Sep 23 2026 (two hours). Weekly episodes are 90 minutes from Sep 30.
 import { COLORS } from './theme';
 
+export const SEASON_ID = 's51';
+export const SEASON_NUMBER = 51;
+export const SEASON_LABEL = 'Season 51';
+export const SEASON_TAGLINE = 'The Open Era';
+
+// Production assigns the starting tribes and reveals them in the premiere, so we
+// ship with every castaway unassigned. The host sorts them from Rules → Tribe
+// Management after watching Episode 1; those assignments override this file.
+//
+// `aliases` exist because the stat sites we import from use short names that do not
+// always match the first word of the official name: True Dork Times lists "Dan" and
+// "Thien An", Fantasy Survivor Game lists "Kilby" and "Thien An". `fsgId` is that
+// site's numeric contestant id.
+export const CONTESTANTS = [
+    { id: 'aaliyah_puglia', name: 'Aaliyah Puglia', age: 24, occupation: 'Chef', short: 'Chef', from: 'Providence, RI', fsgId: '536' },
+    { id: 'alexis_levine', name: 'Alexis Levine', age: 34, occupation: 'Criminal defense attorney', short: 'Attorney', from: 'Atlanta, GA', fsgId: '537' },
+    { id: 'an_nguyen', name: 'An "Thien An" Nguyen', age: 24, occupation: 'Medical student', short: 'Med student', from: 'Fort Worth, TX', fsgId: '538', aliases: ['thien an', 'thien', 'an nguyen'] },
+    { id: 'ana_sani', name: 'Ana Sani', age: 34, occupation: 'Voice actress', short: 'Voice actress', from: 'Toronto, ON', fsgId: '539' },
+    { id: 'jelly_loblack', name: 'Angelica "Jelly" Loblack', age: 29, occupation: 'Sociology professor', short: 'Professor', from: 'Bloomington, IN', fsgId: '540', aliases: ['jelly', 'angelica', 'angelica loblack'] },
+    { id: 'brady_booker', name: 'Brady Booker', age: 27, occupation: 'Pro wrestler', short: 'Pro wrestler', from: 'Knoxville, TN', fsgId: '541' },
+    { id: 'carter_krull', name: 'Carter Krull', age: 24, occupation: 'Livestock farmer', short: 'Farmer', from: 'Sioux Falls, SD', fsgId: '542' },
+    { id: 'cristian_chavez', name: 'Cristian Chavez', age: 26, occupation: 'Head of HR', short: 'Head of HR', from: 'Salt Lake City, UT', fsgId: '543' },
+    { id: 'danny_kilby', name: 'Danny "Kilby" Kilby', age: 30, occupation: 'Game designer', short: 'Game designer', from: 'London, ON', fsgId: '544', aliases: ['kilby', 'dan', 'danny', 'dan kilby'] },
+    { id: 'devin_way', name: 'Devin Way', age: 33, occupation: 'Actor', short: 'Actor', from: 'Los Angeles, CA', fsgId: '545' },
+    { id: 'eric_macksoud', name: 'Eric Macksoud', age: 34, occupation: 'Mental health counselor', short: 'Counselor', from: 'Windsor Locks, CT', fsgId: '546' },
+    { id: 'jenna_doore', name: 'Jenna Doore', age: 30, occupation: 'Wedding photographer', short: 'Photographer', from: 'Toledo, OH', fsgId: '547' },
+    { id: 'kristin_flickinger', name: 'Kristin Flickinger', age: 49, occupation: 'Crisis management', short: 'Crisis mgmt', from: 'Santa Barbara, CA', fsgId: '548' },
+    { id: 'lewis_kelly', name: 'Lewis Kelly', age: 28, occupation: 'Farmer', short: 'Farmer', from: 'Puerto Rico', fsgId: '549' },
+    { id: 'linnea_capobianco', name: 'Linnea Capobianco', age: 25, occupation: 'Entrepreneur', short: 'Entrepreneur', from: 'Jersey City, NJ', fsgId: '550' },
+    { id: 'maggie_nestor', name: 'Maggie Nestor', age: 40, occupation: 'Farmer', short: 'Farmer', from: 'Charlestown, WV', fsgId: '551' },
+    { id: 'mike_pinsky', name: 'Mike Pinsky', age: 32, occupation: '', short: 'NYC', from: 'New York, NY', fsgId: '552' },
+    { id: 'ori_jean_charles', name: 'Ori Jean-Charles', age: 27, occupation: '', short: 'Spring Valley', from: 'Spring Valley, NY', fsgId: '553', aliases: ['ori', 'ori jean charles'] },
+    { id: 'patt_cannaday', name: 'Patt Cannaday', age: 33, occupation: '', short: 'Washington DC', from: 'Washington, DC', fsgId: '554', aliases: ['pat'] },
+    { id: 'rob_antonson', name: 'Rob Antonson', age: 40, occupation: 'Airline gate agent', short: 'Gate agent', from: 'Cumberland, RI', fsgId: '555' },
+    { id: 'sharonda_cox', name: 'Sharonda Cox', age: 34, occupation: 'Resident, OBGYN', short: 'OBGYN resident', from: 'Richmond, KY', fsgId: '556' },
+];
+
+/**
+ * Lowercased name/alias → contestant id, for matching names scraped from stat sites.
+ * Covers the official full name, the first word of it, and any explicit aliases.
+ */
+export const NAME_LOOKUP = (() => {
+    const map = {};
+    for (const c of CONTESTANTS) {
+        map[c.name.toLowerCase()] = c.id;
+        map[c.name.split(' ')[0].toLowerCase()] = c.id;
+        // "An \"Thien An\" Nguyen" → "an nguyen"
+        const plain = c.name.replace(/"[^"]*"\s*/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+        map[plain] = c.id;
+        for (const alias of (c.aliases || [])) map[alias.toLowerCase()] = c.id;
+    }
+    return map;
+})();
+
+export function resolveCastawayName(rawName) {
+    if (!rawName) return null;
+    const clean = String(rawName).replace(/[*'"]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+    return NAME_LOOKUP[clean] || NAME_LOOKUP[clean.split(' ')[0]] || null;
+}
+
+// `seasons` is rendered as a subtitle wherever a castaway appears. For a rookie
+// season there is no season history, so we surface who they are instead.
+for (const c of CONTESTANTS) {
+    c.seasons = c.occupation ? `${c.occupation} · ${c.age}` : `${c.from} · ${c.age}`;
+}
+
+// Tribe names are revealed in the premiere — fill these in once they are known.
+// `unassigned` holds everyone until then so that every screen still renders.
 export const TRIBES = {
-    cila: {
-        name: 'Cila',
-        color: 'cila',
-        members: [
-            { id: 'rick_devens', name: 'Rick Devens', seasons: 'Edge of Extinction', short: 'S38' },
-            { id: 'cirie_fields', name: 'Cirie Fields', seasons: 'Panama +3', short: 'S12,16,20,34' },
-            { id: 'emily_flippen', name: 'Emily Flippen', seasons: 'S45', short: 'S45' },
-            { id: 'christian_hubicki', name: 'Christian Hubicki', seasons: 'David vs. Goliath', short: 'S37' },
-            { id: 'joe_hunter', name: 'Joe Hunter', seasons: 'S48', short: 'S48' },
-            { id: 'jenna_lewis', name: 'Jenna Lewis', seasons: 'Borneo, All-Stars', short: 'S1,8' },
-            { id: 'savannah_louie', name: 'Savannah Louie', seasons: 'S49 Winner 👑', short: 'S49' },
-            { id: 'ozzy_lusth', name: 'Ozzy Lusth', seasons: 'Cook Islands +3', short: 'S13,16,23,34' },
-        ],
-    },
-    vatu: {
-        name: 'Vatu',
-        color: 'vatu',
-        members: [
-            { id: 'aubry_bracco', name: 'Aubry Bracco', seasons: 'Kaôh Rōng +2', short: 'S32,34,38' },
-            { id: 'q_burdette', name: 'Q Burdette', seasons: 'S46', short: 'S46' },
-            { id: 'colby_donaldson', name: 'Colby Donaldson', seasons: 'Outback +2', short: 'S2,8,20' },
-            { id: 'kyle_fraser', name: 'Kyle Fraser', seasons: 'S48 Winner 👑', short: 'S48' },
-            { id: 'angelina_keeley', name: 'Angelina Keeley', seasons: 'David vs. Goliath', short: 'S37' },
-            { id: 'stephenie_lagrossa', name: 'Stephenie LaGrossa', seasons: 'Palau +2', short: 'S10,11,20' },
-            { id: 'genevieve_mushaluk', name: 'Genevieve Mushaluk', seasons: 'S47', short: 'S47' },
-            { id: 'rizo_velovic', name: 'Rizo Velovic', seasons: 'S49', short: 'S49' },
-        ],
-    },
-    kalo: {
-        name: 'Kalo',
-        color: 'kalo',
-        members: [
-            { id: 'charlie_davis', name: 'Charlie Davis', seasons: 'S46', short: 'S46' },
-            { id: 'tiffany_ervin', name: 'Tiffany Ervin', seasons: 'S46', short: 'S46' },
-            { id: 'chrissy_hofbeck', name: 'Chrissy Hofbeck', seasons: 'HvHvH', short: 'S35' },
-            { id: 'kamilla_karthigesu', name: 'Kamilla Karthigesu', seasons: 'S48', short: 'S48' },
-            { id: 'dee_valladares', name: 'Dee Valladares', seasons: 'S45 Winner 👑', short: 'S45' },
-            { id: 'coach_wade', name: 'Coach Wade', seasons: 'Tocantins +2', short: 'S18,20,23' },
-            { id: 'mike_white', name: 'Mike White', seasons: 'David vs. Goliath', short: 'S37' },
-            { id: 'jonathan_young', name: 'Jonathan Young', seasons: 'S42', short: 'S42' },
-        ],
-    },
+    tribeOne: { name: 'Tribe One', color: 'cila', members: [] },
+    tribeTwo: { name: 'Tribe Two', color: 'kalo', members: [] },
+    unassigned: { name: 'Castaways', color: 'vatu', members: CONTESTANTS },
 };
 
-export const ALL_CASTAWAYS = Object.values(TRIBES).flatMap(t => t.members);
-
-// Historical stats from SurvivorStatsDB (pre-season, based on prior seasons)
-// Source: https://survivorstatsdb.com/character-cards-US50.html
-export const HISTORICAL_STATS = {
-    ozzy_lusth:           { overall: 85, tribal: 84, individual: 100, voting: 84, advantages: 0,   influence: 50, jury: 44, bestResult: 'Runner-up', age: 43, timesPlayed: 5 },
-    colby_donaldson:      { overall: 83, tribal: 35, individual: 100, voting: 91, advantages: 0,   influence: 98, jury: 43, bestResult: 'Runner-up', age: 51, timesPlayed: 4 },
-    kyle_fraser:          { overall: 78, tribal: 61, individual: 79,  voting: 79, advantages: 30,  influence: 58, jury: 62, bestResult: 'Sole Survivor', age: 31, timesPlayed: 2 },
-    dee_valladares:       { overall: 77, tribal: 75, individual: 80,  voting: 61, advantages: 0,   influence: 73, jury: 62, bestResult: 'Sole Survivor', age: 28, timesPlayed: 2 },
-    joe_hunter:           { overall: 77, tribal: 75, individual: 93,  voting: 76, advantages: 0,   influence: 55, jury: 12, bestResult: 'Runner-up', age: 46, timesPlayed: 2 },
-    charlie_davis:        { overall: 73, tribal: 45, individual: 81,  voting: 70, advantages: 0,   influence: 71, jury: 38, bestResult: 'Runner-up', age: 27, timesPlayed: 2 },
-    coach_wade:           { overall: 72, tribal: 51, individual: 39,  voting: 100, advantages: 20, influence: 93, jury: 33, bestResult: 'Runner-up', age: 53, timesPlayed: 4 },
-    chrissy_hofbeck:      { overall: 70, tribal: 22, individual: 98,  voting: 63, advantages: 7,   influence: 61, jury: 25, bestResult: 'Runner-up', age: 54, timesPlayed: 2 },
-    rick_devens:          { overall: 66, tribal: 26, individual: 90,  voting: 63, advantages: 100, influence: 79, jury: 0,  bestResult: '4th', age: 41, timesPlayed: 2 },
-    kamilla_karthigesu:   { overall: 63, tribal: 61, individual: 58,  voting: 71, advantages: 19,  influence: 57, jury: 0,  bestResult: '4th', age: 31, timesPlayed: 2 },
-    aubry_bracco:         { overall: 62, tribal: 53, individual: 27,  voting: 73, advantages: 0,   influence: 91, jury: 29, bestResult: 'Runner-up', age: 39, timesPlayed: 4 },
-    jonathan_young:       { overall: 61, tribal: 66, individual: 52,  voting: 74, advantages: 0,   influence: 21, jury: 0,  bestResult: '4th', age: 32, timesPlayed: 2 },
-    mike_white:           { overall: 58, tribal: 26, individual: 38,  voting: 70, advantages: 0,   influence: 45, jury: 30, bestResult: 'Runner-up', age: 54, timesPlayed: 2 },
-    stephenie_lagrossa:   { overall: 58, tribal: 22, individual: 27,  voting: 77, advantages: 0,   influence: 90, jury: 14, bestResult: 'Runner-up', age: 45, timesPlayed: 4 },
-    emily_flippen:        { overall: 55, tribal: 18, individual: 55,  voting: 74, advantages: 0,   influence: 86, jury: 0,  bestResult: '7th', age: 30, timesPlayed: 2 },
-    q_burdette:           { overall: 54, tribal: 18, individual: 48,  voting: 76, advantages: 13,  influence: 67, jury: 0,  bestResult: '6th', age: 31, timesPlayed: 2 },
-    genevieve_mushaluk:   { overall: 54, tribal: 40, individual: 43,  voting: 63, advantages: 15,  influence: 66, jury: 0,  bestResult: '5th', age: 34, timesPlayed: 2 },
-    cirie_fields:         { overall: 53, tribal: 51, individual: 23,  voting: 69, advantages: 0,   influence: 95, jury: 0,  bestResult: '4th', age: 54, timesPlayed: 5 },
-    christian_hubicki:    { overall: 52, tribal: 40, individual: 53,  voting: 60, advantages: 43,  influence: 53, jury: 0,  bestResult: '7th', age: 39, timesPlayed: 2 },
-    angelina_keeley:      { overall: 51, tribal: 26, individual: 18,  voting: 68, advantages: 20,  influence: 72, jury: 0,  bestResult: 'Runner-up', age: 35, timesPlayed: 2 },
-    jenna_lewis:          { overall: 51, tribal: 61, individual: 11,  voting: 70, advantages: 0,   influence: 48, jury: 0,  bestResult: '3rd', age: 47, timesPlayed: 3 },
-    tiffany_ervin:        { overall: 51, tribal: 18, individual: 35,  voting: 89, advantages: 11,  influence: 57, jury: 0,  bestResult: '8th', age: 34, timesPlayed: 2 },
-};
+export const ALL_CASTAWAYS = CONTESTANTS;
 
 export const PLAYER_COLORS = [
     { bg: 'bg-player-1', text: 'text-player-1', border: 'border-player-1', ring: 'ring-player-1', hex: COLORS.player1 },
@@ -86,7 +89,7 @@ export const PLAYER_COLORS = [
     { bg: 'bg-player-8', text: 'text-player-8', border: 'border-player-8', ring: 'ring-player-8', hex: COLORS.player8 },
 ];
 
-// Scoring events (values updated to match brainstorm)
+// Contestant events. These drive points for the contestants a player picked.
 export const SCORE_EVENTS = [
     { key: 'survived', label: 'Survived Episode', points: 2, emoji: '✅' },
     { key: 'tribal_immunity', label: 'Tribal Immunity Win', points: 3, emoji: '🏅' },
@@ -121,6 +124,15 @@ export const SCORE_EVENTS = [
 
 export const ENGAGEMENT_SCORING = [
     {
+        section: 'Bingo',
+        icon: '🎱',
+        items: [
+            { label: 'Each Square You Hit', points: 2, emoji: '🎯' },
+            { label: 'Complete a Line', points: 5, emoji: '➖' },
+            { label: 'Blackout (Full Card)', points: 50, emoji: '🌑' },
+        ],
+    },
+    {
         section: 'Predictions',
         icon: '🔮',
         items: [
@@ -130,37 +142,19 @@ export const ENGAGEMENT_SCORING = [
         ],
     },
     {
-        section: 'Ride or Die',
-        icon: '🤝',
+        section: 'Weekly Picks',
+        icon: '🎯',
         items: [
-            { label: 'Survive per Episode', points: 2, emoji: '✅' },
-            { label: 'Reach Finale', points: 15, emoji: '🏛️' },
-            { label: 'Win Season', points: 30, emoji: '👑' },
-            { label: 'Exclusivity Bonus', points: '1.5×', emoji: '💎', note: 'If you are the only player who picked a contestant, their points are multiplied by 1.5×' },
-        ],
-    },
-    {
-        section: 'Bingo',
-        icon: '🎱',
-        items: [
-            { label: 'Complete a Line', points: 5, emoji: '➖' },
-            { label: 'Blackout (Full Card)', points: 50, emoji: '🌑' },
-        ],
-    },
-    {
-        section: 'Social',
-        icon: '⭐',
-        items: [
-            { label: 'Player of the Episode', points: 7, emoji: '🏆' },
-            { label: 'Impact Rating', points: '1-5 avg', emoji: '📊', note: 'Weekly peer rating' },
+            { label: 'Pick 3 castaways from Episode 2 on', points: '—', emoji: '🗳️', note: 'They earn you their event points for the episode' },
+            { label: 'Sole Picker Bonus', points: '1.5×', emoji: '💎', note: 'If you are the only player who picked a castaway, their points are multiplied by 1.5×' },
         ],
     },
     {
         section: 'Passports',
         icon: '📜',
         items: [
-            { label: 'Season Passport', points: '15-25', emoji: '🛂', note: 'Pre-season predictions scored at finale' },
-            { label: 'Merge Passport', points: '8-12', emoji: '📋', note: 'Mid-season predictions scored at finale' },
+            { label: 'Season Passport', points: '5 each', emoji: '🛂', note: 'Sealed after the premiere, scored as each answer comes true' },
+            { label: 'Merge Passport', points: '5 each', emoji: '📋', note: 'Sealed at the merge, scored as each answer comes true' },
         ],
     },
 ];
@@ -169,34 +163,40 @@ export const ENGAGEMENT_SCORING = [
 // UI label: "Tree Mail". Internal keys kept as propBets for Firebase compatibility.
 export const PROP_BET_POOL = [
     // Camp
-    { text: 'Fire is made at camp', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'make_fire_camp' } },
-    { text: 'Food is found or caught', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'find_food' } },
-    { text: 'Strategy happens at the water well', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'water_well_talk' } },
-    { text: 'Someone leaves camp on a journey or exile', cat: 'camp', phase: 'any', resolveType: 'event_any_of', resolveParams: { eventKeys: ['journey', 'exile'] } },
-    { text: 'A journey challenge is won', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'journey_challenge_win' } },
+    { text: 'Fire gets made at camp', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'make_fire_camp' } },
+    { text: 'Somebody finds or catches food', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'find_food' } },
+    { text: 'The water well hosts a scheming session', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'water_well_talk' } },
+    { text: 'Somebody leaves camp on a journey or gets exiled', cat: 'camp', phase: 'any', resolveType: 'event_any_of', resolveParams: { eventKeys: ['journey', 'exile'] } },
+    { text: 'A journey challenge gets won', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'journey_challenge_win' } },
     // Challenge
-    { text: 'A reward challenge takes place', cat: 'challenge', phase: 'any', resolveType: 'has_reward', resolveParams: {} },
+    { text: 'There is a reward challenge', cat: 'challenge', phase: 'any', resolveType: 'has_reward', resolveParams: {} },
     { text: 'Individual immunity is on the line', cat: 'challenge', phase: 'post-merge', resolveType: 'event_any', resolveParams: { eventKey: 'individual_immunity' } },
     { text: 'Individual reward is up for grabs', cat: 'challenge', phase: 'post-merge', resolveType: 'event_any', resolveParams: { eventKey: 'individual_reward' } },
-    // Idol & power
+    // Idol & power — the Open Era means anything can show up
     { text: 'Hidden power surfaces tonight', cat: 'idol', phase: 'any', resolveType: 'event_any_of', resolveParams: { eventKeys: ['idol_found', 'advantage_found', 'find_clue'] } },
-    { text: 'An idol or advantage is played', cat: 'idol', phase: 'any', resolveType: 'event_any_of', resolveParams: { eventKeys: ['idol_played_success', 'advantage_used'] } },
-    { text: 'Multiple power events tonight (2+ finds or plays)', cat: 'idol', phase: 'any', resolveType: 'event_count_any_of_gte', resolveParams: { eventKeys: ['idol_found', 'advantage_found', 'find_clue', 'idol_played_success', 'advantage_used'], threshold: 2 } },
+    { text: 'An idol or advantage actually gets played', cat: 'idol', phase: 'any', resolveType: 'event_any_of', resolveParams: { eventKeys: ['idol_played_success', 'advantage_used'] } },
+    { text: 'The Open Era goes off — two or more power moves tonight', cat: 'idol', phase: 'any', resolveType: 'event_count_any_of_gte', resolveParams: { eventKeys: ['idol_found', 'advantage_found', 'find_clue', 'idol_played_success', 'advantage_used'], threshold: 2 } },
+    { text: 'Somebody rolls the dice on a Shot in the Dark', cat: 'idol', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'shot_in_dark' } },
+    { text: 'A clue gets found before an idol does', cat: 'idol', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'find_clue' } },
     // Outcome
-    { text: 'A medical evacuation occurs', cat: 'outcome', phase: 'any', resolveType: 'elimination_method', resolveParams: { method: 'medevac' } },
-    { text: 'Someone racks up 4+ confessionals', cat: 'outcome', phase: 'any', resolveType: 'confessional_any_gte', resolveParams: { threshold: 4 } },
+    { text: 'Medical gets called in', cat: 'outcome', phase: 'any', resolveType: 'elimination_method', resolveParams: { method: 'medevac' } },
+    { text: 'Somebody racks up 4+ confessionals — the edit has a favorite', cat: 'outcome', phase: 'any', resolveType: 'confessional_any_gte', resolveParams: { threshold: 4 } },
+    { text: 'The vote splits — not everyone lands on one name', cat: 'outcome', phase: 'any', resolveType: 'vote_split', resolveParams: {} },
+    { text: 'Somebody survives with votes against them', cat: 'outcome', phase: 'any', resolveType: 'survived_with_vap_gte', resolveParams: { threshold: 1 } },
+    { text: 'The boot gets buried — 5+ votes on one person', cat: 'outcome', phase: 'any', resolveType: 'eliminated_vap_gte', resolveParams: { threshold: 5 } },
 ];
 
 // Tribal Whispers — during-tribal predictions with auto-resolution.
 // UI label: "Tribal Whispers". Internal keys kept as sideBets for Firebase compatibility.
 export const SIDE_BET_POOL = [
-    { text: 'Someone pulls out an idol', resolveType: 'event_any', resolveParams: { eventKey: 'idol_played_success' } },
-    { text: 'Someone plays an advantage', resolveType: 'event_any', resolveParams: { eventKey: 'advantage_used' } },
-    { text: 'Someone rolls the dice — Shot in the Dark', resolveType: 'event_any', resolveParams: { eventKey: 'shot_in_dark' } },
+    { text: 'Somebody pulls out an idol', resolveType: 'event_any', resolveParams: { eventKey: 'idol_played_success' } },
+    { text: 'Somebody plays an advantage', resolveType: 'event_any', resolveParams: { eventKey: 'advantage_used' } },
+    { text: 'Somebody rolls the dice — Shot in the Dark', resolveType: 'event_any', resolveParams: { eventKey: 'shot_in_dark' } },
     { text: 'The votes fracture — split vote', resolveType: 'vote_split', resolveParams: {} },
     { text: 'The vote is decisive — 5+ votes on the boot', resolveType: 'eliminated_vap_gte', resolveParams: { threshold: 5 } },
-    { text: 'No power is played tonight', resolveType: 'event_none_of', resolveParams: { eventKeys: ['idol_played_success', 'advantage_used', 'shot_in_dark'] } },
-    { text: 'Someone survives with 2+ votes against them', resolveType: 'survived_with_vap_gte', resolveParams: { threshold: 2 } },
+    { text: 'All that buildup and no power gets played', resolveType: 'event_none_of', resolveParams: { eventKeys: ['idol_played_success', 'advantage_used', 'shot_in_dark'] } },
+    { text: 'Somebody survives with 2+ votes against them', resolveType: 'survived_with_vap_gte', resolveParams: { threshold: 2 } },
+    { text: 'It goes unanimous', resolveType: 'vote_unanimous', resolveParams: {} },
 ];
 
 function deterministicShuffle(arr, seed) {
@@ -308,11 +308,22 @@ export function resolveBets(importData, bets) {
     return results;
 }
 
+export const MAX_LEAGUE_MEMBERS = 12;
+
+// Weekly picks start at Episode 2 — nobody has seen these 21 play before the premiere.
+export const PICKS_START_EPISODE = 2;
+export const MAX_PICKS = 3;
+
 export function getMaxPicks(remainingCount) {
-    return Math.min(5, Math.floor(remainingCount / 2));
+    return Math.min(MAX_PICKS, Math.floor(remainingCount / 2));
 }
 
-// ── Survivor Auction ──
+// ── Survivor Auction (shelved for Season 51) ──
+// Kept intact rather than deleted: it only pays off with a leaderboard people are
+// optimizing for and players watching in sync, and Season 51 is neither. Flip
+// AUCTION_ENABLED to true to bring it back with its perks.
+
+export const AUCTION_ENABLED = false;
 
 export const AUCTION_PERKS = [
     { perkType: 'extra_pick', name: 'Extra Pick', description: 'Pick 1 extra contestant next episode', emoji: '➕' },
@@ -329,6 +340,7 @@ export const AUCTION_DUDS = [
 ];
 
 export function getAuctionPerks(auction, episodeNum) {
+    if (!AUCTION_ENABLED) return {};
     if (!auction || auction.status !== 'complete') return {};
     if (episodeNum != null && auction.perkEpisode != null && Number(episodeNum) !== Number(auction.perkEpisode)) return {};
     const perks = {};
@@ -346,9 +358,13 @@ export function userHasPerk(auction, uid, perkType, episodeNum) {
     return (perks[uid] || []).includes(perkType);
 }
 
-// Island Bingo squares pool (119 items)
+// ── Island Bingo ──
+// Written for a rookie cast: no returnee callbacks, no past-season references that
+// only make sense for veterans. Season 51 is the "Open Era", so any twist from
+// series history can appear at any time, and the cast are superfans who will say so.
+
 export const BINGO_ITEMS = [
-    // Jeff Probst (11)
+    // Jeff Probst (13)
     '"The tribe has spoken"',
     '"Come on in!"',
     '"Dig deep!"',
@@ -357,30 +373,33 @@ export const BINGO_ITEMS = [
     'Jeff says "fire represents life"',
     'Jeff gives a life lesson at tribal',
     'Jeff calls something "the biggest" or "the greatest"',
-    'Jeff opens tribal asking about camp',
+    'Jeff opens tribal by asking about camp',
     'Jeff says "this is Survivor"',
     'Jeff is visibly shocked at tribal',
-    // Tribal council (15)
+    'Jeff explains a twist nobody understands',
+    'Jeff grins because he knows something they don\'t',
+    // Tribal council (16)
     'Someone whispers at tribal',
     'Votes land on more than one name',
     'Someone says "at the end of the day"',
-    'Someone names a target at tribal',
+    'Someone names a target out loud at tribal',
     'Someone says "million dollars"',
     'Side conversation during tribal',
     'Someone says "blindside"',
     'Someone shows their vote to the camera',
     'Creative spelling on a vote',
     'Someone cries at tribal council',
-    'Jeff asks a follow-up question at tribal',
+    'Jeff asks a brutal follow-up question',
     'Someone mentions jury management',
-    'Someone stands up or moves seats during tribal',
-    'A player dodges Jeff\'s question',
+    'Someone gets up and moves seats during tribal',
+    'A player completely dodges Jeff\'s question',
     'Tribal goes to a revote',
-    // Challenges (14)
+    'The boot looks genuinely blindsided',
+    // Challenges (15)
     'Challenge involves water',
-    'Puzzle in challenge',
-    'Someone falls in challenge',
-    'Immunity necklace closeup',
+    'Puzzle at the end of a challenge',
+    'Someone falls during a challenge',
+    'Immunity idol closeup',
     'Challenge involves balance',
     'Challenge involves endurance',
     'Someone sits out of a challenge',
@@ -389,68 +408,87 @@ export const BINGO_ITEMS = [
     'Someone gets hurt during a challenge',
     'Jeff stops or pauses a challenge',
     'Challenge involves throwing or tossing',
-    'Challenge involves crawling',
-    'Sit-out bench is shown',
-    // Idols & advantages (10)
-    'Idol is found',
-    'Idol is played',
-    'Player hides an idol',
-    'Player finds a clue',
-    'Advantage is found',
-    'Someone plays Shot in the Dark',
-    'Fake idol or decoy',
+    'Challenge involves crawling through something',
+    'The sit-out bench gets shown',
+    'A tribe blows a huge lead',
+    // Idols, advantages & the Open Era (14)
+    'An idol is found',
+    'An idol is played',
+    'Someone hides an idol',
+    'Someone finds a clue',
+    'An advantage is found',
+    'Someone plays a Shot in the Dark',
+    'A fake idol or decoy appears',
     'Someone searches for an idol alone',
-    'Idol/advantage bluff',
-    'Idol is played but no votes are negated',
-    // Camp life (17)
+    'Someone bluffs having an idol',
+    'An idol is played but negates zero votes',
+    'A twist from an old season comes back',
+    'An advantage nobody has seen in years turns up',
+    'Someone says "Open Era"',
+    'A player misunderstands how a twist works',
+    // Camp life (18)
     'Rain at camp',
     'Someone makes fire',
-    'Coconut is cracked open',
-    'Player complains about hunger',
-    'Player gets sunburned',
-    'Secret meeting at well',
-    'Reward has food',
+    'A coconut gets cracked open',
+    'Someone complains about hunger',
+    'Someone is badly sunburned',
+    'Secret meeting at the well',
+    'Reward includes food',
     'Someone cooks rice',
     'Shelter building or repair',
     'Someone goes fishing',
     'Night vision camp footage',
     'Someone naps in the shelter',
     'Fireside strategy talk',
-    'Someone gets bitten by bugs',
+    'Someone is getting eaten alive by bugs',
     'Someone negotiates with Jeff for rice',
     'A camp argument or confrontation',
     'Camp celebration — dancing, singing, or cheering',
-    // Emotional & social (10)
-    'Player cries',
-    'Someone talks about family',
+    'Someone is visibly freezing at night',
+    // Emotional & social (12)
+    'Someone cries',
+    'Someone talks about their family',
     'Group hug',
     'Someone says "I love this game"',
     'Someone comforts another player',
-    'Letters from home or family visit',
+    'Letters from home or a family visit',
     'Someone talks about their job back home',
-    'Someone bonds over shared experience',
-    'Someone vows revenge in confessional',
-    'Players celebrate after a challenge win',
-    // Strategy (16)
-    'Alliance is betrayed',
+    'Two players bond over something they share',
+    'Someone vows revenge in a confessional',
+    'Players celebrate wildly after a challenge win',
+    'Someone gets emotional about just being here',
+    'Someone opens up about something heavy',
+    // Rookie cast tells (11)
+    'Someone calls themselves a superfan',
+    'Someone name-drops a former Survivor player',
+    'Someone references a past season',
+    'Someone says they have watched since they were a kid',
+    'Someone quotes a Survivor catchphrase at camp',
+    'Someone says they are "playing like" a past winner',
+    'Someone brings up their occupation as a strategy',
+    'Someone claims they are underestimated',
+    'Someone says they have a "read" on everyone',
+    'A player admits they have no idea what is happening',
+    'Someone says they came here to play, not to sit',
+    // Strategy (15)
+    'An alliance is betrayed',
     '"I didn\'t come here to lose"',
-    '"This is my island"',
-    'A returnee references their past season',
-    'Two players make a final 2/3 deal',
+    'Two players make a final 2 or final 3 deal',
     'Someone flips on their alliance',
-    'Voting confessional trash talk',
+    'Trash talk in a voting confessional',
     'Someone says "blood on my hands"',
-    'A returnee drops their season count',
-    'Someone makes a promise at camp',
+    'Someone makes a promise they clearly will not keep',
     'Someone says "I need to win immunity"',
-    'A blindside is planned in confessional',
-    'Someone mentions being on the bottom',
-    'A name is thrown out as a decoy target',
+    'A blindside gets planned in a confessional',
+    'Someone admits they are on the bottom',
+    'A decoy name gets floated',
     'Someone says "stick to the plan"',
     'Post-tribal fallout conversation',
-    // Production & visuals (11)
+    'A number gets counted out loud',
+    'Someone builds an alliance within an alliance',
+    // Production & visuals (12)
     'Shot of wildlife',
-    'Bug/insect closeup',
+    'Bug or insect closeup',
     'Dramatic music sting',
     'Sunset or sunrise shot',
     'Aerial island shot',
@@ -460,23 +498,41 @@ export const BINGO_ITEMS = [
     'Drone shot following a contestant',
     'Torch-lit walk to tribal council',
     'Split-screen or picture-in-picture edit',
-    // Game milestones (3)
-    'Medical team is called',
+    'A confessional shot in the rain',
+    // Game milestones (4)
+    'Medical team gets called',
     'Post-merge feast',
-    'Tribe swap happens',
-    // Season 50 specials (12)
-    'Ozzy catches fish',
-    'Cirie is shown strategizing',
-    'Angelina mentions the jacket',
-    'A winner references their winning season',
-    'Two 3+ time players talk strategy',
-    'Someone mentions "the greatest season"',
-    'Someone mentions a player not on this season',
-    'Old rivals from a previous season interact',
-    'Someone says "this time I\'m playing differently"',
-    'Coach tells a story or quotes a philosopher',
-    'Colby references the Outback',
-    'Someone mentions being the oldest or youngest',
+    'A tribe swap happens',
+    'Someone leaves with their torch unsnuffed',
+];
+
+// Premiere-only squares, mixed into the pool for Episode 1. Season 51 opens with
+// production-assigned buffs and one castaway held out of the starting tribes.
+// Episode 1 squares, seeded from the published premiere details: a true marooning
+// off a sailing ship, a semi-blindfolded obstacle course with one immunity for two
+// tribes, and a 21st castaway who is either out immediately or sent to Exile.
+export const PREMIERE_BINGO_ITEMS = [
+    'The sailing ship appears before anyone hits the water',
+    'A castaway jumps or dives off the boat',
+    'Something gets dropped or lost during the marooning',
+    'A blindfold comes off crooked or too early',
+    'A caller screams directions and gets ignored',
+    'The losing tribe is obvious before the challenge ends',
+    'The 21st castaway is sent to Exile',
+    'Someone reads the note from production out loud',
+    'Buffs get handed out by name',
+    'The odd-one-out castaway is revealed',
+    'Someone reacts badly to the tribe they got',
+    'A castaway realizes they are alone',
+    'Someone introduces themselves with a lie',
+    'First confessional inside the first five minutes',
+    'A castaway sprints off the mat',
+    'Someone struggles to remember a name',
+    'First fire of the season',
+    'Someone says this is a dream come true',
+    'Jeff welcomes the "Open Era"',
+    'A castaway is immediately pegged as a threat',
+    'First alliance forms on day one',
 ];
 
 // Hash a string to a numeric seed
@@ -488,19 +544,35 @@ function hashSeed(str) {
     return Math.abs(hash);
 }
 
+/**
+ * Build the square pool for an episode. Premiere squares only appear in Episode 1,
+ * and a host can supply extra squares for any episode.
+ */
+export function getBingoPool(episodeNumber, customItems = []) {
+    const base = Number(episodeNumber) === 1
+        ? [...BINGO_ITEMS, ...PREMIERE_BINGO_ITEMS]
+        : [...BINGO_ITEMS];
+    return [...customItems.filter(Boolean), ...base];
+}
+
 // Generate a shuffled bingo card (5x5 with free center)
 // seed should be a string like "{leagueId}-{episodeNum}-{playerId}"
-export function generateBingoCard(seed) {
-    const shuffled = [...BINGO_ITEMS];
+export function generateBingoCard(seed, episodeNumber, customItems = []) {
+    const shuffled = deterministicShuffleFromSeed(getBingoPool(episodeNumber, customItems), seed);
+    const items = shuffled.slice(0, 24);
+    items.splice(12, 0, '🔥 FREE');
+    return items;
+}
+
+function deterministicShuffleFromSeed(pool, seed) {
+    const shuffled = [...pool];
     let s = typeof seed === 'string' ? hashSeed(seed) : (seed || Math.floor(Math.random() * 10000));
     for (let i = shuffled.length - 1; i > 0; i--) {
         s = (s * 16807 + 0) % 2147483647;
         const j = s % (i + 1);
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
-    const items = shuffled.slice(0, 24);
-    items.splice(12, 0, '🔥 FREE');
-    return items;
+    return shuffled;
 }
 
 export const BINGO_LINES = [
@@ -517,17 +589,14 @@ export function isBingoBlackout(marked) {
     return marked.every(Boolean);
 }
 
-export const ACHIEVEMENTS = [
-    { id: 'prophet', name: 'Prophet', emoji: '🔮', description: '3 correct snap votes in a row' },
-    { id: 'bingo_blackout', name: 'Bingo Blackout', emoji: '🎯', description: 'Complete an entire bingo card' },
-    { id: 'contrarian', name: 'Contrarian', emoji: '🎭', description: 'Win 5 scarcity bonuses (unique picks that scored)' },
-    { id: 'ride_or_die_loyalty', name: 'Ride or Die Loyalty', emoji: '💀', description: 'Both ride or dies survive to merge' },
-    { id: 'beast_mode', name: 'Beast Mode', emoji: '💪', description: 'One of your picks scores 20+ in a single episode' },
-    { id: 'first_blood', name: 'First Blood', emoji: '🗡️', description: 'Correct snap vote on the first episode' },
-    { id: 'sole_survivor_standings', name: 'Sole Survivor', emoji: '👑', description: 'Hold first place for 3 consecutive weeks' },
-    { id: 'dethroned', name: 'Dethroned', emoji: '⚔️', description: 'Overtake the first-place player' },
-    { id: 'social_butterfly', name: 'Social Butterfly', emoji: '🦋', description: 'Vote on every Player of the Episode for 5 episodes' },
-    { id: 'perfect_episode', name: 'Perfect Episode', emoji: '✨', description: 'Score in every category in a single episode' },
-];
+// Squares hit, excluding the free centre so it does not pay out on its own.
+export function countBingoSquares(marked) {
+    if (!Array.isArray(marked)) return 0;
+    return marked.reduce((n, isMarked, i) => (isMarked && i !== 12 ? n + 1 : n), 0);
+}
+
+// Achievement badges were cut for Season 51 — the group found them to be noise.
+// The exports stay so the badge surfaces render empty instead of crashing.
+export const ACHIEVEMENTS = [];
 
 export const ACHIEVEMENT_MAP = Object.fromEntries(ACHIEVEMENTS.map(a => [a.id, a]));

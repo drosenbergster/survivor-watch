@@ -1,22 +1,7 @@
-import { ALL_CASTAWAYS, TRIBES } from '../data';
-
-const NAME_MAP = buildNameMap();
-
-function buildNameMap() {
-    const map = {};
-    for (const c of ALL_CASTAWAYS) {
-        const first = c.name.split(' ')[0].toLowerCase();
-        map[first] = c.id;
-        const full = c.name.toLowerCase();
-        map[full] = c.id;
-    }
-    map['q'] = 'q_burdette';
-    return map;
-}
+import { TRIBES, resolveCastawayName } from '../data';
 
 function resolveContestant(name) {
-    const clean = name.replace(/[*'"]/g, '').trim().toLowerCase();
-    return NAME_MAP[clean] || NAME_MAP[clean.split(' ')[0]] || null;
+    return resolveCastawayName(name);
 }
 
 function resolveTribe(name) {

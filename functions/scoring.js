@@ -4,29 +4,20 @@
  * so episodes can be scored without the host opening the app.
  */
 
+// Season 51 ships with every castaway unassigned because production reveals the two
+// starting tribes in the premiere. Host-set tribe overrides take precedence over this
+// baseline in getContestantTribe/getTribeMembers below.
 const TRIBES = {
-    cila: {
-        name: 'Cila',
+    unassigned: {
+        name: 'Unassigned',
         members: [
-            { id: 'rick_devens' }, { id: 'cirie_fields' }, { id: 'emily_flippen' },
-            { id: 'christian_hubicki' }, { id: 'joe_hunter' }, { id: 'jenna_lewis' },
-            { id: 'savannah_louie' }, { id: 'ozzy_lusth' },
-        ],
-    },
-    vatu: {
-        name: 'Vatu',
-        members: [
-            { id: 'aubry_bracco' }, { id: 'q_burdette' }, { id: 'colby_donaldson' },
-            { id: 'kyle_fraser' }, { id: 'angelina_keeley' }, { id: 'stephenie_lagrossa' },
-            { id: 'genevieve_mushaluk' }, { id: 'rizo_velovic' },
-        ],
-    },
-    kalo: {
-        name: 'Kalo',
-        members: [
-            { id: 'charlie_davis' }, { id: 'tiffany_ervin' }, { id: 'chrissy_hofbeck' },
-            { id: 'kamilla_karthigesu' }, { id: 'dee_valladares' }, { id: 'coach_wade' },
-            { id: 'mike_white' }, { id: 'jonathan_young' },
+            { id: 'aaliyah_puglia' }, { id: 'alexis_levine' }, { id: 'an_nguyen' },
+            { id: 'ana_sani' }, { id: 'jelly_loblack' }, { id: 'brady_booker' },
+            { id: 'carter_krull' }, { id: 'cristian_chavez' }, { id: 'danny_kilby' },
+            { id: 'devin_way' }, { id: 'eric_macksoud' }, { id: 'jenna_doore' },
+            { id: 'kristin_flickinger' }, { id: 'lewis_kelly' }, { id: 'linnea_capobianco' },
+            { id: 'maggie_nestor' }, { id: 'mike_pinsky' }, { id: 'ori_jean_charles' },
+            { id: 'patt_cannaday' }, { id: 'rob_antonson' }, { id: 'sharonda_cox' },
         ],
     },
 };

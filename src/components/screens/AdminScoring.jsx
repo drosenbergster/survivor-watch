@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useApp, getEffectiveTribeAssignments } from '../../AppContext';
-import { ALL_CASTAWAYS, TRIBES, SCORE_EVENTS } from '../../data';
+import { ALL_CASTAWAYS, TRIBES, SCORE_EVENTS, SEASON_ID } from '../../data';
 import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon } from '../fijian';
 import { parseTDT } from '../../importers/parseTDT';
 import { parseInsider, mergeInsiderIntoTDT } from '../../importers/parseInsider';
@@ -804,7 +804,7 @@ export default function AdminScoring({ episodeNum }) {
         if (!firebaseDb || !episodeNum || autoImportApplied) return;
         setAutoImportStatus('loading');
 
-        const importRef = ref(firebaseDb, `seasons/s50/autoImport/e${episodeNum}`);
+        const importRef = ref(firebaseDb, `seasons/${SEASON_ID}/autoImport/e${episodeNum}`);
         get(importRef).then(snap => {
             if (snap.exists()) {
                 const data = snap.val();
@@ -884,7 +884,7 @@ export default function AdminScoring({ episodeNum }) {
             const callable = httpsCallable(functions, 'fetchEpisodeStatsManual');
             const result = await callable({ episodeNum, force: true });
             if (result.data?.success) {
-                const importRef = ref(firebaseDb, `seasons/s50/autoImport/e${episodeNum}`);
+                const importRef = ref(firebaseDb, `seasons/${SEASON_ID}/autoImport/e${episodeNum}`);
                 const snap = await get(importRef);
                 if (snap.exists()) {
                     const data = snap.val();

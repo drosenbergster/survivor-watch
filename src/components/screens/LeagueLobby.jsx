@@ -59,7 +59,7 @@ function MemberRow({ member, uid, currentUid }) {
 }
 
 export default function LeagueLobby() {
-    const { league, leagueMembers, leaveLeague, startDraft, user } = useApp();
+    const { league, leagueMembers, leaveLeague, startSeason, user } = useApp();
     const [confirmLeave, setConfirmLeave] = useState(false);
     const [leaving, setLeaving] = useState(false);
     const [starting, setStarting] = useState(false);
@@ -121,29 +121,30 @@ export default function LeagueLobby() {
                 {memberCount < 2 && (
                     <div className="px-4 py-3 text-center">
                         <p className="text-sand-warm/60 text-xs font-serif italic">
-                            Waiting for more castaways to arrive... (at least 2 needed to draft)
+                            Waiting for more castaways to arrive... (at least 2 needed to play)
                         </p>
                     </div>
                 )}
             </FijianCard>
 
-            {/* Start Draft / Status */}
+            {/* Start Season / Status */}
             {canStartDraft ? (
                 <FijianCard className="p-5 text-center">
                     <p className="text-sand-warm text-sm mb-4">
-                        Everyone&apos;s here? Time to pick your Ride or Dies.
+                        Everyone&apos;s here? Open up the premiere. No draft this season — you
+                        meet all 21 castaways first, then start picking in Episode 2.
                     </p>
                     <FijianPrimaryButton
                         onClick={async () => {
                             setStarting(true);
                             setError('');
-                            try { await startDraft(); }
+                            try { await startSeason(); }
                             catch (err) { setError(err.message); }
                             setStarting(false);
                         }}
                         disabled={starting}
                     >
-                        {starting ? 'Starting...' : 'Start Ride or Die Draft'}
+                        {starting ? 'Starting...' : 'Start the Season'}
                     </FijianPrimaryButton>
                     {error && <p className="text-amber text-xs mt-3" role="alert">{error}</p>}
                 </FijianCard>
@@ -155,8 +156,8 @@ export default function LeagueLobby() {
                     </div>
                     <p className="text-sand-warm/60 text-xs mt-2 font-serif italic">
                         {isAdmin
-                            ? 'Waiting for more players to join before drafting...'
-                            : 'The game begins once the host starts the Ride or Die draft.'}
+                            ? 'Waiting for more players to join before starting...'
+                            : 'The game begins once the host starts the season.'}
                     </p>
                 </FijianCard>
             )}

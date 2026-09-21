@@ -1,10 +1,10 @@
 export { default as AuthScreen } from './AuthScreen';
 export { default as LeagueGate } from './LeagueGate';
 export { default as LeagueLobby } from './LeagueLobby';
-export { default as RideOrDieDraft } from './RideOrDieDraft';
+// RideOrDieDraft removed — no pre-season draft in Season 51
 export { default as SeasonPassport } from './SeasonPassport';
 export { default as DraftTab } from './DraftTab';
-// BingoTab removed — bingo is now inline in the Episode (DraftTab) tab
+// Bingo lives inline in the Episode (DraftTab) tab rather than its own tab
 export { default as ScoreboardTab } from './ScoreboardTab';
 export { default as RulesTab } from './RulesTab';
 export { default as TribalSnapVote } from './TribalSnapVote';

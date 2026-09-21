@@ -56,17 +56,7 @@ function SpyGlassPanel() {
 }
 
 export default function WeeklyPicks() {
-    const { user, myEpisode, myEpisodeData, safeEliminated, rideOrDies, episodes, submitPicks, auction, tribeSwaps } = useApp();
-    const myRoDs = useMemo(() => new Set(rideOrDies?.[user?.uid] || []), [rideOrDies, user?.uid]);
-
-    const othersRoDs = useMemo(() => {
-        const set = new Set();
-        for (const [uid, rods] of Object.entries(rideOrDies || {})) {
-            if (uid === user?.uid) continue;
-            for (const cid of (rods || [])) set.add(cid);
-        }
-        return set;
-    }, [rideOrDies, user?.uid]);
+    const { user, myEpisode, myEpisodeData, safeEliminated, episodes, submitPicks, auction, tribeSwaps } = useApp();
 
     const prevEpScarcity = useMemo(() => {
         if (!myEpisode || myEpisode <= 1) return null;
@@ -152,10 +142,9 @@ export default function WeeklyPicks() {
             </div>
 
             <p className="text-sand-warm/60 text-xs font-sans leading-relaxed">
-                Choose {maxPicks} contestants to score for you this episode.
-                If you&apos;re the only player who picks someone (and they&apos;re not someone else&apos;s ride or die),
-                you get a <strong className="text-ochre">1.5&times; bonus</strong>.
-                Your ride or dies score passively — pick someone else!
+                Choose {maxPicks} castaways to score for you this episode.
+                If you&apos;re the only player who picks someone, you get a{' '}
+                <strong className="text-ochre">1.5&times; bonus</strong> on their points.
             </p>
 
             {hasExtraPick && (
@@ -192,9 +181,7 @@ export default function WeeklyPicks() {
                             <div className="divide-y divide-stone-700/30">
                                 {tribeMembers.map((c) => {
                                     const isEliminated = eliminatedSet.has(c.id);
-                                    const isMyRoD = myRoDs.has(c.id);
-                                    const isOthersRoD = othersRoDs.has(c.id);
-                                    const isDisabled = isEliminated || isMyRoD;
+                                    const isDisabled = isEliminated;
                                     const isPicked = selected.includes(c.id);
                                     const canPick = !isDisabled && !isPicked && selected.length < maxPicks;
 
@@ -209,7 +196,6 @@ export default function WeeklyPicks() {
                                             disabled={isDisabled}
                                             className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm transition-all
                                                 ${isEliminated ? 'opacity-25 line-through cursor-default' : ''}
-                                                ${isMyRoD && !isEliminated ? 'opacity-50 cursor-default' : ''}
                                                 ${!isDisabled ? 'cursor-pointer' : ''}
                                                 ${isPicked ? 'bg-ochre/15 text-sand-warm' : ''}
                                                 ${!isPicked && !isDisabled ? 'hover:bg-stone-800/50' : ''}
@@ -217,26 +203,13 @@ export default function WeeklyPicks() {
                                             `}
                                         >
                                             <span className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
-                                                isPicked
-                                                    ? 'border-ochre bg-ochre/20'
-                                                    : isMyRoD && !isEliminated
-                                                        ? 'border-fire-400/40 bg-fire-400/10'
-                                                        : 'border-stone-600'
+                                                isPicked ? 'border-ochre bg-ochre/20' : 'border-stone-600'
                                             }`}>
                                                 {isPicked && <Icon name="check" className="text-ochre text-xs" />}
-                                                {isMyRoD && !isEliminated && <Icon name="favorite" className="text-fire-400/60 text-xs" />}
                                             </span>
                                             <span className="flex-1 font-medium">{c.name}</span>
                                             <span className="flex items-center gap-1.5 shrink-0">
-                                                {isOthersRoD && !isEliminated && (
-                                                    <span className="text-[10px] font-bold text-clay/50 tracking-wider uppercase" title="Someone else's ride or die — no 1.5× bonus">
-                                                        RoD
-                                                    </span>
-                                                )}
-                                                {isMyRoD && !isEliminated && (
-                                                    <span className="text-[10px] font-bold text-fire-400/60 tracking-wider uppercase">Ride or Die</span>
-                                                )}
-                                                {prevEpScarcity && !isEliminated && !isMyRoD && (
+                                                {prevEpScarcity && !isEliminated && (
                                                     <ScarcityBadge count={prevCount} total={prevTotal} />
                                                 )}
                                             </span>

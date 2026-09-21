@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useApp } from '../../AppContext';
-import { ALL_CASTAWAYS } from '../../data';
+import { ALL_CASTAWAYS, SEASON_LABEL } from '../../data';
 import {
     FijianCard,
     FijianSectionHeader,
@@ -8,12 +8,14 @@ import {
     Icon,
 } from '../fijian';
 
+// Sealed after the premiere rather than before it: 21 strangers are a coin flip on a
+// cast photo, but a real decision once you have watched them play for two hours.
 const PASSPORT_QUESTIONS = [
-    { key: 'winner', label: 'Sole Survivor', prompt: 'Who wins Season 50?', points: '25 pts', icon: 'emoji_events' },
-    { key: 'firstBoot', label: 'First Boot', prompt: 'Who goes home first?', points: '20 pts', icon: 'directions_walk' },
-    { key: 'fanFavorite', label: 'Fan Favorite', prompt: 'Who will be the fan favorite?', points: '15 pts', icon: 'favorite' },
-    { key: 'biggestVillain', label: 'Biggest Villain', prompt: 'Who plays the dirtiest game?', points: '15 pts', icon: 'mood_bad' },
-    { key: 'fireMakingWinner', label: 'Fire-Making Winner', prompt: 'Who wins fire at Final 4?', points: '20 pts', icon: 'local_fire_department' },
+    { key: 'winner', label: 'Sole Survivor', prompt: `Who wins ${SEASON_LABEL}?`, icon: 'emoji_events' },
+    { key: 'mergeMaker', label: 'Lock for the Merge', prompt: 'Who is definitely making it to the merge?', icon: 'handshake' },
+    { key: 'earlyExit', label: 'Gone Early', prompt: 'Who is out before the merge?', icon: 'directions_walk' },
+    { key: 'biggestVillain', label: 'Biggest Villain', prompt: 'Who plays the dirtiest game?', icon: 'mood_bad' },
+    { key: 'fanFavorite', label: 'Fan Favorite', prompt: 'Who does everyone end up loving?', icon: 'favorite' },
 ];
 
 function ContestantSelect({ value, onChange, label, excludeIds = [] }) {
@@ -49,9 +51,9 @@ function SealedPassport() {
 }
 
 export default function SeasonPassport() {
-    const { user, passports, submitPassport, league, leagueMembers } = useApp();
+    const { user, passports, submitPassport, leagueMembers } = useApp();
     const [answers, setAnswers] = useState({
-        winner: '', firstBoot: '', fanFavorite: '', biggestVillain: '', fireMakingWinner: '',
+        winner: '', mergeMaker: '', earlyExit: '', biggestVillain: '', fanFavorite: '',
     });
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
@@ -61,13 +63,16 @@ export default function SeasonPassport() {
 
     const memberEntries = Object.entries(leagueMembers || {});
     const sealedCount = memberEntries.filter(([uid]) => passports?.[uid]?.sealedAt).length;
-    const allSealed = sealedCount === memberEntries.length && memberEntries.length > 0;
-    const isAdmin = league?.createdBy === user?.uid;
 
     const allFilled = PASSPORT_QUESTIONS.every(q => answers[q.key]);
 
+    // You cannot have someone both winning and leaving before the merge.
+    const contradiction = answers.earlyExit
+        && (answers.earlyExit === answers.winner || answers.earlyExit === answers.mergeMaker);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (contradiction) return;
         setSubmitting(true);
         setError('');
         try {
@@ -85,7 +90,7 @@ export default function SeasonPassport() {
             <header className="text-center">
                 <h2 className="font-display text-4xl tracking-wider text-sand-warm drop-shadow-text">Passport</h2>
                 <p className="text-sand-warm/70 text-sm mt-1">
-                    Season 50 &middot; 5 gut picks, sealed until the finale
+                    You&apos;ve met them all &middot; 5 gut picks, sealed until the finale
                 </p>
             </header>
 
@@ -120,28 +125,21 @@ export default function SeasonPassport() {
                             })}
                         </div>
                     </FijianCard>
-
-                    {allSealed && isAdmin && (
-                        <StartSeasonButton />
-                    )}
-                    {allSealed && !isAdmin && (
-                        <FijianCard className="p-4 text-center border-ochre/10">
-                            <p className="text-clay text-xs font-serif italic">
-                                All passports sealed! Waiting for the host to start the season...
-                            </p>
-                        </FijianCard>
-                    )}
                 </>
             ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
+                    <FijianCard className="p-4 border-ochre/10">
+                        <p className="text-clay text-xs font-serif italic">
+                            Now that the premiere is done, lock in your read on the season. These
+                            stay sealed from everyone until the finale.
+                        </p>
+                    </FijianCard>
+
                     {PASSPORT_QUESTIONS.map((q) => (
                         <FijianCard key={q.key} className="p-4">
                             <div className="flex items-center gap-2 mb-3">
                                 <Icon name={q.icon} className="text-ochre text-lg" />
-                                <div className="flex-1">
-                                    <span className="text-sand-warm text-sm font-bold">{q.label}</span>
-                                    <span className="text-ochre/70 text-xs ml-2">{q.points}</span>
-                                </div>
+                                <span className="flex-1 text-sand-warm text-sm font-bold">{q.label}</span>
                             </div>
                             <p className="text-clay text-xs mb-2 font-serif italic">{q.prompt}</p>
                             <ContestantSelect
@@ -152,8 +150,14 @@ export default function SeasonPassport() {
                         </FijianCard>
                     ))}
 
+                    {contradiction && (
+                        <p className="text-amber text-xs text-center" role="alert">
+                            Someone can&apos;t be gone before the merge and also win or make the merge.
+                        </p>
+                    )}
+
                     <div className="pt-2">
-                        <FijianPrimaryButton type="submit" disabled={!allFilled || submitting}>
+                        <FijianPrimaryButton type="submit" disabled={!allFilled || submitting || contradiction}>
                             {submitting ? 'Sealing...' : 'Seal My Passport'}
                         </FijianPrimaryButton>
                         <p className="text-sand-warm/60 text-xs text-center mt-3 font-serif italic">
@@ -165,32 +169,5 @@ export default function SeasonPassport() {
                 </form>
             )}
         </div>
-    );
-}
-
-function StartSeasonButton() {
-    const { startSeason } = useApp();
-    const [starting, setStarting] = useState(false);
-    const [error, setError] = useState('');
-
-    return (
-        <FijianCard className="p-5 text-center">
-            <p className="text-sand-warm text-sm mb-4">
-                All passports are sealed. Ready to play!
-            </p>
-            <FijianPrimaryButton
-                onClick={async () => {
-                    setStarting(true);
-                    setError('');
-                    try { await startSeason(); }
-                    catch (err) { setError(err.message); }
-                    setStarting(false);
-                }}
-                disabled={starting}
-            >
-                {starting ? 'Starting...' : 'Start the Season'}
-            </FijianPrimaryButton>
-            {error && <p className="text-amber text-xs mt-3" role="alert">{error}</p>}
-        </FijianCard>
     );
 }

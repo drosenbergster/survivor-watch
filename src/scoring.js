@@ -1,4 +1,4 @@
-import { SCORE_EVENTS, ALL_CASTAWAYS, detectBingoLines, isBingoBlackout, ACHIEVEMENT_MAP, userHasPerk } from './data';
+import { SCORE_EVENTS, ALL_CASTAWAYS, detectBingoLines, isBingoBlackout, countBingoSquares, ACHIEVEMENT_MAP, userHasPerk } from './data';
 
 const SCORE_MAP = Object.fromEntries(SCORE_EVENTS.map(e => [e.key, e.points]));
 
@@ -10,8 +10,13 @@ const CORRECT_PROP_BET_POINTS = 3;
 const CORRECT_SNAP_VOTE_POINTS = 8;
 const CORRECT_SIDE_BET_POINTS = 3;
 const PLAYER_OF_EPISODE_POINTS = 7;
+// Bingo is the centrepiece for Season 51, so every square you catch pays. Lines and
+// blackouts sit on top as bonuses rather than being the only way bingo scores.
+const BINGO_SQUARE_POINTS = 2;
 const BINGO_LINE_POINTS = 5;
 const BINGO_BLACKOUT_POINTS = 50;
+
+const ACHIEVEMENTS_ENABLED = false;
 
 /**
  * Given game events for an episode, compute the raw points each contestant earned.
@@ -219,6 +224,12 @@ export function scoreEpisode(episodeData, rideOrDies, eliminatedBefore, memberUi
         breakdown.bingo = [];
         const playerBingo = bingoData?.[uid];
         if (playerBingo && Array.isArray(playerBingo) && playerBingo.length === 25) {
+            const squares = countBingoSquares(playerBingo);
+            if (squares > 0) {
+                const squarePoints = squares * BINGO_SQUARE_POINTS * bingoMultiplier;
+                bingoTotal += squarePoints;
+                breakdown.bingo.push({ type: 'squares', count: squares, points: squarePoints, perkBoost: hasBingoFrenzy });
+            }
             const lines = detectBingoLines(playerBingo);
             if (lines.length > 0) {
                 const linePoints = lines.length * BINGO_LINE_POINTS * bingoMultiplier;
@@ -441,10 +452,15 @@ const DETHRONE_BONUS = 8;
 /**
  * Detect achievements for all players across the season.
  * Returns: { [uid]: string[] } — array of achievement IDs
+ *
+ * Badges were cut for Season 51, so this yields nothing. The detection logic below
+ * is left in place for a future season that wants them back.
  */
 export function detectAchievements(episodes, rideOrDies, memberUids, bingoAllEpisodes, postEpisodeData, perEpisode) {
     const earned = {};
     for (const uid of memberUids) earned[uid] = [];
+
+    if (ACHIEVEMENTS_ENABLED === false) return earned;
 
     const epNums = Object.keys(episodes || {})
         .map(Number)

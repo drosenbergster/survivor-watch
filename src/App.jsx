@@ -2,11 +2,11 @@ import { useState, useEffect, useMemo } from 'react';
 import { useApp } from './AppContext';
 import {
     AuthScreen, LeagueGate, LeagueLobby,
-    RideOrDieDraft, SeasonPassport,
     DraftTab, ScoreboardTab, RulesTab, PlayerProfile,
     SurvivorAuction, WelcomeCarousel,
 } from './components/screens';
 import { AppShell } from './components/layout';
+import { AUCTION_ENABLED } from './data';
 
 function ProfileTab() {
     return <PlayerProfile />;
@@ -30,7 +30,7 @@ function LoadingScreen() {
 }
 
 export default function App() {
-    const { user, authLoading, league, leagueId, leagueLoading, draftState, passports, onboardingComplete, completeOnboarding, auction } = useApp();
+    const { user, authLoading, league, leagueId, leagueLoading, onboardingComplete, completeOnboarding, auction } = useApp();
     const [activeTab, setActiveTab] = useState('episode');
     const [joinParam, setJoinParam] = useState(null);
     useEffect(() => {
@@ -43,7 +43,7 @@ export default function App() {
     }, []);
 
     const isHost = league?.createdBy === user?.uid;
-    const auctionVisible = auction || isHost;
+    const auctionVisible = AUCTION_ENABLED && (auction || isHost);
     const isActive = league?.status === 'active';
 
     const TABS = useMemo(() => {
@@ -77,33 +77,8 @@ export default function App() {
         );
     }
 
-    if (status === 'draft') {
-        const draftComplete = draftState?.status === 'complete';
-        const myPassportSealed = !!passports?.[user.uid]?.sealedAt;
-
-        if (!draftComplete) {
-            return (
-                <AppShell {...shellProps}>
-                    <RideOrDieDraft />
-                </AppShell>
-            );
-        }
-
-        if (!myPassportSealed) {
-            return (
-                <AppShell {...shellProps}>
-                    <SeasonPassport />
-                </AppShell>
-            );
-        }
-
-        return (
-            <AppShell {...shellProps}>
-                <SeasonPassport />
-            </AppShell>
-        );
-    }
-
+    // Season 51 has no pre-season draft. Any league still sitting in the old
+    // 'draft' status falls through to normal play.
     // status === 'active' or beyond → normal tab routing
     const ActiveComponent = TABS.find(t => t.key === activeTab)?.Component || TABS[0].Component;
 

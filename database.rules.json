@@ -76,6 +76,7 @@
             "scoredAt": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
             "rescoredAt": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
             "immunityWinners": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
+            "lockedSocial": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
             "rewardWinners": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
             "autoResolvedPropBets": { ".write": false },
             "autoResolvedSideBets": { ".write": false },
@@ -186,6 +187,11 @@
     "seasons": {
       ".read": "auth != null",
       "s50": {
+        "autoImport": {
+          ".write": false
+        }
+      },
+      "s51": {
         "autoImport": {
           ".write": false
         }

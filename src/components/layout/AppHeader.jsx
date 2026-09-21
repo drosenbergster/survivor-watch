@@ -16,7 +16,7 @@ export function AppHeader() {
         </div>
         <div className="leading-none">
           <h1 className="font-display text-xl tracking-tight text-transparent bg-gradient-to-b from-clay via-ochre to-earth bg-clip-text drop-shadow-text">
-            SURVIVOR 50
+            SURVIVOR 51
           </h1>
           <p className="text-[7px] font-bold tracking-[0.25em] text-sand-warm/50 uppercase mt-0.5">
             Watch Party HQ
