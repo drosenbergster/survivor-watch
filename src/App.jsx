@@ -1,25 +1,22 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState } from 'react';
 import { useApp } from './AppContext';
 import {
-    AuthScreen, LeagueGate, LeagueLobby,
-    DraftTab, ScoreboardTab, RulesTab, PlayerProfile,
-    SurvivorAuction, WelcomeCarousel,
+    AuthScreen, JoinScreen,
+    EpisodeTab, ScoreboardTab, RulesTab, PlayerProfile,
+    WelcomeCarousel,
 } from './components/screens';
 import { AppShell } from './components/layout';
-import { AUCTION_ENABLED } from './data';
 
 function ProfileTab() {
     return <PlayerProfile />;
 }
 
-const BASE_TABS = [
-    { key: 'episode', label: 'Episode', icon: 'local_fire_department', Component: DraftTab },
+const TABS = [
+    { key: 'episode', label: 'Episode', icon: 'local_fire_department', Component: EpisodeTab },
     { key: 'scores', label: 'Scores', icon: 'leaderboard', Component: ScoreboardTab },
     { key: 'profile', label: 'Profile', icon: 'person', Component: ProfileTab },
     { key: 'rules', label: 'Rules', icon: 'menu_book', Component: RulesTab },
 ];
-
-const AUCTION_TAB = { key: 'auction', label: 'Auction', icon: 'gavel', Component: SurvivorAuction };
 
 function LoadingScreen() {
     return (
@@ -30,56 +27,18 @@ function LoadingScreen() {
 }
 
 export default function App() {
-    const { user, authLoading, league, leagueId, leagueLoading, onboardingComplete, completeOnboarding, auction } = useApp();
+    const { user, authLoading, displayName, profileLoading, partyLoading, onboardingComplete, completeOnboarding } = useApp();
     const [activeTab, setActiveTab] = useState('episode');
-    const [joinParam, setJoinParam] = useState(null);
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get('join');
-        if (code) {
-            setJoinParam(code.toUpperCase());
-            window.history.replaceState(null, '', window.location.pathname);
-        }
-    }, []);
-
-    const isHost = league?.createdBy === user?.uid;
-    const auctionVisible = AUCTION_ENABLED && (auction || isHost);
-    const isActive = league?.status === 'active';
-
-    const TABS = useMemo(() => {
-        if (isActive && auctionVisible) {
-            return [...BASE_TABS.slice(0, 2), AUCTION_TAB, ...BASE_TABS.slice(2)];
-        }
-        return BASE_TABS;
-    }, [isActive, auctionVisible]);
-
-    useEffect(() => {
-        if (auction?.status === 'active' && activeTab !== 'auction') {
-            setActiveTab('auction');
-        }
-    }, [auction?.status]);
 
     if (authLoading) return <LoadingScreen />;
     if (!user) return <AuthScreen />;
     if (!onboardingComplete) return <WelcomeCarousel onComplete={completeOnboarding} />;
-    if (leagueLoading) return <LoadingScreen />;
-    if (!leagueId) return <LeagueGate prefillCode={joinParam} />;
-
-    const status = league?.status || 'lobby';
+    if (profileLoading) return <LoadingScreen />;
+    if (!displayName) return <JoinScreen />;
+    if (partyLoading) return <LoadingScreen />;
 
     const shellProps = { tabs: TABS, activeTab, onTabChange: setActiveTab, onShowTutorial: () => setActiveTab('rules') };
 
-    if (status === 'lobby') {
-        return (
-            <AppShell {...shellProps}>
-                <LeagueLobby />
-            </AppShell>
-        );
-    }
-
-    // Season 51 has no pre-season draft. Any league still sitting in the old
-    // 'draft' status falls through to normal play.
-    // status === 'active' or beyond → normal tab routing
     const ActiveComponent = TABS.find(t => t.key === activeTab)?.Component || TABS[0].Component;
 
     return (

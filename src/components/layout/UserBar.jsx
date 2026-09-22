@@ -1,6 +1,5 @@
 import { useApp } from '../../AppContext';
 import { Icon } from '../fijian';
-import LeagueSwitcher from '../screens/LeagueSwitcher';
 
 export function UserBar({ onShowTutorial }) {
   const { user, syncStatus, logout } = useApp();
@@ -35,7 +34,6 @@ export function UserBar({ onShowTutorial }) {
           <span className="hidden sm:inline">How to Play</span>
         </button>
       )}
-      <LeagueSwitcher />
       <button
         type="button"
         onClick={logout}

@@ -1,24 +1,20 @@
 import { useMemo } from 'react';
 import { useApp } from '../../AppContext';
-import { ALL_CASTAWAYS } from '../../data';
 import { computeStandings, generateProbstRecap } from '../../scoring';
 import { FijianCard, Icon } from '../fijian';
 
 export default function ProbstRecap({ episodeNum }) {
-    const {
-        episodes, rideOrDies, leagueMembers, bingo,
-        postEpisode, league, auction,
-    } = useApp();
+    const { episodes, leagueMembers, bingo } = useApp();
 
     const memberUids = useMemo(() => Object.keys(leagueMembers || {}), [leagueMembers]);
 
     const { standings, perEpisode } = useMemo(
-        () => computeStandings(episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated, auction),
-        [episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated, auction]
+        () => computeStandings(episodes, memberUids, bingo),
+        [episodes, memberUids, bingo]
     );
 
     const report = useMemo(
-        () => generateProbstRecap(episodeNum, episodes, standings, perEpisode, leagueMembers, null),
+        () => generateProbstRecap(episodeNum, episodes, standings, perEpisode, leagueMembers),
         [episodeNum, episodes, standings, perEpisode, leagueMembers]
     );
 

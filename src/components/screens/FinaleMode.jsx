@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useApp } from '../../AppContext';
-import { computeStandings, detectAchievements } from '../../scoring';
-import { ALL_CASTAWAYS, ACHIEVEMENTS, ACHIEVEMENT_MAP } from '../../data';
+import { computeStandings, scorePassports } from '../../scoring';
+import { ALL_CASTAWAYS, PASSPORT_QUESTIONS, PASSPORT_POINTS_PER_CORRECT } from '../../data';
 import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon } from '../fijian';
 
 const REUNION_CATEGORIES = [
@@ -10,74 +10,122 @@ const REUNION_CATEGORIES = [
     { key: 'bestTake', label: 'Best Hot Take', description: 'Who had the boldest correct prediction?', emoji: '🔥' },
 ];
 
-const PASSPORT_QUESTIONS = {
-    winner: { label: 'Sole Survivor', icon: '👑' },
-    firstBoot: { label: 'First Boot', icon: '🚪' },
-    fanFavorite: { label: 'Fan Favorite', icon: '❤️' },
-    biggestVillain: { label: 'Biggest Villain', icon: '😈' },
-    fireMakingWinner: { label: 'Fire-Making', icon: '🔥' },
-};
-
-const MERGE_QUESTIONS = {
-    winner: { label: 'Sole Survivor', icon: '👑' },
-    firstJury: { label: 'First Juror', icon: '⚖️' },
-    fanFavorite: { label: 'Fan Favorite', icon: '❤️' },
-    biggestVillain: { label: 'Biggest Villain', icon: '😈' },
-    fireMakingWinner: { label: 'Fire-Making', icon: '🔥' },
-};
-
 function contestantName(cid) {
     return ALL_CASTAWAYS.find(c => c.id === cid)?.name || cid;
 }
 
-const COLOR_MAP = {
-    'ochre': { text: '#c8a55a', bg20: 'rgba(200,165,90,0.2)', bg30: 'rgba(200,165,90,0.3)', border: 'rgba(200,165,90,0.2)' },
-    'purple-400': { text: '#c084fc', bg20: 'rgba(192,132,252,0.2)', bg30: 'rgba(192,132,252,0.3)', border: 'rgba(192,132,252,0.2)' },
-};
-
-function PassportRevealCard({ memberName, passport, questions, color }) {
+function PassportRevealCard({ memberName, passport, truth }) {
     const [revealed, setRevealed] = useState(false);
-    const c = COLOR_MAP[color] || COLOR_MAP['ochre'];
 
-    if (!passport) {
+    if (!passport?.sealedAt) {
         return (
             <FijianCard className="p-3 opacity-40">
-                <p className="text-sand-warm/50 text-sm font-sans">{memberName} — no passport</p>
+                <p className="text-sand-warm/50 text-sm font-sans">{memberName} — didn&apos;t seal a passport</p>
             </FijianCard>
         );
     }
 
+    // Compute the correct-count once we have truth
+    const scored = truth ? scorePassports({ x: passport }, truth).x : null;
+    const points = scored?.points || 0;
+
     return (
-        <FijianCard className="p-4 space-y-2" style={{ borderColor: c.border }}>
+        <FijianCard className="p-4 space-y-2 border-amber-400/30">
             <div className="flex items-center justify-between">
                 <p className="text-sand-warm text-sm font-sans font-bold">{memberName}</p>
                 {!revealed ? (
                     <button
                         onClick={() => setRevealed(true)}
-                        className="px-3 py-1 rounded-lg text-xs font-sans transition-all"
-                        style={{ backgroundColor: c.bg20, color: c.text }}
-                        onMouseEnter={e => e.currentTarget.style.backgroundColor = c.bg30}
-                        onMouseLeave={e => e.currentTarget.style.backgroundColor = c.bg20}
+                        className="px-3 py-1 rounded-lg text-xs font-sans transition-all bg-amber-400/20 text-amber-400 hover:bg-amber-400/30"
                     >
                         Reveal
                     </button>
                 ) : (
-                    <span className="text-xs" style={{ color: c.text }}>Revealed</span>
+                    <span className="text-xs text-amber-400 font-bold">
+                        {truth ? `+${points} pts` : 'Revealed'}
+                    </span>
                 )}
             </div>
             {revealed && (
                 <div className="space-y-1.5 pt-1">
-                    {Object.entries(questions).map(([key, q]) => (
-                        <div key={key} className="flex items-center gap-2 text-sm font-sans">
-                            <span>{q.icon}</span>
-                            <span className="text-sand-warm/50 flex-1">{q.label}</span>
-                            <span className="text-ochre font-bold">
-                                {passport[key] ? contestantName(passport[key]) : '—'}
-                            </span>
-                        </div>
-                    ))}
+                    {PASSPORT_QUESTIONS.map(q => {
+                        const answer = passport[q.key];
+                        const correctAnswer = truth?.[q.key];
+                        const isCorrect = truth && answer && answer === correctAnswer;
+                        const isWrong = truth && answer && correctAnswer && answer !== correctAnswer;
+                        return (
+                            <div key={q.key} className="flex items-center gap-2 text-sm font-sans">
+                                <Icon
+                                    name={isCorrect ? 'check_circle' : isWrong ? 'cancel' : 'help_outline'}
+                                    className={`text-sm ${isCorrect ? 'text-jungle-400' : isWrong ? 'text-fire-400' : 'text-sand-warm/40'}`}
+                                />
+                                <span className="text-sand-warm/50 flex-1">{q.label}</span>
+                                <span className={`font-bold ${isCorrect ? 'text-jungle-400' : 'text-sand-warm'}`}>
+                                    {answer ? contestantName(answer) : '—'}
+                                </span>
+                            </div>
+                        );
+                    })}
                 </div>
             )}
+        </FijianCard>
+    );
+}
+
+function ContestantSelect({ value, onChange, label }) {
+    return (
+        <select
+            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full bg-stone-dark/80 border border-earth/30 rounded-lg h-10 px-3 text-sand-warm text-sm outline-none"
+            aria-label={label}
+        >
+            <option value="">Select...</option>
+            {ALL_CASTAWAYS.map(c => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+        </select>
+    );
+}
+
+function PassportTruthPanel() {
+    const { finaleData, setPassportTruth } = useApp();
+    const [truth, setTruth] = useState(() => finaleData?.passportTruth || {});
+    const [saving, setSaving] = useState(false);
+    const [saved, setSaved] = useState(false);
+
+    const setKey = (key, val) => {
+        setTruth(prev => ({ ...prev, [key]: val }));
+        setSaved(false);
+    };
+
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            await setPassportTruth(truth);
+            setSaved(true);
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    return (
+        <FijianCard className="p-4 space-y-3 border-amber-400/20">
+            <FijianSectionHeader title="Passport Truth (Host)" />
+            <p className="text-clay text-xs font-serif italic">
+                Enter what actually happened. Each answer that matches a sealed passport pays +{PASSPORT_POINTS_PER_CORRECT} pts.
+            </p>
+            <div className="space-y-2">
+                {PASSPORT_QUESTIONS.map(q => (
+                    <div key={q.key} className="space-y-1">
+                        <label className="text-sand-warm/70 text-xs font-sans font-bold">{q.label}</label>
+                        <ContestantSelect value={truth[q.key]} onChange={val => setKey(q.key, val)} label={q.label} />
+                    </div>
+                ))}
+            </div>
+            <FijianPrimaryButton onClick={handleSave} disabled={saving}>
+                {saving ? 'Saving...' : saved ? 'Truth Saved — scores updated' : 'Save Passport Truth'}
+            </FijianPrimaryButton>
         </FijianCard>
     );
 }
@@ -147,9 +195,7 @@ function ReunionAwards() {
     );
 }
 
-function LegacyCard({ uid, memberName, standing, rank, achievements: earned, episodes }) {
-    const badge = earned?.[uid] || [];
-
+function LegacyCard({ memberName, standing, rank, episodes }) {
     const scoredEps = Object.keys(episodes || {}).filter(n => episodes[n]?.scored).length;
     const avgPerEp = scoredEps > 0 ? Math.round((standing?.total || 0) / scoredEps) : 0;
 
@@ -163,27 +209,28 @@ function LegacyCard({ uid, memberName, standing, rank, achievements: earned, epi
                 </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-center">
+            <div className="grid grid-cols-4 gap-2 text-center">
                 <div className="bg-stone-800/50 rounded-lg p-2">
-                    <p className="font-display text-lg text-fire-400">{avgPerEp}</p>
-                    <p className="text-[11px] text-sand-warm/60">Avg/Ep</p>
+                    <p className="font-display text-lg text-fire-400">{standing?.weekly || 0}</p>
+                    <p className="text-[10px] text-sand-warm/60">Picks</p>
                 </div>
                 <div className="bg-stone-800/50 rounded-lg p-2">
-                    <p className="font-display text-lg text-purple-400">{badge.length}</p>
-                    <p className="text-[11px] text-sand-warm/60">Badges</p>
+                    <p className="font-display text-lg text-green-400">{standing?.predictions || 0}</p>
+                    <p className="text-[10px] text-sand-warm/60">Predict</p>
+                </div>
+                <div className="bg-stone-800/50 rounded-lg p-2">
+                    <p className="font-display text-lg text-purple-400">{standing?.bingo || 0}</p>
+                    <p className="text-[10px] text-sand-warm/60">Bingo</p>
+                </div>
+                <div className="bg-stone-800/50 rounded-lg p-2">
+                    <p className="font-display text-lg text-amber-400">{standing?.passport || 0}</p>
+                    <p className="text-[10px] text-sand-warm/60">Passport</p>
                 </div>
             </div>
 
-            {badge.length > 0 && (
-                <div className="flex flex-wrap gap-1 justify-center">
-                    {badge.map(id => {
-                        const a = ACHIEVEMENT_MAP[id];
-                        return a ? (
-                            <span key={id} className="text-lg" title={a.name}>{a.emoji}</span>
-                        ) : null;
-                    })}
-                </div>
-            )}
+            <p className="text-center text-sand-warm/50 text-xs font-sans">
+                Avg {avgPerEp} pts/ep across {scoredEps} episodes
+            </p>
         </FijianCard>
     );
 }
@@ -245,22 +292,20 @@ function ChampionCrowning() {
 
 export default function FinaleMode() {
     const {
-        user, league, leagueMembers, passports, mergePassports,
-        episodes, rideOrDies, bingo, postEpisode, auction,
-        finaleData, startFinale,
+        user, league, leagueMembers, mergePassports,
+        episodes, bingo, finaleData, startFinale,
     } = useApp();
 
     const isHost = league?.createdBy === user?.uid;
     const memberUids = useMemo(() => Object.keys(leagueMembers || {}), [leagueMembers]);
+    const passportTruth = finaleData?.passportTruth || null;
 
-    const { standings, perEpisode } = useMemo(
-        () => computeStandings(episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated, auction),
-        [episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated, auction]
-    );
-
-    const achievements = useMemo(
-        () => detectAchievements(episodes, rideOrDies, memberUids, bingo, postEpisode, perEpisode),
-        [episodes, rideOrDies, memberUids, bingo, postEpisode, perEpisode]
+    const { standings } = useMemo(
+        () => computeStandings(episodes, memberUids, bingo, {
+            passports: mergePassports,
+            passportTruth,
+        }),
+        [episodes, memberUids, bingo, mergePassports, passportTruth]
     );
 
     const [starting, setStarting] = useState(false);
@@ -281,7 +326,7 @@ export default function FinaleMode() {
                 <span className="text-4xl">🏝️</span>
                 <p className="font-display text-xl tracking-wider text-ochre">Start the Finale</p>
                 <p className="text-clay text-xs font-serif italic">
-                    This begins the passport reveal ceremony, reunion awards, and champion crowning.
+                    This begins the passport reveal, reunion awards, and champion crowning.
                 </p>
                 <FijianPrimaryButton
                     onClick={async () => {
@@ -304,45 +349,24 @@ export default function FinaleMode() {
                 <p className="text-sand-warm/50 text-xs font-sans mt-1">Season 51 — The Final Chapter</p>
             </FijianCard>
 
-            {/* Season Passport Reveals */}
+            {/* Host enters truth so passports score */}
+            {isHost && <PassportTruthPanel />}
+
+            {/* Passport Reveals */}
             <FijianCard className="p-4 space-y-3">
-                <FijianSectionHeader title="Season Passport Reveals" />
+                <FijianSectionHeader title="Passport Reveals" />
                 <p className="text-clay text-xs font-serif italic">
-                    Sealed before the premiere. How did everyone&apos;s gut picks hold up?
+                    Sealed at the merge — five long-term calls per player. +{PASSPORT_POINTS_PER_CORRECT} pts each answer that came true.
                 </p>
                 {memberUids.map(uid => (
                     <PassportRevealCard
                         key={uid}
-                        uid={uid}
                         memberName={leagueMembers?.[uid]?.displayName || uid}
-                        passport={passports?.[uid]}
-                        questions={PASSPORT_QUESTIONS}
-                        title="Season Passport"
-                        color="jungle-400"
+                        passport={mergePassports?.[uid]}
+                        truth={passportTruth}
                     />
                 ))}
             </FijianCard>
-
-            {/* Merge Passport Reveals */}
-            {Object.keys(mergePassports || {}).length > 0 && (
-                <FijianCard className="p-4 space-y-3">
-                    <FijianSectionHeader title="Merge Passport Reveals" />
-                    <p className="text-clay text-xs font-serif italic">
-                        Updated at the merge with more info. Half the stakes, double the accountability.
-                    </p>
-                    {memberUids.map(uid => (
-                        <PassportRevealCard
-                            key={uid}
-                            uid={uid}
-                            memberName={leagueMembers?.[uid]?.displayName || uid}
-                            passport={mergePassports?.[uid]}
-                            questions={MERGE_QUESTIONS}
-                            title="Merge Passport"
-                            color="purple-400"
-                        />
-                    ))}
-                </FijianCard>
-            )}
 
             {/* Reunion Awards */}
             <ReunionAwards />
@@ -353,11 +377,9 @@ export default function FinaleMode() {
                 {standings?.map((s, i) => (
                     <LegacyCard
                         key={s.uid}
-                        uid={s.uid}
                         memberName={leagueMembers?.[s.uid]?.displayName || s.uid}
                         standing={s}
                         rank={i + 1}
-                        achievements={achievements}
                         episodes={episodes}
                     />
                 ))}

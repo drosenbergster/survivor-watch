@@ -1,9 +1,8 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { onAuthStateChanged, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, signOut } from 'firebase/auth';
-import { ref, onValue, set, get, push, remove } from 'firebase/database';
+import { ref, onValue, set, get, remove } from 'firebase/database';
 import { auth, db } from './firebase';
-import { generatePropBets, generateSideBets, ALL_CASTAWAYS, resolveBets, SEASON_ID, MAX_LEAGUE_MEMBERS, PICKS_START_EPISODE, getMaxPicks } from './data';
-import { computeStandings, computeSocialScores } from './scoring';
+import { generatePropBets, generateSideBets, ALL_CASTAWAYS, resolveBets, SEASON_ID, WATCH_PARTY_ID, WATCH_PARTY_NAME, PICKS_START_EPISODE, getMaxPicks } from './data';
 import { deriveGameEvents } from './importers/deriveGameEvents';
 
 const AppContext = createContext(null);
@@ -37,12 +36,11 @@ export function getEffectiveTribeAssignments(tribeSwaps, episodeNum) {
     return tribeSwaps[swapEps[0]]?.assignments || null;
 }
 
-const DEMO_LEAGUE = {
-    name: 'Demo Island',
-    joinCode: 'DEMO00',
+const DEMO_PARTY = {
+    name: WATCH_PARTY_NAME,
     createdBy: 'demo',
     createdAt: Date.now(),
-    status: 'lobby',
+    status: 'active',
 };
 
 const DEMO_MEMBERS = {
@@ -52,15 +50,6 @@ const DEMO_MEMBERS = {
     bot3: { displayName: 'Jess', email: 'jess@survivor.local', joinedAt: Date.now(), role: 'player' },
 };
 
-const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-
-function generateJoinCode() {
-    let code = '';
-    for (let i = 0; i < 4; i++) code += CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)];
-    code += String(Math.floor(Math.random() * 100)).padStart(2, '0');
-    return code;
-}
-
 const actionCodeSettings = {
     url: window.location.origin,
     handleCodeInApp: true,
@@ -69,27 +58,25 @@ const actionCodeSettings = {
 export function AppProvider({ children }) {
     const [user, setUser] = useState(null);
     const [authLoading, setAuthLoading] = useState(true);
-    const [leagueId, setLeagueId] = useState(null);
     const [league, setLeague] = useState(null);
     const [leagueMembers, setLeagueMembers] = useState({});
-    const [draftState, setDraftState] = useState(null);
-    const [rideOrDies, setRideOrDies] = useState({});
-    const [passports, setPassports] = useState({});
     const [currentEpisode, setCurrentEpisode] = useState(null);
     const [playerEpisode, setPlayerEpisode] = useState({});
     const [episodes, setEpisodes] = useState({});
     const [eliminated, setEliminated] = useState([]);
     const [watchStatus, setWatchStatus] = useState({});
     const [bingo, setBingo] = useState({});
-    const [postEpisode, setPostEpisode] = useState({});
     const [tribeSwaps, setTribeSwaps] = useState({});
     const [mergePassports, setMergePassports] = useState({});
-    const [auction, setAuction] = useState(null);
     const [finaleData, setFinaleData] = useState(null);
-    const [leagueLoading, setLeagueLoading] = useState(true);
+    const [partyLoading, setPartyLoading] = useState(true);
     const [syncStatus, setSyncStatus] = useState('offline');
     const [onboardingComplete, setOnboardingComplete] = useState(false);
-    const [userLeagues, setUserLeagues] = useState({});
+    const [displayName, setDisplayName] = useState(null);
+    const [profileLoading, setProfileLoading] = useState(true);
+
+    // Everyone shares one watch party, so there is nothing to look up or choose.
+    const leagueId = WATCH_PARTY_ID;
 
     // Auth listener — demo user when Firebase not configured
     useEffect(() => {
@@ -123,75 +110,33 @@ export function AppProvider({ children }) {
         }
     }, []);
 
-    // Resolve current league ID from user profile
+    // Sync the player's own profile. `displayName` doubles as the marker that they
+    // have finished joining the watch party — nothing else is readable until then.
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional loading state before async subscription
-        if (!user) { setLeagueLoading(false); return; }
+        if (!user) { setDisplayName(null); setProfileLoading(false); return; }
         if (!db) {
-            setLeagueId('demo-league');
-            setLeagueLoading(false);
+            setDisplayName('You');
+            setOnboardingComplete(true);
+            setProfileLoading(false);
             return;
         }
-        const userLeagueRef = ref(db, `users/${user.uid}/currentLeague`);
-        const unsub = onValue(userLeagueRef, (snap) => {
-            setLeagueId(snap.val() || null);
-            setLeagueLoading(false);
-        }, () => setLeagueLoading(false));
+        const profileRef = ref(db, `users/${user.uid}`);
+        const unsub = onValue(profileRef, (snap) => {
+            const profile = snap.val() || {};
+            setDisplayName(profile.displayName || null);
+            setOnboardingComplete(!!profile.onboardingComplete);
+            setProfileLoading(false);
+        }, () => setProfileLoading(false));
         return () => unsub();
     }, [user]);
 
-    // Sync onboardingComplete and user leagues list
+    // Sync watch party data + members + episodes
     useEffect(() => {
-        if (!user || !db) return;
-        const onboardRef = ref(db, `users/${user.uid}/onboardingComplete`);
-        const leaguesRef = ref(db, `users/${user.uid}/leagues`);
-        const unsub1 = onValue(onboardRef, (snap) => {
-            setOnboardingComplete(!!snap.val());
-        });
-        const unsub2 = onValue(leaguesRef, (snap) => {
-            setUserLeagues(snap.val() || {});
-        });
-        return () => { unsub1(); unsub2(); };
-    }, [user]);
-
-    // Sync league data + members + draft + rideOrDies + passports + episodes
-    useEffect(() => {
-        if (!leagueId) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional cleanup when league changes
-            setLeague(null);
-            setLeagueMembers({});
-            setDraftState(null);
-            setRideOrDies({});
-            setPassports({});
-            setCurrentEpisode(null);
-            setPlayerEpisode({});
-            setEpisodes({});
-            setEliminated([]);
-            setWatchStatus({});
-            setBingo({});
-            setPostEpisode({});
-            setTribeSwaps({});
-            setMergePassports({});
-            setAuction(null);
-            setFinaleData(null);
-            return;
-        }
         if (!db) {
-            setLeague({ ...DEMO_LEAGUE, status: 'active', currentEpisode: 1 });
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional seeding for demo mode
+            setLeague({ ...DEMO_PARTY, currentEpisode: 1 });
             setLeagueMembers(DEMO_MEMBERS);
-            setDraftState({ status: 'complete' });
-            setRideOrDies({
-                demo: ['cirie_fields', 'ozzy_lusth'],
-                bot1: ['rick_devens', 'aubry_bracco'],
-                bot2: ['dee_valladares', 'christian_hubicki'],
-                bot3: ['coach_wade', 'stephenie_lagrossa'],
-            });
-            setPassports({
-                demo: { sealedAt: Date.now() },
-                bot1: { sealedAt: Date.now() },
-                bot2: { sealedAt: Date.now() },
-                bot3: { sealedAt: Date.now() },
-            });
             setCurrentEpisode(2);
             const ep1Props = generatePropBets(1, 5);
             setEpisodes({
@@ -267,194 +212,100 @@ export function AppProvider({ children }) {
                     bot3: Array(25).fill(false).map((_, i) => i === 12),
                 },
             });
-            setPostEpisode({
-                1: {
-                    playerOfEpisode: {
-                        bot1: ['ozzy_lusth', 'cirie_fields', 'coach_wade'],
-                        bot2: ['ozzy_lusth', 'coach_wade', 'cirie_fields'],
-                        bot3: ['cirie_fields', 'ozzy_lusth', 'coach_wade'],
-                    },
-                    impactRating: { bot1: 2, bot2: 3, bot3: 2 },
-                },
-            });
             setTribeSwaps({});
             setMergePassports({});
-            setAuction(null);
             setFinaleData(null);
             setSyncStatus('online');
+            setPartyLoading(false);
             return;
         }
+        // The party is only readable to its members, so wait for the join to land.
+        if (!displayName) return;
         setSyncStatus('syncing');
         const leagueRef = ref(db, `leagues/${leagueId}`);
         const unsub = onValue(leagueRef, (snap) => {
             const data = snap.val();
             if (data) {
                 const {
-                    members, draft, rideOrDies: rod, passports: pp,
+                    members,
                     episodes: eps, eliminated: elim, watchStatus: ws, bingo: bg,
-                    postEpisode: pe, playerEpisode: pep,
-                    tribeSwaps: ts, mergePassports: mp, auction: auc, finaleData: fd,
+                    playerEpisode: pep,
+                    tribeSwaps: ts, mergePassports: mp, finaleData: fd,
                     ...meta
                 } = data;
                 setLeague(meta);
                 setLeagueMembers(members || {});
-                setDraftState(draft || null);
-                setRideOrDies(rod || {});
-                setPassports(pp || {});
                 setEpisodes(eps || {});
                 setCurrentEpisode(meta.currentEpisode || null);
                 setPlayerEpisode(pep || {});
                 setEliminated(elim || []);
                 setWatchStatus(ws || {});
                 setBingo(bg || {});
-                setPostEpisode(pe || {});
                 setTribeSwaps(ts || {});
                 setMergePassports(mp || {});
-                setAuction(auc || null);
                 setFinaleData(fd || null);
             } else {
                 setLeague(null);
                 setLeagueMembers({});
-                setDraftState(null);
-                setRideOrDies({});
-                setPassports({});
                 setCurrentEpisode(null);
                 setPlayerEpisode({});
                 setEpisodes({});
                 setEliminated([]);
                 setWatchStatus({});
                 setBingo({});
-                setPostEpisode({});
                 setTribeSwaps({});
                 setMergePassports({});
-                setAuction(null);
                 setFinaleData(null);
             }
             setSyncStatus('online');
-        }, () => setSyncStatus('offline'));
-        return () => unsub();
-    }, [leagueId]);
-
-    const getSeasonImportData = useCallback(async () => {
-        if (!db) return [];
-        const snap = await get(ref(db, `seasons/${SEASON_ID}/autoImport`));
-        if (!snap.exists()) return [];
-        const data = snap.val();
-        return Object.keys(data)
-            .filter(k => k.startsWith('e'))
-            .map(k => ({
-                episodeNum: parseInt(k.slice(1), 10),
-                eliminatedId: data[k].eliminatedId || null,
-                eliminatedIds: data[k].eliminatedIds || (data[k].eliminatedId ? [data[k].eliminatedId] : []),
-            }))
-            .sort((a, b) => a.episodeNum - b.episodeNum);
-    }, []);
-
-    const createLeague = useCallback(async (name, displayName, startingEpisode = 1) => {
-        if (!db || !user) throw new Error('Firebase not configured');
-
-        let joinCode;
-        let attempts = 0;
-        while (attempts < 10) {
-            joinCode = generateJoinCode();
-            const existing = await get(ref(db, `leagueCodes/${joinCode}`));
-            if (!existing.val()) break;
-            attempts++;
-        }
-        if (attempts >= 10) throw new Error('Could not generate unique code. Try again.');
-
-        const newRef = push(ref(db, 'leagues'));
-        const id = newRef.key;
-
-        let preSeasonEliminated = [];
-        if (startingEpisode > 1) {
-            const importData = await getSeasonImportData();
-            preSeasonEliminated = importData
-                .filter(ep => ep.episodeNum < startingEpisode)
-                .flatMap(ep => ep.eliminatedIds || (ep.eliminatedId ? [ep.eliminatedId] : []));
-        }
-
-        const leagueData = {
-            name,
-            joinCode,
-            season: SEASON_ID,
-            createdBy: user.uid,
-            createdAt: Date.now(),
-            status: 'lobby',
-            startingEpisode,
-            members: {
-                [user.uid]: {
-                    displayName,
-                    email: user.email || '',
-                    joinedAt: Date.now(),
-                    role: 'admin',
-                },
-            },
-        };
-
-        if (preSeasonEliminated.length > 0) {
-            leagueData.eliminated = preSeasonEliminated;
-            leagueData.preSeasonEliminated = preSeasonEliminated;
-        }
-
-        await set(newRef, leagueData);
-        await set(ref(db, `leagueCodes/${joinCode}`), id);
-        await set(ref(db, `users/${user.uid}/leagues/${id}`), true);
-
-        return { id, joinCode };
-    }, [user, getSeasonImportData]);
-
-    const joinLeague = useCallback(async (code, displayName) => {
-        if (!db || !user) throw new Error('Firebase not configured');
-
-        const codeSnap = await get(ref(db, `leagueCodes/${code.toUpperCase()}`));
-        const targetId = codeSnap.val();
-        if (!targetId) throw new Error('Invalid join code. Check with your league admin.');
-
-        const leagueSnap = await get(ref(db, `leagues/${targetId}`));
-        const leagueData = leagueSnap.val();
-        if (!leagueData) throw new Error('League not found.');
-        if (leagueData.members && leagueData.members[user.uid]) throw new Error('You are already in this league.');
-
-        const memberCount = leagueData.members ? Object.keys(leagueData.members).length : 0;
-        if (memberCount >= MAX_LEAGUE_MEMBERS) throw new Error(`This league is full (max ${MAX_LEAGUE_MEMBERS} players).`);
-
-        await set(ref(db, `leagues/${targetId}/members/${user.uid}`), {
-            displayName,
-            email: user.email || '',
-            joinedAt: Date.now(),
-            role: 'player',
+            setPartyLoading(false);
+        }, () => {
+            setSyncStatus('offline');
+            setPartyLoading(false);
         });
-        await set(ref(db, `users/${user.uid}/currentLeague`), targetId);
-        await set(ref(db, `users/${user.uid}/leagues/${targetId}`), true);
+        return () => unsub();
+    }, [leagueId, displayName]);
 
-        return targetId;
-    }, [user]);
-
-    const leaveLeague = useCallback(async () => {
-        if (!db || !user || !leagueId) return;
-        await remove(ref(db, `leagues/${leagueId}/members/${user.uid}`));
-        await remove(ref(db, `users/${user.uid}/leagues/${leagueId}`));
-        const remaining = { ...userLeagues };
-        delete remaining[leagueId];
-        const nextId = Object.keys(remaining)[0] || null;
-        if (nextId) {
-            await set(ref(db, `users/${user.uid}/currentLeague`), nextId);
-        } else {
-            await remove(ref(db, `users/${user.uid}/currentLeague`));
+    /**
+     * Claim a seat in the one watch party. All it takes is a name — there is no
+     * code to enter and no lobby to wait in.
+     */
+    const joinWatchParty = useCallback(async (name) => {
+        const trimmed = (name || '').trim();
+        if (!trimmed) throw new Error('Pick a name the tribe can call you.');
+        if (!db || !user) {
+            setDisplayName(trimmed);
+            return;
         }
-    }, [user, leagueId, userLeagues]);
 
-    const switchLeague = useCallback(async (targetLeagueId) => {
-        if (!db || !user) return;
-        await set(ref(db, `users/${user.uid}/currentLeague`), targetLeagueId);
-    }, [user]);
+        const member = { displayName: trimmed, email: user.email || '', joinedAt: Date.now() };
 
-    const updateLeagueName = useCallback(async (name) => {
-        if (!db || !user || !leagueId) return;
-        if (league?.createdBy !== user.uid) throw new Error('Only the host can rename the league');
-        await set(ref(db, `leagues/${leagueId}/name`), name);
-    }, [user, leagueId, league]);
+        // The security rules only permit this write while the party does not exist,
+        // so the first player through the door creates it and hosts it, and everyone
+        // after is rejected and falls through to the membership write. No read is
+        // needed (non-members cannot read the party) and there is no race to lose.
+        let hosting = false;
+        try {
+            await set(ref(db, `leagues/${leagueId}`), {
+                name: WATCH_PARTY_NAME,
+                season: SEASON_ID,
+                createdBy: user.uid,
+                createdAt: Date.now(),
+                status: 'active',
+                startingEpisode: 1,
+                members: { [user.uid]: { ...member, role: 'admin' } },
+            });
+            hosting = true;
+        } catch { /* party already exists — just join it */ }
+
+        if (!hosting) {
+            await set(ref(db, `leagues/${leagueId}/members/${user.uid}`), { ...member, role: 'player' });
+        }
+
+        // Written last on purpose: this is what the app reads to decide you are in,
+        // so a failure above leaves you on the join screen able to retry.
+        await set(ref(db, `users/${user.uid}/displayName`), trimmed);
+    }, [user, leagueId]);
 
     const completeOnboarding = useCallback(async () => {
         if (!db || !user) {
@@ -464,35 +315,10 @@ export function AppProvider({ children }) {
         await set(ref(db, `users/${user.uid}/onboardingComplete`), true);
     }, [user]);
 
-    const submitPassport = useCallback(async (answers) => {
-        if (!db || !user || !leagueId) throw new Error('Not connected');
-        await set(ref(db, `leagues/${leagueId}/passports/${user.uid}`), {
-            ...answers,
-            sealedAt: Date.now(),
-        });
-    }, [user, leagueId]);
-
-    const startSeason = useCallback(async () => {
-        if (!db || !user || !leagueId) throw new Error('Not connected');
-        if (league?.createdBy !== user.uid) throw new Error('Only the host can start the season');
-        await set(ref(db, `leagues/${leagueId}/status`), 'active');
-    }, [user, leagueId, league]);
-
     const createEpisode = useCallback(async (episodeNum) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
 
         const isHost = league?.createdBy === user.uid;
-
-        // Lock social scores for the previous episode (host-only per DB rules)
-        const prevEpNum = episodeNum - 1;
-        const prevEp = episodes?.[prevEpNum];
-        if (isHost && prevEp?.scored && !prevEp?.lockedSocial) {
-            const memberUids = Object.keys(leagueMembers || {});
-            const peData = postEpisode?.[prevEpNum] || {};
-            const socialScores = computeSocialScores(prevEp, peData, memberUids);
-            await set(ref(db, `leagues/${leagueId}/episodes/${prevEpNum}/lockedSocial`), socialScores);
-        }
-
         const isPostMerge = !!tribeSwaps?.merge;
         const propBets = generatePropBets(episodeNum, 5, isPostMerge);
         const sideBets = generateSideBets(episodeNum, 3);
@@ -507,7 +333,7 @@ export function AppProvider({ children }) {
         if (isHost) {
             await set(ref(db, `leagues/${leagueId}/currentEpisode`), episodeNum);
         }
-    }, [user, leagueId, league, tribeSwaps, episodes, leagueMembers, postEpisode]);
+    }, [user, leagueId, league, tribeSwaps]);
 
     const updatePropBets = useCallback(async (episodeNum, propBets) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
@@ -651,6 +477,13 @@ export function AppProvider({ children }) {
         await set(ref(db, `leagues/${leagueId}/playerEpisode/${user.uid}`), myEp + 1);
     }, [user, leagueId, playerEpisode]);
 
+    // Host-only utility: reset THIS user's episode pointer (fixes stale test data).
+    const setMyEpisode = useCallback(async (targetEpisode) => {
+        if (!db || !user || !leagueId) return;
+        const n = Math.max(1, Number(targetEpisode) || 1);
+        await set(ref(db, `leagues/${leagueId}/playerEpisode/${user.uid}`), n);
+    }, [user, leagueId]);
+
     const saveBingoMarks = useCallback(async (episodeNum, marked) => {
         if (!user || !leagueId) return;
         const path = `leagues/${leagueId}/bingo/${episodeNum}/${user.uid}`;
@@ -679,47 +512,7 @@ export function AppProvider({ children }) {
         return !!(playerWs?.picksLockedAt || playerWs?.watching || playerWs?.watchedAt);
     }, [watchStatus, user]);
 
-    // --- Post-episode actions ---
-
-    const submitPlayerOfEpisodeVote = useCallback(async (episodeNum, rankings) => {
-        if (!user || !leagueId) throw new Error('Not connected');
-        const path = `leagues/${leagueId}/postEpisode/${episodeNum}/playerOfEpisode/${user.uid}`;
-        if (db) {
-            await set(ref(db, path), rankings);
-        } else {
-            setPostEpisode(prev => ({
-                ...prev,
-                [episodeNum]: {
-                    ...(prev[episodeNum] || {}),
-                    playerOfEpisode: {
-                        ...(prev[episodeNum]?.playerOfEpisode || {}),
-                        [user.uid]: rankings,
-                    },
-                },
-            }));
-        }
-    }, [user, leagueId]);
-
-    const submitImpactRating = useCallback(async (episodeNum, rating) => {
-        if (!user || !leagueId) throw new Error('Not connected');
-        const path = `leagues/${leagueId}/postEpisode/${episodeNum}/impactRating/${user.uid}`;
-        if (db) {
-            await set(ref(db, path), rating);
-        } else {
-            setPostEpisode(prev => ({
-                ...prev,
-                [episodeNum]: {
-                    ...(prev[episodeNum] || {}),
-                    impactRating: {
-                        ...(prev[episodeNum]?.impactRating || {}),
-                        [user.uid]: rating,
-                    },
-                },
-            }));
-        }
-    }, [user, leagueId]);
-
-    // --- Phase 9: Tribe management, merge passport, auction, finale ---
+    // --- Phase 9: Tribe management, passport, finale ---
 
     const executeTribeSwap = useCallback(async (episodeNum, newAssignments) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
@@ -850,149 +643,6 @@ export function AppProvider({ children }) {
         });
     }, [user, leagueId]);
 
-    const startAuction = useCallback(async (items) => {
-        if (!db || !user || !leagueId) throw new Error('Not connected');
-        if (league?.createdBy !== user.uid) throw new Error('Only the host can start the auction');
-
-        const memberUids = Object.keys(leagueMembers);
-        const baseBudget = 100;
-        const budgets = {};
-
-        // Compute standings-based budget bonuses (everyone except 1st gets a bonus)
-        const { standings } = computeStandings(episodes, rideOrDies, memberUids, bingo, postEpisode, []);
-        const n = standings.length;
-
-        memberUids.forEach(uid => {
-            if (n <= 1) {
-                budgets[uid] = { base: baseBudget, bonus: 0, total: baseBudget };
-                return;
-            }
-            const rank = standings.findIndex(s => s.uid === uid);
-            // 1st place (rank 0): no bonus. Others: linear scale up to 50% for last place.
-            const bonusPct = rank === 0 ? 0 : (rank / (n - 1)) * 0.5;
-            const bonus = Math.round(baseBudget * bonusPct);
-            budgets[uid] = { base: baseBudget, bonus, total: baseBudget + bonus };
-        });
-
-        await set(ref(db, `leagues/${leagueId}/auction`), {
-            status: 'active',
-            items: items.map((item, i) => ({
-                id: `auc_${i}`, ...item,
-                revealed: false, winner: null, winningBid: null, skipped: false,
-            })),
-            currentItemIndex: 0,
-            budgets,
-            bids: {},
-            startedAt: Date.now(),
-        });
-    }, [user, leagueId, league, leagueMembers, episodes, rideOrDies, bingo, postEpisode]);
-
-    const placeBid = useCallback(async (itemId, amount) => {
-        if (!user || !leagueId) throw new Error('Not connected');
-        const path = `leagues/${leagueId}/auction/bids/${itemId}/${user.uid}`;
-        if (db) {
-            await set(ref(db, path), { amount, at: Date.now() });
-        } else {
-            setAuction(prev => prev ? {
-                ...prev,
-                bids: {
-                    ...(prev.bids || {}),
-                    [itemId]: {
-                        ...(prev.bids?.[itemId] || {}),
-                        [user.uid]: { amount, at: Date.now() },
-                    },
-                },
-            } : prev);
-        }
-    }, [user, leagueId]);
-
-    const closeAuctionItem = useCallback(async (itemId, winnerUid, winningBid) => {
-        if (!db || !user || !leagueId) throw new Error('Not connected');
-        if (league?.createdBy !== user.uid) throw new Error('Only the host can close auction items');
-
-        const snap = await get(ref(db, `leagues/${leagueId}/auction`));
-        const auctionData = snap.val();
-        if (!auctionData) throw new Error('No auction running');
-
-        const items = (auctionData.items || []).map(item =>
-            item.id === itemId ? { ...item, winner: winnerUid, winningBid } : item
-        );
-
-        // Deduct from winner's budget
-        const budgets = {};
-        for (const [uid, b] of Object.entries(auctionData.budgets || {})) {
-            const prev = typeof b === 'object' ? { ...b } : { base: b, bonus: 0, total: b };
-            if (uid === winnerUid && winningBid) {
-                prev.total = (prev.total || 0) - winningBid;
-            }
-            budgets[uid] = prev;
-        }
-
-        await set(ref(db, `leagues/${leagueId}/auction/items`), items);
-        await set(ref(db, `leagues/${leagueId}/auction/budgets`), budgets);
-
-        // Don't auto-advance yet -- host reveals the cloche first
-    }, [user, leagueId, league]);
-
-    const revealAuctionItem = useCallback(async (itemId) => {
-        if (!db || !user || !leagueId) throw new Error('Not connected');
-        if (league?.createdBy !== user.uid) throw new Error('Only the host can reveal items');
-
-        const snap = await get(ref(db, `leagues/${leagueId}/auction`));
-        const auctionData = snap.val();
-        if (!auctionData) throw new Error('No auction running');
-
-        const items = (auctionData.items || []).map(item =>
-            item.id === itemId ? { ...item, revealed: true } : item
-        );
-
-        // Find next un-sold/un-skipped item to advance to
-        const currentIdx = items.findIndex(i => i.id === itemId);
-        let nextIndex = -1;
-        for (let i = currentIdx + 1; i < items.length; i++) {
-            if (!items[i].winner && !items[i].skipped) { nextIndex = i; break; }
-        }
-
-        await set(ref(db, `leagues/${leagueId}/auction/items`), items);
-
-        if (nextIndex >= 0) {
-            await set(ref(db, `leagues/${leagueId}/auction/currentItemIndex`), nextIndex);
-        } else {
-            const perkEp = currentEpisode || 1;
-            await set(ref(db, `leagues/${leagueId}/auction/status`), 'complete');
-            await set(ref(db, `leagues/${leagueId}/auction/perkEpisode`), perkEp);
-        }
-    }, [user, leagueId, league, currentEpisode]);
-
-    const skipAuctionItem = useCallback(async (itemId) => {
-        if (!db || !user || !leagueId) throw new Error('Not connected');
-        if (league?.createdBy !== user.uid) throw new Error('Only the host can skip items');
-
-        const snap = await get(ref(db, `leagues/${leagueId}/auction`));
-        const auctionData = snap.val();
-        if (!auctionData) throw new Error('No auction running');
-
-        const items = (auctionData.items || []).map(item =>
-            item.id === itemId ? { ...item, skipped: true, revealed: true } : item
-        );
-
-        const currentIdx = items.findIndex(i => i.id === itemId);
-        let nextIndex = -1;
-        for (let i = currentIdx + 1; i < items.length; i++) {
-            if (!items[i].winner && !items[i].skipped) { nextIndex = i; break; }
-        }
-
-        await set(ref(db, `leagues/${leagueId}/auction/items`), items);
-
-        if (nextIndex >= 0) {
-            await set(ref(db, `leagues/${leagueId}/auction/currentItemIndex`), nextIndex);
-        } else {
-            const perkEp = currentEpisode || 1;
-            await set(ref(db, `leagues/${leagueId}/auction/status`), 'complete');
-            await set(ref(db, `leagues/${leagueId}/auction/perkEpisode`), perkEp);
-        }
-    }, [user, leagueId, league, currentEpisode]);
-
     const startFinale = useCallback(async () => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
         if (league?.createdBy !== user.uid) throw new Error('Only the host can start the finale');
@@ -1001,20 +651,10 @@ export function AppProvider({ children }) {
             startedAt: Date.now(),
             passportReveals: {},
             reunionAwards: {},
+            passportTruth: {},
             champion: null,
         });
     }, [user, leagueId, league]);
-
-    const revealPassport = useCallback(async (uid) => {
-        if (!db || !user || !leagueId) throw new Error('Not connected');
-        if (league?.createdBy !== user.uid) throw new Error('Only the host can reveal passports');
-        const passport = passports?.[uid];
-        if (!passport) return;
-        await set(ref(db, `leagues/${leagueId}/finaleData/passportReveals/${uid}`), {
-            ...passport,
-            revealedAt: Date.now(),
-        });
-    }, [user, leagueId, league, passports]);
 
     const revealMergePassport = useCallback(async (uid) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
@@ -1026,6 +666,16 @@ export function AppProvider({ children }) {
             revealedAt: Date.now(),
         });
     }, [user, leagueId, league, mergePassports]);
+
+    /**
+     * Host-only: record what actually happened this season, unlocking passport bonus
+     * points for every player. `truth` uses the same keys as PASSPORT_QUESTIONS.
+     */
+    const setPassportTruth = useCallback(async (truth) => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can set the passport truth');
+        await set(ref(db, `leagues/${leagueId}/finaleData/passportTruth`), truth);
+    }, [user, leagueId, league]);
 
     const submitReunionVote = useCallback(async (category, nomineeUid) => {
         if (!user || !leagueId) throw new Error('Not connected');
@@ -1109,28 +759,6 @@ export function AppProvider({ children }) {
             });
         }
     }, [db, user, leagueId, league, playerEpisode, episodes, createEpisode]);
-
-    // Host: freeze social scores on scored episodes (non-hosts skip this in createEpisode)
-    const lockedSocialBackfill = useRef({});
-    useEffect(() => {
-        if (!db || !user || !leagueId || !league) return;
-        if (league.status !== 'active') return;
-        if (league.createdBy !== user.uid) return;
-
-        for (const [epStr, ep] of Object.entries(episodes || {})) {
-            const epNum = Number(epStr);
-            if (!ep?.scored || ep?.lockedSocial) continue;
-            const key = `${leagueId}_lockSocial_${epNum}`;
-            if (lockedSocialBackfill.current[key]) continue;
-            lockedSocialBackfill.current[key] = true;
-            const memberUids = Object.keys(leagueMembers || {});
-            const peData = postEpisode?.[epNum] || {};
-            const socialScores = computeSocialScores(ep, peData, memberUids);
-            set(ref(db, `leagues/${leagueId}/episodes/${epNum}/lockedSocial`), socialScores).catch(() => {
-                lockedSocialBackfill.current[key] = false;
-            });
-        }
-    }, [db, user, leagueId, league, episodes, postEpisode, leagueMembers]);
 
     // Host: keep currentEpisode aligned when a member opened a new week first
     useEffect(() => {
@@ -1245,11 +873,6 @@ export function AppProvider({ children }) {
         });
     }, [eliminated, episodes, user, hasWatched]);
 
-    const enterLeague = useCallback(async (targetLeagueId) => {
-        if (!db || !user) return;
-        await set(ref(db, `users/${user.uid}/currentLeague`), targetLeagueId);
-    }, [user]);
-
     const sendMagicLink = (email) => {
         if (!auth) throw new Error('Firebase not configured. Add .env from .env.example');
         window.localStorage.setItem('emailForSignIn', email);
@@ -1259,24 +882,20 @@ export function AppProvider({ children }) {
     const logout = () => auth && signOut(auth);
 
     const value = {
-        user, authLoading,
-        league, leagueId, leagueMembers, leagueLoading,
-        draftState, rideOrDies, passports, mergePassports,
+        user, authLoading, displayName, profileLoading,
+        league, leagueId, leagueMembers, partyLoading,
+        mergePassports,
         currentEpisode, episodeData, myEpisode, myEpisodeData, episodes, eliminated, safeEliminated,
-        watchStatus, bingo, postEpisode,
-        tribeSwaps, isMerged, currentTribes, auction, finaleData,
-        lightTorch, markWatched, advanceEpisode, saveBingoMarks, hasWatched, isWatching, hasLockedPicks,
-        syncStatus, onboardingComplete, userLeagues,
-        createLeague, joinLeague, leaveLeague, switchLeague, updateLeagueName, completeOnboarding,
-        submitPassport, startSeason,
+        watchStatus, bingo,
+        tribeSwaps, isMerged, currentTribes, finaleData,
+        lightTorch, markWatched, advanceEpisode, setMyEpisode, saveBingoMarks, hasWatched, isWatching, hasLockedPicks,
+        syncStatus, onboardingComplete,
+        joinWatchParty, completeOnboarding,
         createEpisode, updatePropBets, submitPicks, submitPredictions,
         submitSnapVote, submitSideBets, scoreEpisodeAction,
-        submitPlayerOfEpisodeVote, submitImpactRating,
         executeTribeSwap, moveTribeSwap, deleteTribeSwap, fixElimination, rescoreEpisode,
         executeMerge, submitMergePassport,
-        startAuction, placeBid, closeAuctionItem, revealAuctionItem, skipAuctionItem,
-        startFinale, revealPassport, revealMergePassport, submitReunionVote, crownChampion,
-        getSeasonImportData, enterLeague,
+        startFinale, revealMergePassport, setPassportTruth, submitReunionVote, crownChampion,
         sendMagicLink, logout,
     };
 

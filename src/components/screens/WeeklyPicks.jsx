@@ -1,62 +1,11 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useApp, getEffectiveTribeAssignments } from '../../AppContext';
-import { TRIBES, ALL_CASTAWAYS, getMaxPicks, userHasPerk } from '../../data';
+import { TRIBES, ALL_CASTAWAYS, getMaxPicks } from '../../data';
 import { computeScarcity } from '../../scoring';
-import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon } from '../fijian';
-
-function SpyGlassPanel() {
-    const { user, leagueMembers, myEpisode, myEpisodeData, auction } = useApp();
-    const [targetUid, setTargetUid] = useState('');
-
-    const hasSpyGlass = userHasPerk(auction, user?.uid, 'spy_glass', myEpisode);
-    if (!hasSpyGlass) return null;
-
-    const opponents = Object.entries(leagueMembers || {}).filter(([uid]) => uid !== user?.uid);
-    const targetPicks = targetUid ? (myEpisodeData?.picks?.[targetUid] || []) : [];
-
-    return (
-        <FijianCard className="p-4 space-y-3 border-ochre/20">
-            <div className="flex items-center gap-2">
-                <span className="text-lg">🔍</span>
-                <span className="text-ochre text-sm font-bold font-sans">Spy Glass</span>
-            </div>
-            <p className="text-sand-warm/50 text-xs font-sans">
-                Pick an opponent to peek at their current picks for this episode.
-            </p>
-            <select
-                value={targetUid}
-                onChange={e => setTargetUid(e.target.value)}
-                className="w-full bg-stone-800 text-sand-warm border border-stone-600 rounded-lg px-3 py-2 text-sm font-sans"
-            >
-                <option value="">Select opponent...</option>
-                {opponents.map(([uid, m]) => (
-                    <option key={uid} value={uid}>{m.displayName}</option>
-                ))}
-            </select>
-            {targetUid && (
-                <div className="space-y-1">
-                    {targetPicks.length === 0 ? (
-                        <p className="text-sand-warm/40 text-xs font-sans italic">
-                            {leagueMembers?.[targetUid]?.displayName} hasn&apos;t locked picks yet.
-                        </p>
-                    ) : (
-                        targetPicks.map(cid => {
-                            const c = ALL_CASTAWAYS.find(x => x.id === cid);
-                            return (
-                                <div key={cid} className="flex items-center gap-2 px-2 py-1.5 rounded bg-ochre/5 text-xs font-sans">
-                                    <span className="text-sand-warm">{c?.name || cid}</span>
-                                </div>
-                            );
-                        })
-                    )}
-                </div>
-            )}
-        </FijianCard>
-    );
-}
+import { FijianCard, FijianSectionHeader, Icon } from '../fijian';
 
 export default function WeeklyPicks() {
-    const { user, myEpisode, myEpisodeData, safeEliminated, episodes, submitPicks, auction, tribeSwaps } = useApp();
+    const { user, myEpisode, myEpisodeData, safeEliminated, episodes, submitPicks, tribeSwaps } = useApp();
 
     const prevEpScarcity = useMemo(() => {
         if (!myEpisode || myEpisode <= 1) return null;
@@ -69,15 +18,13 @@ export default function WeeklyPicks() {
 
     const myPicks = useMemo(() => myEpisodeData?.picks?.[user?.uid] || [], [myEpisodeData?.picks, user?.uid]);
     const [selected, setSelected] = useState(() => myPicks);
-    const [saving, setSaving] = useState(false);
-    const [saved, setSaved] = useState(() => myPicks.length > 0);
     const [error, setError] = useState('');
     const hydrated = useRef(myPicks.length > 0);
+    const saveTimer = useRef(null);
 
     const eliminatedSet = new Set(safeEliminated || []);
     const remaining = ALL_CASTAWAYS.filter(c => !eliminatedSet.has(c.id));
-    const hasExtraPick = userHasPerk(auction, user?.uid, 'extra_pick', myEpisode);
-    const maxPicks = getMaxPicks(remaining.length) + (hasExtraPick ? 1 : 0);
+    const maxPicks = getMaxPicks(remaining.length);
 
     const tribeOverrides = useMemo(
         () => getEffectiveTribeAssignments(tribeSwaps, myEpisode),
@@ -103,33 +50,35 @@ export default function WeeklyPicks() {
         }));
     }, [tribeOverrides]);
 
+    // Hydrate from remote picks (once they arrive)
     useEffect(() => {
         if (myPicks.length > 0 && !hydrated.current) {
             hydrated.current = true;
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional one-time hydration from remote data
             setSelected(myPicks);
-            setSaved(true);
         }
     }, [myPicks]);
 
-    const togglePick = (id) => {
-        setSaved(false);
-        setSelected(prev => {
-            if (prev.includes(id)) return prev.filter(x => x !== id);
-            if (prev.length >= maxPicks) return prev;
-            return [...prev, id];
-        });
-    };
-
-    const handleSubmit = async () => {
-        setSaving(true);
-        setError('');
+    // Auto-persist any change (debounced) — Light Your Torch is the only lock action.
+    const persist = useCallback(async (next) => {
         try {
-            await submitPicks(myEpisode, selected);
-            setSaved(true);
+            await submitPicks(myEpisode, next);
+            setError('');
         } catch (err) {
             setError(err.message);
         }
-        setSaving(false);
+    }, [submitPicks, myEpisode]);
+
+    const togglePick = (id) => {
+        setSelected(prev => {
+            let next;
+            if (prev.includes(id)) next = prev.filter(x => x !== id);
+            else if (prev.length >= maxPicks) return prev;
+            else next = [...prev, id];
+            if (saveTimer.current) clearTimeout(saveTimer.current);
+            saveTimer.current = setTimeout(() => persist(next), 400);
+            return next;
+        });
     };
 
     return (
@@ -142,26 +91,10 @@ export default function WeeklyPicks() {
             </div>
 
             <p className="text-sand-warm/60 text-xs font-sans leading-relaxed">
-                Choose {maxPicks} castaways to score for you this episode.
+                Choose {maxPicks} castaways to score for you this episode. Picks auto-save.
                 If you&apos;re the only player who picks someone, you get a{' '}
                 <strong className="text-ochre">1.5&times; bonus</strong> on their points.
             </p>
-
-            {hasExtraPick && (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-ochre/10 border border-ochre/20">
-                    <span>➕</span>
-                    <span className="text-ochre text-xs font-bold">Extra Pick active! You get +1 pick this episode.</span>
-                </div>
-            )}
-
-            <SpyGlassPanel />
-
-            {saved && (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-jungle-400/10 border border-jungle-400/20">
-                    <Icon name="check_circle" className="text-jungle-400 text-sm" />
-                    <span className="text-jungle-400 text-xs font-bold">Picks saved!</span>
-                </div>
-            )}
 
             <div className={`grid grid-cols-1 ${tribeGroups.length > 1 ? 'lg:grid-cols-3' : ''} gap-3`}>
                 {tribeGroups.map(({ key: tribeKey, name: tribeName, members: tribeMembers }) => {
@@ -221,13 +154,6 @@ export default function WeeklyPicks() {
                     );
                 })}
             </div>
-
-            <FijianPrimaryButton
-                onClick={handleSubmit}
-                disabled={selected.length !== maxPicks || saving}
-            >
-                {saving ? 'Saving...' : selected.length !== maxPicks ? `Select ${maxPicks - selected.length} more` : saved ? 'Update Picks' : 'Save Picks'}
-            </FijianPrimaryButton>
 
             {error && <p className="text-amber text-xs text-center" role="alert">{error}</p>}
         </div>

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useApp } from '../../AppContext';
 import { computeStandings } from '../../scoring';
-import { SCORE_EVENTS, ALL_CASTAWAYS, PLAYER_COLORS } from '../../data';
+import { SCORE_EVENTS, PLAYER_COLORS } from '../../data';
 import { FijianCard, FijianSectionHeader, Icon, HintBadge } from '../fijian';
 import BingoCard from './BingoCard';
 
@@ -20,6 +20,8 @@ function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perE
     const epNums = Object.keys(perEpisode || {}).map(Number).sort((a, b) => a - b);
     const [episodesOpen, setEpisodesOpen] = useState(false);
 
+    const hasPassport = (entry.passport || 0) > 0;
+
     return (
         <div className="space-y-0">
             <button
@@ -34,11 +36,10 @@ function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perE
                 <div className="flex-1 text-left">
                     <p className="font-sans font-bold text-sand-warm text-sm">{memberName}</p>
                     <div className="flex gap-3 text-xs text-sand-warm/50 font-sans">
-                        <span>W:{entry.weekly}</span>
-                        <span>P:{entry.predictions}</span>
-                        <span>R:{entry.rideOrDie}</span>
-                        {entry.bingo > 0 && <span>B:{entry.bingo}</span>}
-                        {entry.social > 0 && <span>S:{entry.social}</span>}
+                        <span>Picks {entry.weekly}</span>
+                        <span>Predict {entry.predictions}</span>
+                        <span>Bingo {entry.bingo}</span>
+                        {hasPassport && <span className="text-purple-400/80">Passport +{entry.passport}</span>}
                     </div>
                 </div>
 
@@ -55,13 +56,15 @@ function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perE
 
             {expanded && (
                 <div className="ml-12 mr-3 pb-3 space-y-3">
-                    <div className="grid grid-cols-3 gap-2 text-center">
-                        <ScoreBox label="Bingo" value={entry.bingo || 0} color="text-purple-400" />
-                        <ScoreBox label="Predict" value={entry.predictions} color="text-green-400" />
+                    <div className={`grid ${hasPassport ? 'grid-cols-4' : 'grid-cols-3'} gap-2 text-center`}>
                         <ScoreBox label="Picks" value={entry.weekly} color="text-fire-400" />
+                        <ScoreBox label="Predict" value={entry.predictions} color="text-green-400" />
+                        <ScoreBox label="Bingo" value={entry.bingo} color="text-purple-400" />
+                        {hasPassport && (
+                            <ScoreBox label="Passport" value={entry.passport} color="text-amber-400" />
+                        )}
                     </div>
 
-                    {/* Episodes — caret dropdown */}
                     {epNums.length > 0 && (
                         <div>
                             <button
@@ -97,7 +100,6 @@ function StandingsRow({ entry, rank, memberName, color, expanded, onToggle, perE
                             )}
                         </div>
                     )}
-
                 </div>
             )}
         </div>
@@ -119,9 +121,7 @@ function EpisodeBreakdown({ epNum, score, bingoSeed, bingoMarked }) {
 
     const hasDetails = score.breakdown.weekly.length > 0
         || score.breakdown.predictions.length > 0
-        || score.breakdown.rideOrDie.length > 0
-        || (score.breakdown.bingo || []).length > 0
-        || (score.breakdown.social || []).length > 0;
+        || (score.breakdown.bingo || []).length > 0;
 
     return (
         <div>
@@ -141,16 +141,12 @@ function EpisodeBreakdown({ epNum, score, bingoSeed, bingoMarked }) {
 
             {open && (
                 <div className="px-3 py-2 space-y-2 text-xs font-sans">
-                    {/* Episode scoring summary */}
-                    <div className="grid grid-cols-5 gap-1.5 text-center">
-                        <EpSummaryCell label="W" value={score.weekly} color="text-fire-400" />
-                        <EpSummaryCell label="P" value={score.predictions} color="text-green-400" />
-                        <EpSummaryCell label="R" value={score.rideOrDie} color="text-sky-400" />
-                        <EpSummaryCell label="B" value={score.bingo || 0} color="text-purple-400" />
-                        <EpSummaryCell label="S" value={score.social || 0} color="text-amber-400" />
+                    <div className="grid grid-cols-3 gap-1.5 text-center">
+                        <EpSummaryCell label="Picks" value={score.weekly} color="text-fire-400" />
+                        <EpSummaryCell label="Predict" value={score.predictions} color="text-green-400" />
+                        <EpSummaryCell label="Bingo" value={score.bingo || 0} color="text-purple-400" />
                     </div>
 
-                    {/* Line item details grouped by category */}
                     {hasDetails ? (
                         <div className="space-y-2 pt-1 border-t border-stone-700/30">
                             {score.breakdown.weekly.length > 0 && (
@@ -257,7 +253,7 @@ function SpoilerShield({ unwatchedEps, onNavigate }) {
 }
 
 export default function ScoreboardTab({ onTabChange }) {
-    const { user, episodes, rideOrDies, leagueMembers, hasWatched, bingo, postEpisode, league, leagueId, auction } = useApp();
+    const { user, episodes, leagueMembers, hasWatched, bingo, leagueId, mergePassports, finaleData } = useApp();
     const [expandedUid, setExpandedUid] = useState(null);
 
     const memberUids = useMemo(() => Object.keys(leagueMembers || {}), [leagueMembers]);
@@ -275,8 +271,11 @@ export default function ScoreboardTab({ onTabChange }) {
     const spoilerActive = unwatchedScoredEps.length > 0;
 
     const { standings, perEpisode } = useMemo(
-        () => computeStandings(episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated, auction),
-        [episodes, rideOrDies, memberUids, bingo, postEpisode, league?.preSeasonEliminated, auction]
+        () => computeStandings(episodes, memberUids, bingo, {
+            passports: mergePassports,
+            passportTruth: finaleData?.passportTruth,
+        }),
+        [episodes, memberUids, bingo, mergePassports, finaleData?.passportTruth]
     );
 
     const hasScoredEpisodes = scoredEpNums.length > 0;
@@ -295,7 +294,7 @@ export default function ScoreboardTab({ onTabChange }) {
                 <p className="text-sand-warm/50 text-xs mt-1 font-sans inline-flex items-center justify-center gap-1">
                     Tap a player to see breakdown
                     <HintBadge hintKey="scores">
-                        B = Bingo, P = Predictions, W = Weekly picks. Tap any player row for details.
+                        Three ways to score: Picks (your castaways&apos; events), Predictions (Tree Mail + Snap Vote + Whispers), and Bingo. Passport bonus reveals at the finale.
                     </HintBadge>
                 </p>
             </header>
@@ -353,13 +352,12 @@ export default function ScoreboardTab({ onTabChange }) {
 
                         {guideOpen && (
                             <div className="px-4 pb-4 space-y-4 text-xs font-sans text-sand-warm/60">
-                                {/* Weekly Picks (W) */}
                                 <div>
                                     <p className="text-fire-400 text-[11px] font-bold uppercase tracking-widest mb-1.5">
-                                        Weekly Picks (W)
+                                        Picks
                                     </p>
                                     <p className="text-sand-warm/40 text-[10px] mb-2">
-                                        Your picks earn points based on what their castaways do in the episode. Only picker = 1.5x bonus.
+                                        Your picks earn points based on what their castaways do. Sole picker = 1.5× bonus.
                                     </p>
                                     <div className="space-y-0.5">
                                         {milestoneEvents.map(e => (
@@ -389,10 +387,9 @@ export default function ScoreboardTab({ onTabChange }) {
 
                                 <div className="border-t border-stone-700/50" />
 
-                                {/* Predictions (P) */}
                                 <div>
                                     <p className="text-green-400 text-[11px] font-bold uppercase tracking-widest mb-1.5">
-                                        Predictions (P)
+                                        Predictions
                                     </p>
                                     <div className="space-y-0.5">
                                         <ScoreGuideRow emoji="⚡" label="Snap Vote correct" value="+8" />
@@ -403,15 +400,25 @@ export default function ScoreboardTab({ onTabChange }) {
 
                                 <div className="border-t border-stone-700/50" />
 
-                                {/* Bingo (B) */}
                                 <div>
                                     <p className="text-purple-400 text-[11px] font-bold uppercase tracking-widest mb-1.5">
-                                        Bingo (B)
+                                        Bingo
                                     </p>
                                     <div className="space-y-0.5">
                                         <ScoreGuideRow emoji="🎯" label="Each square you hit" value="+2" />
                                         <ScoreGuideRow emoji="➖" label="Complete a line (5 in a row)" value="+5" />
                                         <ScoreGuideRow emoji="🌑" label="Blackout (all 25 squares)" value="+50" />
+                                    </div>
+                                </div>
+
+                                <div className="border-t border-stone-700/50" />
+
+                                <div>
+                                    <p className="text-amber-400 text-[11px] font-bold uppercase tracking-widest mb-1.5">
+                                        Passport (finale bonus)
+                                    </p>
+                                    <div className="space-y-0.5">
+                                        <ScoreGuideRow emoji="🛂" label="Each sealed answer that comes true" value="+5" />
                                     </div>
                                 </div>
                             </div>

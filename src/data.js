@@ -7,6 +7,12 @@ export const SEASON_NUMBER = 51;
 export const SEASON_LABEL = 'Season 51';
 export const SEASON_TAGLINE = 'The Open Era';
 
+// One watch party per season, and everyone who signs in lands in it. The id is
+// derived rather than generated so any client can reach it without a lookup.
+// `leagues/` is the historical Firebase path and is kept for data continuity.
+export const WATCH_PARTY_ID = `${SEASON_ID}-global`;
+export const WATCH_PARTY_NAME = `${SEASON_LABEL} Watch Party`;
+
 // Production assigns the starting tribes and reveals them in the premiere, so we
 // ship with every castaway unassigned. The host sorts them from Rules → Tribe
 // Management after watching Episode 1; those assignments override this file.
@@ -150,11 +156,10 @@ export const ENGAGEMENT_SCORING = [
         ],
     },
     {
-        section: 'Passports',
+        section: 'Passport',
         icon: '📜',
         items: [
-            { label: 'Season Passport', points: '5 each', emoji: '🛂', note: 'Sealed after the premiere, scored as each answer comes true' },
-            { label: 'Merge Passport', points: '5 each', emoji: '📋', note: 'Sealed at the merge, scored as each answer comes true' },
+            { label: 'Passport (sealed at merge)', points: '5 each', emoji: '🛂', note: 'Five long-term picks sealed when the merge hits. Each correct call pays 5 pts at the finale reveal.' },
         ],
     },
 ];
@@ -308,54 +313,12 @@ export function resolveBets(importData, bets) {
     return results;
 }
 
-export const MAX_LEAGUE_MEMBERS = 12;
-
 // Weekly picks start at Episode 2 — nobody has seen these 21 play before the premiere.
 export const PICKS_START_EPISODE = 2;
 export const MAX_PICKS = 3;
 
 export function getMaxPicks(remainingCount) {
     return Math.min(MAX_PICKS, Math.floor(remainingCount / 2));
-}
-
-// ── Survivor Auction (shelved for Season 51) ──
-// Kept intact rather than deleted: it only pays off with a leaderboard people are
-// optimizing for and players watching in sync, and Season 51 is neither. Flip
-// AUCTION_ENABLED to true to bring it back with its perks.
-
-export const AUCTION_ENABLED = false;
-
-export const AUCTION_PERKS = [
-    { perkType: 'extra_pick', name: 'Extra Pick', description: 'Pick 1 extra contestant next episode', emoji: '➕' },
-    { perkType: 'double_down', name: 'Double Down', description: 'Double your snap vote points next tribal (8 → 16)', emoji: '🔥' },
-    { perkType: 'tree_mail_insider', name: 'Tree Mail Insider', description: 'Double your Tree Mail points next episode (+6 each)', emoji: '📬' },
-    { perkType: 'bingo_frenzy', name: 'Bingo Frenzy', description: 'Double your bingo points next episode', emoji: '🎱' },
-    { perkType: 'spy_glass', name: 'Spy Glass', description: "See one opponent's picks before locking yours", emoji: '🔍' },
-    { perkType: 'steal_pick', name: 'Steal a Pick', description: "Copy one opponent's best pick as a bonus pick", emoji: '🃏' },
-];
-
-export const AUCTION_DUDS = [
-    { perkType: 'dud_feast', name: 'The Merge Feast', description: "A covered platter of... rice. No game advantage whatsoever.", emoji: '🍖' },
-    { perkType: 'dud_coconut', name: 'Coconut of Doom', description: "It's just a coconut. A very expensive coconut.", emoji: '🥥' },
-];
-
-export function getAuctionPerks(auction, episodeNum) {
-    if (!AUCTION_ENABLED) return {};
-    if (!auction || auction.status !== 'complete') return {};
-    if (episodeNum != null && auction.perkEpisode != null && Number(episodeNum) !== Number(auction.perkEpisode)) return {};
-    const perks = {};
-    for (const item of (auction.items || [])) {
-        if (item.winner && item.perkType && !item.perkType.startsWith('dud_')) {
-            if (!perks[item.winner]) perks[item.winner] = [];
-            perks[item.winner].push(item.perkType);
-        }
-    }
-    return perks;
-}
-
-export function userHasPerk(auction, uid, perkType, episodeNum) {
-    const perks = getAuctionPerks(auction, episodeNum);
-    return (perks[uid] || []).includes(perkType);
 }
 
 // ── Island Bingo ──
@@ -556,7 +519,7 @@ export function getBingoPool(episodeNumber, customItems = []) {
 }
 
 // Generate a shuffled bingo card (5x5 with free center)
-// seed should be a string like "{leagueId}-{episodeNum}-{playerId}"
+// seed should be a string like "{partyId}-{episodeNum}-{playerId}"
 export function generateBingoCard(seed, episodeNumber, customItems = []) {
     const shuffled = deterministicShuffleFromSeed(getBingoPool(episodeNumber, customItems), seed);
     const items = shuffled.slice(0, 24);
@@ -595,8 +558,15 @@ export function countBingoSquares(marked) {
     return marked.reduce((n, isMarked, i) => (isMarked && i !== 12 ? n + 1 : n), 0);
 }
 
-// Achievement badges were cut for Season 51 — the group found them to be noise.
-// The exports stay so the badge surfaces render empty instead of crashing.
-export const ACHIEVEMENTS = [];
+// Passport scoring — five long-term picks sealed at the merge, revealed at the finale.
+// Each key here maps to a "was this correct?" check against the season's final state.
+// Points awarded are `PASSPORT_POINTS_PER_CORRECT` per correct answer.
+export const PASSPORT_POINTS_PER_CORRECT = 5;
 
-export const ACHIEVEMENT_MAP = Object.fromEntries(ACHIEVEMENTS.map(a => [a.id, a]));
+export const PASSPORT_QUESTIONS = [
+    { key: 'winner', label: 'Sole Survivor', prompt: `Who wins ${SEASON_LABEL}?`, icon: 'emoji_events' },
+    { key: 'firstJury', label: 'First Juror', prompt: 'Who is the first jury member?', icon: 'gavel' },
+    { key: 'fanFavorite', label: 'Fan Favorite', prompt: 'Who is the fan favorite?', icon: 'favorite' },
+    { key: 'biggestVillain', label: 'Biggest Villain', prompt: 'Who plays the dirtiest game?', icon: 'mood_bad' },
+    { key: 'fireMakingWinner', label: 'Fire-Making Winner', prompt: 'Who wins fire at Final 4?', icon: 'local_fire_department' },
+];

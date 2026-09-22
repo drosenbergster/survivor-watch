@@ -6,7 +6,7 @@ A web app for Survivor Season 50 watch parties. Pick contestants, make predictio
 
 ## Features
 
-- **League System** — Create/join private leagues with join codes
+- **One Watch Party** — Sign in, pick a display name, and you are on the only scoreboard. No leagues, no codes, no lobby
 - **Ride or Die Draft** — Pre-season 2-round snake draft for exclusive contestants with historical player stats
 - **Weekly Picks** — Choose contestants to score for you each episode
 - **Predictions** — Prop bets (auto-resolvable), snap votes, side bets
@@ -26,7 +26,7 @@ A web app for Survivor Season 50 watch parties. Pick contestants, make predictio
 
 1. **Thursday night** — Firebase Cloud Functions automatically fetch episode stats from three external sources (TDT, InsideSurvivor, FSG)
 2. **Auto-resolve** — Prop bets and side bets are resolved programmatically against the imported data
-3. **Auto-score** — The first league creator to open the app triggers automatic scoring from the imported data
+3. **Auto-score** — The host opening the app triggers automatic scoring from the imported data
 4. **Spoiler-safe** — Results are gated per-player behind their watch status; no data leaks until they mark the episode as watched
 
 The host can still manually review or adjust scores via an optional admin override panel.
@@ -73,7 +73,7 @@ React 19, Vite 7, Tailwind CSS v4, Firebase (Auth + Realtime DB + Cloud Function
 
 | Path | Purpose |
 |------|---------|
-| `src/App.jsx` | Main app, tab routing, league flow |
+| `src/App.jsx` | Main app, tab routing, sign-in/join gates |
 | `src/AppContext.jsx` | Global state, Firebase sync, auto-scoring, all game actions |
 | `src/data.js` | Season 50 cast, tribes, scoring events, structured prop bets, bet resolution, auction perks |
 | `src/scoring.js` | Scoring engine, standings, achievements, commissioner report, auction perk multipliers |

@@ -39,12 +39,12 @@ Use these for all screens. See `src/components/fijian/` and `docs/STYLE_GUIDE.md
 
 ## Screen Components
 
-### Auth & League Setup
+### Auth & Onboarding
 | Component | File | Purpose |
 |-----------|------|---------|
 | **AuthScreen** | `AuthScreen.jsx` | Magic link sign-in |
-| **LeagueGate** | `LeagueGate.jsx` | Create or join a league with code |
-| **LeagueLobby** | `LeagueLobby.jsx` | Pre-game lobby, member list |
+| **JoinScreen** | `JoinScreen.jsx` | Pick a display name and take a seat in the one watch party |
+| **TribeRoster** | `TribeRoster.jsx` | Who is playing, plus the invite link |
 | **RideOrDieDraft** | `RideOrDieDraft.jsx` | 2-round snake draft |
 | **SeasonPassport** | `SeasonPassport.jsx` | 5 sealed pre-season predictions |
 

@@ -59,9 +59,10 @@ function PropBetEditor({ propBets, onSave }) {
 export default function AdminEpisodeCard() {
     const {
         user, league, myEpisode, myEpisodeData,
-        updatePropBets,
+        updatePropBets, setMyEpisode,
     } = useApp();
     const [error, setError] = useState('');
+    const [resetting, setResetting] = useState(false);
 
     const isAdmin = league?.createdBy === user?.uid;
     if (!isAdmin) return null;
@@ -72,6 +73,24 @@ export default function AdminEpisodeCard() {
         try {
             await updatePropBets(myEpisode, bets);
         } catch (err) { setError(err.message); }
+    };
+
+    const handleReset = async () => {
+        const startingEp = league?.startingEpisode || 1;
+        const raw = window.prompt(
+            `Reset your episode pointer. Current: ${myEpisode}. Season starting episode: ${startingEp}. Enter the episode number to jump to:`,
+            String(startingEp),
+        );
+        if (raw === null) return;
+        const target = Math.max(1, parseInt(raw, 10) || startingEp);
+        setResetting(true);
+        try {
+            await setMyEpisode(target);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setResetting(false);
+        }
     };
 
     return (
@@ -87,6 +106,15 @@ export default function AdminEpisodeCard() {
             {myEpisodeData?.propBets && (
                 <PropBetEditor propBets={myEpisodeData.propBets} onSave={handleSavePropBets} />
             )}
+            <button
+                type="button"
+                onClick={handleReset}
+                disabled={resetting}
+                className="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 text-[11px] rounded-lg border border-amber/30 text-amber/80 hover:bg-amber/10 transition-all cursor-pointer disabled:opacity-50 font-sans uppercase tracking-widest"
+            >
+                <Icon name="restart_alt" className="text-sm" />
+                {resetting ? 'Resetting…' : 'Reset my episode pointer'}
+            </button>
             {error && <p className="text-amber text-xs mt-2" role="alert">{error}</p>}
         </FijianCard>
     );

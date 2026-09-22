@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useApp } from '../../AppContext';
-import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon, HintBadge } from '../fijian';
+import { FijianCard, FijianSectionHeader, Icon, HintBadge } from '../fijian';
 
 export default function Predictions() {
     const { user, myEpisode, myEpisodeData, submitPredictions } = useApp();
@@ -9,36 +9,34 @@ export default function Predictions() {
     const propBets = myEpisodeData?.propBets || [];
 
     const [propAnswers, setPropAnswers] = useState(() => myPredictions?.propBets || {});
-    const [saving, setSaving] = useState(false);
-    const [saved, setSaved] = useState(() => !!myPredictions);
     const [error, setError] = useState('');
     const hydrated = useRef(!!myPredictions);
+    const saveTimer = useRef(null);
 
     useEffect(() => {
         if (myPredictions && !hydrated.current) {
             hydrated.current = true;
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional one-time hydration from remote data
             setPropAnswers(myPredictions.propBets || {});
-            setSaved(true);
         }
     }, [myPredictions]);
 
-    const setProp = (propId, value) => {
-        setSaved(false);
-        setPropAnswers(prev => ({ ...prev, [propId]: value }));
-    };
-
-    const handleSubmit = async () => {
-        setSaving(true);
-        setError('');
+    const persist = useCallback(async (next) => {
         try {
-            await submitPredictions(myEpisode, {
-                propBets: propAnswers,
-            });
-            setSaved(true);
+            await submitPredictions(myEpisode, { propBets: next });
+            setError('');
         } catch (err) {
             setError(err.message);
         }
-        setSaving(false);
+    }, [submitPredictions, myEpisode]);
+
+    const setProp = (propId, value) => {
+        setPropAnswers(prev => {
+            const next = { ...prev, [propId]: value };
+            if (saveTimer.current) clearTimeout(saveTimer.current);
+            saveTimer.current = setTimeout(() => persist(next), 400);
+            return next;
+        });
     };
 
     if (propBets.length === 0) return null;
@@ -48,15 +46,8 @@ export default function Predictions() {
             <FijianSectionHeader title="Tree Mail" />
 
             <p className="text-sand-warm/60 text-xs font-sans leading-relaxed">
-                Quick calls before the episode. Points are awarded after the host scores.
+                Quick calls before the episode. Answers auto-save. Points are awarded after the host scores.
             </p>
-
-            {saved && (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-jungle-400/10 border border-jungle-400/20">
-                    <Icon name="check_circle" className="text-jungle-400 text-sm" />
-                    <span className="text-jungle-400 text-xs font-bold">Predictions saved!</span>
-                </div>
-            )}
 
             <FijianCard className="p-4">
                 <div className="flex items-center gap-2 mb-3">
@@ -64,7 +55,7 @@ export default function Predictions() {
                     <span className="text-sand-warm text-sm font-bold inline-flex items-center">
                         Tree Mail
                         <HintBadge hintKey="propBets">
-                            Yes/No questions about what will happen this episode. Get +3 pts for each correct answer. The host sets the questions before the episode.
+                            Yes/No questions about what will happen this episode. Get +3 pts for each correct answer.
                         </HintBadge>
                     </span>
                     <span className="text-ochre/70 text-xs ml-auto">+3 pts each</span>
@@ -106,17 +97,10 @@ export default function Predictions() {
                         );
                     })}
                     <p className="text-sand-warm/50 text-xs text-center pt-1">
-                        Tap YES or NO for each question.
+                        Tap YES or NO — your answers save automatically.
                     </p>
                 </div>
             </FijianCard>
-
-            <FijianPrimaryButton
-                onClick={handleSubmit}
-                disabled={saving}
-            >
-                {saving ? 'Saving...' : saved ? 'Update Predictions' : 'Save Predictions'}
-            </FijianPrimaryButton>
 
             {error && <p className="text-amber text-xs text-center" role="alert">{error}</p>}
         </div>

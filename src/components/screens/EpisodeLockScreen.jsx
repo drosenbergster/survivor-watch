@@ -60,7 +60,7 @@ function PredictionsSummary({ predictions, propBets }) {
     );
 }
 
-function ScarcityInfo({ episodeData, user, rideOrDies }) {
+function ScarcityInfo({ episodeData, user }) {
     const allPicks = episodeData?.picks || {};
     const contestantCount = {};
 
@@ -71,11 +71,8 @@ function ScarcityInfo({ episodeData, user, rideOrDies }) {
     }
 
     const myPicks = allPicks[user?.uid] || [];
-    const isOthersRoD = (cid) => Object.entries(rideOrDies || {}).some(
-        ([rodUid, rods]) => rodUid !== user?.uid && (rods || []).includes(cid)
-    );
-    const exclusive = myPicks.filter(id => contestantCount[id] === 1 && !isOthersRoD(id));
-    const shared = myPicks.filter(id => contestantCount[id] > 1 || isOthersRoD(id));
+    const exclusive = myPicks.filter(id => contestantCount[id] === 1);
+    const shared = myPicks.filter(id => contestantCount[id] > 1);
 
     if (myPicks.length === 0) return null;
 
@@ -120,7 +117,7 @@ function ScarcityInfo({ episodeData, user, rideOrDies }) {
 }
 
 export default function EpisodeLockScreen() {
-    const { user, myEpisodeData, rideOrDies } = useApp();
+    const { user, myEpisodeData } = useApp();
 
     const myPicks = myEpisodeData?.picks?.[user?.uid] || [];
     const myPredictions = myEpisodeData?.predictions?.[user?.uid];
@@ -137,7 +134,7 @@ export default function EpisodeLockScreen() {
                 <PredictionsSummary predictions={myPredictions} propBets={myEpisodeData?.propBets} />
             </FijianCard>
 
-            <ScarcityInfo episodeData={myEpisodeData} user={user} rideOrDies={rideOrDies} />
+            <ScarcityInfo episodeData={myEpisodeData} user={user} />
         </div>
     );
 }

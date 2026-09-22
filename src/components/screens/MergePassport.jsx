@@ -1,20 +1,12 @@
 import { useState } from 'react';
 import { useApp } from '../../AppContext';
-import { ALL_CASTAWAYS, SEASON_LABEL } from '../../data';
+import { ALL_CASTAWAYS, PASSPORT_QUESTIONS, PASSPORT_POINTS_PER_CORRECT } from '../../data';
 import { FijianCard, FijianSectionHeader, FijianPrimaryButton, Icon } from '../fijian';
 
-const MERGE_QUESTIONS = [
-    { key: 'winner', label: 'Sole Survivor', prompt: `Who wins ${SEASON_LABEL}?`, icon: 'emoji_events' },
-    { key: 'firstJury', label: 'First Juror', prompt: 'Who is the first jury member?', icon: 'gavel' },
-    { key: 'fanFavorite', label: 'Fan Favorite', prompt: 'Who will be the fan favorite post-merge?', icon: 'favorite' },
-    { key: 'biggestVillain', label: 'Biggest Villain', prompt: 'Who plays the dirtiest post-merge game?', icon: 'mood_bad' },
-    { key: 'fireMakingWinner', label: 'Fire-Making Winner', prompt: 'Who wins fire at Final 4?', icon: 'local_fire_department' },
-];
-
-function ContestantSelect({ value, onChange, label, excludeIds = [] }) {
+function ContestantSelect({ value, onChange, label }) {
     const { safeEliminated } = useApp();
     const available = ALL_CASTAWAYS.filter(
-        c => !(safeEliminated || []).includes(c.id) && (!excludeIds.includes(c.id) || c.id === value)
+        c => !(safeEliminated || []).includes(c.id) || c.id === value
     );
 
     return (
@@ -34,9 +26,8 @@ function ContestantSelect({ value, onChange, label, excludeIds = [] }) {
 
 export default function MergePassport() {
     const { user, mergePassports, submitMergePassport, isMerged } = useApp();
-    const [answers, setAnswers] = useState({
-        winner: '', firstJury: '', fanFavorite: '', biggestVillain: '', fireMakingWinner: '',
-    });
+    const initial = Object.fromEntries(PASSPORT_QUESTIONS.map(q => [q.key, '']));
+    const [answers, setAnswers] = useState(initial);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
 
@@ -45,7 +36,7 @@ export default function MergePassport() {
     const myPassport = mergePassports?.[user?.uid];
     const isSealed = !!myPassport?.sealedAt;
 
-    const allFilled = MERGE_QUESTIONS.every(q => answers[q.key]);
+    const allFilled = PASSPORT_QUESTIONS.every(q => answers[q.key]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -63,11 +54,11 @@ export default function MergePassport() {
 
     if (isSealed) {
         return (
-            <FijianCard className="p-5 text-center border-purple-400/30">
+            <FijianCard className="p-5 text-center border-amber-400/30">
                 <div className="text-3xl mb-2">🔒</div>
-                <p className="font-display text-xl tracking-wider text-purple-400">Merge Passport Sealed</p>
+                <p className="font-display text-xl tracking-wider text-amber-400">Passport Sealed</p>
                 <p className="text-clay text-xs mt-1 font-serif italic">
-                    Your mid-season reads are locked until the finale reveal.
+                    Your five finale calls are locked until the finale reveal.
                 </p>
             </FijianCard>
         );
@@ -75,21 +66,21 @@ export default function MergePassport() {
 
     return (
         <div className="space-y-4">
-            <FijianCard className="p-4 text-center border-purple-400/20">
-                <p className="font-display text-xl tracking-wider text-purple-400">Merge Passport</p>
+            <FijianCard className="p-4 text-center border-amber-400/20">
+                <p className="font-display text-xl tracking-wider text-amber-400">Passport</p>
                 <p className="text-sand-warm/50 text-xs font-sans mt-1">
-                    5 updated predictions with the merge intel. Half-value — 8-12 pts each.
+                    The merge is here. Seal your five long-term calls — each one pays{' '}
+                    <span className="text-amber-400 font-bold">+{PASSPORT_POINTS_PER_CORRECT} pts</span>{' '}
+                    at the finale if it comes true.
                 </p>
             </FijianCard>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-                {MERGE_QUESTIONS.map(q => (
+                {PASSPORT_QUESTIONS.map(q => (
                     <FijianCard key={q.key} className="p-4">
                         <div className="flex items-center gap-2 mb-3">
-                            <Icon name={q.icon} className="text-purple-400 text-lg" />
-                            <div className="flex-1">
-                                <span className="text-sand-warm text-sm font-bold">{q.label}</span>
-                            </div>
+                            <Icon name={q.icon} className="text-amber-400 text-lg" />
+                            <span className="text-sand-warm text-sm font-bold">{q.label}</span>
                         </div>
                         <p className="text-clay text-xs mb-2 font-serif italic">{q.prompt}</p>
                         <ContestantSelect
@@ -101,10 +92,10 @@ export default function MergePassport() {
                 ))}
 
                 <FijianPrimaryButton type="submit" disabled={!allFilled || submitting}>
-                    {submitting ? 'Sealing...' : 'Seal Merge Passport'}
+                    {submitting ? 'Sealing...' : 'Seal My Passport'}
                 </FijianPrimaryButton>
                 <p className="text-sand-warm/60 text-xs text-center font-serif italic">
-                    Once sealed, your merge picks cannot be changed.
+                    Once sealed, your calls cannot be changed.
                 </p>
                 {error && <p className="text-amber text-xs text-center" role="alert">{error}</p>}
             </form>

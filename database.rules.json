@@ -3,10 +3,9 @@
     "leagues": {
       "$leagueId": {
         ".read": "auth != null && data.child('members').child(auth.uid).exists()",
-        "name": { ".write": "auth != null && data.parent().child('createdBy').val() === auth.uid" },
+        "name": { ".write": false },
         "status": { ".write": "auth != null && data.parent().child('createdBy').val() === auth.uid" },
         "currentEpisode": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
-        "joinCode": { ".write": false },
         "createdBy": { ".write": false },
         "createdAt": { ".write": false },
         "members": {
@@ -176,12 +175,6 @@
       "$userId": {
         ".read": "auth != null && auth.uid === $userId",
         ".write": "auth != null && auth.uid === $userId"
-      }
-    },
-    "leagueCodes": {
-      "$code": {
-        ".read": "auth != null",
-        ".write": "auth != null && !data.exists()"
       }
     },
     "seasons": {

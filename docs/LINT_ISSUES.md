@@ -64,11 +64,6 @@ useMemo has a missing dependency: 'isPostMerge'
 
 `tribalAttendees` memo uses `isPostMerge` in its body but doesn't list it as a dependency. Fix: add `isPostMerge` to the dependency array. Verify the memo doesn't produce stale results when merge status changes.
 
-### `src/components/screens/LeagueSwitcher.jsx` — line 35
+### ~~`src/components/screens/LeagueSwitcher.jsx` — line 35~~
 
-```
-useEffect has a missing dependency: 'leagueIds'
-useEffect has a complex expression in the dependency array
-```
-
-The effect uses `leagueIds.join(',')` as a dependency — the compiler can't statically verify this. Refactor: extract `const leagueIdsKey = leagueIds.join(',')` as a separate variable, then use `leagueIdsKey` in the dependency array. This also resolves the missing `leagueIds` warning since the derived value captures the dependency.
+Resolved: the component was removed along with the multi-league system. Every player now shares a single watch party, so there is nothing to switch between.

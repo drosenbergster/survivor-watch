@@ -12,15 +12,14 @@ import MergePassport from './MergePassport';
 import FinaleMode from './FinaleMode';
 import LightYourTorch from './LightYourTorch';
 import BingoCard from './BingoCard';
-import SeasonPassport from './SeasonPassport';
 import { PICKS_START_EPISODE, SEASON_LABEL } from '../../data';
 
-export default function DraftTab() {
+export default function EpisodeTab() {
     const {
         user, myEpisode, myEpisodeData, leagueId,
         isWatching, hasWatched, hasLockedPicks,
         advanceEpisode, saveBingoMarks, bingo,
-        isMerged, mergePassports, finaleData, passports,
+        isMerged, mergePassports, finaleData,
     } = useApp();
 
     const hasEpisode = !!myEpisode && !!myEpisodeData;
@@ -32,14 +31,10 @@ export default function DraftTab() {
 
     const isScored = !!myEpisodeData?.scored;
     const isFinaleActive = !!finaleData?.status;
-    const mergePassportSealed = !!mergePassports?.[user?.uid]?.sealedAt;
+    const passportSealed = !!mergePassports?.[user?.uid]?.sealedAt;
 
     // Castaway picks begin in Episode 2 — the premiere is the group's first look at this cast.
     const picksOpen = !!myEpisode && Number(myEpisode) >= PICKS_START_EPISODE;
-
-    // The Season Passport is sealed after the premiere, once you have actually met everyone.
-    const seasonPassportSealed = !!passports?.[user?.uid]?.sealedAt;
-    const passportDue = Number(myEpisode) === 1 && watched && !seasonPassportSealed;
 
     const bingoSeed = user ? `${leagueId}-${myEpisode}-${user.uid}` : 'fallback';
     const bingoMarked = bingo?.[myEpisode]?.[user?.uid];
@@ -81,8 +76,8 @@ export default function DraftTab() {
                         {!episodePendingSync && !watching && !watched && (
                             <HintBadge hintKey="picks">
                                 {picksOpen
-                                    ? 'Pick castaways and answer Tree Mail, then tap "Light Your Torch" to lock everything in, activate your bingo card, and start the episode.'
-                                    : 'Answer your Tree Mail, then tap "Light Your Torch" to activate your bingo card and start the episode. Castaway picks open in Episode 2.'}
+                                    ? 'Pick castaways and answer Tree Mail — everything auto-saves. Tap "Light Your Torch" when you sit down to watch to lock them in and open your bingo card.'
+                                    : 'Answer your Tree Mail (auto-saves), then tap "Light Your Torch" to open your bingo card. Castaway picks open in Episode 2.'}
                             </HintBadge>
                         )}
                     </p>
@@ -95,14 +90,13 @@ export default function DraftTab() {
                 <FijianCard className="p-6 text-center space-y-2">
                     <Icon name="hourglass_empty" className="text-ochre text-3xl mx-auto animate-pulse" />
                     <p className="text-sand-warm/80 text-sm font-sans">
-                        Setting up Episode {myEpisode}. If this lingers, ask the host to open the league once (they sync the season week).
+                        Setting up Episode {myEpisode}. If this lingers, ask the host to open the app once (they sync the season week).
                     </p>
                 </FijianCard>
             )}
 
-            {isMerged && !mergePassportSealed && (
-                <MergePassport />
-            )}
+            {/* Merge just hit — seal your Passport (finale predictions) once. */}
+            {isMerged && !passportSealed && <MergePassport />}
 
             {/* Pre-watch: picks (Episode 2+), predictions, then torch */}
             {hasEpisode && !picksLocked && !watching && !watched && (
@@ -131,9 +125,6 @@ export default function DraftTab() {
                 </>
             )}
 
-            {/* Premiere done — now you've met everyone, so seal your season calls */}
-            {passportDue && <SeasonPassport />}
-
             {/* Watched, not yet scored */}
             {hasEpisode && watched && !isScored && (
                 <FijianCard className="p-5 text-center space-y-2">
@@ -149,13 +140,13 @@ export default function DraftTab() {
 
             {watched && <AdminScoring episodeNum={myEpisode} />}
 
-            {/* Scored: full episode recap (Previously On, Key Moments, Elimination, votes, picks, standings, badges) */}
+            {/* Scored: full episode recap */}
             {isScored && watched && (
                 <ProbstRecap episodeNum={myEpisode} />
             )}
 
-            {/* Hard stop — continue to next episode */}
-            {hasEpisode && watched && !passportDue && (
+            {/* Hard stop — continue only after the host has scored this episode */}
+            {hasEpisode && watched && isScored && (
                 <FijianCard className="p-4 text-center">
                     <FijianPrimaryButton onClick={advanceEpisode}>
                         Continue to Episode {myEpisode + 1}

@@ -69,8 +69,8 @@ export default function LightYourTorch({ episodeNum }) {
             <div className="text-4xl">📺</div>
             <h3 className="font-display text-2xl text-sand-warm tracking-wider">Ready to Watch?</h3>
             <p className="text-sand-warm/60 text-sm font-sans max-w-xs mx-auto">
-                Make sure you&apos;ve saved your picks and Tree Mail above.
-                This locks everything in and activates your bingo card and tribal snap vote.
+                Your picks and Tree Mail above are already saved. Lighting your torch locks
+                them in and opens your bingo card and tribal snap vote.
             </p>
             <FijianPrimaryButton onClick={async () => {
                 setError('');
