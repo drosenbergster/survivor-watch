@@ -289,7 +289,7 @@ export function parseTDTHtml(html, eliminatedBefore = []) {
         immunityWinnerIds,
         rewardWinners,
         rewardWinnerIds,
-        isPostMerge: detectPostMerge(eliminatedIds, immunityWinnerIds),
+        isPostMerge: detectPostMerge(eliminatedIds, immunityWinnerIds, rows),
         minorityVoters,
         receivedVotes,
         bigMoments,
@@ -300,10 +300,17 @@ export function parseTDTHtml(html, eliminatedBefore = []) {
 
 /**
  * Heuristic post-merge detection from TDT data alone.
- * Post-merge indicators: 3+ eliminations in one episode, or individual
- * immunity winners spanning 3 different original tribes.
+ * Post-merge indicators: an individual immunity win, 3+ eliminations in one episode,
+ * or individual immunity winners spanning 3 different original tribes.
  */
-function detectPostMerge(eliminatedIds, immunityWinnerIds) {
+function detectPostMerge(eliminatedIds, immunityWinnerIds, rows = []) {
+    // TDT's per-episode challenge wins are fractional for tribal challenges — each
+    // participant gets 1/n of a point — while an individual win is a full point. So a
+    // full point means immunity was individual, and the merge has happened. This is the
+    // only signal that works with two starting tribes, where the 3-tribe check below
+    // can never fire.
+    if (rows.some(r => r.icChW !== null && r.icChW >= 1)) return true;
+
     if (eliminatedIds.length >= 3) return true;
 
     if (immunityWinnerIds.length > 0) {
@@ -475,29 +482,63 @@ const FSG_ID_MAP = Object.fromEntries(
     CAST.filter(c => c.fsgId).map(c => [c.fsgId, c.id])
 );
 
+// FSG labels every scored event in a <dt>, e.g. "Read Tree Mail (2)". These are the
+// exact labels observed across a full season, matched with the trailing point value
+// stripped. FSG's own point values are deliberately ignored — their scale is flat
+// (1-3 for everything) and rates tribal immunity above individual.
+// Note: FSG has no "found a clue" label, so find_clue stays host-entered only.
+const FSG_EVENT_LABELS = {
+    'win a tribe immunity challenge': 'tribal_immunity',
+    'win a tribe reward challenge': 'tribal_reward',
+    'win an individual immunity challenge': 'individual_immunity',
+    'win an individual reward challenge': 'individual_reward',
+    'win the fire making challenge': 'fire_making_win',
+    'win a journey challenge': 'journey_challenge_win',
+    'win the marooning challenge': 'marooning_win',
+    'win the supply challenge': 'supply_challenge_win',
+    'read tree mail': 'read_tree_mail',
+    'strategize at the water well': 'water_well_talk',
+    'make fire at camp': 'make_fire_camp',
+    'find food': 'find_food',
+    'go on a journey': 'journey',
+    'was exiled or sent to exile island': 'exile',
+    'became part of the merged tribe': 'merge',
+    'gain an immunity idol': 'idol_found',
+    'gain an advantage': 'advantage_found',
+    'play an idol or advantage': 'advantage_used',
+    'play shot in the dark': 'shot_in_dark',
+    'winner of this season': 'winner',
+};
+
+// Labels that mark someone leaving rather than scoring an event.
+const FSG_EXIT_LABELS = {
+    'survivor was voted out': 'voted_out',
+    'survivor is off the show': 'medevac',
+};
+
+// Fallback for mid-season wording changes and season-specific twists. Tried only when
+// the exact label is unknown, so order runs most specific first.
 const FSG_EVENT_PATTERNS = [
-    { pattern: /win the marooning challenge/i, event: 'marooning_win' },
-    { pattern: /win the supply challenge/i, event: 'supply_challenge_win' },
-    { pattern: /win a tribe reward challenge/i, event: 'tribal_reward' },
-    { pattern: /win a tribe immunity challenge/i, event: 'tribal_immunity' },
-    { pattern: /win a solo reward/i, event: 'individual_reward' },
-    { pattern: /win (?:a )?solo immunity/i, event: 'individual_immunity' },
-    { pattern: /win an? individual reward/i, event: 'individual_reward' },
-    { pattern: /win an? individual immunity/i, event: 'individual_immunity' },
-    { pattern: /win a journey challenge/i, event: 'journey_challenge_win' },
-    { pattern: /win a fire[- ]making challenge/i, event: 'fire_making_win' },
-    { pattern: /read tree mail/i, event: 'read_tree_mail' },
-    { pattern: /strategize at the water well/i, event: 'water_well_talk' },
+    { pattern: /tribe immunity/i, event: 'tribal_immunity' },
+    { pattern: /tribe reward/i, event: 'tribal_reward' },
+    { pattern: /(?:individual|solo) immunity/i, event: 'individual_immunity' },
+    { pattern: /(?:individual|solo) reward/i, event: 'individual_reward' },
+    { pattern: /fire[- ]?making/i, event: 'fire_making_win' },
+    { pattern: /journey challenge/i, event: 'journey_challenge_win' },
+    { pattern: /marooning/i, event: 'marooning_win' },
+    { pattern: /supply challenge/i, event: 'supply_challenge_win' },
+    { pattern: /tree mail/i, event: 'read_tree_mail' },
+    { pattern: /water well/i, event: 'water_well_talk' },
     { pattern: /make fire at camp/i, event: 'make_fire_camp' },
     { pattern: /find food/i, event: 'find_food' },
-    { pattern: /go to exile island/i, event: 'exile' },
-    { pattern: /go on a journey/i, event: 'journey' },
-    { pattern: /join the merge/i, event: 'merge' },
-    { pattern: /find a? ?clue/i, event: 'find_clue' },
-    { pattern: /gain an? immunity idol/i, event: 'idol_found' },
+    { pattern: /exile/i, event: 'exile' },
+    { pattern: /journey/i, event: 'journey' },
+    { pattern: /merged? tribe|join the merge/i, event: 'merge' },
+    { pattern: /immunity idol/i, event: 'idol_found' },
     { pattern: /gain an? advantage/i, event: 'advantage_found' },
-    { pattern: /play an? advantage/i, event: 'advantage_used' },
-    { pattern: /play (?:the )?shot in the dark/i, event: 'shot_in_dark' },
+    { pattern: /play an? (?:idol|advantage)/i, event: 'advantage_used' },
+    { pattern: /shot in the dark/i, event: 'shot_in_dark' },
+    { pattern: /find a? ?clue/i, event: 'find_clue' },
 ];
 
 function resolveFsgLink(href) {
@@ -529,77 +570,106 @@ export function parseFSGHtml(html, episodeNum) {
         if (!result.events[cid].includes(evt)) result.events[cid].push(evt);
     };
 
-    // Find the episode section. FSG uses h5 tags for "Episode N".
-    // We need to find the right section and collect all sibling content until the next <hr>.
-    let episodeSection = null;
+    // FSG wraps each "Episode N" heading in a div alongside an <hr>, so the heading has
+    // no following siblings of its own. The episode's content sits in that wrapper's
+    // siblings, ending at the wrapper holding the next episode heading.
+    const isEpisodeHeading = (el) => /^episode \d+$/i.test($(el).text().trim());
 
+    let heading = null;
     $('h5, h4, h3').each((_, el) => {
-        const text = $(el).text().trim();
-        if (text.toLowerCase() === `episode ${episodeNum}`) {
-            episodeSection = el;
+        if ($(el).text().trim().toLowerCase() === `episode ${episodeNum}`) {
+            heading = el;
             return false;
         }
     });
 
-    if (!episodeSection) return null;
+    if (!heading) return null;
 
-    // Collect all siblings after the episode header until we hit the next <hr> or another episode header
     const sectionElements = [];
-    let current = $(episodeSection).next();
+    let current = $(heading).parent().next();
     while (current.length > 0) {
-        const tagName = current.prop('tagName')?.toLowerCase();
-        if (tagName === 'hr') break;
-        // Another episode header means we've left our section
-        if (['h3', 'h4', 'h5'].includes(tagName) && /episode \d+/i.test(current.text())) break;
+        if (current.find('h5, h4, h3').filter((_, el) => isEpisodeHeading(el)).length) break;
         sectionElements.push(current);
         current = current.next();
     }
 
-    // Parse each element in the episode section
+    const noteExit = (cid, method) => {
+        if (!cid || result.eliminatedIds.includes(cid)) return;
+        result.eliminatedIds.push(cid);
+        result.eliminationMethods[cid] = method;
+        if (!result.eliminatedId) {
+            result.eliminatedId = cid;
+            result.eliminationMethod = method;
+        }
+    };
+
+    const linkedIds = (el) => {
+        const ids = [];
+        el.find('a[href^="/survivors/"]').each((_, a) => {
+            const cid = resolveFsgLink($(a).attr('href'));
+            if (cid && !ids.includes(cid)) ids.push(cid);
+        });
+        return ids;
+    };
+
+    const normalizeLabel = (raw) => (raw || '')
+        .toLowerCase()
+        .replace(/\s*\(-?\d+\)\s*$/, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    const noteWinner = (event, cid) => {
+        const list = (event === 'tribal_immunity' || event === 'individual_immunity')
+            ? result.immunityWinnerIds
+            : (event === 'tribal_reward' || event === 'individual_reward')
+                ? result.rewardWinnerIds
+                : null;
+        if (list && !list.includes(cid)) list.push(cid);
+    };
+
     for (const elem of sectionElements) {
-        const text = elem.text().trim();
-        if (!text) continue;
+        // Each lookup matches the element itself as well as its descendants, because a
+        // section element can be a card container or a <dl> in its own right.
 
-        // Check for "Voted out" or "Quit/Evac"
-        const votedOutMatch = text.match(/voted out/i);
-        const quitEvacMatch = text.match(/quit\/evac/i);
+        // Headline cards carry the episode's exits and the season winner.
+        elem.find('.recapbox').add(elem.filter('.recapbox')).each((_, box) => {
+            const card = $(box);
+            const label = normalizeLabel(card.find('h6').first().text());
+            const ids = linkedIds(card);
+            if (/voted out/.test(label)) ids.forEach(cid => noteExit(cid, 'voted_out'));
+            else if (/quit|evac/.test(label)) ids.forEach(cid => noteExit(cid, 'medevac'));
+            else if (/sole survivor/.test(label)) ids.forEach(cid => addEvent(cid, 'winner'));
+        });
 
-        if (votedOutMatch || quitEvacMatch) {
-            const method = quitEvacMatch ? 'medevac' : 'voted_out';
-            const links = elem.find('a');
-            links.each((_, a) => {
-                const cid = resolveFsgLink($(a).attr('href'));
-                if (cid && !result.eliminatedIds.includes(cid)) {
-                    result.eliminatedIds.push(cid);
-                    result.eliminationMethods[cid] = method;
-                    if (!result.eliminatedId) {
-                        result.eliminatedId = cid;
-                        result.eliminationMethod = method;
-                    }
+        // Per-player scoring lives in <dl> blocks: <dt>Label (points)</dt><dd>players</dd>.
+        // Each pair must be read individually — the labels differ within one list.
+        elem.find('dl').add(elem.filter('dl')).each((_, dl) => {
+            let label = null;
+            $(dl).children().each((_, child) => {
+                const tag = $(child).prop('tagName')?.toLowerCase();
+                if (tag === 'dt') {
+                    label = normalizeLabel($(child).attr('title') || $(child).text());
+                    return;
+                }
+                if (tag !== 'dd' || !label) return;
+
+                const ids = linkedIds($(child));
+
+                if (FSG_EXIT_LABELS[label]) {
+                    ids.forEach(cid => noteExit(cid, FSG_EXIT_LABELS[label]));
+                    return;
+                }
+
+                const event = FSG_EVENT_LABELS[label]
+                    || FSG_EVENT_PATTERNS.find(({ pattern }) => pattern.test(label))?.event;
+                if (!event) return;
+
+                for (const cid of ids) {
+                    addEvent(cid, event);
+                    noteWinner(event, cid);
                 }
             });
-            continue;
-        }
-
-        // Match against FSG event patterns
-        for (const { pattern, event } of FSG_EVENT_PATTERNS) {
-            if (pattern.test(text)) {
-                const links = elem.find('a');
-                links.each((_, a) => {
-                    const cid = resolveFsgLink($(a).attr('href'));
-                    if (cid) {
-                        addEvent(cid, event);
-                        if (event === 'tribal_immunity' && !result.immunityWinnerIds.includes(cid)) {
-                            result.immunityWinnerIds.push(cid);
-                        }
-                        if (event === 'tribal_reward' && !result.rewardWinnerIds.includes(cid)) {
-                            result.rewardWinnerIds.push(cid);
-                        }
-                    }
-                });
-                break;
-            }
-        }
+        });
     }
 
     return result;
