@@ -138,6 +138,27 @@ export async function fetchAndParseEpisode(episodeNum, eliminatedBefore = []) {
     return { result, source, tdtUrl };
 }
 
+/**
+ * True when a boxscore parsed cleanly but carries no results yet.
+ *
+ * TDT publishes the episode page before the episode airs, listing the cast with
+ * empty stat columns, so the parse succeeds and reports nobody out and nobody
+ * winning anything. Storing that would be worse than storing nothing: once an
+ * import exists, later runs take the already-imported path and never scrape
+ * again, so the real boxscore would be ignored for the rest of the week.
+ *
+ * A legitimate episode always leaves a trace — a boot, a challenge winner, or an
+ * idol — so requiring all of them to be empty keeps genuine no-elimination
+ * episodes importable.
+ */
+export function looksUnpublished(result) {
+    const nothing = (arr) => !arr || arr.length === 0;
+    return nothing(result.eliminatedIds) && !result.eliminatedId
+        && nothing(result.immunityWinnerIds) && nothing(result.immunityWinners)
+        && nothing(result.rewardWinnerIds) && nothing(result.rewardWinners)
+        && Object.keys(result.bigMoments || {}).length === 0;
+}
+
 function buildImportData(result, source, episodeNum) {
     return {
         fetchedAt: Date.now(),
@@ -201,6 +222,14 @@ export async function fetchAndParse(db, episodeNum, { force = false } = {}) {
     if (parsed.skipped || parsed.error) return parsed;
 
     const { result, source } = parsed;
+
+    if (looksUnpublished(result)) {
+        return {
+            skipped: true,
+            reason: `Episode ${episodeNum} boxscore is published but empty — no results yet`,
+            tdtUrl: parsed.tdtUrl,
+        };
+    }
 
     // Post-merge detection: if FSG merge events flagged this episode as post-merge,
     // great. Otherwise, check if any prior episode was already marked post-merge —

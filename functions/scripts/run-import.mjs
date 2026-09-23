@@ -16,7 +16,7 @@
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getDatabase } from 'firebase-admin/database';
 import {
-    determineNextEpisode, fetchAndParse, fetchAndParseEpisode, MAX_EPISODE,
+    determineNextEpisode, fetchAndParse, fetchAndParseEpisode, looksUnpublished, MAX_EPISODE,
 } from '../importer.js';
 
 function parseArgs(argv) {
@@ -63,6 +63,9 @@ if (args.dryRun) {
     console.log(`  post-merge:        ${!!r.isPostMerge}`);
     const unresolved = (r.parsed || []).filter(row => !row.id);
     console.log(`  unresolved names:  ${unresolved.length ? JSON.stringify(unresolved) : 'none'}`);
+    console.log(looksUnpublished(r)
+        ? '  verdict:           no results yet — a real run would skip this and retry later'
+        : '  verdict:           has results — a real run would import and score this');
     process.exit(0);
 }
 
