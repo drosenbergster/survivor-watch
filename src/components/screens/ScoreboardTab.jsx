@@ -156,7 +156,7 @@ function EpisodeBreakdown({ epNum, score, bingoSeed, bingoMarked }) {
                                         <div key={i} className="flex justify-between text-sand-warm/60 py-0.5">
                                             <span>
                                                 {w.name}
-                                                {w.scarcityBonus && <span className="text-ochre ml-1">×1.5</span>}
+                                                {w.captain && <span className="text-ochre ml-1">★ ×2</span>}
                                             </span>
                                             <span className="text-fire-400">+{w.points}</span>
                                         </div>
@@ -356,7 +356,7 @@ export default function ScoreboardTab({ onTabChange }) {
                                         Picks
                                     </p>
                                     <p className="text-sand-warm/40 text-[10px] mb-2">
-                                        Your picks earn points based on what their castaways do. Sole picker = 1.5× bonus.
+                                        Your picks earn points based on what their castaways do. Your Captain scores double.
                                     </p>
                                     <div className="space-y-0.5">
                                         {milestoneEvents.map(e => (

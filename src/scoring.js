@@ -10,7 +10,7 @@ import {
 
 const SCORE_MAP = Object.fromEntries(SCORE_EVENTS.map(e => [e.key, e.points]));
 
-const SCARCITY_MULTIPLIER = 1.5;
+const CAPTAIN_MULTIPLIER = 2;
 const CORRECT_PROP_BET_POINTS = 3;
 const CORRECT_SNAP_VOTE_POINTS = 8;
 const BINGO_SQUARE_POINTS = 2;
@@ -33,32 +33,9 @@ export function scoreContestants(gameEvents) {
 }
 
 /**
- * Which contestants were picked by exactly one player this episode (unlocking 1.5x).
- * picks: { [uid]: string[] }
- * Returns: { [contestantId]: { count, exclusiveOwner } }
- */
-export function computeScarcity(picks) {
-    const owners = {};
-    for (const [uid, playerPicks] of Object.entries(picks || {})) {
-        for (const cid of (playerPicks || [])) {
-            if (!owners[cid]) owners[cid] = [];
-            owners[cid].push(uid);
-        }
-    }
-    const result = {};
-    for (const [cid, list] of Object.entries(owners)) {
-        result[cid] = {
-            count: list.length,
-            exclusiveOwner: list.length === 1 ? list[0] : null,
-        };
-    }
-    return result;
-}
-
-/**
  * Score a single episode for all players. Three streams: picks, predictions, bingo.
  *
- * episodeData: { picks, predictions, propBets, propBetResults, snapVotes,
+ * episodeData: { picks, captains, predictions, propBets, propBetResults, snapVotes,
  *                eliminatedThisEp }
  * bingoData:   { [uid]: boolean[25] }
  * memberUids:  string[]
@@ -68,6 +45,7 @@ export function computeScarcity(picks) {
 export function scoreEpisode(episodeData, memberUids, bingoData) {
     const {
         picks = {},
+        captains = {},
         predictions = {},
         gameEvents = {},
         propBets = [],
@@ -77,7 +55,6 @@ export function scoreEpisode(episodeData, memberUids, bingoData) {
     } = episodeData;
 
     const contestantScores = scoreContestants(gameEvents);
-    const scarcity = computeScarcity(picks);
     const playerScores = {};
 
     for (const uid of memberUids) {
@@ -85,12 +62,14 @@ export function scoreEpisode(episodeData, memberUids, bingoData) {
         let weeklyTotal = 0;
         let predictionTotal = 0;
 
-        // ── Weekly picks: event points, with sole-picker 1.5× ──
+        // ── Weekly picks: event points, with the captain doubled ──
         const playerPicks = picks[uid] || [];
+        // A captain who is no longer among the picks scores nothing extra.
+        const captainId = playerPicks.includes(captains[uid]) ? captains[uid] : null;
         for (const cid of playerPicks) {
             const raw = contestantScores[cid] || 0;
-            const isExclusive = scarcity[cid]?.exclusiveOwner === uid;
-            const multiplied = isExclusive ? Math.round(raw * SCARCITY_MULTIPLIER) : raw;
+            const isCaptain = cid === captainId;
+            const multiplied = isCaptain ? raw * CAPTAIN_MULTIPLIER : raw;
             weeklyTotal += multiplied;
             if (raw > 0) {
                 const castaway = ALL_CASTAWAYS.find(c => c.id === cid);
@@ -98,7 +77,7 @@ export function scoreEpisode(episodeData, memberUids, bingoData) {
                     contestantId: cid,
                     name: castaway?.name || cid,
                     raw,
-                    scarcityBonus: isExclusive,
+                    captain: isCaptain,
                     points: multiplied,
                     events: gameEvents[cid] || [],
                 });

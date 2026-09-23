@@ -1,23 +1,15 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useApp, getEffectiveTribeAssignments } from '../../AppContext';
 import { TRIBES, ALL_CASTAWAYS, getMaxPicks } from '../../data';
-import { computeScarcity } from '../../scoring';
 import { FijianCard, FijianSectionHeader, Icon } from '../fijian';
 
 export default function WeeklyPicks() {
-    const { user, myEpisode, myEpisodeData, safeEliminated, episodes, submitPicks, tribeSwaps } = useApp();
-
-    const prevEpScarcity = useMemo(() => {
-        if (!myEpisode || myEpisode <= 1) return null;
-        const prevEp = episodes?.[myEpisode - 1];
-        if (!prevEp?.scored || !prevEp?.picks) return null;
-        const scarcity = computeScarcity(prevEp.picks);
-        const totalPlayers = Object.keys(prevEp.picks).length;
-        return { scarcity, totalPlayers };
-    }, [myEpisode, episodes]);
+    const { user, myEpisode, myEpisodeData, safeEliminated, submitPicks, submitCaptain, tribeSwaps } = useApp();
 
     const myPicks = useMemo(() => myEpisodeData?.picks?.[user?.uid] || [], [myEpisodeData?.picks, user?.uid]);
+    const myCaptain = myEpisodeData?.captains?.[user?.uid] || null;
     const [selected, setSelected] = useState(() => myPicks);
+    const [captain, setCaptainState] = useState(() => myCaptain);
     const [error, setError] = useState('');
     const hydrated = useRef(myPicks.length > 0);
     const saveTimer = useRef(null);
@@ -58,8 +50,9 @@ export default function WeeklyPicks() {
             hydrated.current = true;
             // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional one-time hydration from remote data
             setSelected(myPicks);
+            setCaptainState(myCaptain);
         }
-    }, [myPicks]);
+    }, [myPicks, myCaptain]);
 
     // Auto-persist any change (debounced) — Light Your Torch is the only lock action.
     const persist = useCallback(async (next) => {
@@ -71,6 +64,15 @@ export default function WeeklyPicks() {
         }
     }, [submitPicks, myEpisode]);
 
+    const persistCaptain = useCallback(async (id) => {
+        try {
+            await submitCaptain(myEpisode, id);
+            setError('');
+        } catch (err) {
+            setError(err.message);
+        }
+    }, [submitCaptain, myEpisode]);
+
     const togglePick = (id) => {
         setSelected(prev => {
             let next;
@@ -79,8 +81,19 @@ export default function WeeklyPicks() {
             else next = [...prev, id];
             if (saveTimer.current) clearTimeout(saveTimer.current);
             saveTimer.current = setTimeout(() => persist(next), 400);
+            // Dropping your captain drops the captaincy with them.
+            if (!next.includes(id) && captain === id) {
+                setCaptainState(null);
+                persistCaptain(null);
+            }
             return next;
         });
+    };
+
+    const chooseCaptain = (id) => {
+        const next = captain === id ? null : id;
+        setCaptainState(next);
+        persistCaptain(next);
     };
 
     return (
@@ -94,9 +107,16 @@ export default function WeeklyPicks() {
 
             <p className="text-sand-warm/60 text-xs font-sans leading-relaxed">
                 Choose {maxPicks} castaways to score for you this episode. They save as you tap.
-                If you&apos;re the only player who picks someone, you get a{' '}
-                <strong className="text-ochre">1.5&times; bonus</strong> on their points.
+                Tap the star on one of them to make them your{' '}
+                <strong className="text-ochre">Captain</strong> — they score{' '}
+                <strong className="text-ochre">double</strong>.
             </p>
+
+            {selected.length > 0 && !captain && (
+                <p className="text-ochre/80 text-xs font-sans text-center" role="status">
+                    Pick your Captain before you light your torch.
+                </p>
+            )}
 
             <div className={`grid grid-cols-1 ${
                 visibleTribeCount >= 3 ? 'lg:grid-cols-3' : visibleTribeCount === 2 ? 'lg:grid-cols-2' : ''
@@ -121,36 +141,47 @@ export default function WeeklyPicks() {
                                     const isDisabled = isEliminated;
                                     const isPicked = selected.includes(c.id);
                                     const canPick = !isDisabled && !isPicked && selected.length < maxPicks;
-
-                                    const prevCount = prevEpScarcity?.scarcity[c.id]?.count || 0;
-                                    const prevTotal = prevEpScarcity?.totalPlayers || 0;
+                                    const isCaptain = captain === c.id;
 
                                     return (
-                                        <button
+                                        <div
                                             key={c.id}
-                                            type="button"
-                                            onClick={() => !isDisabled && togglePick(c.id)}
-                                            disabled={isDisabled}
-                                            className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm transition-all
-                                                ${isEliminated ? 'opacity-25 line-through cursor-default' : ''}
-                                                ${!isDisabled ? 'cursor-pointer' : ''}
+                                            className={`flex items-center transition-all
+                                                ${isEliminated ? 'opacity-25 line-through' : ''}
                                                 ${isPicked ? 'bg-ochre/15 text-sand-warm' : ''}
                                                 ${!isPicked && !isDisabled ? 'hover:bg-stone-800/50' : ''}
                                                 ${!canPick && !isPicked && !isDisabled ? 'opacity-40' : ''}
                                             `}
                                         >
-                                            <span className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
-                                                isPicked ? 'border-ochre bg-ochre/20' : 'border-stone-600'
-                                            }`}>
-                                                {isPicked && <Icon name="check" className="text-ochre text-xs" />}
-                                            </span>
-                                            <span className="flex-1 font-medium">{c.name}</span>
-                                            <span className="flex items-center gap-1.5 shrink-0">
-                                                {prevEpScarcity && !isEliminated && (
-                                                    <ScarcityBadge count={prevCount} total={prevTotal} />
-                                                )}
-                                            </span>
-                                        </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => !isDisabled && togglePick(c.id)}
+                                                disabled={isDisabled}
+                                                aria-pressed={isPicked}
+                                                className={`flex-1 flex items-center gap-2 px-3 py-2 text-left text-sm min-w-0 ${isDisabled ? 'cursor-default' : 'cursor-pointer'}`}
+                                            >
+                                                <span className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
+                                                    isPicked ? 'border-ochre bg-ochre/20' : 'border-stone-600'
+                                                }`}>
+                                                    {isPicked && <Icon name="check" className="text-ochre text-xs" />}
+                                                </span>
+                                                <span className="flex-1 font-medium truncate">{c.name}</span>
+                                            </button>
+                                            {isPicked && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => chooseCaptain(c.id)}
+                                                    aria-pressed={isCaptain}
+                                                    aria-label={isCaptain ? `${c.name} is your Captain` : `Make ${c.name} your Captain`}
+                                                    className="shrink-0 px-3 py-2 cursor-pointer"
+                                                >
+                                                    <Icon
+                                                        name={isCaptain ? 'star' : 'star_outline'}
+                                                        className={isCaptain ? 'text-ochre text-lg' : 'text-sand-warm/30 text-lg hover:text-ochre/60'}
+                                                    />
+                                                </button>
+                                            )}
+                                        </div>
                                     );
                                 })}
                             </div>
@@ -161,35 +192,5 @@ export default function WeeklyPicks() {
 
             {error && <p className="text-amber text-xs text-center" role="alert">{error}</p>}
         </div>
-    );
-}
-
-function ScarcityBadge({ count, total }) {
-    if (total === 0) return null;
-    if (count === 0) {
-        return (
-            <span className="text-[10px] font-bold text-jungle-400/70 tracking-wider uppercase" title="Nobody picked last week — potential 1.5× bonus">
-                Sleeper
-            </span>
-        );
-    }
-    if (count === 1) {
-        return (
-            <span className="text-[10px] font-bold text-ochre/60 tracking-wider" title={`Only 1 of ${total} picked last week`}>
-                1/{total}
-            </span>
-        );
-    }
-    if (count >= Math.ceil(total * 0.6)) {
-        return (
-            <span className="text-[10px] font-bold text-sand-warm/30 tracking-wider uppercase" title={`${count} of ${total} picked last week — unlikely 1.5× bonus`}>
-                Popular
-            </span>
-        );
-    }
-    return (
-        <span className="text-[10px] font-bold text-sand-warm/25 tracking-wider" title={`${count} of ${total} picked last week`}>
-            {count}/{total}
-        </span>
     );
 }

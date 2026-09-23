@@ -47,6 +47,12 @@
                 ".validate": "newData.hasChildren()"
               }
             },
+            "captains": {
+              "$uid": {
+                ".write": "auth != null && auth.uid === $uid && !root.child('leagues').child($leagueId).child('watchStatus').child($epNum).child(auth.uid).child('picksLockedAt').exists()",
+                ".validate": "!newData.exists() || newData.isString()"
+              }
+            },
             "predictions": {
               "$uid": {
                 ".write": "auth != null && auth.uid === $uid && !root.child('leagues').child($leagueId).child('watchStatus').child($epNum).child(auth.uid).child('picksLockedAt').exists()",

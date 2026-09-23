@@ -328,6 +328,12 @@ export function AppProvider({ children }) {
         await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}/picks/${user.uid}`), contestantIds);
     }, [user, leagueId]);
 
+    // `null` clears the captain, which happens when the chosen castaway is unpicked.
+    const submitCaptain = useCallback(async (episodeNum, contestantId) => {
+        if (!db || !user || !leagueId) throw new Error('Not connected');
+        await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}/captains/${user.uid}`), contestantId || null);
+    }, [user, leagueId]);
+
     const submitPredictions = useCallback(async (episodeNum, predictions) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
         await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}/predictions/${user.uid}`), predictions);
@@ -396,6 +402,11 @@ export function AppProvider({ children }) {
             const maxPicks = getMaxPicks(remainingCount);
             if (playerPicks.length < maxPicks) {
                 throw new Error(`You need ${maxPicks} picks before lighting your torch (currently ${playerPicks.length})`);
+            }
+            // Asking here means the choice is never lost by forgetting to make it.
+            const captain = ep?.captains?.[user.uid];
+            if (!captain || !playerPicks.includes(captain)) {
+                throw new Error('Pick your Captain before lighting your torch — tap the star on one of your picks');
             }
         }
 
@@ -847,7 +858,7 @@ export function AppProvider({ children }) {
         lightTorch, markWatched, advanceEpisode, setMyEpisode, saveBingoMarks, hasWatched, isWatching, hasLockedPicks,
         syncStatus, onboardingComplete,
         joinWatchParty, completeOnboarding,
-        createEpisode, updatePropBets, submitPicks, submitPredictions,
+        createEpisode, updatePropBets, submitPicks, submitCaptain, submitPredictions,
         submitSnapVote, scoreEpisodeAction,
         executeTribeSwap, moveTribeSwap, deleteTribeSwap, fixElimination, rescoreEpisode,
         executeMerge, submitMergePassport,

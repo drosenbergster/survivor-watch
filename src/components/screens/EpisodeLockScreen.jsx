@@ -60,58 +60,22 @@ function PredictionsSummary({ predictions, propBets }) {
     );
 }
 
-function ScarcityInfo({ episodeData, user }) {
-    const allPicks = episodeData?.picks || {};
-    const contestantCount = {};
+function CaptainInfo({ episodeData, user }) {
+    const myPicks = episodeData?.picks?.[user?.uid] || [];
+    const captainId = episodeData?.captains?.[user?.uid] || null;
 
-    for (const [, picks] of Object.entries(allPicks)) {
-        for (const id of (picks || [])) {
-            contestantCount[id] = (contestantCount[id] || 0) + 1;
-        }
-    }
+    if (myPicks.length === 0 || !captainId) return null;
 
-    const myPicks = allPicks[user?.uid] || [];
-    const exclusive = myPicks.filter(id => contestantCount[id] === 1);
-    const shared = myPicks.filter(id => contestantCount[id] > 1);
-
-    if (myPicks.length === 0) return null;
+    const captain = ALL_CASTAWAYS.find(c => c.id === captainId);
 
     return (
         <FijianCard className="p-4">
-            <FijianSectionHeader title="Sole Picker Bonus" />
-            {exclusive.length > 0 && (
-                <div className="mb-3">
-                    <div className="flex items-center gap-1.5 mb-1">
-                        <Icon name="star" className="text-torch text-sm" />
-                        <span className="text-torch text-xs font-bold">1.5&times; bonus &mdash; only you picked them</span>
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                        {exclusive.map(id => {
-                            const c = ALL_CASTAWAYS.find(x => x.id === id);
-                            return (
-                                <span key={id} className="bg-torch/10 text-torch text-xs px-2 py-0.5 rounded border border-torch/20">
-                                    {c?.name || id}
-                                </span>
-                            );
-                        })}
-                    </div>
-                </div>
-            )}
-            {shared.length > 0 && (
-                <div>
-                    <span className="text-clay text-xs">Shared picks (1x):</span>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                        {shared.map(id => {
-                            const c = ALL_CASTAWAYS.find(x => x.id === id);
-                            return (
-                                <span key={id} className="text-stone-400 text-xs bg-stone-800/50 px-2 py-0.5 rounded">
-                                    {c?.name || id} ({contestantCount[id]} picked)
-                                </span>
-                            );
-                        })}
-                    </div>
-                </div>
-            )}
+            <FijianSectionHeader title="Your Captain" />
+            <div className="flex items-center gap-2">
+                <Icon name="star" className="text-torch text-sm" />
+                <span className="text-torch text-sm font-bold">{captain?.name || captainId}</span>
+                <span className="text-clay text-xs">scores double tonight</span>
+            </div>
         </FijianCard>
     );
 }
@@ -134,7 +98,7 @@ export default function EpisodeLockScreen() {
                 <PredictionsSummary predictions={myPredictions} propBets={myEpisodeData?.propBets} />
             </FijianCard>
 
-            <ScarcityInfo episodeData={myEpisodeData} user={user} />
+            <CaptainInfo episodeData={myEpisodeData} user={user} />
         </div>
     );
 }

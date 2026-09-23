@@ -32,7 +32,7 @@ function Accordion({ title, icon, defaultOpen = false, children }) {
 }
 
 const GAMEPLAY_STEPS = [
-  { icon: '🔮', label: 'Before the episode, answer Tree Mail and pick your castaways. They save as you go.' },
+  { icon: '🔮', label: 'Before the episode, answer Tree Mail and pick your castaways. Star one as your Captain — they score double. Everything saves as you go.' },
   { icon: '🔥', label: 'When you sit down to watch, tap "Light Your Torch." That locks your calls and opens your bingo card and Snap Vote.' },
   { icon: '🎱', label: 'While the show is on, mark bingo squares as things pop up.' },
   { icon: '⚡', label: 'When they sit down at tribal, pause and call who is going home.' },

@@ -137,7 +137,7 @@ export const ENGAGEMENT_SCORING = [
         icon: '🎯',
         items: [
             { label: 'Pick 3 castaways', points: '—', emoji: '🗳️', note: 'They earn you their event points for the episode. Change them every week. Picks open in Episode 2 — the premiere is for meeting the cast.' },
-            { label: 'Sole Picker Bonus', points: '1.5×', emoji: '💎', note: 'If nobody else picked your castaway, their points are multiplied. Going against the room pays.' },
+            { label: 'Captain', points: '2×', emoji: '⭐', note: 'Star one of your three each week. They score double. Pick the one you believe in.' },
         ],
     },
     {
