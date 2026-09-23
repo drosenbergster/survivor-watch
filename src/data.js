@@ -128,37 +128,40 @@ export const SCORE_EVENTS = [
     { key: 'shot_in_dark', label: 'Shot in the Dark', points: 2, emoji: '🎲' },
 ];
 
+// The only four ways a player scores. This is the whole player-facing rulebook,
+// so every detail worth knowing lives here as a note rather than being restated
+// in prose elsewhere. Ordered the way a night actually goes.
 export const ENGAGEMENT_SCORING = [
     {
-        section: 'Bingo',
-        icon: '🎱',
+        section: 'Weekly Picks',
+        icon: '🎯',
         items: [
-            { label: 'Each Square You Hit', points: 2, emoji: '🎯' },
-            { label: 'Complete a Line', points: 5, emoji: '➖' },
-            { label: 'Blackout (Full Card)', points: 50, emoji: '🌑' },
+            { label: 'Pick 3 castaways', points: '—', emoji: '🗳️', note: 'They earn you their event points for the episode. Change them every week. Picks open in Episode 2 — the premiere is for meeting the cast.' },
+            { label: 'Sole Picker Bonus', points: '1.5×', emoji: '💎', note: 'If nobody else picked your castaway, their points are multiplied. Going against the room pays.' },
         ],
     },
     {
         section: 'Predictions',
         icon: '🔮',
         items: [
-            { label: 'Tree Mail (correct)', points: 3, emoji: '📬' },
-            { label: 'Snap Vote (correct)', points: 8, emoji: '⚡' },
+            { label: 'Tree Mail (correct)', points: 3, emoji: '📬', note: 'Five yes/no calls about the episode, answered before you watch.' },
+            { label: 'Snap Vote (correct)', points: 8, emoji: '⚡', note: 'Once they sit down at tribal, pause before Jeff asks anything and call whose torch gets snuffed. Opens when you light your torch, closes when you mark Done.' },
         ],
     },
     {
-        section: 'Weekly Picks',
-        icon: '🎯',
+        section: 'Bingo',
+        icon: '🎱',
         items: [
-            { label: 'Pick 3 castaways from Episode 2 on', points: '—', emoji: '🗳️', note: 'They earn you their event points for the episode' },
-            { label: 'Sole Picker Bonus', points: '1.5×', emoji: '💎', note: 'If you are the only player who picked a castaway, their points are multiplied by 1.5×' },
+            { label: 'Each Square You Hit', points: 2, emoji: '🎯', note: 'No line needed to score. Long-press a square to read the full text.' },
+            { label: 'Complete a Line', points: 5, emoji: '➖' },
+            { label: 'Blackout (Full Card)', points: 50, emoji: '🌑' },
         ],
     },
     {
         section: 'Passport',
         icon: '📜',
         items: [
-            { label: 'Passport (sealed at merge)', points: '5 each', emoji: '🛂', note: 'Five long-term picks sealed when the merge hits. Each correct call pays 5 pts at the finale reveal.' },
+            { label: 'Passport (sealed at merge)', points: '5 each', emoji: '🛂', note: 'Sole Survivor · First Juror · Fan Favorite · Biggest Villain · Fire-Making Winner. Sealed when the merge hits, revealed at the finale. Once sealed, it stays sealed.' },
         ],
     },
 ];
