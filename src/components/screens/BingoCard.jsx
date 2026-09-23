@@ -31,6 +31,9 @@ export default function BingoCard({ seed, episodeNum, marked: savedMarked, onSav
     const [bulaVisible, setBulaVisible] = useState(false);
     const [bulaType, setBulaType] = useState(null);
     const prevLinesRef = useRef(0);
+    // Lines that arrive from saved data are lines you already celebrated — on a
+    // rejoin, or on the read-only card in the Scores tab. Only your own taps count.
+    const userMarkedRef = useRef(false);
 
     const lines = useMemo(() => detectBingoLines(marked), [marked]);
     const blackout = useMemo(() => isBingoBlackout(marked), [marked]);
@@ -55,13 +58,16 @@ export default function BingoCard({ seed, episodeNum, marked: savedMarked, onSav
     }, [marked]);
 
     useEffect(() => {
-        if (lines.length > prevLinesRef.current) {
+        // Record the count before deciding, so unmarking a square cannot celebrate
+        // a line you just lost.
+        const prevLines = prevLinesRef.current;
+        prevLinesRef.current = lines.length;
+        if (userMarkedRef.current && lines.length > prevLines) {
             setBulaType(blackout ? 'blackout' : 'bingo'); // eslint-disable-line react-hooks/set-state-in-effect -- celebration trigger
             setBulaVisible(true);
             const t = setTimeout(() => setBulaVisible(false), BULA_DURATION);
             return () => clearTimeout(t);
         }
-        prevLinesRef.current = lines.length;
     }, [lines.length, blackout]);
 
     // Long-press tooltip
@@ -94,6 +100,7 @@ export default function BingoCard({ seed, episodeNum, marked: savedMarked, onSav
             return;
         }
         if (i === 12 || disabled) return;
+        userMarkedRef.current = true;
         setMarked(prev => {
             const next = [...prev];
             next[i] = !next[i];
@@ -123,7 +130,12 @@ export default function BingoCard({ seed, episodeNum, marked: savedMarked, onSav
                         <p className="text-white/80 text-sm mt-2 font-sans">
                             {bulaType === 'blackout' ? 'Full card. +50.' : `A line. +5 on top of your squares.`}
                         </p>
-                        <p className="text-white/50 text-xs mt-3 font-sans">Tap to dismiss</p>
+                        <p className="font-wood-serif text-2xl italic text-white mt-3 drop-shadow-text">
+                            &quot;Jeff!&quot;
+                        </p>
+                        <p className="text-white/50 text-xs mt-1 font-sans">
+                            If you feel like yelling. Tap to dismiss.
+                        </p>
                     </div>
                 </div>
             )}
