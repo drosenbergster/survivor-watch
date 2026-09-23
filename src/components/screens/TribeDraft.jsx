@@ -31,13 +31,13 @@ export default function TribeDraft({ episodeNum }) {
             <FijianCard className="p-4 text-center border-ochre/40">
                 <p className="font-display text-2xl tracking-wider text-ochre">Premiere Draft</p>
                 <p className="text-sand-warm/60 text-xs mt-1 font-sans">
-                    Four castaways tonight, one Captain. Your bingo card opens once you lock it.
+                    Five castaways tonight, one Captain. Your bingo card opens once you lock it.
                 </p>
             </FijianCard>
 
             <WeeklyPicks
                 title="Your Draft"
-                lede="Now that you have seen the tribes, draft the castaways who score for you tonight — the premiere gets an extra one. They save as you tap."
+                lede="Now that you have seen the tribes, draft the castaways who score for you tonight — premiere night is the widest draft of the season. They save as you tap."
                 captainNudge="Star one of your picks as Captain before you lock your draft."
             />
 

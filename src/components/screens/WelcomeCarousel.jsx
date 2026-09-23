@@ -10,7 +10,7 @@ const SLIDES = [
     {
         icon: '🔮',
         title: 'Before the episode: Call It',
-        body: 'Answer Tree Mail, then pick 3 castaways. In the premiere you draft 4 instead, part way through, once you have seen the tribes.',
+        body: 'Answer Tree Mail, then pick your castaways. In the premiere you draft 5 part way through, once you have seen the tribes.',
     },
     {
         icon: '🔥',

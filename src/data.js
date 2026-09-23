@@ -136,7 +136,7 @@ export const ENGAGEMENT_SCORING = [
         section: 'Weekly Picks',
         icon: '🎯',
         items: [
-            { label: 'Pick 3 castaways', points: '—', emoji: '🗳️', note: 'They earn you their event points for the episode. Change them every week. In the premiere you draft 4, mid-episode, once the buffs are handed out.' },
+            { label: 'Pick your castaways', points: '—', emoji: '🗳️', note: 'They earn you their event points for the episode. Change them every week. The app tells you how many — 5 on premiere night, then fewer as the field thins, never below 2.' },
             { label: 'Captain', points: '2×', emoji: '⭐', note: 'Star one of your picks each week. They score double. Pick the one you believe in.' },
         ],
     },
@@ -354,13 +354,25 @@ export function resolveBets(importData, bets) {
 export const PICKS_START_EPISODE = 2;
 // The premiere drafts mid-episode instead, right after the buffs are handed out.
 export const DRAFT_EPISODE = 1;
-export const MAX_PICKS = 3;
 // The premiere runs two hours against the widest field of the season.
-export const PREMIERE_PICKS = 4;
+export const PREMIERE_PICKS = 5;
+// Two is a floor, not a minimum that happens to be low: at one pick the Captain
+// star has nothing to choose between, and that is the best weekly decision there is.
+export const MIN_PICKS = 2;
+
+// Wide early, narrower as the field thins. A roster everyone else also owns is not
+// a decision, and holding the count flat would converge everybody at the merge.
+const PICK_TIERS = [
+    { atLeast: 15, picks: 4 },
+    { atLeast: 9, picks: 3 },
+];
 
 export function getMaxPicks(remainingCount, episodeNum) {
-    const cap = Number(episodeNum) === DRAFT_EPISODE ? PREMIERE_PICKS : MAX_PICKS;
-    return Math.min(cap, Math.floor(remainingCount / 2));
+    const cap = Number(episodeNum) === DRAFT_EPISODE
+        ? PREMIERE_PICKS
+        : (PICK_TIERS.find(t => remainingCount >= t.atLeast)?.picks ?? MIN_PICKS);
+    // Always leave at least one castaway you did not pick.
+    return Math.min(cap, Math.max(1, remainingCount - 1));
 }
 
 // ── Island Bingo ──
