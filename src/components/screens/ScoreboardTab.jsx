@@ -403,9 +403,9 @@ export default function ScoreboardTab({ onTabChange }) {
                                         Bingo
                                     </p>
                                     <div className="space-y-0.5">
-                                        <ScoreGuideRow emoji="🎯" label="Each square you hit" value="+2" />
+                                        <ScoreGuideRow emoji="🎯" label="Each square you hit" value="+1" />
                                         <ScoreGuideRow emoji="➖" label="Complete a line (5 in a row)" value="+5" />
-                                        <ScoreGuideRow emoji="🌑" label="Blackout (all 25 squares)" value="+50" />
+                                        <ScoreGuideRow emoji="🌑" label="Blackout, instead of your lines" value="+50" />
                                     </div>
                                 </div>
 

@@ -177,9 +177,9 @@ export const ENGAGEMENT_SCORING = [
         section: 'Bingo',
         icon: '🎱',
         items: [
-            { label: 'Each Square You Hit', points: 2, emoji: '🎯', note: 'No line needed to score. Long-press a square to read the full text.' },
+            { label: 'Each Square You Hit', points: 1, emoji: '🎯', note: 'No line needed to score. Long-press a square to read the full text.' },
             { label: 'Complete a Line', points: 5, emoji: '➖' },
-            { label: 'Blackout (Full Card)', points: 50, emoji: '🌑' },
+            { label: 'Blackout (Full Card)', points: 50, emoji: '🌑', note: 'Paid instead of your line bonuses, not on top of them. Your squares still count.' },
         ],
     },
     {

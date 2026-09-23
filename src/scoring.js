@@ -13,7 +13,12 @@ const SCORE_MAP = Object.fromEntries(SCORE_EVENTS.map(e => [e.key, e.points]));
 const CAPTAIN_MULTIPLIER = 2;
 const CORRECT_PROP_BET_POINTS = 3;
 const CORRECT_SNAP_VOTE_POINTS = 8;
-const BINGO_SQUARE_POINTS = 2;
+// A square is worth a point rather than two, and a blackout pays instead of the
+// line bonuses rather than on top of them. Stacked, a full card was worth 158 —
+// more than two nights of good drafting — which let marking squares outscore
+// every decision in the game. Note the blackout still pays its squares, so
+// completing the card can never leave you worse off than stopping at 23.
+const BINGO_SQUARE_POINTS = 1;
 const BINGO_LINE_POINTS = 5;
 const BINGO_BLACKOUT_POINTS = 50;
 
@@ -126,15 +131,17 @@ export function scoreEpisode(episodeData, memberUids, bingoData) {
                 bingoTotal += pts;
                 breakdown.bingo.push({ type: 'squares', count: squares, points: pts });
             }
-            const lines = detectBingoLines(playerBingo);
-            if (lines.length > 0) {
-                const pts = lines.length * BINGO_LINE_POINTS;
-                bingoTotal += pts;
-                breakdown.bingo.push({ type: 'lines', count: lines.length, points: pts });
-            }
-            if (isBingoBlackout(playerBingo)) {
+            const blackout = isBingoBlackout(playerBingo);
+            if (blackout) {
                 bingoTotal += BINGO_BLACKOUT_POINTS;
                 breakdown.bingo.push({ type: 'blackout', points: BINGO_BLACKOUT_POINTS });
+            } else {
+                const lines = detectBingoLines(playerBingo);
+                if (lines.length > 0) {
+                    const pts = lines.length * BINGO_LINE_POINTS;
+                    bingoTotal += pts;
+                    breakdown.bingo.push({ type: 'lines', count: lines.length, points: pts });
+                }
             }
         }
 

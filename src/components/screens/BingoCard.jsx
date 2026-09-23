@@ -8,7 +8,7 @@ const TOOLTIP_DURATION = 2500;
 const BINGO_HEADERS = ['B', 'I', 'N', 'G', 'O'];
 
 // Mirrors the values in scoring.js so the card can show a running total.
-const SQUARE_POINTS = 2;
+const SQUARE_POINTS = 1;
 const LINE_POINTS = 5;
 const BLACKOUT_POINTS = 50;
 
@@ -38,9 +38,9 @@ export default function BingoCard({ seed, episodeNum, marked: savedMarked, onSav
     const lines = useMemo(() => detectBingoLines(marked), [marked]);
     const blackout = useMemo(() => isBingoBlackout(marked), [marked]);
     const squaresHit = useMemo(() => countBingoSquares(marked), [marked]);
+    // A blackout pays instead of the line bonuses, not on top of them.
     const points = squaresHit * SQUARE_POINTS
-        + lines.length * LINE_POINTS
-        + (blackout ? BLACKOUT_POINTS : 0);
+        + (blackout ? BLACKOUT_POINTS : lines.length * LINE_POINTS);
 
     const winningSquares = useMemo(() => {
         const s = new Set();
@@ -128,7 +128,7 @@ export default function BingoCard({ seed, episodeNum, marked: savedMarked, onSav
                             {bulaType === 'blackout' ? 'Blackout' : 'Bingo'}
                         </p>
                         <p className="text-white/80 text-sm mt-2 font-sans">
-                            {bulaType === 'blackout' ? 'Full card. +50.' : `A line. +5 on top of your squares.`}
+                            {bulaType === 'blackout' ? 'Full card. +50 instead of your lines.' : 'A line. +5 on top of your squares.'}
                         </p>
                         <p className="font-wood-serif text-2xl italic text-white mt-3 drop-shadow-text">
                             &quot;Jeff!&quot;
