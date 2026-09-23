@@ -176,6 +176,20 @@ function TribeSwapPanel({ episodeNum }) {
         setTribes(prev => prev.map(t => (t.key === key ? { ...t, name } : t)));
     };
 
+    const addTribe = () => {
+        const key = `t${Date.now()}`;
+        setTribes(prev => [...prev, { key, name: '' }]);
+        setMembers(prev => ({ ...prev, [key]: [] }));
+    };
+
+    const removeTribe = (key) => {
+        setTribes(prev => prev.filter(t => t.key !== key));
+        setMembers(prev => {
+            const { [key]: orphaned = [], ...rest } = prev;
+            return { ...rest, [HOLDING]: [...(rest[HOLDING] || []), ...orphaned] };
+        });
+    };
+
     const unsorted = members[HOLDING] || [];
     const trimmedNames = tribes.map(t => t.name.trim());
     const namesFilled = trimmedNames.every(Boolean);
@@ -210,6 +224,7 @@ function TribeSwapPanel({ episodeNum }) {
             <p className="text-clay text-xs font-serif italic">
                 Name each tribe as the show reveals it, then sort the castaways. Use this
                 for the starting tribes after the premiere and again for any swap later on.
+                If somebody starts without a buff, add a bucket for them — a tribe of one is fine.
             </p>
 
             <div className="max-w-32">
@@ -224,14 +239,34 @@ function TribeSwapPanel({ episodeNum }) {
             </div>
 
             {tribes.map(t => (
-                <FijianInput
-                    key={t.key}
-                    value={t.name}
-                    onChange={e => rename(t.key, e.target.value)}
-                    label="Tribe name"
-                    placeholder="e.g. Uli"
-                />
+                <div key={t.key} className="flex items-end gap-2">
+                    <div className="flex-1 min-w-0">
+                        <FijianInput
+                            value={t.name}
+                            onChange={e => rename(t.key, e.target.value)}
+                            label="Tribe name"
+                            placeholder="e.g. Uli"
+                        />
+                    </div>
+                    {tribes.length > 1 && (
+                        <button
+                            onClick={() => removeTribe(t.key)}
+                            aria-label={`Remove ${t.name.trim() || 'unnamed tribe'}`}
+                            className="shrink-0 h-14 px-3 rounded-lg border border-earth/30 text-sand-warm/40 hover:text-clay hover:border-clay/40 transition-all cursor-pointer"
+                        >
+                            <Icon name="close" />
+                        </button>
+                    )}
+                </div>
             ))}
+
+            <button
+                onClick={addTribe}
+                className="flex items-center gap-1.5 text-xs font-sans text-sand-warm/50 hover:text-ochre transition-colors cursor-pointer"
+            >
+                <Icon name="add" className="text-sm" />
+                Add a tribe
+            </button>
 
             {buckets.map(bucket => {
                 const ids = members[bucket.key] || [];

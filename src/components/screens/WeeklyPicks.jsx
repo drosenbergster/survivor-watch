@@ -16,7 +16,7 @@ export default function WeeklyPicks({ title = 'Weekly Picks', lede, captainNudge
 
     const eliminatedSet = new Set(safeEliminated || []);
     const remaining = ALL_CASTAWAYS.filter(c => !eliminatedSet.has(c.id));
-    const maxPicks = getMaxPicks(remaining.length);
+    const maxPicks = getMaxPicks(remaining.length, myEpisode);
 
     const tribeOverrides = useMemo(
         () => getEffectiveTribeAssignments(tribeSwaps, myEpisode),

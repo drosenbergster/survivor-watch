@@ -397,7 +397,7 @@ export function AppProvider({ children }) {
         const ep = episodes?.[episodeNum];
         const playerPicks = ep?.picks?.[user.uid] || [];
         const elimSet = new Set(eliminated || []);
-        const maxPicks = getMaxPicks(ALL_CASTAWAYS.filter(c => !elimSet.has(c.id)).length);
+        const maxPicks = getMaxPicks(ALL_CASTAWAYS.filter(c => !elimSet.has(c.id)).length, episodeNum);
         if (playerPicks.length < maxPicks) {
             throw new Error(`Pick ${maxPicks} castaways before locking your draft (currently ${playerPicks.length})`);
         }
@@ -432,7 +432,7 @@ export function AppProvider({ children }) {
             const playerPicks = ep?.picks?.[user.uid] || [];
             const elimSet = new Set(eliminated || []);
             const remainingCount = ALL_CASTAWAYS.filter(c => !elimSet.has(c.id)).length;
-            const maxPicks = getMaxPicks(remainingCount);
+            const maxPicks = getMaxPicks(remainingCount, episodeNum);
             if (playerPicks.length < maxPicks) {
                 throw new Error(`You need ${maxPicks} picks before lighting your torch (currently ${playerPicks.length})`);
             }

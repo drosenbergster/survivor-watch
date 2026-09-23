@@ -136,8 +136,8 @@ export const ENGAGEMENT_SCORING = [
         section: 'Weekly Picks',
         icon: '🎯',
         items: [
-            { label: 'Pick 3 castaways', points: '—', emoji: '🗳️', note: 'They earn you their event points for the episode. Change them every week. Picks open in Episode 2 — the premiere is for meeting the cast.' },
-            { label: 'Captain', points: '2×', emoji: '⭐', note: 'Star one of your three each week. They score double. Pick the one you believe in.' },
+            { label: 'Pick 3 castaways', points: '—', emoji: '🗳️', note: 'They earn you their event points for the episode. Change them every week. In the premiere you draft 4, mid-episode, once the buffs are handed out.' },
+            { label: 'Captain', points: '2×', emoji: '⭐', note: 'Star one of your picks each week. They score double. Pick the one you believe in.' },
         ],
     },
     {
@@ -355,9 +355,12 @@ export const PICKS_START_EPISODE = 2;
 // The premiere drafts mid-episode instead, right after the buffs are handed out.
 export const DRAFT_EPISODE = 1;
 export const MAX_PICKS = 3;
+// The premiere runs two hours against the widest field of the season.
+export const PREMIERE_PICKS = 4;
 
-export function getMaxPicks(remainingCount) {
-    return Math.min(MAX_PICKS, Math.floor(remainingCount / 2));
+export function getMaxPicks(remainingCount, episodeNum) {
+    const cap = Number(episodeNum) === DRAFT_EPISODE ? PREMIERE_PICKS : MAX_PICKS;
+    return Math.min(cap, Math.floor(remainingCount / 2));
 }
 
 // ── Island Bingo ──
