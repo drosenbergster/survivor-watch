@@ -377,123 +377,128 @@ export function resolveBets(importData, bets) {
 
 // ── Island Bingo ──
 // Mark it the moment it happens. Short, because the square is tiny and the
-// label is uppercase. No freebies that hit every episode (the logo, palm trees,
-// a confessional existing). Seven lanes, so a random card cannot be eight
-// versions of Jeff's shirt.
+// label is uppercase. Seven lanes, so a random card cannot be eight versions
+// of Jeff's shirt.
+//
+// Three rules earn a square its place:
+//   1. It must be able to NOT happen. Anything that lands every single episode
+//      is a formality, not a square — no torch snuffing, no reading of votes,
+//      no "the tribe has spoken."
+//   2. It must be possible tonight. Nothing gated behind the merge, because a
+//      premiere card that contains it is unwinnable in that spot.
+//   3. A judgment call is welcome if it starts an argument ("was that a dad
+//      joke?"), and unwelcome if it is quietly always true (a slow push-in).
 
 export const BINGO_ITEMS = [
     // Jeff, the lines and the bits
-    'Jeff: "Come on in!"',
     '"Worth playing for?"',
     'Jeff: "Dig deep"',
-    '"The tribe has spoken"',
-    'Jeff snuffs a torch',
     '"Got nothin\' for ya"',
-    'Jeff reads the votes',
-    '"Grab your torches"',
     'A Probst dad joke',
-    'Jeff asks for final words',
-    '"Immunity is back up"',
-    'The Probst stare-down',
+    '"Permanent uncertainty"',
+    'Jeff says "Open Era"',
+    'Jeff wades in after them',
+    'Jeff needles somebody',
     // The edit, not the scenery
     'Villain music hits',
     'A whisper, subtitled',
-    'A vote in close-up',
     'A flashback insert',
     'Sad music, big smile',
-    'A stare, no dialogue',
     'A nickname on the chyron',
-    'Smash cut to a chicken',
-    'The voting confessional',
     'An "hours later" card',
-    'Someone narrates the lie',
-    'A slow push-in on a face',
+    'A rat or a crab on screen',
+    'Night vision at camp',
+    'A clip from an old season',
+    'A confessional in the rain',
     // Words you hear them say
     '"It\'s a big move"',
     '"I trust them completely"',
     '"I\'m on the bottom"',
     '"We need a decoy"',
-    '"It\'s just a vote"',
-    'They count the numbers',
     'A name gets walked back',
     '"I\'m a free agent"',
     '"Don\'t tell the others"',
     'Someone says "blindsided"',
     '"They\'re coming for me"',
     '"I have the numbers"',
+    '"I\'m playing my own game"',
+    '"This is my dream"',
     // The challenge, the beat not the prop
     'A puzzle piece won\'t fit',
     'Wipes out on the beam',
     'Jeff stops the challenge',
     'Sitting out on the bench',
-    'The lead changes hands',
     'A knot that will not budge',
-    'The bag hits the ground',
     'A full-body splash',
-    'The tribe flag goes in',
     '"Dig, dig, dig!"',
-    'The necklace goes on',
-    'Benched off the puzzle',
+    'The finish flag goes up',
+    'Immunity gets handed over',
+    'A crate drags up the beach',
+    'Someone slips on the mud',
     // Idols and paper
     'Sneaks away from camp',
     'A clue, read whispering',
     'Digging after dark',
-    'An idol out of a bag',
+    'An idol gets unwrapped',
     '"Do not open this"',
     'The Shot in the Dark die',
     'Idol shown to one ally',
-    'An advantage hits the mat',
+    'An advantage gets played',
     '"I know where it is"',
     'A Beware Advantage',
-    'Someone clocks a search',
-    'A fake-idol theory',
+    'Somebody makes a fake idol',
+    'A vote steal or extra vote',
     // Camp, when it becomes a scene
     'A fight over the rice',
     'The machete comes out',
-    'Tree mail hits camp',
     '"I am so hungry"',
     'Strategy at the well',
     'The shelter sags',
-    'Food does not get shared',
+    'Somebody hides food',
     'A bug-bite meltdown',
     '"This tribe is a mess"',
     'Quiet after a blindside',
     'A reward feast',
     'Fire that will not catch',
+    'Rain soaks the camp',
     // Tribal, mark it when it happens
-    '"Play it if you\'ve got it"',
     'A throwaway vote',
     'Jeff calls a revote',
     'Someone stands to play',
-    '"Anything left to say?"',
     'People stand. Live tribal',
     '"Give me a minute"',
-    'A juror shakes it off',
-    'Jeff asks it again',
-    'A vote gets crossed out',
-    '"I\'ll go tally the votes"',
+    'A vote does not count',
     'Somebody cries at tribal',
+    'A whisper huddle at tribal',
+    'Someone changes their mind',
+    'The vote is unanimous',
+    'A name said out loud',
 ];
 
-// Premiere-only. Episode 1 cards reserve eight of these so the two-hour open
-// is about the ship, the buffs, and the castaway who does not start.
+// Premiere-only. Episode 1 cards reserve eight of these so the two-hour open is
+// about the boat, the buffs, and the castaway who does not start with a tribe.
+// Drawn from what CBS has confirmed: Probst rings a bell to start, supplies get
+// thrown off the boat and swum in, the note reads "Find your name, grab your
+// BUFF," the tribes are yellow and purple, and one player leaves the beach for a
+// journey. Beats that are certain to happen are left out on purpose — the ship
+// and the jump are in the public sneak peek, so they are scenery, not squares.
 export const PREMIERE_BINGO_ITEMS = [
-    'The ship in the open',
-    'Someone jumps off',
-    'A blindfold',
-    'Two different buffs',
+    'Probst rings the bell',
+    'Supplies hit the water',
+    'Somebody swims it in',
+    '"Find your name"',
     'A buff yanked on',
-    '"There are 21 of you"',
-    'The 21st held back',
-    'The marooning sprint',
+    'Yellow vs purple',
+    'One player is sent away',
+    'Somebody says "21"',
     'A note read out loud',
     '"I have wanted this"',
-    'The word "alliance"',
-    'Jeff names the twist',
-    'The whole cast, one mat',
     'Already crying',
     'A buff as a headband',
-    'Camp with no shelter',
+    'Bamboo comes off the boat',
+    'A name is mispronounced',
+    'Nobody knows what to do',
+    'An alliance in hour one',
 ];
 
 // Hash a string to a numeric seed
