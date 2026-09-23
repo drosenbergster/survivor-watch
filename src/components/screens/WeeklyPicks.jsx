@@ -106,7 +106,7 @@ export default function WeeklyPicks({ title = 'Weekly Picks', lede, captainNudge
             </div>
 
             <p className="text-sand-warm/60 text-xs font-sans leading-relaxed">
-                {lede || <>Choose {maxPicks} castaways to score for you this episode. They save as you tap.</>}
+                {lede || <>Choose {maxPicks} castaways to score for you this episode — fewer as the field thins. They save as you tap.</>}
                 {' '}Tap the star on one of them to make them your{' '}
                 <strong className="text-ochre">Captain</strong> — they score{' '}
                 <strong className="text-ochre">double</strong>.
