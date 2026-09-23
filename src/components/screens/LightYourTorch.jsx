@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { FijianCard, FijianPrimaryButton, Icon } from '../fijian';
 import { useApp } from '../../AppContext';
+import { DRAFT_EPISODE } from '../../data';
 
 export default function LightYourTorch({ episodeNum }) {
-    const { lightTorch, markWatched, isWatching, hasWatched } = useApp();
+    const { lightTorch, markWatched, isWatching, hasWatched, hasDrafted } = useApp();
     const [confirming, setConfirming] = useState(false);
     const [error, setError] = useState('');
 
     const watching = isWatching(episodeNum);
     const watched = hasWatched(episodeNum);
+    const draftPending = Number(episodeNum) === DRAFT_EPISODE && !hasDrafted(episodeNum);
 
     if (watched) {
         return (
@@ -28,7 +30,9 @@ export default function LightYourTorch({ episodeNum }) {
                     <span className="text-3xl animate-pulse">🔥</span>
                 </div>
                 <p className="text-sand-warm/70 text-xs font-sans">
-                    Picks and Tree Mail are locked. Mark a square if you feel like it.
+                    {draftPending
+                        ? 'Tree Mail is locked. Draft your castaways when they grab their buffs.'
+                        : 'Picks and Tree Mail are locked. Mark a square if you feel like it.'}
                 </p>
                 {!confirming ? (
                     <button
@@ -69,8 +73,9 @@ export default function LightYourTorch({ episodeNum }) {
             <div className="text-4xl">📺</div>
             <h3 className="font-display text-2xl text-sand-warm tracking-wider">Ready to Watch?</h3>
             <p className="text-sand-warm/60 text-sm font-sans max-w-xs mx-auto">
-                Your picks and Tree Mail are already saved. Lighting your torch locks
-                them in, and opens your bingo card and Snap Vote.
+                {draftPending
+                    ? 'Your Tree Mail is already saved. Lighting your torch locks it in and opens your castaway draft for when the buffs come out.'
+                    : 'Your picks and Tree Mail are already saved. Lighting your torch locks them in, and opens your bingo card and Snap Vote.'}
             </p>
             <FijianPrimaryButton onClick={async () => {
                 setError('');

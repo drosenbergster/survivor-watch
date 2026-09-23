@@ -390,6 +390,39 @@ export function AppProvider({ children }) {
         }
     }, [user, leagueId, league, eliminated]);
 
+    // Premiere draft: picks happen after the buffs are handed out, so this is the
+    // only lock they get. Tree Mail stays locked by the torch.
+    const lockDraft = useCallback(async (episodeNum) => {
+        if (!user || !leagueId) throw new Error('Not connected');
+        const ep = episodes?.[episodeNum];
+        const playerPicks = ep?.picks?.[user.uid] || [];
+        const elimSet = new Set(eliminated || []);
+        const maxPicks = getMaxPicks(ALL_CASTAWAYS.filter(c => !elimSet.has(c.id)).length);
+        if (playerPicks.length < maxPicks) {
+            throw new Error(`Pick ${maxPicks} castaways before locking your draft (currently ${playerPicks.length})`);
+        }
+        const captain = ep?.captains?.[user.uid];
+        if (!captain || !playerPicks.includes(captain)) {
+            throw new Error('Star one of your picks as Captain before locking your draft');
+        }
+
+        const path = `leagues/${leagueId}/watchStatus/${episodeNum}/${user.uid}/draftLockedAt`;
+        if (db) {
+            await set(ref(db, path), Date.now());
+        } else {
+            setWatchStatus(prev => ({
+                ...prev,
+                [episodeNum]: {
+                    ...(prev[episodeNum] || {}),
+                    [user.uid]: {
+                        ...(prev[episodeNum]?.[user.uid] || {}),
+                        draftLockedAt: Date.now(),
+                    },
+                },
+            }));
+        }
+    }, [user, leagueId, episodes, eliminated]);
+
     const lightTorch = useCallback(async (episodeNum) => {
         if (!user || !leagueId) return;
 
@@ -483,6 +516,13 @@ export function AppProvider({ children }) {
         if (!ws || !user) return false;
         const playerWs = ws[user.uid];
         return !!(playerWs?.picksLockedAt || playerWs?.watching || playerWs?.watchedAt);
+    }, [watchStatus, user]);
+
+    // The premiere draft happens mid-episode, so it carries its own lock.
+    const hasDrafted = useCallback((episodeNum) => {
+        const ws = watchStatus[episodeNum];
+        if (!ws || !user) return false;
+        return !!ws[user.uid]?.draftLockedAt;
     }, [watchStatus, user]);
 
     // --- Phase 9: Tribe management, passport, finale ---
@@ -855,7 +895,7 @@ export function AppProvider({ children }) {
         currentEpisode, episodeData, myEpisode, myEpisodeData, episodes, eliminated, safeEliminated,
         watchStatus, bingo,
         tribeSwaps, isMerged, currentTribes, finaleData,
-        lightTorch, markWatched, advanceEpisode, setMyEpisode, saveBingoMarks, hasWatched, isWatching, hasLockedPicks,
+        lightTorch, lockDraft, markWatched, advanceEpisode, setMyEpisode, saveBingoMarks, hasWatched, isWatching, hasLockedPicks, hasDrafted,
         syncStatus, onboardingComplete,
         joinWatchParty, completeOnboarding,
         createEpisode, updatePropBets, submitPicks, submitCaptain, submitPredictions,

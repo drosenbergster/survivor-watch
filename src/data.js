@@ -352,6 +352,8 @@ export function resolveBets(importData, bets) {
 
 // Weekly picks start at Episode 2 — nobody has seen these 21 play before the premiere.
 export const PICKS_START_EPISODE = 2;
+// The premiere drafts mid-episode instead, right after the buffs are handed out.
+export const DRAFT_EPISODE = 1;
 export const MAX_PICKS = 3;
 
 export function getMaxPicks(remainingCount) {

@@ -3,7 +3,7 @@ import { useApp, getEffectiveTribeAssignments } from '../../AppContext';
 import { TRIBES, ALL_CASTAWAYS, getMaxPicks } from '../../data';
 import { FijianCard, FijianSectionHeader, Icon } from '../fijian';
 
-export default function WeeklyPicks() {
+export default function WeeklyPicks({ title = 'Weekly Picks', lede, captainNudge = 'Pick your Captain before you light your torch.' }) {
     const { user, myEpisode, myEpisodeData, safeEliminated, submitPicks, submitCaptain, tribeSwaps } = useApp();
 
     const myPicks = useMemo(() => myEpisodeData?.picks?.[user?.uid] || [], [myEpisodeData?.picks, user?.uid]);
@@ -99,22 +99,22 @@ export default function WeeklyPicks() {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <FijianSectionHeader title="Weekly Picks" className="!mb-0" />
+                <FijianSectionHeader title={title} className="!mb-0" />
                 <span className={`text-xs font-bold ${selected.length === maxPicks ? 'text-jungle-400' : 'text-ochre'}`}>
                     {selected.length}/{maxPicks}
                 </span>
             </div>
 
             <p className="text-sand-warm/60 text-xs font-sans leading-relaxed">
-                Choose {maxPicks} castaways to score for you this episode. They save as you tap.
-                Tap the star on one of them to make them your{' '}
+                {lede || <>Choose {maxPicks} castaways to score for you this episode. They save as you tap.</>}
+                {' '}Tap the star on one of them to make them your{' '}
                 <strong className="text-ochre">Captain</strong> — they score{' '}
                 <strong className="text-ochre">double</strong>.
             </p>
 
             {selected.length > 0 && !captain && (
                 <p className="text-ochre/80 text-xs font-sans text-center" role="status">
-                    Pick your Captain before you light your torch.
+                    {captainNudge}
                 </p>
             )}
 

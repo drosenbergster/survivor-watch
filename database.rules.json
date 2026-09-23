@@ -43,13 +43,13 @@
             "propBets": { ".write": "auth != null && root.child('leagues').child($leagueId).child('createdBy').val() === auth.uid" },
             "picks": {
               "$uid": {
-                ".write": "auth != null && auth.uid === $uid && !root.child('leagues').child($leagueId).child('watchStatus').child($epNum).child(auth.uid).child('picksLockedAt').exists()",
+                ".write": "auth != null && auth.uid === $uid && (!root.child('leagues').child($leagueId).child('watchStatus').child($epNum).child(auth.uid).child('picksLockedAt').exists() || ($epNum === '1' && !root.child('leagues').child($leagueId).child('watchStatus').child($epNum).child(auth.uid).child('draftLockedAt').exists()))",
                 ".validate": "newData.hasChildren()"
               }
             },
             "captains": {
               "$uid": {
-                ".write": "auth != null && auth.uid === $uid && !root.child('leagues').child($leagueId).child('watchStatus').child($epNum).child(auth.uid).child('picksLockedAt').exists()",
+                ".write": "auth != null && auth.uid === $uid && (!root.child('leagues').child($leagueId).child('watchStatus').child($epNum).child(auth.uid).child('picksLockedAt').exists() || ($epNum === '1' && !root.child('leagues').child($leagueId).child('watchStatus').child($epNum).child(auth.uid).child('draftLockedAt').exists()))",
                 ".validate": "!newData.exists() || newData.isString()"
               }
             },

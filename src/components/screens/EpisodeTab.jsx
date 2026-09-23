@@ -7,6 +7,7 @@ import WeeklyPicks from './WeeklyPicks';
 import Predictions from './Predictions';
 import EpisodeLockScreen from './EpisodeLockScreen';
 import TribalSnapVote from './TribalSnapVote';
+import TribeDraft from './TribeDraft';
 import ProbstRecap from './ProbstRecap';
 import MergePassport from './MergePassport';
 import FinaleMode from './FinaleMode';
@@ -14,12 +15,12 @@ import LightYourTorch from './LightYourTorch';
 import BingoCard from './BingoCard';
 import TribeFire from './TribeFire';
 import FireCircle from './FireCircle';
-import { PICKS_START_EPISODE, SEASON_LABEL } from '../../data';
+import { PICKS_START_EPISODE, DRAFT_EPISODE, SEASON_LABEL } from '../../data';
 
 export default function EpisodeTab() {
     const {
         user, myEpisode, myEpisodeData, leagueId,
-        isWatching, hasWatched, hasLockedPicks,
+        isWatching, hasWatched, hasLockedPicks, hasDrafted,
         advanceEpisode, saveBingoMarks, bingo,
         isMerged, mergePassports, finaleData,
     } = useApp();
@@ -38,6 +39,10 @@ export default function EpisodeTab() {
     // Castaway picks begin in Episode 2 — the premiere is the group's first look at this cast.
     const picksOpen = !!myEpisode && Number(myEpisode) >= PICKS_START_EPISODE;
 
+    // The premiere drafts mid-episode instead, once the buffs are handed out.
+    const draftsTonight = !!myEpisode && Number(myEpisode) === DRAFT_EPISODE;
+    const draftPending = draftsTonight && !hasDrafted(myEpisode);
+
     const bingoSeed = user ? `${leagueId}-${myEpisode}-${user.uid}` : 'fallback';
     const bingoMarked = bingo?.[myEpisode]?.[user?.uid];
     const handleBingoSave = useCallback((marked) => {
@@ -47,13 +52,14 @@ export default function EpisodeTab() {
     const headerSubtitle = useMemo(() => {
         if (episodePendingSync) return 'Loading episode data…';
         if (!hasEpisode) return null;
+        if (watching && draftPending) return 'Your torch is lit — draft when the buffs come out.';
         if (watching) return 'Your torch is lit — enjoy the show.';
         if (watched && isScored) return 'Episode complete. Review your results below.';
         if (watched) return 'Waiting for the host to score this episode.';
         return picksOpen
             ? 'Make your picks and Tree Mail, then light your torch.'
-            : 'Answer your Tree Mail, then light your torch. No castaway picks tonight — you meet them first.';
-    }, [episodePendingSync, hasEpisode, watching, watched, isScored, picksOpen]);
+            : 'Answer your Tree Mail, then light your torch. You draft castaways once the tribes are handed out.';
+    }, [episodePendingSync, hasEpisode, watching, watched, isScored, picksOpen, draftPending]);
 
     if (isFinaleActive) {
         return (
@@ -80,7 +86,7 @@ export default function EpisodeTab() {
                             <HintBadge hintKey="picks">
                                 {picksOpen
                                     ? 'Pick castaways and answer Tree Mail. They save as you go. Tap "Light Your Torch" when you sit down to watch.'
-                                    : 'Answer Tree Mail, then tap "Light Your Torch" when you sit down to watch. Castaway picks open in Episode 2.'}
+                                    : 'Answer Tree Mail, then tap "Light Your Torch" when you sit down to watch. Your castaway draft opens a few minutes in, once they grab their buffs.'}
                             </HintBadge>
                         )}
                     </p>
@@ -116,17 +122,23 @@ export default function EpisodeTab() {
             {hasEpisode && watching && (
                 <>
                     <LightYourTorch episodeNum={myEpisode} />
-                    <div className="max-w-md mx-auto">
-                        <BingoCard
-                            seed={bingoSeed}
-                            episodeNum={myEpisode}
-                            marked={bingoMarked}
-                            onSave={handleBingoSave}
-                            disabled={false}
-                        />
-                    </div>
-                    <TribalSnapVote episodeNum={myEpisode} />
-                    <EpisodeLockScreen />
+                    {draftPending ? (
+                        <TribeDraft episodeNum={myEpisode} />
+                    ) : (
+                        <>
+                            <div className="max-w-md mx-auto">
+                                <BingoCard
+                                    seed={bingoSeed}
+                                    episodeNum={myEpisode}
+                                    marked={bingoMarked}
+                                    onSave={handleBingoSave}
+                                    disabled={false}
+                                />
+                            </div>
+                            <TribalSnapVote episodeNum={myEpisode} />
+                            <EpisodeLockScreen />
+                        </>
+                    )}
                 </>
             )}
 
