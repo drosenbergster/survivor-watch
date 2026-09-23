@@ -1,4 +1,4 @@
-# Style Guide — Survivor 50 Watch Party HQ
+# Style Guide — Survivor 51 Watch Party HQ
 
 Design system and CSS architecture.
 
@@ -26,7 +26,7 @@ Import from `../fijian`:
 | Component | Use for |
 |-----------|---------|
 | `MasiBackground` | Full-screen backgrounds (e.g. AuthScreen) |
-| `FijianHero` | Hero title block (SURVIVOR 50) |
+| `FijianHero` | Hero title block (SURVIVOR 51) |
 | `FijianCard` | Cards, sections, containers |
 | `FijianSectionHeader` | Section titles with optional subtitle |
 | `FijianInput` | Text inputs with optional label (auto-wires `htmlFor`/`id`) |
