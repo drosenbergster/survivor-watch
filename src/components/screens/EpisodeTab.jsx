@@ -12,6 +12,8 @@ import MergePassport from './MergePassport';
 import FinaleMode from './FinaleMode';
 import LightYourTorch from './LightYourTorch';
 import BingoCard from './BingoCard';
+import TribeFire from './TribeFire';
+import FireCircle from './FireCircle';
 import { PICKS_START_EPISODE, SEASON_LABEL } from '../../data';
 
 export default function EpisodeTab() {
@@ -59,6 +61,7 @@ export default function EpisodeTab() {
                 <header className="text-center">
                     <h2 className="font-display text-3xl tracking-wider text-sand-warm drop-shadow-text">Finale</h2>
                 </header>
+                <TribeFire />
                 <FinaleMode />
             </div>
         );
@@ -83,6 +86,8 @@ export default function EpisodeTab() {
                     </p>
                 )}
             </header>
+
+            <TribeFire />
 
             <AdminEpisodeCard />
 
@@ -137,6 +142,8 @@ export default function EpisodeTab() {
                     </p>
                 </FijianCard>
             )}
+
+            {hasEpisode && watched && <FireCircle episodeNum={myEpisode} />}
 
             {watched && <AdminScoring episodeNum={myEpisode} />}
 

@@ -177,8 +177,13 @@ export function AppProvider({ children }) {
             });
             setEliminated(['aaliyah_puglia']);
             setWatchStatus({
-                1: { demo: { watching: false, watchedAt: Date.now() - 600000 }, bot1: { watchedAt: Date.now() - 500000 }, bot2: { watchedAt: Date.now() - 400000 }, bot3: { watchedAt: Date.now() - 300000 } },
-                2: {},
+                1: {
+                    demo: { watching: false, watchedAt: Date.now() - 600000 },
+                    bot1: { watchedAt: Date.now() - 500000 },
+                    // bot2 missed the scored episode: faded flame
+                },
+                // bot3 is catching up on the unscored episode: faded flame with a live pulse
+                2: { bot3: { watching: true, picksLockedAt: Date.now() } },
             });
             const demoBingo1 = Array(25).fill(false);
             demoBingo1[12] = true; // free space

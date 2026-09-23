@@ -36,7 +36,7 @@ const GAMEPLAY_STEPS = [
   { icon: '🔥', label: 'When you sit down to watch, tap "Light Your Torch." That locks your picks and Tree Mail, and opens your bingo card and Snap Vote.' },
   { icon: '🎱', label: 'While the show is on, mark bingo squares as things pop up. It is just a fun extra.' },
   { icon: '⚡', label: 'When they sit down at tribal, pause before Jeff asks anything and call who is going home (Snap Vote).' },
-  { icon: '📊', label: 'Tap "Done Watching" at the end. Results and standings unlock then — never before.' },
+  { icon: '📊', label: 'Tap "Done Watching" at the end. That seats you at the Fire Circle with everyone else who has finished, and unlocks results and standings — never before.' },
 ];
 
 const SCORING_CATEGORIES = (() => {

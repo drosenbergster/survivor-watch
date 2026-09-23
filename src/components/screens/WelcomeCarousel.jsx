@@ -15,12 +15,12 @@ const SLIDES = [
     {
         icon: '🔥',
         title: 'Light Your Torch to Watch',
-        body: 'One tap locks your picks and Tree Mail, and opens your bingo card and Snap Vote. Mark a square when it pops up.',
+        body: 'One tap locks your picks and Tree Mail, opens your bingo card and Snap Vote, and puts your flame up for the tribe to see. Mark a square when it pops up.',
     },
     {
         icon: '📺',
         title: 'Watch on Your Own Time',
-        body: 'Nothing is spoiled before you watch. Mark an episode done and the results and standings unlock at once.',
+        body: 'Nothing is spoiled before you watch. Mark an episode done to take your seat at the Fire Circle, where the results, the standings, and how the room called it all unlock at once.',
     },
 ];
 
