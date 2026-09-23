@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MasiBackground, FijianHero, FijianCard, FijianPrimaryButton, Icon } from '../fijian';
+import { PREMIERE_PICKS } from '../../data';
 
 const SLIDES = [
     {
@@ -10,7 +11,7 @@ const SLIDES = [
     {
         icon: '🔮',
         title: 'Before the episode: Call It',
-        body: 'Answer Tree Mail, then pick your castaways. In the premiere you draft 5 part way through, once you have seen the tribes.',
+        body: `Answer Tree Mail, then pick your castaways. In the premiere you draft ${PREMIERE_PICKS} part way through, once you have seen the tribes.`,
     },
     {
         icon: '🔥',

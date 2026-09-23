@@ -31,7 +31,7 @@ export default function TribeDraft({ episodeNum }) {
             <FijianCard className="p-4 text-center border-ochre/40">
                 <p className="font-display text-2xl tracking-wider text-ochre">Premiere Draft</p>
                 <p className="text-sand-warm/60 text-xs mt-1 font-sans">
-                    Five castaways tonight, one Captain. Your bingo card opens once you lock it.
+                    Take your picks and star a Captain. Your bingo card opens once you lock it.
                 </p>
             </FijianCard>
 

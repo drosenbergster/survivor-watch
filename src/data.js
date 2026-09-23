@@ -128,6 +128,31 @@ export const SCORE_EVENTS = [
     { key: 'shot_in_dark', label: 'Shot in the Dark', points: 2, emoji: '🎲' },
 ];
 
+// Weekly picks start at Episode 2 — nobody has seen these 21 play before the premiere.
+export const PICKS_START_EPISODE = 2;
+// The premiere drafts mid-episode instead, right after the buffs are handed out.
+export const DRAFT_EPISODE = 1;
+// The premiere runs two hours against the widest field of the season.
+export const PREMIERE_PICKS = 5;
+// Two is a floor, not a minimum that happens to be low: at one pick the Captain
+// star has nothing to choose between, and that is the best weekly decision there is.
+export const MIN_PICKS = 2;
+
+// Wide early, narrower as the field thins. A roster everyone else also owns is not
+// a decision, and holding the count flat would converge everybody at the merge.
+const PICK_TIERS = [
+    { atLeast: 15, picks: 4 },
+    { atLeast: 9, picks: 3 },
+];
+
+export function getMaxPicks(remainingCount, episodeNum) {
+    const cap = Number(episodeNum) === DRAFT_EPISODE
+        ? PREMIERE_PICKS
+        : (PICK_TIERS.find(t => remainingCount >= t.atLeast)?.picks ?? MIN_PICKS);
+    // Always leave at least one castaway you did not pick.
+    return Math.min(cap, Math.max(1, remainingCount - 1));
+}
+
 // The only four ways a player scores. This is the whole player-facing rulebook,
 // so every detail worth knowing lives here as a note rather than being restated
 // in prose elsewhere. Ordered the way a night actually goes.
@@ -136,7 +161,7 @@ export const ENGAGEMENT_SCORING = [
         section: 'Weekly Picks',
         icon: '🎯',
         items: [
-            { label: 'Pick your castaways', points: '—', emoji: '🗳️', note: 'They earn you their event points for the episode. Change them every week. The app tells you how many — 5 on premiere night, then fewer as the field thins, never below 2.' },
+            { label: 'Pick your castaways', points: '—', emoji: '🗳️', note: `They earn you their event points for the episode. Change them every week. The app tells you how many — ${PREMIERE_PICKS} on premiere night, then fewer as the field thins, never below ${MIN_PICKS}.` },
             { label: 'Captain', points: '2×', emoji: '⭐', note: 'Star one of your picks each week. They score double. Pick the one you believe in.' },
         ],
     },
@@ -348,31 +373,6 @@ export function resolveBets(importData, bets) {
         }
     }
     return results;
-}
-
-// Weekly picks start at Episode 2 — nobody has seen these 21 play before the premiere.
-export const PICKS_START_EPISODE = 2;
-// The premiere drafts mid-episode instead, right after the buffs are handed out.
-export const DRAFT_EPISODE = 1;
-// The premiere runs two hours against the widest field of the season.
-export const PREMIERE_PICKS = 5;
-// Two is a floor, not a minimum that happens to be low: at one pick the Captain
-// star has nothing to choose between, and that is the best weekly decision there is.
-export const MIN_PICKS = 2;
-
-// Wide early, narrower as the field thins. A roster everyone else also owns is not
-// a decision, and holding the count flat would converge everybody at the merge.
-const PICK_TIERS = [
-    { atLeast: 15, picks: 4 },
-    { atLeast: 9, picks: 3 },
-];
-
-export function getMaxPicks(remainingCount, episodeNum) {
-    const cap = Number(episodeNum) === DRAFT_EPISODE
-        ? PREMIERE_PICKS
-        : (PICK_TIERS.find(t => remainingCount >= t.atLeast)?.picks ?? MIN_PICKS);
-    // Always leave at least one castaway you did not pick.
-    return Math.min(cap, Math.max(1, remainingCount - 1));
 }
 
 // ── Island Bingo ──
