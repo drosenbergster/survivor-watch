@@ -173,21 +173,14 @@ async function resolveBetsForLeagues(db, episodeNum, importData) {
         if (!ep) continue;
 
         const propBets = ep.propBets || [];
-        const sideBets = ep.sideBets || [];
-        const allBets = [...propBets, ...sideBets];
-        if (allBets.length === 0 || !allBets[0].resolveType) continue;
+        if (propBets.length === 0 || !propBets[0].resolveType) continue;
 
-        const betResults = resolvePropBets(importData, allBets);
+        const betResults = resolvePropBets(importData, propBets);
         const propResults = {};
-        const sideResults = {};
         for (const bet of propBets) {
             if (betResults[bet.id] !== undefined) propResults[bet.id] = betResults[bet.id];
         }
-        for (const bet of sideBets) {
-            if (betResults[bet.id] !== undefined) sideResults[bet.id] = betResults[bet.id];
-        }
         await db.ref(`leagues/${leagueId}/episodes/${episodeNum}/autoResolvedPropBets`).set(propResults);
-        await db.ref(`leagues/${leagueId}/episodes/${episodeNum}/autoResolvedSideBets`).set(sideResults);
     }
 }
 

@@ -78,7 +78,7 @@ function ScarcityInfo({ episodeData, user }) {
 
     return (
         <FijianCard className="p-4">
-            <FijianSectionHeader title="Exclusivity Bonus" />
+            <FijianSectionHeader title="Sole Picker Bonus" />
             {exclusive.length > 0 && (
                 <div className="mb-3">
                     <div className="flex items-center gap-1.5 mb-1">
@@ -105,7 +105,7 @@ function ScarcityInfo({ episodeData, user }) {
                             const c = ALL_CASTAWAYS.find(x => x.id === id);
                             return (
                                 <span key={id} className="text-stone-400 text-xs bg-stone-800/50 px-2 py-0.5 rounded">
-                                    {c?.name || id} ({contestantCount[id]} owners)
+                                    {c?.name || id} ({contestantCount[id]} picked)
                                 </span>
                             );
                         })}

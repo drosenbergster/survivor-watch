@@ -618,56 +618,34 @@ function BigMomentsStep({ remaining, bigMoments, setBigMoments }) {
     );
 }
 
-/* ── step 4: prop bets + side bets ──────────────────────────── */
+/* ── step 4: Tree Mail outcomes ─────────────────────────────── */
 
-function BetResultsStep({ propBets, propBetResults, setPropBetResults, sideBets, sideBetResults, setSideBetResults }) {
-    if (propBets.length === 0 && sideBets.length === 0) {
+function BetResultsStep({ propBets, propBetResults, setPropBetResults }) {
+    if (propBets.length === 0) {
         return (
             <div className="space-y-3">
-                <SectionLabel>Bet Results</SectionLabel>
-                <HelpText>No Tree Mail or Tribal Whispers this episode.</HelpText>
+                <SectionLabel>Tree Mail Outcomes</SectionLabel>
+                <HelpText>No Tree Mail this episode.</HelpText>
             </div>
         );
     }
 
     return (
-        <div className="space-y-5">
-            {propBets.length > 0 && (
-                <div className="space-y-3">
-                    <SectionLabel>Tree Mail Outcomes</SectionLabel>
-                    <HelpText>Did this happen? Mark YES or NO.</HelpText>
-                    {propBets.map(prop => {
-                        const result = propBetResults[prop.id];
-                        return (
-                            <div key={prop.id} className="flex items-center gap-3 px-4 py-3 rounded-lg bg-stone-800 text-sm font-sans">
-                                <span className="flex-1 text-sand-warm/80">{prop.text}</span>
-                                <div className="flex gap-1 shrink-0">
-                                    <Chip active={result === true} color="green" onClick={() => setPropBetResults(prev => ({ ...prev, [prop.id]: true }))}>YES</Chip>
-                                    <Chip active={result === false} color="red" onClick={() => setPropBetResults(prev => ({ ...prev, [prop.id]: false }))}>NO</Chip>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
-            {sideBets.length > 0 && (
-                <div className="space-y-3">
-                    <SectionLabel>Tribal Whisper Outcomes</SectionLabel>
-                    <HelpText>Mark YES or NO.</HelpText>
-                    {sideBets.map(bet => {
-                        const result = sideBetResults[bet.id];
-                        return (
-                            <div key={bet.id} className="flex items-center gap-3 px-4 py-3 rounded-lg bg-stone-800 text-sm font-sans">
-                                <span className="flex-1 text-sand-warm/80">{bet.text}</span>
-                                <div className="flex gap-1 shrink-0">
-                                    <Chip active={result === true} color="green" onClick={() => setSideBetResults(prev => ({ ...prev, [bet.id]: true }))}>YES</Chip>
-                                    <Chip active={result === false} color="red" onClick={() => setSideBetResults(prev => ({ ...prev, [bet.id]: false }))}>NO</Chip>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
+        <div className="space-y-3">
+            <SectionLabel>Tree Mail Outcomes</SectionLabel>
+            <HelpText>Did this happen? Mark YES or NO.</HelpText>
+            {propBets.map(prop => {
+                const result = propBetResults[prop.id];
+                return (
+                    <div key={prop.id} className="flex items-center gap-3 px-4 py-3 rounded-lg bg-stone-800 text-sm font-sans">
+                        <span className="flex-1 text-sand-warm/80">{prop.text}</span>
+                        <div className="flex gap-1 shrink-0">
+                            <Chip active={result === true} color="green" onClick={() => setPropBetResults(prev => ({ ...prev, [prop.id]: true }))}>YES</Chip>
+                            <Chip active={result === false} color="red" onClick={() => setPropBetResults(prev => ({ ...prev, [prop.id]: false }))}>NO</Chip>
+                        </div>
+                    </div>
+                );
+            })}
         </div>
     );
 }
@@ -754,9 +732,8 @@ export default function AdminScoring({ episodeNum }) {
     // Step 3: Big Moments
     const [bigMoments, setBigMoments] = useState({});
 
-    // Step 4: Bets
+    // Step 4: Tree Mail
     const [propBetResults, setPropBetResults] = useState({});
-    const [sideBetResultsState, setSideBetResultsState] = useState({});
 
     // Navigation
     const [step, setStep] = useState('summary');
@@ -770,7 +747,6 @@ export default function AdminScoring({ episodeNum }) {
 
     const isAdmin = league?.createdBy === user?.uid;
     const propBets = episodeData?.propBets || [];
-    const sideBets = episodeData?.sideBets || [];
     const isAutoScored = episodeData?.scored && episodeData?.scoredAt;
 
     const remaining = useMemo(() => {
@@ -1005,7 +981,6 @@ export default function AdminScoring({ episodeNum }) {
             await scoreEpisodeAction(episodeNum, {
                 gameEvents,
                 propBetResults,
-                sideBetResults: sideBetResultsState,
                 eliminatedThisEp: eliminatedPicks,
                 eliminationMethod: primaryMethod,
             });
@@ -1046,13 +1021,13 @@ export default function AdminScoring({ episodeNum }) {
 
     if (episodeData?.scored && !expanded) return null;
 
-    const hasBets = propBets.length > 0 || sideBets.length > 0;
+    const hasBets = propBets.length > 0;
 
     const steps = [
         { key: 'summary', label: 'Episode', done: eliminatedPicks.length > 0 || immunityWinners.length > 0 },
         { key: 'tribal', label: 'Tribal', done: eliminatedPicks.length > 0 && (unanimousVote || minorityVoters.length > 0) },
         { key: 'moments', label: 'Moments', done: Object.keys(bigMoments).length > 0 },
-        ...(hasBets ? [{ key: 'bets', label: 'Bets', done: Object.keys(propBetResults).length > 0 }] : []),
+        ...(hasBets ? [{ key: 'bets', label: 'Tree Mail', done: Object.keys(propBetResults).length > 0 }] : []),
         { key: 'review', label: 'Review', done: false },
     ];
 
@@ -1148,9 +1123,6 @@ export default function AdminScoring({ episodeNum }) {
                             propBets={propBets}
                             propBetResults={propBetResults}
                             setPropBetResults={setPropBetResults}
-                            sideBets={sideBets}
-                            sideBetResults={sideBetResultsState}
-                            setSideBetResults={setSideBetResultsState}
                         />
                     )}
 

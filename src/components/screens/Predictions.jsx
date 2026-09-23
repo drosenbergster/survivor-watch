@@ -46,7 +46,7 @@ export default function Predictions() {
             <FijianSectionHeader title="Tree Mail" />
 
             <p className="text-sand-warm/60 text-xs font-sans leading-relaxed">
-                Quick calls before the episode. Answers auto-save. Points are awarded after the host scores.
+                Yes or no, before you watch. They save as you go.
             </p>
 
             <FijianCard className="p-4">
@@ -55,7 +55,7 @@ export default function Predictions() {
                     <span className="text-sand-warm text-sm font-bold inline-flex items-center">
                         Tree Mail
                         <HintBadge hintKey="propBets">
-                            Yes/No questions about what will happen this episode. Get +3 pts for each correct answer.
+                            Yes or no calls about this episode. +3 if you&apos;re right.
                         </HintBadge>
                     </span>
                     <span className="text-ochre/70 text-xs ml-auto">+3 pts each</span>

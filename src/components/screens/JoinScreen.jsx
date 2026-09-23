@@ -57,7 +57,7 @@ export default function JoinScreen() {
                                     aria-label="Your display name"
                                 />
                                 <FijianPrimaryButton type="submit" disabled={loading || !name.trim()}>
-                                    {loading ? 'Lighting your torch...' : 'Take Your Seat'}
+                                    {loading ? 'One moment...' : 'Take Your Seat'}
                                 </FijianPrimaryButton>
                             </form>
 
@@ -69,7 +69,7 @@ export default function JoinScreen() {
 
                             <div className="mt-8 text-center">
                                 <p className="text-clay font-serif italic text-sm leading-relaxed">
-                                    &quot;One island, one scoreboard. Everyone watching is already here.&quot;
+                                    One scoreboard. If you&apos;re watching, you&apos;re already on it.
                                 </p>
                                 <div className="flex justify-center mt-4 opacity-30">
                                     <Icon name="groups" className="text-ochre text-2xl" />

@@ -243,23 +243,18 @@ export async function autoScoreLeagues(db, episodeNum, importData, resolvePropBe
             });
 
             const propBets = ep.propBets || [];
-            const sideBets = ep.sideBets || [];
             let propBetResults = ep.autoResolvedPropBets || {};
-            let sideBetResults = ep.autoResolvedSideBets || {};
 
-            if (resolvePropBets) {
-                if (Object.keys(propBetResults).length === 0 && propBets.length > 0 && propBets[0]?.resolveType) {
-                    propBetResults = resolvePropBets(importData, propBets);
-                }
-                if (Object.keys(sideBetResults).length === 0 && sideBets.length > 0 && sideBets[0]?.resolveType) {
-                    sideBetResults = resolvePropBets(importData, sideBets);
-                }
+            if (resolvePropBets
+                && Object.keys(propBetResults).length === 0
+                && propBets.length > 0
+                && propBets[0]?.resolveType) {
+                propBetResults = resolvePropBets(importData, propBets);
             }
 
             const updates = {
                 [`leagues/${leagueId}/episodes/${episodeNum}/gameEvents`]: gameEvents,
                 [`leagues/${leagueId}/episodes/${episodeNum}/propBetResults`]: propBetResults,
-                [`leagues/${leagueId}/episodes/${episodeNum}/sideBetResults`]: sideBetResults,
                 [`leagues/${leagueId}/episodes/${episodeNum}/eliminatedThisEp`]: eliminatedIds,
                 [`leagues/${leagueId}/episodes/${episodeNum}/eliminationMethod`]: importData.eliminationMethod || 'voted_out',
                 [`leagues/${leagueId}/episodes/${episodeNum}/scored`]: true,

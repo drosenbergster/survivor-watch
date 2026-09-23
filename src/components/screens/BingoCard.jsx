@@ -118,10 +118,10 @@ export default function BingoCard({ seed, episodeNum, marked: savedMarked, onSav
                 >
                     <div className="bg-gradient-to-br from-ochre via-sunset to-masi-red rounded-2xl px-8 py-6 text-center shadow-2xl transform scale-110 animate-bounce">
                         <p className="font-display text-5xl text-white tracking-widest drop-shadow-text">
-                            {bulaType === 'blackout' ? '🔥 BLACKOUT 🔥' : '🌺 BULA! 🌺'}
+                            {bulaType === 'blackout' ? 'Blackout' : 'Bingo'}
                         </p>
                         <p className="text-white/80 text-sm mt-2 font-sans">
-                            {bulaType === 'blackout' ? 'Every square! +50 bonus points!' : `Line ${lines.length}! +5 bonus on top of your squares.`}
+                            {bulaType === 'blackout' ? 'Full card. +50.' : `A line. +5 on top of your squares.`}
                         </p>
                         <p className="text-white/50 text-xs mt-3 font-sans">Tap to dismiss</p>
                     </div>

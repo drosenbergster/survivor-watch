@@ -144,7 +144,6 @@ export const ENGAGEMENT_SCORING = [
         items: [
             { label: 'Tree Mail (correct)', points: 3, emoji: '📬' },
             { label: 'Snap Vote (correct)', points: 8, emoji: '⚡' },
-            { label: 'Tribal Whisper (correct)', points: 3, emoji: '🤫' },
         ],
     },
     {
@@ -164,45 +163,67 @@ export const ENGAGEMENT_SCORING = [
     },
 ];
 
-// Tree Mail — pre-episode predictions with auto-resolution from imported data.
+// Tree Mail — yes/no calls made before the episode. Each line has to be a real
+// decision, and the wording has to match what resolveType actually checks.
 // UI label: "Tree Mail". Internal keys kept as propBets for Firebase compatibility.
+// Episode 1 uses PREMIERE_PROP_BETS instead: no imported data exists yet, so the
+// host marks those by hand.
+// `excludes` names questions that must not appear in the same set, either
+// because one answer gives away the other ("an idol is played" inside "an idol
+// or an advantage is played") or because they are opposites and one of the two
+// is a free +3 ("the vote splits" against "every vote is the same name").
 export const PROP_BET_POOL = [
-    // Camp
-    { text: 'Fire gets made at camp', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'make_fire_camp' } },
-    { text: 'Somebody finds or catches food', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'find_food' } },
-    { text: 'The water well hosts a scheming session', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'water_well_talk' } },
-    { text: 'Somebody leaves camp on a journey or gets exiled', cat: 'camp', phase: 'any', resolveType: 'event_any_of', resolveParams: { eventKeys: ['journey', 'exile'] } },
-    { text: 'A journey challenge gets won', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'journey_challenge_win' } },
+    // Camp — a scene, not a supply list
+    { key: 'fire', text: 'Somebody gets a real fire going', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'make_fire_camp' } },
+    { key: 'food', text: 'They eat something that is not rice', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'find_food' } },
+    { key: 'well', text: 'The real plan gets made at the well', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'water_well_talk' } },
+    { key: 'sent_away', text: 'Someone is sent away from camp', cat: 'camp', phase: 'any', excludes: ['journey_win', 'exile'], resolveType: 'event_any_of', resolveParams: { eventKeys: ['journey', 'exile'] } },
+    { key: 'journey_win', text: 'A journey has an actual winner', cat: 'camp', phase: 'any', excludes: ['sent_away'], resolveType: 'event_any', resolveParams: { eventKey: 'journey_challenge_win' } },
+    { key: 'exile', text: 'Exile is the twist tonight', cat: 'camp', phase: 'any', excludes: ['sent_away'], resolveType: 'event_any', resolveParams: { eventKey: 'exile' } },
     // Challenge
-    { text: 'There is a reward challenge', cat: 'challenge', phase: 'any', resolveType: 'has_reward', resolveParams: {} },
-    { text: 'Individual immunity is on the line', cat: 'challenge', phase: 'post-merge', resolveType: 'event_any', resolveParams: { eventKey: 'individual_immunity' } },
-    { text: 'Individual reward is up for grabs', cat: 'challenge', phase: 'post-merge', resolveType: 'event_any', resolveParams: { eventKey: 'individual_reward' } },
-    // Idol & power — the Open Era means anything can show up
-    { text: 'Hidden power surfaces tonight', cat: 'idol', phase: 'any', resolveType: 'event_any_of', resolveParams: { eventKeys: ['idol_found', 'advantage_found', 'find_clue'] } },
-    { text: 'An idol or advantage actually gets played', cat: 'idol', phase: 'any', resolveType: 'event_any_of', resolveParams: { eventKeys: ['idol_played_success', 'advantage_used'] } },
-    { text: 'The Open Era goes off — two or more power moves tonight', cat: 'idol', phase: 'any', resolveType: 'event_count_any_of_gte', resolveParams: { eventKeys: ['idol_found', 'advantage_found', 'find_clue', 'idol_played_success', 'advantage_used'], threshold: 2 } },
-    { text: 'Somebody rolls the dice on a Shot in the Dark', cat: 'idol', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'shot_in_dark' } },
-    { text: 'A clue gets found before an idol does', cat: 'idol', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'find_clue' } },
-    // Outcome
-    { text: 'Medical gets called in', cat: 'outcome', phase: 'any', resolveType: 'elimination_method', resolveParams: { method: 'medevac' } },
-    { text: 'Somebody racks up 4+ confessionals — the edit has a favorite', cat: 'outcome', phase: 'any', resolveType: 'confessional_any_gte', resolveParams: { threshold: 4 } },
-    { text: 'The vote splits — not everyone lands on one name', cat: 'outcome', phase: 'any', resolveType: 'vote_split', resolveParams: {} },
-    { text: 'Somebody survives with votes against them', cat: 'outcome', phase: 'any', resolveType: 'survived_with_vap_gte', resolveParams: { threshold: 1 } },
-    { text: 'The boot gets buried — 5+ votes on one person', cat: 'outcome', phase: 'any', resolveType: 'eliminated_vap_gte', resolveParams: { threshold: 5 } },
+    { key: 'reward_separate', text: 'Reward is its own challenge, apart from immunity', cat: 'challenge', phase: 'any', resolveType: 'has_reward', resolveParams: {} },
+    { key: 'ind_immunity', text: 'Someone wins individual immunity', cat: 'challenge', phase: 'post-merge', resolveType: 'event_any', resolveParams: { eventKey: 'individual_immunity' } },
+    { key: 'ind_reward', text: 'A reward goes to one person, not a tribe', cat: 'challenge', phase: 'post-merge', resolveType: 'event_any', resolveParams: { eventKey: 'individual_reward' } },
+    // Power — each line is a different bet, not three ways to say "an advantage"
+    { key: 'power_surfaces', text: 'An idol, an advantage, or a clue turns up', cat: 'idol', phase: 'any', excludes: ['clue', 'no_power_found'], resolveType: 'event_any_of', resolveParams: { eventKeys: ['idol_found', 'advantage_found', 'find_clue'] } },
+    { key: 'power_played', text: 'Someone plays an idol or an advantage', cat: 'idol', phase: 'any', excludes: ['idol_works', 'advantage_used'], resolveType: 'event_any_of', resolveParams: { eventKeys: ['idol_played_success', 'advantage_used'] } },
+    { key: 'two_power', text: 'Two separate power plays in one episode', cat: 'idol', phase: 'any', excludes: ['no_power_found'], resolveType: 'event_count_any_of_gte', resolveParams: { eventKeys: ['idol_found', 'advantage_found', 'find_clue', 'idol_played_success', 'advantage_used'], threshold: 2 } },
+    { key: 'shot', text: 'Someone risks a Shot in the Dark', cat: 'idol', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'shot_in_dark' } },
+    { key: 'clue', text: 'A clue gets found', cat: 'idol', phase: 'any', excludes: ['power_surfaces'], resolveType: 'event_any', resolveParams: { eventKey: 'find_clue' } },
+    { key: 'idol_works', text: 'An idol is played and it works', cat: 'idol', phase: 'any', excludes: ['power_played'], resolveType: 'event_any', resolveParams: { eventKey: 'idol_played_success' } },
+    { key: 'advantage_used', text: 'An advantage that is not an idol gets used', cat: 'idol', phase: 'any', excludes: ['power_played'], resolveType: 'event_any', resolveParams: { eventKey: 'advantage_used' } },
+    { key: 'no_power_found', text: 'Nobody finds an idol or an advantage', cat: 'idol', phase: 'any', excludes: ['power_surfaces', 'two_power'], resolveType: 'event_none_of', resolveParams: { eventKeys: ['idol_found', 'advantage_found'] } },
+    // The vote and the edit
+    { key: 'medevac', text: 'Medical pulls someone from the game', cat: 'outcome', phase: 'any', resolveType: 'elimination_method', resolveParams: { method: 'medevac' } },
+    { key: 'confessionals', text: 'One person owns the edit — four or more confessionals', cat: 'outcome', phase: 'any', resolveType: 'confessional_any_gte', resolveParams: { threshold: 4 } },
+    { key: 'vote_split', text: 'The vote splits. More than one name', cat: 'vote', phase: 'any', excludes: ['vote_unanimous'], resolveType: 'vote_split', resolveParams: {} },
+    { key: 'vote_unanimous', text: 'Every vote is the same name', cat: 'vote', phase: 'any', excludes: ['vote_split', 'survived_votes'], resolveType: 'vote_unanimous', resolveParams: {} },
+    { key: 'survived_votes', text: 'Someone stays in after their name is read', cat: 'vote', phase: 'any', excludes: ['vote_unanimous'], resolveType: 'survived_with_vap_gte', resolveParams: { threshold: 1 } },
+    { key: 'blowout', text: 'The boot is a blowout — five or more votes', cat: 'vote', phase: 'any', resolveType: 'eliminated_vap_gte', resolveParams: { threshold: 5 } },
 ];
 
-// Tribal Whispers — during-tribal predictions with auto-resolution.
-// UI label: "Tribal Whispers". Internal keys kept as sideBets for Firebase compatibility.
-export const SIDE_BET_POOL = [
-    { text: 'Somebody pulls out an idol', resolveType: 'event_any', resolveParams: { eventKey: 'idol_played_success' } },
-    { text: 'Somebody plays an advantage', resolveType: 'event_any', resolveParams: { eventKey: 'advantage_used' } },
-    { text: 'Somebody rolls the dice — Shot in the Dark', resolveType: 'event_any', resolveParams: { eventKey: 'shot_in_dark' } },
-    { text: 'The votes fracture — split vote', resolveType: 'vote_split', resolveParams: {} },
-    { text: 'The vote is decisive — 5+ votes on the boot', resolveType: 'eliminated_vap_gte', resolveParams: { threshold: 5 } },
-    { text: 'All that buildup and no power gets played', resolveType: 'event_none_of', resolveParams: { eventKeys: ['idol_played_success', 'advantage_used', 'shot_in_dark'] } },
-    { text: 'Somebody survives with 2+ votes against them', resolveType: 'survived_with_vap_gte', resolveParams: { threshold: 2 } },
-    { text: 'It goes unanimous', resolveType: 'vote_unanimous', resolveParams: {} },
+// Premiere Tree Mail. Written for a two-hour Episode 1 with 21 strangers, two
+// tribes, and one castaway held out. No resolveType: nothing to import yet.
+export const PREMIERE_PROP_BETS = [
+    { key: 'held_out_skips_tribal', text: 'The 21st castaway misses the first Tribal Council', cat: 'premiere', excludes: ['tribe_short'] },
+    { key: 'double_boot', text: 'Two people go home tonight', cat: 'premiere' },
+    { key: 'early_power', text: 'An idol or a clue turns up before the first vote', cat: 'premiere' },
+    { key: 'medical_or_quit', text: 'Medical, or a quit, stops the premiere', cat: 'premiere' },
+    { key: 'jeff_twist', text: 'Jeff spells out a twist before the first challenge', cat: 'premiere' },
+    { key: 'first_is_reward', text: 'The first challenge is for reward, not immunity', cat: 'premiere' },
+    { key: 'tribe_short', text: 'One tribe is short a player when they vote', cat: 'premiere', excludes: ['held_out_skips_tribal'] },
+    { key: 'already_out', text: 'Somebody is already on the outs before they hit the beach', cat: 'premiere' },
 ];
+
+/** True when `bet` can join a set that already holds `chosen`. */
+export function betFits(bet, chosen) {
+    return !chosen.some(picked =>
+        picked.key === bet.key
+        || (bet.excludes || []).includes(picked.key)
+        || (picked.excludes || []).includes(bet.key)
+        || picked.text === bet.text
+    );
+}
 
 function deterministicShuffle(arr, seed) {
     const shuffled = [...arr];
@@ -215,28 +236,41 @@ function deterministicShuffle(arr, seed) {
     return shuffled;
 }
 
-export function generateSideBets(episodeNumber, count = 3) {
-    const shuffled = deterministicShuffle(SIDE_BET_POOL, (episodeNumber * 13337 + 42) % 2147483647);
-    return shuffled.slice(0, count).map((bet, i) => ({ id: `side_${episodeNumber}_${i}`, text: bet.text, resolveType: bet.resolveType, resolveParams: bet.resolveParams }));
+export function getPropBetSwapPool(episodeNumber, isPostMerge = false) {
+    if (Number(episodeNumber) === 1) return PREMIERE_PROP_BETS;
+    return isPostMerge ? PROP_BET_POOL : PROP_BET_POOL.filter(b => b.phase !== 'post-merge');
 }
 
 export function generatePropBets(episodeNumber, count = 5, isPostMerge = false) {
-    const pool = isPostMerge ? PROP_BET_POOL : PROP_BET_POOL.filter(b => b.phase !== 'post-merge');
+    const pool = getPropBetSwapPool(episodeNumber, isPostMerge);
     const shuffled = deterministicShuffle(pool, episodeNumber * 7919);
     const selected = [];
+    // Premiere questions are all one category, so only the cap is skipped —
+    // the weekly pool needs it or a shuffle hands you five idol bets.
+    const capCategories = Number(episodeNumber) !== 1;
     const catCount = {};
     for (const bet of shuffled) {
         const cat = bet.cat || 'other';
-        if ((catCount[cat] || 0) >= 2) continue;
+        if (capCategories && (catCount[cat] || 0) >= 2) continue;
+        if (!betFits(bet, selected)) continue;
         selected.push(bet);
         catCount[cat] = (catCount[cat] || 0) + 1;
         if (selected.length >= count) break;
     }
-    return selected.map((bet, i) => ({ id: `prop_${episodeNumber}_${i}`, text: bet.text, resolveType: bet.resolveType, resolveParams: bet.resolveParams }));
+    // `key` and `excludes` ride along so the host's swap can tell what is
+    // already on the card. Firebase rejects undefined, so unset means null.
+    return selected.map((bet, i) => ({
+        id: `prop_${episodeNumber}_${i}`,
+        key: bet.key,
+        excludes: bet.excludes || null,
+        text: bet.text,
+        resolveType: bet.resolveType || null,
+        resolveParams: bet.resolveParams || null,
+    }));
 }
 
 /**
- * Resolve Tree Mail / Tribal Whisper outcomes from imported episode data.
+ * Resolve Tree Mail outcomes from imported episode data.
  * importData: { bigMoments, minorityVoters, receivedVotes, eliminationMethod, rewardWinners, confessionals, voteCountMap, ... }
  * bets: [{ id, resolveType, resolveParams }]
  * Returns: { [betId]: boolean }
@@ -322,180 +356,124 @@ export function getMaxPicks(remainingCount) {
 }
 
 // ── Island Bingo ──
-// Written for a rookie cast: no returnee callbacks, no past-season references that
-// only make sense for veterans. Season 51 is the "Open Era", so any twist from
-// series history can appear at any time, and the cast are superfans who will say so.
+// Mark it the moment it happens. Short, because the square is tiny and the
+// label is uppercase. No freebies that hit every episode (the logo, palm trees,
+// a confessional existing). Seven lanes, so a random card cannot be eight
+// versions of Jeff's shirt.
 
 export const BINGO_ITEMS = [
-    // Jeff Probst (13)
-    '"The tribe has spoken"',
-    '"Come on in!"',
-    '"Dig deep!"',
+    // Jeff, the lines and the bits
+    'Jeff: "Come on in!"',
     '"Worth playing for?"',
-    'Jeff says "got nothin\' for ya"',
-    'Jeff says "fire represents life"',
-    'Jeff gives a life lesson at tribal',
-    'Jeff calls something "the biggest" or "the greatest"',
-    'Jeff opens tribal by asking about camp',
-    'Jeff says "this is Survivor"',
-    'Jeff is visibly shocked at tribal',
-    'Jeff explains a twist nobody understands',
-    'Jeff grins because he knows something they don\'t',
-    // Tribal council (16)
-    'Someone whispers at tribal',
-    'Votes land on more than one name',
-    'Someone says "at the end of the day"',
-    'Someone names a target out loud at tribal',
-    'Someone says "million dollars"',
-    'Side conversation during tribal',
-    'Someone says "blindside"',
-    'Someone shows their vote to the camera',
-    'Creative spelling on a vote',
-    'Someone cries at tribal council',
-    'Jeff asks a brutal follow-up question',
-    'Someone mentions jury management',
-    'Someone gets up and moves seats during tribal',
-    'A player completely dodges Jeff\'s question',
-    'Tribal goes to a revote',
-    'The boot looks genuinely blindsided',
-    // Challenges (15)
-    'Challenge involves water',
-    'Puzzle at the end of a challenge',
-    'Someone falls during a challenge',
-    'Immunity idol closeup',
-    'Challenge involves balance',
-    'Challenge involves endurance',
-    'Someone sits out of a challenge',
-    'Challenge involves digging',
-    'Challenge involves knots or ropes',
-    'Someone gets hurt during a challenge',
-    'Jeff stops or pauses a challenge',
-    'Challenge involves throwing or tossing',
-    'Challenge involves crawling through something',
-    'The sit-out bench gets shown',
-    'A tribe blows a huge lead',
-    // Idols, advantages & the Open Era (14)
-    'An idol is found',
-    'An idol is played',
-    'Someone hides an idol',
-    'Someone finds a clue',
-    'An advantage is found',
-    'Someone plays a Shot in the Dark',
-    'A fake idol or decoy appears',
-    'Someone searches for an idol alone',
-    'Someone bluffs having an idol',
-    'An idol is played but negates zero votes',
-    'A twist from an old season comes back',
-    'An advantage nobody has seen in years turns up',
-    'Someone says "Open Era"',
-    'A player misunderstands how a twist works',
-    // Camp life (18)
-    'Rain at camp',
-    'Someone makes fire',
-    'A coconut gets cracked open',
-    'Someone complains about hunger',
-    'Someone is badly sunburned',
-    'Secret meeting at the well',
-    'Reward includes food',
-    'Someone cooks rice',
-    'Shelter building or repair',
-    'Someone goes fishing',
-    'Night vision camp footage',
-    'Someone naps in the shelter',
-    'Fireside strategy talk',
-    'Someone is getting eaten alive by bugs',
-    'Someone negotiates with Jeff for rice',
-    'A camp argument or confrontation',
-    'Camp celebration — dancing, singing, or cheering',
-    'Someone is visibly freezing at night',
-    // Emotional & social (12)
-    'Someone cries',
-    'Someone talks about their family',
-    'Group hug',
-    'Someone says "I love this game"',
-    'Someone comforts another player',
-    'Letters from home or a family visit',
-    'Someone talks about their job back home',
-    'Two players bond over something they share',
-    'Someone vows revenge in a confessional',
-    'Players celebrate wildly after a challenge win',
-    'Someone gets emotional about just being here',
-    'Someone opens up about something heavy',
-    // Rookie cast tells (11)
-    'Someone calls themselves a superfan',
-    'Someone name-drops a former Survivor player',
-    'Someone references a past season',
-    'Someone says they have watched since they were a kid',
-    'Someone quotes a Survivor catchphrase at camp',
-    'Someone says they are "playing like" a past winner',
-    'Someone brings up their occupation as a strategy',
-    'Someone claims they are underestimated',
-    'Someone says they have a "read" on everyone',
-    'A player admits they have no idea what is happening',
-    'Someone says they came here to play, not to sit',
-    // Strategy (15)
-    'An alliance is betrayed',
-    '"I didn\'t come here to lose"',
-    'Two players make a final 2 or final 3 deal',
-    'Someone flips on their alliance',
-    'Trash talk in a voting confessional',
-    'Someone says "blood on my hands"',
-    'Someone makes a promise they clearly will not keep',
-    'Someone says "I need to win immunity"',
-    'A blindside gets planned in a confessional',
-    'Someone admits they are on the bottom',
-    'A decoy name gets floated',
-    'Someone says "stick to the plan"',
-    'Post-tribal fallout conversation',
-    'A number gets counted out loud',
-    'Someone builds an alliance within an alliance',
-    // Production & visuals (12)
-    'Shot of wildlife',
-    'Bug or insect closeup',
-    'Dramatic music sting',
-    'Sunset or sunrise shot',
-    'Aerial island shot',
-    'Someone does a victory dance',
-    'Slow-motion challenge replay',
-    'Tree mail arrives',
-    'Drone shot following a contestant',
-    'Torch-lit walk to tribal council',
-    'Split-screen or picture-in-picture edit',
-    'A confessional shot in the rain',
-    // Game milestones (4)
-    'Medical team gets called',
-    'Post-merge feast',
-    'A tribe swap happens',
-    'Someone leaves with their torch unsnuffed',
+    'Jeff: "Dig deep"',
+    '"The tribe has spoken"',
+    'Jeff snuffs a torch',
+    '"Got nothin\' for ya"',
+    'Jeff reads the votes',
+    '"Grab your torches"',
+    'A Probst dad joke',
+    'Jeff asks for final words',
+    '"Immunity is back up"',
+    'The Probst stare-down',
+    // The edit, not the scenery
+    'Villain music hits',
+    'A whisper, subtitled',
+    'A vote in close-up',
+    'A flashback insert',
+    'Sad music, big smile',
+    'A stare, no dialogue',
+    'A nickname on the chyron',
+    'Smash cut to a chicken',
+    'The voting confessional',
+    'An "hours later" card',
+    'Someone narrates the lie',
+    'A slow push-in on a face',
+    // Words you hear them say
+    '"It\'s a big move"',
+    '"I trust them completely"',
+    '"I\'m on the bottom"',
+    '"We need a decoy"',
+    '"It\'s just a vote"',
+    'They count the numbers',
+    'A name gets walked back',
+    '"I\'m a free agent"',
+    '"Don\'t tell the others"',
+    'Someone says "blindsided"',
+    '"They\'re coming for me"',
+    '"I have the numbers"',
+    // The challenge, the beat not the prop
+    'A puzzle piece won\'t fit',
+    'Wipes out on the beam',
+    'Jeff stops the challenge',
+    'Sitting out on the bench',
+    'The lead changes hands',
+    'A knot that will not budge',
+    'The bag hits the ground',
+    'A full-body splash',
+    'The tribe flag goes in',
+    '"Dig, dig, dig!"',
+    'The necklace goes on',
+    'Benched off the puzzle',
+    // Idols and paper
+    'Sneaks away from camp',
+    'A clue, read whispering',
+    'Digging after dark',
+    'An idol out of a bag',
+    '"Do not open this"',
+    'The Shot in the Dark die',
+    'Idol shown to one ally',
+    'An advantage hits the mat',
+    '"I know where it is"',
+    'A Beware Advantage',
+    'Someone clocks a search',
+    'A fake-idol theory',
+    // Camp, when it becomes a scene
+    'A fight over the rice',
+    'The machete comes out',
+    'Tree mail hits camp',
+    '"I am so hungry"',
+    'Strategy at the well',
+    'The shelter sags',
+    'Food does not get shared',
+    'A bug-bite meltdown',
+    '"This tribe is a mess"',
+    'Quiet after a blindside',
+    'A reward feast',
+    'Fire that will not catch',
+    // Tribal, mark it when it happens
+    '"Play it if you\'ve got it"',
+    'A throwaway vote',
+    'Jeff calls a revote',
+    'Someone stands to play',
+    '"Anything left to say?"',
+    'People stand. Live tribal',
+    '"Give me a minute"',
+    'A juror shakes it off',
+    'Jeff asks it again',
+    'A vote gets crossed out',
+    '"I\'ll go tally the votes"',
+    'Somebody cries at tribal',
 ];
 
-// Premiere-only squares, mixed into the pool for Episode 1. Season 51 opens with
-// production-assigned buffs and one castaway held out of the starting tribes.
-// Episode 1 squares, seeded from the published premiere details: a true marooning
-// off a sailing ship, a semi-blindfolded obstacle course with one immunity for two
-// tribes, and a 21st castaway who is either out immediately or sent to Exile.
+// Premiere-only. Episode 1 cards reserve eight of these so the two-hour open
+// is about the ship, the buffs, and the castaway who does not start.
 export const PREMIERE_BINGO_ITEMS = [
-    'The sailing ship appears before anyone hits the water',
-    'A castaway jumps or dives off the boat',
-    'Something gets dropped or lost during the marooning',
-    'A blindfold comes off crooked or too early',
-    'A caller screams directions and gets ignored',
-    'The losing tribe is obvious before the challenge ends',
-    'The 21st castaway is sent to Exile',
-    'Someone reads the note from production out loud',
-    'Buffs get handed out by name',
-    'The odd-one-out castaway is revealed',
-    'Someone reacts badly to the tribe they got',
-    'A castaway realizes they are alone',
-    'Someone introduces themselves with a lie',
-    'First confessional inside the first five minutes',
-    'A castaway sprints off the mat',
-    'Someone struggles to remember a name',
-    'First fire of the season',
-    'Someone says this is a dream come true',
-    'Jeff welcomes the "Open Era"',
-    'A castaway is immediately pegged as a threat',
-    'First alliance forms on day one',
+    'The ship in the open',
+    'Someone jumps off',
+    'A blindfold',
+    'Two different buffs',
+    'A buff yanked on',
+    '"There are 21 of you"',
+    'The 21st held back',
+    'The marooning sprint',
+    'A note read out loud',
+    '"I have wanted this"',
+    'The word "alliance"',
+    'Jeff names the twist',
+    'The whole cast, one mat',
+    'Already crying',
+    'A buff as a headband',
+    'Camp with no shelter',
 ];
 
 // Hash a string to a numeric seed
@@ -520,9 +498,20 @@ export function getBingoPool(episodeNumber, customItems = []) {
 
 // Generate a shuffled bingo card (5x5 with free center)
 // seed should be a string like "{partyId}-{episodeNum}-{playerId}"
+const PREMIERE_SQUARES_ON_CARD = 8;
+
 export function generateBingoCard(seed, episodeNumber, customItems = []) {
-    const shuffled = deterministicShuffleFromSeed(getBingoPool(episodeNumber, customItems), seed);
-    const items = shuffled.slice(0, 24);
+    const custom = customItems.filter(Boolean);
+    let items;
+    if (Number(episodeNumber) === 1) {
+        const premierePick = deterministicShuffleFromSeed(PREMIERE_BINGO_ITEMS, `${seed}:premiere`)
+            .slice(0, PREMIERE_SQUARES_ON_CARD);
+        const fill = deterministicShuffleFromSeed([...custom, ...BINGO_ITEMS], seed)
+            .slice(0, 24 - premierePick.length);
+        items = deterministicShuffleFromSeed([...premierePick, ...fill], `${seed}:mix`);
+    } else {
+        items = deterministicShuffleFromSeed(getBingoPool(episodeNumber, custom), seed).slice(0, 24);
+    }
     items.splice(12, 0, '🔥 FREE');
     return items;
 }
@@ -558,15 +547,15 @@ export function countBingoSquares(marked) {
     return marked.reduce((n, isMarked, i) => (isMarked && i !== 12 ? n + 1 : n), 0);
 }
 
-// Passport scoring — five long-term picks sealed at the merge, revealed at the finale.
-// Each key here maps to a "was this correct?" check against the season's final state.
-// Points awarded are `PASSPORT_POINTS_PER_CORRECT` per correct answer.
+// Passport — five long-term calls, each a different kind of Survivor question.
+// Winner, placement, timing, character, and a challenge. The host enters the
+// truth at the finale; scoring compares these keys.
 export const PASSPORT_POINTS_PER_CORRECT = 5;
 
 export const PASSPORT_QUESTIONS = [
-    { key: 'winner', label: 'Sole Survivor', prompt: `Who wins ${SEASON_LABEL}?`, icon: 'emoji_events' },
-    { key: 'firstJury', label: 'First Juror', prompt: 'Who is the first jury member?', icon: 'gavel' },
-    { key: 'fanFavorite', label: 'Fan Favorite', prompt: 'Who is the fan favorite?', icon: 'favorite' },
-    { key: 'biggestVillain', label: 'Biggest Villain', prompt: 'Who plays the dirtiest game?', icon: 'mood_bad' },
-    { key: 'fireMakingWinner', label: 'Fire-Making Winner', prompt: 'Who wins fire at Final 4?', icon: 'local_fire_department' },
+    { key: 'winner', label: 'Sole Survivor', prompt: `Who takes the million and wins ${SEASON_LABEL}?`, icon: 'emoji_events' },
+    { key: 'runnerUp', label: 'Runner-up', prompt: 'Who makes the end and finishes second?', icon: 'military_tech' },
+    { key: 'firstJury', label: 'First juror', prompt: 'Who is the first person voted onto the jury?', icon: 'gavel' },
+    { key: 'villain', label: 'The villain', prompt: 'Who does this season treat as the villain?', icon: 'mood_bad' },
+    { key: 'fireMakingWinner', label: 'Fire', prompt: 'Who wins fire-making at the final four?', icon: 'local_fire_department' },
 ];

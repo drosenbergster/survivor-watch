@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useMemo, u
 import { onAuthStateChanged, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, signOut } from 'firebase/auth';
 import { ref, onValue, set, get, remove } from 'firebase/database';
 import { auth, db } from './firebase';
-import { generatePropBets, generateSideBets, ALL_CASTAWAYS, resolveBets, SEASON_ID, WATCH_PARTY_ID, WATCH_PARTY_NAME, PICKS_START_EPISODE, getMaxPicks } from './data';
+import { generatePropBets, ALL_CASTAWAYS, resolveBets, SEASON_ID, WATCH_PARTY_ID, WATCH_PARTY_NAME, PICKS_START_EPISODE, getMaxPicks } from './data';
 import { deriveGameEvents } from './importers/deriveGameEvents';
 
 const AppContext = createContext(null);
@@ -138,6 +138,7 @@ export function AppProvider({ children }) {
             setLeague({ ...DEMO_PARTY, currentEpisode: 1 });
             setLeagueMembers(DEMO_MEMBERS);
             setCurrentEpisode(2);
+            setPlayerEpisode({ demo: 1 });
             const ep1Props = generatePropBets(1, 5);
             setEpisodes({
                 1: {
@@ -145,58 +146,36 @@ export function AppProvider({ children }) {
                     scored: true,
                     createdAt: Date.now() - 604800000,
                     propBets: ep1Props,
-                    picks: {
-                        demo: ['cirie_fields', 'ozzy_lusth', 'rick_devens', 'emily_flippen', 'christian_hubicki'],
-                        bot1: ['rick_devens', 'aubry_bracco', 'dee_valladares', 'coach_wade', 'colby_donaldson'],
-                        bot2: ['ozzy_lusth', 'dee_valladares', 'stephenie_lagrossa', 'jonathan_young', 'angelina_keeley'],
-                        bot3: ['cirie_fields', 'coach_wade', 'tiffany_ervin', 'charlie_davis', 'genevieve_mushaluk'],
-                    },
+                    picks: {},
                     predictions: {
-                        demo: { elimination: 'jenna_lewis', boldPrediction: 'Cirie finds an idol', propBets: { [ep1Props[0].id]: true, [ep1Props[2].id]: true } },
-                        bot1: { elimination: 'mike_white', boldPrediction: 'Rick wins immunity', propBets: { [ep1Props[1].id]: true } },
-                        bot2: { elimination: 'jenna_lewis', boldPrediction: 'Ozzy catches a fish', propBets: { [ep1Props[0].id]: true, [ep1Props[3].id]: true } },
-                        bot3: { elimination: 'q_burdette', boldPrediction: 'Coach goes on a rant', propBets: { [ep1Props[2].id]: true, [ep1Props[4].id]: true } },
+                        demo: { elimination: 'aaliyah_puglia', propBets: { [ep1Props[0].id]: true, [ep1Props[2].id]: true } },
+                        bot1: { elimination: 'brady_booker', propBets: { [ep1Props[1].id]: true } },
+                        bot2: { elimination: 'aaliyah_puglia', propBets: { [ep1Props[0].id]: true, [ep1Props[3].id]: true } },
+                        bot3: { elimination: 'mike_pinsky', propBets: { [ep1Props[2].id]: true, [ep1Props[4].id]: true } },
                     },
                     gameEvents: {
-                        cirie_fields: ['survived', 'tribal_immunity'],
-                        ozzy_lusth: ['survived', 'tribal_immunity', 'idol_found'],
-                        rick_devens: ['survived', 'tribal_reward'],
-                        emily_flippen: ['survived', 'tribal_immunity'],
-                        christian_hubicki: ['survived', 'tribal_immunity'],
-                        aubry_bracco: ['survived', 'voted_correctly'],
-                        dee_valladares: ['survived', 'voted_correctly'],
-                        coach_wade: ['survived', 'voted_correctly', 'attended_tribal_zero'],
-                        colby_donaldson: ['survived', 'tribal_reward'],
-                        stephenie_lagrossa: ['survived'],
-                        jonathan_young: ['survived'],
-                        angelina_keeley: ['survived'],
-                        charlie_davis: ['survived'],
-                        tiffany_ervin: ['survived'],
-                        genevieve_mushaluk: ['survived', 'survived_with_votes'],
-                        joe_hunter: ['survived', 'tribal_immunity'],
-                        savannah_louie: ['survived', 'tribal_immunity'],
-                        jenna_lewis: ['survived', 'tribal_reward'],
-                        q_burdette: ['survived'],
-                        kyle_fraser: ['survived'],
-                        rizo_velovic: ['survived'],
-                        kamilla_karthigesu: ['survived'],
-                        mike_white: [],
-                        chrissy_hofbeck: ['survived'],
+                        alexis_levine: ['survived', 'tribal_immunity'],
+                        ana_sani: ['survived', 'tribal_immunity', 'idol_found'],
+                        brady_booker: ['survived', 'tribal_reward'],
+                        carter_krull: ['survived', 'voted_correctly'],
+                        danny_kilby: ['survived', 'voted_correctly', 'attended_tribal_zero'],
+                        devin_way: ['survived'],
+                        jenna_doore: ['survived', 'survived_with_votes'],
+                        aaliyah_puglia: [],
                     },
                     propBetResults: { [ep1Props[0].id]: true, [ep1Props[2].id]: false, [ep1Props[4].id]: true },
-                    eliminatedThisEp: ['mike_white'],
+                    eliminatedThisEp: ['aaliyah_puglia'],
                     eliminationMethod: 'voted_out',
                 },
                 2: {
                     status: 'open',
                     createdAt: Date.now(),
                     propBets: generatePropBets(2, 5),
-                    sideBets: generateSideBets(2, 3),
                     picks: {},
                     predictions: {},
                 },
             });
-            setEliminated(['mike_white']);
+            setEliminated(['aaliyah_puglia']);
             setWatchStatus({
                 1: { demo: { watching: false, watchedAt: Date.now() - 600000 }, bot1: { watchedAt: Date.now() - 500000 }, bot2: { watchedAt: Date.now() - 400000 }, bot3: { watchedAt: Date.now() - 300000 } },
                 2: {},
@@ -321,12 +300,10 @@ export function AppProvider({ children }) {
         const isHost = league?.createdBy === user.uid;
         const isPostMerge = !!tribeSwaps?.merge;
         const propBets = generatePropBets(episodeNum, 5, isPostMerge);
-        const sideBets = generateSideBets(episodeNum, 3);
         await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}`), {
             status: 'open',
             createdAt: Date.now(),
             propBets,
-            sideBets,
             picks: {},
             predictions: {},
         });
@@ -370,35 +347,15 @@ export function AppProvider({ children }) {
         }
     }, [user, leagueId]);
 
-    const submitSideBets = useCallback(async (episodeNum, bets) => {
-        if (!user || !leagueId) throw new Error('Not connected');
-        const path = `leagues/${leagueId}/episodes/${episodeNum}/playerSideBets/${user.uid}`;
-        if (db) {
-            await set(ref(db, path), bets);
-        } else {
-            setEpisodes(prev => ({
-                ...prev,
-                [episodeNum]: {
-                    ...prev[episodeNum],
-                    playerSideBets: {
-                        ...(prev[episodeNum]?.playerSideBets || {}),
-                        [user.uid]: bets,
-                    },
-                },
-            }));
-        }
-    }, [user, leagueId]);
-
     const scoreEpisodeAction = useCallback(async (episodeNum, scoringData) => {
         if (!db || !user || !leagueId) throw new Error('Not connected');
         if (league?.createdBy !== user.uid) throw new Error('Only the host can score episodes');
 
-        const { gameEvents, propBetResults, eliminatedThisEp, eliminationMethod, sideBetResults } = scoringData;
+        const { gameEvents, propBetResults, eliminatedThisEp, eliminationMethod } = scoringData;
 
         const updates = {
             [`leagues/${leagueId}/episodes/${episodeNum}/gameEvents`]: gameEvents,
             [`leagues/${leagueId}/episodes/${episodeNum}/propBetResults`]: propBetResults || {},
-            [`leagues/${leagueId}/episodes/${episodeNum}/sideBetResults`]: sideBetResults || {},
             [`leagues/${leagueId}/episodes/${episodeNum}/eliminatedThisEp`]: eliminatedThisEp || [],
             [`leagues/${leagueId}/episodes/${episodeNum}/eliminationMethod`]: eliminationMethod || 'voted_out',
             [`leagues/${leagueId}/episodes/${episodeNum}/scored`]: true,
@@ -829,15 +786,10 @@ export function AppProvider({ children }) {
                 });
 
                 const propBets = ep.propBets || [];
-                const sideBets = ep.sideBets || [];
                 let propBetResults = ep.autoResolvedPropBets || {};
-                let sideBetResults = ep.autoResolvedSideBets || {};
 
                 if (Object.keys(propBetResults).length === 0 && propBets.length > 0 && propBets[0].resolveType) {
                     propBetResults = resolveBets(importData, propBets);
-                }
-                if (Object.keys(sideBetResults).length === 0 && sideBets.length > 0 && sideBets[0].resolveType) {
-                    sideBetResults = resolveBets(importData, sideBets);
                 }
 
                 const eliminatedThisEp = eliminatedIds;
@@ -845,7 +797,6 @@ export function AppProvider({ children }) {
                 scoreEpisodeAction(epNum, {
                     gameEvents,
                     propBetResults,
-                    sideBetResults,
                     eliminatedThisEp,
                     eliminationMethod: importData.eliminationMethod || 'voted_out',
                 }).then(() => {
@@ -892,7 +843,7 @@ export function AppProvider({ children }) {
         syncStatus, onboardingComplete,
         joinWatchParty, completeOnboarding,
         createEpisode, updatePropBets, submitPicks, submitPredictions,
-        submitSnapVote, submitSideBets, scoreEpisodeAction,
+        submitSnapVote, scoreEpisodeAction,
         executeTribeSwap, moveTribeSwap, deleteTribeSwap, fixElimination, rescoreEpisode,
         executeMerge, submitMergePassport,
         startFinale, revealMergePassport, setPassportTruth, submitReunionVote, crownChampion,

@@ -38,10 +38,10 @@ export default function AuthScreen() {
             {sent ? (
               <div className="space-y-4 text-center">
                 <div className="text-4xl" aria-hidden>✉️</div>
-                <h2 className="font-display text-2xl tracking-wider text-clay">Check Your Email!</h2>
+                <h2 className="font-display text-2xl tracking-wider text-clay">Check your email</h2>
                 <p className="text-clay font-serif italic text-sm leading-relaxed">
-                  We sent a magic link to <strong className="text-sand-warm">{email}</strong>.
-                  Click the link to sign in — no password needed!
+                  We sent a sign-in link to <strong className="text-sand-warm">{email}</strong>.
+                  Open it and you&apos;re in. No password.
                 </p>
                 <button
                   type="button"
@@ -54,11 +54,11 @@ export default function AuthScreen() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <FijianInput
-                  label="Island Access Email"
+                  label="Email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Messenger bird address..."
+                  placeholder="you@email.com"
                   required
                   autoComplete="email"
                   aria-label="Email address"
@@ -69,7 +69,7 @@ export default function AuthScreen() {
                   </FijianPrimaryButton>
                   <div className="mt-8 text-center space-y-4">
                     <p className="text-clay font-serif italic text-sm leading-relaxed">
-                      &quot;A link will be cast into the waters to guide your way.&quot;
+                      We&apos;ll email you a link. That&apos;s the whole sign-in.
                     </p>
                     <div className="flex justify-center opacity-30">
                       <Icon name="scuba_diving" className="text-ochre text-2xl" />

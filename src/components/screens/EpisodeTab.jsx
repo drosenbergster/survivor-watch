@@ -76,8 +76,8 @@ export default function EpisodeTab() {
                         {!episodePendingSync && !watching && !watched && (
                             <HintBadge hintKey="picks">
                                 {picksOpen
-                                    ? 'Pick castaways and answer Tree Mail — everything auto-saves. Tap "Light Your Torch" when you sit down to watch to lock them in and open your bingo card.'
-                                    : 'Answer your Tree Mail (auto-saves), then tap "Light Your Torch" to open your bingo card. Castaway picks open in Episode 2.'}
+                                    ? 'Pick castaways and answer Tree Mail. They save as you go. Tap "Light Your Torch" when you sit down to watch.'
+                                    : 'Answer Tree Mail, then tap "Light Your Torch" when you sit down to watch. Castaway picks open in Episode 2.'}
                             </HintBadge>
                         )}
                     </p>

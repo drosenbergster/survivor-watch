@@ -346,7 +346,7 @@ export default function FinaleMode() {
         <div className="space-y-4">
             <FijianCard className="p-5 text-center bg-gradient-to-b from-stone-800/90 to-stone-900/80 border-ochre/30">
                 <p className="font-display text-3xl tracking-wider text-ochre">Finale</p>
-                <p className="text-sand-warm/50 text-xs font-sans mt-1">Season 51 — The Final Chapter</p>
+                <p className="text-sand-warm/50 text-xs font-sans mt-1">Season 51 finale</p>
             </FijianCard>
 
             {/* Host enters truth so passports score */}

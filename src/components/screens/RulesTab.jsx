@@ -32,11 +32,11 @@ function Accordion({ title, icon, defaultOpen = false, children }) {
 }
 
 const GAMEPLAY_STEPS = [
-  { icon: '🔮', label: 'Before the episode: answer Tree Mail (5 yes/no calls) and — from Episode 2 on — pick 3 castaways. Everything auto-saves.' },
-  { icon: '🔥', label: 'When you sit down to watch, tap "Light Your Torch." That single tap locks your picks and predictions and opens your bingo card.' },
-  { icon: '🎱', label: 'Mark bingo squares as things happen. Every square you catch scores; lines and blackout pay bonuses.' },
-  { icon: '⚡', label: 'When tribal starts, pause and call who is going home (Snap Vote), plus answer Tribal Whispers.' },
-  { icon: '📊', label: 'Tap "Done Watching" at the end. Results, standings, and your card unlock then — never before.' },
+  { icon: '🔮', label: 'Before the episode: answer Tree Mail (5 yes/no calls) and, from Episode 2 on, pick 3 castaways. They save as you go.' },
+  { icon: '🔥', label: 'When you sit down to watch, tap "Light Your Torch." That locks your picks and Tree Mail, and opens your bingo card and Snap Vote.' },
+  { icon: '🎱', label: 'While the show is on, mark bingo squares as things pop up. It is just a fun extra.' },
+  { icon: '⚡', label: 'When they sit down at tribal, pause before Jeff asks anything and call who is going home (Snap Vote).' },
+  { icon: '📊', label: 'Tap "Done Watching" at the end. Results and standings unlock then — never before.' },
 ];
 
 const SCORING_CATEGORIES = (() => {
@@ -63,11 +63,11 @@ export default function RulesTab() {
     <div className="space-y-6 overflow-hidden">
       <header className="text-center py-4 sm:py-6">
         <h1 className="font-wood-serif font-bold text-4xl sm:text-5xl text-sand-warm uppercase tracking-tighter drop-shadow-text">
-          LAWA
+          Rules
         </h1>
         <div className="flex items-center justify-center gap-2 mt-1">
           <span className="h-[1px] w-8 bg-terracotta" />
-          <p className="font-display text-terracotta text-sm sm:text-base tracking-[0.3em]">FIJIAN RULES</p>
+          <p className="font-display text-terracotta text-sm sm:text-base tracking-[0.3em]">SEASON 51</p>
           <span className="h-[1px] w-8 bg-terracotta" />
         </div>
       </header>
@@ -75,8 +75,8 @@ export default function RulesTab() {
       {/* ── How to Play ── */}
       <Accordion title="How to Play" icon="🏝️" defaultOpen>
         <p className="text-xs text-bleached-sand/60 font-sans pb-1">
-          Every week follows the same rhythm: call it, watch it, mark it, score it.
-          Watch on your own schedule — nothing is revealed until you say you are done.
+          Make your calls, watch the episode, then see how you did.
+          Nothing is revealed until you say you are done.
         </p>
         <ol className="space-y-2.5">
           {GAMEPLAY_STEPS.map((step, i) => (
@@ -94,7 +94,7 @@ export default function RulesTab() {
       {/* ── The Three Ways to Score ── */}
       <Accordion title="How Points Work" icon="📊" defaultOpen>
         <p className="text-xs text-bleached-sand/60 font-sans pb-2">
-          Three streams stack into your total. Plus one bonus at the finale.
+          Points come from picks, calls, and bingo. One more bonus waits until the finale.
         </p>
         <ul className="text-sm text-bleached-sand/80 font-sans space-y-2">
           <li>
@@ -102,8 +102,8 @@ export default function RulesTab() {
             Sole picker = 1.5× bonus.
           </li>
           <li>
-            <strong className="text-green-400">🔮 Predictions</strong> — Tree Mail (before, +3 each), Snap Vote
-            (at tribal, +8), and Tribal Whispers (during tribal, +3 each).
+            <strong className="text-green-400">🔮 Predictions</strong> — Tree Mail (before you watch, +3 each) and your
+            Snap Vote (at tribal, +8).
           </li>
           <li>
             <strong className="text-purple-400">🎱 Bingo</strong> — +2 per square you catch, +5 per line, +50 for a full blackout.
@@ -116,10 +116,10 @@ export default function RulesTab() {
       </Accordion>
 
       {/* ── Bingo ── */}
-      <Accordion title="Bingo — The Main Event" icon="🎱">
+      <Accordion title="Bingo" icon="🎱">
         <p className="text-sm text-bleached-sand/70 leading-relaxed font-sans">
-          Bingo is the heart of the game this season. Everyone gets their own card each episode,
-          drawn from a pool written for Season 51.
+          A fun extra while the show is on. Everyone gets a card each episode.
+          Mark a square when it pops up — Jeff&apos;s hat, a drone shot, a puzzle.
         </p>
         <ul className="text-xs text-bleached-sand/70 font-sans space-y-1">
           <li><strong className="text-sand-warm">Every square you hit</strong> is worth 2 points — you do not need a line to score</li>
@@ -128,9 +128,9 @@ export default function RulesTab() {
           <li>Long-press any square to read the full text</li>
         </ul>
         <div className="bg-terracotta/5 rounded-lg p-3 border border-dashed border-terracotta/25 text-center">
-          <p className="font-wood-serif text-sand-warm text-lg italic">&quot;JEFF PROBST!&quot;</p>
-          <p className="text-[10px] uppercase text-bleached-sand/50 font-bold tracking-[0.2em] font-sans mt-1">
-            Must be yelled at full volume to claim bingo victory.
+          <p className="font-wood-serif text-sand-warm text-lg italic">&quot;Jeff!&quot;</p>
+          <p className="text-xs text-bleached-sand/50 font-sans mt-1">
+            Optional. If you hit a line and you feel like yelling.
           </p>
         </div>
       </Accordion>
@@ -138,12 +138,11 @@ export default function RulesTab() {
       {/* ── Weekly Picks ── */}
       <Accordion title="Picking Castaways" icon="🎯">
         <p className="text-sm text-bleached-sand/70 leading-relaxed font-sans">
-          There is <strong className="text-sand-warm">no draft</strong> this season. The premiere
-          is just for watching. Picks open in Episode 2.
+          The premiere is for watching — you meet the cast first. Picks open in Episode 2.
         </p>
         <ul className="text-xs text-bleached-sand/70 font-sans space-y-1">
           <li>Pick <strong className="text-sand-warm">3 castaways</strong> each episode from anyone still in the game</li>
-          <li>Change them every week — picks auto-save as you tap</li>
+          <li>Change them every week. They save as you tap</li>
           <li>They earn you their event points for the episode</li>
         </ul>
         <div className="bg-terracotta/5 rounded-lg p-3 border border-dashed border-terracotta/25">
@@ -163,7 +162,7 @@ export default function RulesTab() {
         <ul className="text-xs text-bleached-sand/70 font-sans space-y-1">
           <li>Sole Survivor · First Juror · Fan Favorite · Biggest Villain · Fire-Making Winner</li>
           <li>Each answer that comes true pays <strong className="text-amber-400">+5 pts</strong> at the finale</li>
-          <li>Once sealed, cannot be changed</li>
+          <li>Once you seal it, it stays sealed</li>
         </ul>
       </Accordion>
 
@@ -173,21 +172,15 @@ export default function RulesTab() {
           <div className="flex items-start gap-3">
             <span className="text-lg">⚡</span>
             <p className="text-sm text-bleached-sand/70 font-sans leading-relaxed">
-              <strong className="text-sand-warm">Snap Vote:</strong> When tribal council starts, pause the show
-              and pick who you think is going home. <strong className="text-terracotta">+8 pts</strong> if you nail it.
-            </p>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="text-lg">🤫</span>
-            <p className="text-sm text-bleached-sand/70 font-sans leading-relaxed">
-              <strong className="text-sand-warm">Tribal Whispers:</strong> Quick yes/no calls during tribal —
-              &quot;Someone pulls out an idol,&quot; &quot;The vote is decisive,&quot; etc.
-              <strong className="text-terracotta"> +3 pts</strong> per correct.
+              <strong className="text-sand-warm">Snap Vote:</strong> Once they sit down at tribal, pause before Jeff
+              asks his first question and call whose torch gets snuffed.
+              <strong className="text-terracotta"> +8 pts</strong> if you nail it. One call, and the deliberation
+              cannot help you — that is the whole point.
             </p>
           </div>
           <div className="bg-terracotta/5 border border-dashed border-terracotta/25 rounded-lg p-3">
             <p className="text-xs text-bleached-sand/60 font-sans">
-              Both open after you Light Your Torch and close when you mark Done Watching.
+              It opens after you Light Your Torch and closes when you mark Done Watching.
             </p>
           </div>
         </div>
@@ -267,13 +260,12 @@ export default function RulesTab() {
       </Accordion>
 
       {/* ── Watch Party ritual ── */}
-      <Accordion title="Watch Party Ritual" icon="🍹">
+      <Accordion title="A Toast" icon="🍹">
         <div className="flex items-start gap-3">
           <span className="text-lg">🍹</span>
           <p className="text-sm text-bleached-sand/70 font-sans leading-relaxed">
-            <strong className="text-terracotta">Vaka-Viti:</strong> When you hear{' '}
-            <span className="text-terracotta">&quot;C&apos;mon in guys!&quot;</span> or{' '}
-            <span className="text-terracotta">&quot;Dig Deep&quot;</span> — synchronous tribe-wide salute.
+            When Jeff says <span className="text-terracotta">&quot;Come on in!&quot;</span> or{' '}
+            <span className="text-terracotta">&quot;Dig deep,&quot;</span> raise a glass if you&apos;re watching together.
           </p>
         </div>
       </Accordion>

@@ -28,7 +28,7 @@ export default function LightYourTorch({ episodeNum }) {
                     <span className="text-3xl animate-pulse">🔥</span>
                 </div>
                 <p className="text-sand-warm/70 text-xs font-sans">
-                    Picks and predictions locked. Mark bingo squares below as things happen!
+                    Picks and Tree Mail are locked. Mark a square if you feel like it.
                 </p>
                 {!confirming ? (
                     <button
@@ -40,7 +40,7 @@ export default function LightYourTorch({ episodeNum }) {
                 ) : (
                     <div className="space-y-2">
                         <p className="text-sand-warm/60 text-xs">
-                            Mark the episode as finished? Your bingo card will be locked in.
+                            Done with this episode? Results stay hidden until it&apos;s scored.
                         </p>
                         <div className="flex gap-2 justify-center">
                             <FijianPrimaryButton onClick={async () => {
@@ -69,8 +69,8 @@ export default function LightYourTorch({ episodeNum }) {
             <div className="text-4xl">📺</div>
             <h3 className="font-display text-2xl text-sand-warm tracking-wider">Ready to Watch?</h3>
             <p className="text-sand-warm/60 text-sm font-sans max-w-xs mx-auto">
-                Your picks and Tree Mail above are already saved. Lighting your torch locks
-                them in and opens your bingo card and tribal snap vote.
+                Your picks and Tree Mail are already saved. Lighting your torch locks
+                them in, and opens your bingo card and Snap Vote.
             </p>
             <FijianPrimaryButton onClick={async () => {
                 setError('');

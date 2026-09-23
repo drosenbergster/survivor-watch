@@ -745,7 +745,7 @@ export function mergeFSGResults(combinedResult, fsgResult) {
 
 
 /* ═══════════════════════════════════════════════════════════
-   Auto-resolve Tree Mail / Tribal Whisper bets from imported data
+   Auto-resolve Tree Mail from imported data
    ═══════════════════════════════════════════════════════════ */
 
 /**

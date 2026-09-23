@@ -50,6 +50,8 @@ export default function WeeklyPicks() {
         }));
     }, [tribeOverrides]);
 
+    const visibleTribeCount = tribeGroups.filter(g => g.members.some(c => !eliminatedSet.has(c.id))).length;
+
     // Hydrate from remote picks (once they arrive)
     useEffect(() => {
         if (myPicks.length > 0 && !hydrated.current) {
@@ -91,12 +93,14 @@ export default function WeeklyPicks() {
             </div>
 
             <p className="text-sand-warm/60 text-xs font-sans leading-relaxed">
-                Choose {maxPicks} castaways to score for you this episode. Picks auto-save.
+                Choose {maxPicks} castaways to score for you this episode. They save as you tap.
                 If you&apos;re the only player who picks someone, you get a{' '}
                 <strong className="text-ochre">1.5&times; bonus</strong> on their points.
             </p>
 
-            <div className={`grid grid-cols-1 ${tribeGroups.length > 1 ? 'lg:grid-cols-3' : ''} gap-3`}>
+            <div className={`grid grid-cols-1 ${
+                visibleTribeCount >= 3 ? 'lg:grid-cols-3' : visibleTribeCount === 2 ? 'lg:grid-cols-2' : ''
+            } gap-3`}>
                 {tribeGroups.map(({ key: tribeKey, name: tribeName, members: tribeMembers }) => {
                     const activeMembers = tribeMembers.filter(c => !eliminatedSet.has(c.id));
                     if (activeMembers.length === 0) return null;

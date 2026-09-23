@@ -13,7 +13,6 @@ const SCORE_MAP = Object.fromEntries(SCORE_EVENTS.map(e => [e.key, e.points]));
 const SCARCITY_MULTIPLIER = 1.5;
 const CORRECT_PROP_BET_POINTS = 3;
 const CORRECT_SNAP_VOTE_POINTS = 8;
-const CORRECT_SIDE_BET_POINTS = 3;
 const BINGO_SQUARE_POINTS = 2;
 const BINGO_LINE_POINTS = 5;
 const BINGO_BLACKOUT_POINTS = 50;
@@ -59,8 +58,8 @@ export function computeScarcity(picks) {
 /**
  * Score a single episode for all players. Three streams: picks, predictions, bingo.
  *
- * episodeData: { picks, predictions, propBets, propBetResults, snapVotes, sideBets,
- *                playerSideBets, sideBetResults, eliminatedThisEp }
+ * episodeData: { picks, predictions, propBets, propBetResults, snapVotes,
+ *                eliminatedThisEp }
  * bingoData:   { [uid]: boolean[25] }
  * memberUids:  string[]
  *
@@ -75,9 +74,6 @@ export function scoreEpisode(episodeData, memberUids, bingoData) {
         propBetResults = {},
         eliminatedThisEp = [],
         snapVotes = {},
-        sideBets = [],
-        playerSideBets = {},
-        sideBetResults = {},
     } = episodeData;
 
     const contestantScores = scoreContestants(gameEvents);
@@ -109,14 +105,18 @@ export function scoreEpisode(episodeData, memberUids, bingoData) {
             }
         }
 
-        // ── Predictions: Tree Mail, Snap Vote, Tribal Whispers ──
+        // ── Predictions: Tree Mail before the episode, Snap Vote at tribal ──
         const playerPred = predictions[uid] || {};
 
         const playerProps = playerPred.propBets || {};
         for (const prop of propBets) {
             const correctAnswer = propBetResults[prop.id];
             if (correctAnswer === undefined || correctAnswer === null) continue;
-            if (!!playerProps[prop.id] === !!correctAnswer) {
+            // An unanswered question is not a NO. Without this, skipping Tree
+            // Mail entirely still banks points on everything that resolves NO.
+            const answer = playerProps[prop.id];
+            if (answer === undefined || answer === null) continue;
+            if (!!answer === !!correctAnswer) {
                 predictionTotal += CORRECT_PROP_BET_POINTS;
                 breakdown.predictions.push({
                     type: 'propBet',
@@ -135,21 +135,6 @@ export function scoreEpisode(episodeData, memberUids, bingoData) {
                 correct: true,
                 points: CORRECT_SNAP_VOTE_POINTS,
             });
-        }
-
-        const playerSB = playerSideBets[uid] || {};
-        for (const bet of sideBets) {
-            const correctAnswer = sideBetResults[bet.id];
-            if (correctAnswer === undefined || correctAnswer === null) continue;
-            if (!!playerSB[bet.id] === !!correctAnswer) {
-                predictionTotal += CORRECT_SIDE_BET_POINTS;
-                breakdown.predictions.push({
-                    type: 'sideBet',
-                    text: bet.text,
-                    correct: true,
-                    points: CORRECT_SIDE_BET_POINTS,
-                });
-            }
         }
 
         // ── Bingo: squares + lines + blackout ──
@@ -188,8 +173,8 @@ export function scoreEpisode(episodeData, memberUids, bingoData) {
 
 /**
  * Score sealed passports against a "truth" object once the season is decided.
- * passports: { [uid]: { winner, firstJury, fanFavorite, biggestVillain, fireMakingWinner, sealedAt } }
- * truth:     { winner, firstJury, fanFavorite, biggestVillain, fireMakingWinner }
+ * passports: { [uid]: { ...PASSPORT_QUESTIONS keys, sealedAt } }
+ * truth:     { ...same keys }
  * Returns:   { [uid]: { points, correct: [{ key, label, answer, correctAnswer }], total } }
  */
 export function scorePassports(passports, truth) {

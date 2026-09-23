@@ -171,7 +171,6 @@ function EpisodeBreakdown({ epNum, score, bingoSeed, bingoMarked }) {
                                             <span>
                                                 {p.type === 'propBet' && `Tree Mail — ${p.text}`}
                                                 {p.type === 'snapVote' && 'Snap vote correct'}
-                                                {p.type === 'sideBet' && `Tribal Whisper — ${p.text}`}
                                             </span>
                                             <span className="text-green-400">+{p.points}</span>
                                         </div>
@@ -240,13 +239,13 @@ function SpoilerShield({ unwatchedEps, onNavigate }) {
             <h3 className="font-display text-2xl text-sand-warm tracking-wider">Spoiler Shield</h3>
             <p className="text-sand-warm/60 text-sm font-sans">
                 You haven&apos;t watched {unwatchedEps.length === 1 ? `Episode ${unwatchedEps[0]}` : `Episodes ${unwatchedEps.join(', ')}`} yet.
-                Scores are hidden to keep things fresh.
+                Scores stay hidden until you have.
             </p>
             <button
                 onClick={() => onNavigate?.('episode')}
                 className="text-ochre text-sm underline hover:text-ochre/80 transition-colors font-sans"
             >
-                🔥 Light your torch to watch →
+                Back to the episode →
             </button>
         </FijianCard>
     );
@@ -292,9 +291,9 @@ export default function ScoreboardTab({ onTabChange }) {
             <header className="text-center">
                 <h2 className="font-display text-3xl tracking-wider text-sand-warm drop-shadow-text">Scores</h2>
                 <p className="text-sand-warm/50 text-xs mt-1 font-sans inline-flex items-center justify-center gap-1">
-                    Tap a player to see breakdown
+                    Tap a name for the breakdown
                     <HintBadge hintKey="scores">
-                        Three ways to score: Picks (your castaways&apos; events), Predictions (Tree Mail + Snap Vote + Whispers), and Bingo. Passport bonus reveals at the finale.
+                        Picks, Tree Mail, your Snap Vote at tribal, and bingo while you watch. The Passport pays at the finale.
                     </HintBadge>
                 </p>
             </header>
@@ -306,7 +305,7 @@ export default function ScoreboardTab({ onTabChange }) {
                         <Icon name="leaderboard" className="text-ochre text-4xl" />
                     </div>
                     <p className="text-clay font-serif italic text-sm leading-relaxed">
-                        The scoreboard will light up once the first episode is scored. May the best castaway win!
+                        Scores show up after the first episode.
                     </p>
                 </FijianCard>
             ) : spoilerActive ? (
@@ -394,7 +393,6 @@ export default function ScoreboardTab({ onTabChange }) {
                                     <div className="space-y-0.5">
                                         <ScoreGuideRow emoji="⚡" label="Snap Vote correct" value="+8" />
                                         <ScoreGuideRow emoji="📬" label="Tree Mail correct" value="+3" />
-                                        <ScoreGuideRow emoji="🤫" label="Tribal Whisper correct" value="+3" />
                                     </div>
                                 </div>
 

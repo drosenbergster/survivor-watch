@@ -5,22 +5,22 @@ const SLIDES = [
     {
         icon: '🏝️',
         title: 'Welcome to Watch Party HQ',
-        body: 'Your Survivor 51 companion app. Three ways to score: pick castaways, make calls, mark bingo. That is the whole game.',
+        body: 'Your Survivor 51 companion. The show is the point. Pick castaways, make a few calls, and mark a bingo card while the episode is on.',
     },
     {
         icon: '🔮',
         title: 'Before the episode: Call It',
-        body: 'Answer Tree Mail (yes/no calls), and from Episode 2 on, pick 3 castaways. Everything auto-saves — nothing to remember to hit.',
+        body: 'Answer Tree Mail, and from Episode 2 on, pick 3 castaways. They save as you go.',
     },
     {
         icon: '🔥',
         title: 'Light Your Torch to Watch',
-        body: 'One tap locks your picks and calls, and opens your bingo card and tribal snap vote. Every square you catch scores.',
+        body: 'One tap locks your picks and Tree Mail, and opens your bingo card and Snap Vote. Mark a square when it pops up.',
     },
     {
         icon: '📺',
         title: 'Watch on Your Own Time',
-        body: 'Nothing is spoiled before you watch. Mark an episode done and everything unlocks at once — results, standings, and how your card stacked up.',
+        body: 'Nothing is spoiled before you watch. Mark an episode done and the results and standings unlock at once.',
     },
 ];
 

@@ -1,21 +1,30 @@
 import { useState } from 'react';
 import { useApp } from '../../AppContext';
 import { FijianCard, Icon } from '../fijian';
-import { PROP_BET_POOL } from '../../data';
+import { betFits, getPropBetSwapPool } from '../../data';
 
-function PropBetEditor({ propBets, onSave }) {
+function PropBetEditor({ propBets, swapPool, onSave }) {
     const [bets, setBets] = useState(propBets);
     const [dirty, setDirty] = useState(false);
     const [saving, setSaving] = useState(false);
 
     const swapBet = (index) => {
-        const usedTexts = new Set(bets.map(b => b.text));
-        const available = PROP_BET_POOL.filter(b => !usedTexts.has(b.text));
+        // Keep the other four in place and only offer questions that can sit
+        // beside them — no opposites, no question that answers another.
+        const others = bets.filter((_, i) => i !== index);
+        const available = swapPool.filter(b => betFits(b, others));
         if (available.length === 0) return;
         setBets(prev => {
             const updated = [...prev];
             const replacement = available[Math.floor(Math.random() * available.length)];
-            updated[index] = { ...updated[index], text: replacement.text, resolveType: replacement.resolveType, resolveParams: replacement.resolveParams };
+            updated[index] = {
+                ...updated[index],
+                key: replacement.key,
+                excludes: replacement.excludes || null,
+                text: replacement.text,
+                resolveType: replacement.resolveType || null,
+                resolveParams: replacement.resolveParams || null,
+            };
             return updated;
         });
         setDirty(true);
@@ -59,7 +68,7 @@ function PropBetEditor({ propBets, onSave }) {
 export default function AdminEpisodeCard() {
     const {
         user, league, myEpisode, myEpisodeData,
-        updatePropBets, setMyEpisode,
+        updatePropBets, setMyEpisode, isMerged,
     } = useApp();
     const [error, setError] = useState('');
     const [resetting, setResetting] = useState(false);
@@ -104,7 +113,11 @@ export default function AdminEpisodeCard() {
                 Episode is open. Players lock their own picks when they light their torch.
             </p>
             {myEpisodeData?.propBets && (
-                <PropBetEditor propBets={myEpisodeData.propBets} onSave={handleSavePropBets} />
+                <PropBetEditor
+                    propBets={myEpisodeData.propBets}
+                    swapPool={getPropBetSwapPool(myEpisode, isMerged)}
+                    onSave={handleSavePropBets}
+                />
             )}
             <button
                 type="button"
