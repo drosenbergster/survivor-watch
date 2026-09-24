@@ -152,7 +152,7 @@ export default function BingoCard({ seed, episodeNum, marked: savedMarked, onSav
             )}
 
             <FijianCard className="p-2">
-                <div className="grid grid-cols-5 gap-[2px]">
+                <div className="grid grid-cols-5 gap-[2px] items-stretch">
                     {BINGO_HEADERS.map(letter => (
                         <div key={letter} className="text-center font-display text-xs sm:text-sm text-ochre tracking-widest py-1">
                             {letter}
