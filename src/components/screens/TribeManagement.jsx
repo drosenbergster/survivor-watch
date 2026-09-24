@@ -118,9 +118,8 @@ function TribeSwapPanel({ episodeNum }) {
     );
 
     // Seed from the most recent swap if there is one, otherwise from the tribes in
-    // data.js. Season 51 ships everyone unassigned, so on first run the real tribes
-    // are empty and every castaway starts in the holding bucket for the host to name
-    // and sort after the premiere reveal.
+    // data.js. Anyone left in `unassigned` (Patt, at the start) lands in the holding
+    // bucket so the host can place them later.
     const [tribes, setTribes] = useState(() => {
         const swapEps = Object.keys(tribeSwaps || {}).filter(k => k !== 'merge').map(Number).sort((a, b) => b - a);
         const latest = swapEps.length > 0 ? tribeSwaps[swapEps[0]]?.assignments : null;

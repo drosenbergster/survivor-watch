@@ -4,22 +4,28 @@
  * so episodes can be scored without the host opening the app.
  */
 
-// Season 51 ships with every castaway unassigned because production reveals the two
-// starting tribes in the premiere. Host-set tribe overrides take precedence over this
-// baseline in getContestantTribe/getTribeMembers below.
+// Starting tribes. Host-set tribe overrides take precedence over this baseline
+// in getContestantTribe/getTribeMembers below. Patt Cannaday starts with no tribe.
 const TRIBES = {
-    unassigned: {
-        name: 'Unassigned',
+    savu: {
+        name: 'Savu',
         members: [
-            { id: 'aaliyah_puglia' }, { id: 'alexis_levine' }, { id: 'an_nguyen' },
-            { id: 'ana_sani' }, { id: 'jelly_loblack' }, { id: 'brady_booker' },
-            { id: 'carter_krull' }, { id: 'cristian_chavez' }, { id: 'danny_kilby' },
-            { id: 'devin_way' }, { id: 'eric_macksoud' }, { id: 'jenna_doore' },
-            { id: 'kristin_flickinger' }, { id: 'lewis_kelly' }, { id: 'linnea_capobianco' },
-            { id: 'maggie_nestor' }, { id: 'mike_pinsky' }, { id: 'ori_jean_charles' },
-            { id: 'patt_cannaday' }, { id: 'rob_antonson' }, { id: 'sharonda_cox' },
+            { id: 'alexis_levine' }, { id: 'ana_sani' }, { id: 'carter_krull' },
+            { id: 'cristian_chavez' }, { id: 'eric_macksoud' }, { id: 'kristin_flickinger' },
+            { id: 'linnea_capobianco' }, { id: 'ori_jean_charles' }, { id: 'rob_antonson' },
+            { id: 'sharonda_cox' },
         ],
     },
+    toka: {
+        name: 'Toka',
+        members: [
+            { id: 'aaliyah_puglia' }, { id: 'jelly_loblack' }, { id: 'brady_booker' },
+            { id: 'danny_kilby' }, { id: 'devin_way' }, { id: 'jenna_doore' },
+            { id: 'lewis_kelly' }, { id: 'maggie_nestor' }, { id: 'mike_pinsky' },
+            { id: 'an_nguyen' },
+        ],
+    },
+    unassigned: { name: 'No tribe', members: [{ id: 'patt_cannaday' }] },
 };
 
 const ALL_IDS = Object.values(TRIBES).flatMap(t => t.members.map(m => m.id));

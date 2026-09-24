@@ -65,7 +65,10 @@
   --color-surface-dark: #292524;
   --color-sand-warm: #d4b483;
 
-  /* Tribe colors — Cila, Vatu, Kalo, Manulevu (merge) */
+  /* Tribe colors — Savu (purple), Toka (yellow), plus earlier-season names */
+  --color-savu: #7a3e9d;
+  --color-toka: #e0a030;
+  --color-unassigned: #d4b483;
   --color-cila: #e0a030;
   --color-vatu: #c43e1c;
   --color-kalo: #1a8cbb;

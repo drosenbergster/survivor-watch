@@ -13,9 +13,9 @@ export const SEASON_TAGLINE = 'The Open Era';
 export const WATCH_PARTY_ID = `${SEASON_ID}-global`;
 export const WATCH_PARTY_NAME = `${SEASON_LABEL} Watch Party`;
 
-// Production assigns the starting tribes and reveals them in the premiere, so we
-// ship with every castaway unassigned. The host sorts them from Rules → Tribe
-// Management after watching Episode 1; those assignments override this file.
+// Starting tribes are Savu (purple) and Toka (yellow). Patt Cannaday begins with
+// no buff, so she stays in `unassigned`. A host can still override these from
+// Rules → Tribe Management after a swap; those assignments take precedence.
 //
 // `aliases` exist because the stat sites we import from use short names that do not
 // always match the first word of the official name: True Dork Times lists "Dan" and
@@ -26,23 +26,23 @@ export const CONTESTANTS = [
     { id: 'alexis_levine', name: 'Alexis Levine', age: 34, occupation: 'Criminal defense attorney', short: 'Attorney', from: 'Atlanta, GA', fsgId: '537' },
     { id: 'an_nguyen', name: 'An "Thien An" Nguyen', age: 24, occupation: 'Medical student', short: 'Med student', from: 'Fort Worth, TX', fsgId: '538', aliases: ['thien an', 'thien', 'an nguyen'] },
     { id: 'ana_sani', name: 'Ana Sani', age: 34, occupation: 'Voice actress', short: 'Voice actress', from: 'Toronto, ON', fsgId: '539' },
-    { id: 'jelly_loblack', name: 'Angelica "Jelly" Loblack', age: 29, occupation: 'Sociology professor', short: 'Professor', from: 'Bloomington, IN', fsgId: '540', aliases: ['jelly', 'angelica', 'angelica loblack'] },
+    { id: 'jelly_loblack', name: 'Angelica "Jelly" LoBlack', age: 29, occupation: 'Sociology professor', short: 'Professor', from: 'Bloomington, IN', fsgId: '540', aliases: ['jelly', 'angelica', 'angelica loblack', 'loblack', 'lo black', 'angelica lo black'] },
     { id: 'brady_booker', name: 'Brady Booker', age: 27, occupation: 'Pro wrestler', short: 'Pro wrestler', from: 'Knoxville, TN', fsgId: '541' },
     { id: 'carter_krull', name: 'Carter Krull', age: 24, occupation: 'Livestock farmer', short: 'Farmer', from: 'Sioux Falls, SD', fsgId: '542' },
     { id: 'cristian_chavez', name: 'Cristian Chavez', age: 26, occupation: 'Head of HR', short: 'Head of HR', from: 'Salt Lake City, UT', fsgId: '543' },
-    { id: 'danny_kilby', name: 'Danny "Kilby" Kilby', age: 30, occupation: 'Game designer', short: 'Game designer', from: 'London, ON', fsgId: '544', aliases: ['kilby', 'dan', 'danny', 'dan kilby'] },
+    { id: 'danny_kilby', name: 'Dan Kilby', age: 30, occupation: 'Game designer', short: 'Game designer', from: 'London, ON', fsgId: '544', aliases: ['kilby', 'dan', 'danny', 'danny kilby', 'dan kilby'] },
     { id: 'devin_way', name: 'Devin Way', age: 33, occupation: 'Actor', short: 'Actor', from: 'Los Angeles, CA', fsgId: '545' },
     { id: 'eric_macksoud', name: 'Eric Macksoud', age: 34, occupation: 'Mental health counselor', short: 'Counselor', from: 'Windsor Locks, CT', fsgId: '546' },
-    { id: 'jenna_doore', name: 'Jenna Doore', age: 30, occupation: 'Wedding photographer', short: 'Photographer', from: 'Toledo, OH', fsgId: '547' },
+    { id: 'jenna_doore', name: 'Jenna Doore', age: 30, occupation: 'Wedding photographer', short: 'Photographer', from: 'Toledo, OH', fsgId: '547', aliases: ['jenna greenawalt', 'greenawalt'] },
     { id: 'kristin_flickinger', name: 'Kristin Flickinger', age: 49, occupation: 'Crisis management', short: 'Crisis mgmt', from: 'Santa Barbara, CA', fsgId: '548' },
     { id: 'lewis_kelly', name: 'Lewis Kelly', age: 28, occupation: 'Farmer', short: 'Farmer', from: 'Puerto Rico', fsgId: '549' },
     { id: 'linnea_capobianco', name: 'Linnea Capobianco', age: 25, occupation: 'Entrepreneur', short: 'Entrepreneur', from: 'Jersey City, NJ', fsgId: '550' },
     { id: 'maggie_nestor', name: 'Maggie Nestor', age: 40, occupation: 'Farmer', short: 'Farmer', from: 'Charlestown, WV', fsgId: '551' },
-    { id: 'mike_pinsky', name: 'Mike Pinsky', age: 32, occupation: '', short: 'NYC', from: 'New York, NY', fsgId: '552' },
+    { id: 'mike_pinsky', name: 'Michael Pinsky', age: 32, occupation: '', short: 'NYC', from: 'New York, NY', fsgId: '552', aliases: ['mike', 'mike pinsky'] },
     { id: 'ori_jean_charles', name: 'Ori Jean-Charles', age: 27, occupation: '', short: 'Spring Valley', from: 'Spring Valley, NY', fsgId: '553', aliases: ['ori', 'ori jean charles'] },
-    { id: 'patt_cannaday', name: 'Patt Cannaday', age: 33, occupation: '', short: 'Washington DC', from: 'Washington, DC', fsgId: '554', aliases: ['pat'] },
+    { id: 'patt_cannaday', name: 'Patt Cannaday', age: 33, occupation: '', short: 'Washington DC', from: 'Washington, DC', fsgId: '554', aliases: ['pat', 'cannady', 'patt cannady'] },
     { id: 'rob_antonson', name: 'Rob Antonson', age: 40, occupation: 'Airline gate agent', short: 'Gate agent', from: 'Cumberland, RI', fsgId: '555' },
-    { id: 'sharonda_cox', name: 'Sharonda Cox', age: 34, occupation: 'Resident, OBGYN', short: 'OBGYN resident', from: 'Richmond, KY', fsgId: '556' },
+    { id: 'sharonda_cox', name: 'Sharonda Renee', age: 34, occupation: 'Resident, OBGYN', short: 'OBGYN resident', from: 'Richmond, KY', fsgId: '556', aliases: ['renee', 'sharonda cox', 'cox'] },
 ];
 
 /**
@@ -74,12 +74,29 @@ for (const c of CONTESTANTS) {
     c.seasons = c.occupation ? `${c.occupation} · ${c.age}` : `${c.from} · ${c.age}`;
 }
 
-// Tribe names are revealed in the premiere — fill these in once they are known.
-// `unassigned` holds everyone until then so that every screen still renders.
+function cast(...ids) {
+    return ids.map(id => CONTESTANTS.find(c => c.id === id));
+}
+
+// Savu is purple, Toka is yellow. Patt Cannaday starts without a tribe.
 export const TRIBES = {
-    tribeOne: { name: 'Tribe One', color: 'cila', members: [] },
-    tribeTwo: { name: 'Tribe Two', color: 'kalo', members: [] },
-    unassigned: { name: 'Castaways', color: 'vatu', members: CONTESTANTS },
+    savu: {
+        name: 'Savu',
+        color: 'savu',
+        members: cast(
+            'alexis_levine', 'ana_sani', 'carter_krull', 'cristian_chavez', 'eric_macksoud',
+            'kristin_flickinger', 'linnea_capobianco', 'ori_jean_charles', 'rob_antonson', 'sharonda_cox',
+        ),
+    },
+    toka: {
+        name: 'Toka',
+        color: 'toka',
+        members: cast(
+            'aaliyah_puglia', 'jelly_loblack', 'brady_booker', 'danny_kilby', 'devin_way',
+            'jenna_doore', 'lewis_kelly', 'maggie_nestor', 'mike_pinsky', 'an_nguyen',
+        ),
+    },
+    unassigned: { name: 'No tribe', color: 'unassigned', members: cast('patt_cannaday') },
 };
 
 export const ALL_CASTAWAYS = CONTESTANTS;

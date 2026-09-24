@@ -11,30 +11,40 @@ const CAST = [
     { id: 'alexis_levine', name: 'Alexis Levine', fsgId: '537' },
     { id: 'an_nguyen', name: 'An Nguyen', fsgId: '538', aliases: ['thien an', 'thien'] },
     { id: 'ana_sani', name: 'Ana Sani', fsgId: '539' },
-    { id: 'jelly_loblack', name: 'Angelica Loblack', fsgId: '540', aliases: ['jelly'] },
+    { id: 'jelly_loblack', name: 'Angelica LoBlack', fsgId: '540', aliases: ['jelly', 'loblack', 'angelica loblack'] },
     { id: 'brady_booker', name: 'Brady Booker', fsgId: '541' },
     { id: 'carter_krull', name: 'Carter Krull', fsgId: '542' },
     { id: 'cristian_chavez', name: 'Cristian Chavez', fsgId: '543' },
-    { id: 'danny_kilby', name: 'Danny Kilby', fsgId: '544', aliases: ['kilby', 'dan'] },
+    { id: 'danny_kilby', name: 'Dan Kilby', fsgId: '544', aliases: ['kilby', 'dan', 'danny', 'danny kilby'] },
     { id: 'devin_way', name: 'Devin Way', fsgId: '545' },
     { id: 'eric_macksoud', name: 'Eric Macksoud', fsgId: '546' },
-    { id: 'jenna_doore', name: 'Jenna Doore', fsgId: '547' },
+    { id: 'jenna_doore', name: 'Jenna Doore', fsgId: '547', aliases: ['jenna greenawalt', 'greenawalt'] },
     { id: 'kristin_flickinger', name: 'Kristin Flickinger', fsgId: '548' },
     { id: 'lewis_kelly', name: 'Lewis Kelly', fsgId: '549' },
     { id: 'linnea_capobianco', name: 'Linnea Capobianco', fsgId: '550' },
     { id: 'maggie_nestor', name: 'Maggie Nestor', fsgId: '551' },
-    { id: 'mike_pinsky', name: 'Mike Pinsky', fsgId: '552' },
+    { id: 'mike_pinsky', name: 'Michael Pinsky', fsgId: '552', aliases: ['mike', 'mike pinsky'] },
     { id: 'ori_jean_charles', name: 'Ori Jean-Charles', fsgId: '553', aliases: ['ori'] },
-    { id: 'patt_cannaday', name: 'Patt Cannaday', fsgId: '554', aliases: ['pat'] },
+    { id: 'patt_cannaday', name: 'Patt Cannaday', fsgId: '554', aliases: ['pat', 'cannady', 'patt cannady'] },
     { id: 'rob_antonson', name: 'Rob Antonson', fsgId: '555' },
-    { id: 'sharonda_cox', name: 'Sharonda Cox', fsgId: '556' },
+    { id: 'sharonda_cox', name: 'Sharonda Renee', fsgId: '556', aliases: ['renee', 'sharonda cox', 'cox'] },
 ];
 
-// Production reveals the two starting tribes in the premiere, so everyone ships
-// unassigned. Once the host assigns tribes in the app, those overrides take
-// precedence over this baseline everywhere it is consulted.
+const SAVU_IDS = ['alexis_levine', 'ana_sani', 'carter_krull', 'cristian_chavez', 'eric_macksoud', 'kristin_flickinger', 'linnea_capobianco', 'ori_jean_charles', 'rob_antonson', 'sharonda_cox'];
+const TOKA_IDS = ['aaliyah_puglia', 'jelly_loblack', 'brady_booker', 'danny_kilby', 'devin_way', 'jenna_doore', 'lewis_kelly', 'maggie_nestor', 'mike_pinsky', 'an_nguyen'];
+
+function tribeMembers(ids) {
+    return ids.map(id => {
+        const c = CAST.find(x => x.id === id);
+        return { id, name: c.name };
+    });
+}
+
+// Host-set tribe overrides take precedence over this baseline. Patt starts with no tribe.
 const TRIBES = {
-    unassigned: { name: 'Unassigned', members: CAST.map(c => ({ id: c.id, name: c.name })) },
+    savu: { name: 'Savu', members: tribeMembers(SAVU_IDS) },
+    toka: { name: 'Toka', members: tribeMembers(TOKA_IDS) },
+    unassigned: { name: 'No tribe', members: tribeMembers(['patt_cannaday']) },
 };
 
 const NAME_MAP = {};
