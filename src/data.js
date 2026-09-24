@@ -228,17 +228,48 @@ export const PROP_BET_POOL = [
 ];
 
 // Premiere Tree Mail. Written for a two-hour Episode 1 with 21 strangers, two
-// tribes, and one castaway held out. No resolveType: nothing to import yet.
+// tribes, and one castaway held out. No resolveType: nothing to import yet, so
+// the host marks every one of these by hand. That frees the wording from the
+// importer's vocabulary — the only test is whether the room can agree on the
+// answer by the end of the night.
+//
+// Order matters here. Episode 1 deals from the top of this list instead of
+// shuffling (see generatePropBets), so the first PREMIERE_PROP_BET_COUNT lines
+// are the curated set everybody gets and the rest are the host's swap bench.
 export const PREMIERE_PROP_BETS = [
-    { key: 'held_out_skips_tribal', text: 'The 21st castaway misses the first Tribal Council', cat: 'premiere', excludes: ['tribe_short'] },
-    { key: 'double_boot', text: 'Two people go home tonight', cat: 'premiere' },
-    { key: 'early_power', text: 'An idol or a clue turns up before the first vote', cat: 'premiere' },
-    { key: 'sits_out', text: 'Somebody sits out of the first challenge', cat: 'premiere' },
-    { key: 'early_target', text: 'Somebody names a target before camp is built', cat: 'premiere' },
-    { key: 'first_is_reward', text: 'The first challenge is for reward, not immunity', cat: 'premiere' },
-    { key: 'tribe_short', text: 'One tribe is short a player when they vote', cat: 'premiere', excludes: ['held_out_skips_tribal'] },
-    { key: 'first_vote_unanimous', text: 'The first vote is unanimous', cat: 'premiere' },
+    // The headliners — real coin flips with something to argue about
+    { key: 'early_idol', text: 'An idol is found before the first Tribal Council', cat: 'idol', excludes: ['clue_only', 'no_idol_found'] },
+    { key: 'target_survives', text: 'Somebody gets targeted and survives the vote', cat: 'vote' },
+    { key: 'first_vote_unanimous', text: 'The first vote is unanimous', cat: 'vote' },
+    { key: 'blown_lead', text: 'A tribe blows a lead and still loses', cat: 'challenge' },
+    { key: 'alliance_four', text: 'Four or more lock into one alliance', cat: 'camp' },
+    { key: 'fire_day_one', text: 'A tribe gets fire going on day one', cat: 'camp' },
+    { key: 'sits_out', text: 'Somebody sits out of the first challenge', cat: 'challenge', excludes: ['tribe_short'] },
+
+    // The bench — swap these in from Host Controls
+    { key: 'puzzle_finish', text: 'The immunity challenge comes down to a puzzle', cat: 'challenge' },
+    { key: 'first_is_reward', text: 'The first challenge is for reward, not immunity', cat: 'challenge', excludes: ['both_prizes'] },
+    { key: 'both_prizes', text: 'The winning tribe takes reward and immunity together', cat: 'challenge', excludes: ['first_is_reward'] },
+    { key: 'clue_only', text: 'Somebody finds a clue but never gets the idol', cat: 'idol', excludes: ['early_idol'] },
+    { key: 'power_shared', text: 'Somebody tells an ally about their idol or advantage', cat: 'idol' },
+    { key: 'power_played', text: 'An idol or advantage gets played at the first Tribal', cat: 'idol' },
+    { key: 'boot_has_power', text: 'The first person out leaves holding an advantage', cat: 'idol' },
+    { key: 'no_idol_found', text: 'Nobody finds an idol tonight', cat: 'idol', excludes: ['early_idol', 'boot_has_power'] },
+    { key: 'shot_in_dark', text: 'Somebody risks a Shot in the Dark', cat: 'vote' },
+    { key: 'open_lie', text: "Somebody lies straight to another player's face", cat: 'camp' },
+    { key: 'final_deal', text: 'Two people shake on a final two before the first vote', cat: 'camp' },
+    { key: 'early_target', text: 'Somebody names a target before the shelter is built', cat: 'camp' },
+    { key: 'rain', text: 'Rain hits camp before the first vote', cat: 'camp' },
+    { key: 'journey', text: 'Somebody leaves camp for a journey', cat: 'twist' },
+    { key: 'double_boot', text: 'Two people go home tonight', cat: 'twist' },
+    { key: 'tribe_short', text: 'One tribe is short a player when they vote', cat: 'twist', excludes: ['held_out_skips_tribal', 'sits_out'] },
+    { key: 'held_out_skips_tribal', text: 'The held-out castaway misses the first Tribal Council', cat: 'twist', excludes: ['tribe_short'] },
 ];
+
+// How many Tree Mail questions land on a card. The premiere runs two hours and
+// has no weekly picks in front of it, so it carries a few more.
+export const PROP_BET_COUNT = 5;
+export const PREMIERE_PROP_BET_COUNT = 7;
 
 /** True when `bet` can join a set that already holds `chosen`. */
 export function betFits(bet, chosen) {
@@ -266,21 +297,25 @@ export function getPropBetSwapPool(episodeNumber, isPostMerge = false) {
     return isPostMerge ? PROP_BET_POOL : PROP_BET_POOL.filter(b => b.phase !== 'post-merge');
 }
 
-export function generatePropBets(episodeNumber, count = 5, isPostMerge = false) {
+export function generatePropBets(episodeNumber, count, isPostMerge = false) {
+    const isPremiere = Number(episodeNumber) === 1;
     const pool = getPropBetSwapPool(episodeNumber, isPostMerge);
-    const shuffled = deterministicShuffle(pool, episodeNumber * 7919);
+    // There is only ever one premiere, so a shuffle buys nothing and can bury
+    // the best questions. Deal it in authored order instead.
+    const ordered = isPremiere ? pool : deterministicShuffle(pool, episodeNumber * 7919);
+    const target = count ?? (isPremiere ? PREMIERE_PROP_BET_COUNT : PROP_BET_COUNT);
     const selected = [];
-    // Premiere questions are all one category, so only the cap is skipped —
-    // the weekly pool needs it or a shuffle hands you five idol bets.
-    const capCategories = Number(episodeNumber) !== 1;
+    // The weekly pool needs a category cap or a shuffle hands you five idol
+    // bets. The premiere set is curated by hand, so it does not.
+    const capCategories = !isPremiere;
     const catCount = {};
-    for (const bet of shuffled) {
+    for (const bet of ordered) {
         const cat = bet.cat || 'other';
         if (capCategories && (catCount[cat] || 0) >= 2) continue;
         if (!betFits(bet, selected)) continue;
         selected.push(bet);
         catCount[cat] = (catCount[cat] || 0) + 1;
-        if (selected.length >= count) break;
+        if (selected.length >= target) break;
     }
     // `key` and `excludes` ride along so the host's swap can tell what is
     // already on the card. Firebase rejects undefined, so unset means null.

@@ -139,7 +139,7 @@ export function AppProvider({ children }) {
             setLeagueMembers(DEMO_MEMBERS);
             setCurrentEpisode(2);
             setPlayerEpisode({ demo: 1 });
-            const ep1Props = generatePropBets(1, 5);
+            const ep1Props = generatePropBets(1);
             setEpisodes({
                 1: {
                     status: 'scored',
@@ -170,7 +170,7 @@ export function AppProvider({ children }) {
                 2: {
                     status: 'open',
                     createdAt: Date.now(),
-                    propBets: generatePropBets(2, 5),
+                    propBets: generatePropBets(2),
                     picks: {},
                     predictions: {},
                 },
@@ -304,7 +304,7 @@ export function AppProvider({ children }) {
 
         const isHost = league?.createdBy === user.uid;
         const isPostMerge = !!tribeSwaps?.merge;
-        const propBets = generatePropBets(episodeNum, 5, isPostMerge);
+        const propBets = generatePropBets(episodeNum, undefined, isPostMerge);
         await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}`), {
             status: 'open',
             createdAt: Date.now(),
