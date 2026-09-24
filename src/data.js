@@ -169,7 +169,7 @@ export const ENGAGEMENT_SCORING = [
         section: 'Predictions',
         icon: '🔮',
         items: [
-            { label: 'Tree Mail (correct)', points: 3, emoji: '📬', note: 'Five yes/no calls about the episode, answered before you watch.' },
+            { label: 'Tree Mail (correct)', points: 3, emoji: '📬', note: 'Yes or no calls about the episode, answered before you watch. A blank pays nothing, but a wrong answer costs nothing either.' },
             { label: 'Snap Vote (correct)', points: 8, emoji: '⚡', note: 'Once they sit down at tribal, pause before Jeff asks anything and call whose torch gets snuffed. Opens when you light your torch, closes when you mark Done.' },
         ],
     },

@@ -10,7 +10,7 @@ A web app for Survivor Season 51 — "The Open Era" — watch parties. Draft cas
 - **Weekly Picks** — Choose castaways to score for you each episode. The count tapers as the field thins, so a roster stays yours rather than converging on everyone else's
 - **Captain** — Star one of your picks each week; they score double. The one real decision every episode
 - **Premiere Draft** — The premiere has nobody to pick yet, so the draft happens mid-episode. Pause when the buffs are handed out, take five, and lock it
-- **Tree Mail** — Yes/no prop bets, auto-resolved from imported stats
+- **Tree Mail** — Yes/no prop bets, auto-resolved from imported stats. The premiere set has nothing to import against, so the host marks those by tapping
 - **Snap Vote** — One call at tribal council, before the questioning starts
 - **Merge Passport** — Sealed long-term predictions revealed at the finale
 - **Bingo** — Auto-generated 5x5 card per player per episode with line detection
