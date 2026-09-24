@@ -16,7 +16,7 @@ export default function TribeDraft({ episodeNum }) {
                 <h3 className="font-display text-xl text-sand-warm tracking-wider">Premiere Draft</h3>
                 <p className="text-sand-warm/60 text-sm font-sans max-w-xs mx-auto">
                     They find their names and grab their buffs in the first few minutes.
-                    Pause right there — that is when you draft.
+                    Pause right there — that is when you draft. Your card stays up.
                 </p>
                 <FijianPrimaryButton onClick={() => setDrafting(true)}>
                     <Icon name="groups" />
@@ -27,11 +27,17 @@ export default function TribeDraft({ episodeNum }) {
     }
 
     return (
-        <div className="space-y-4">
+        <div
+            className="fixed inset-0 z-30 overflow-y-auto bg-stone-950/92 px-4 pt-6 pb-28"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Premiere draft"
+        >
+            <div className="max-w-md mx-auto space-y-4">
             <FijianCard className="p-4 text-center border-ochre/40">
                 <p className="font-display text-2xl tracking-wider text-ochre">Premiere Draft</p>
                 <p className="text-sand-warm/60 text-xs mt-1 font-sans">
-                    Take your picks and star a Captain. Your bingo card opens once you lock it.
+                    Take your picks and star a Captain. The card stays where you left it.
                 </p>
             </FijianCard>
 
@@ -57,6 +63,7 @@ export default function TribeDraft({ episodeNum }) {
                 </FijianPrimaryButton>
                 {error && <p className="text-amber text-xs font-sans" role="alert">{error}</p>}
             </FijianCard>
+            </div>
         </div>
     );
 }

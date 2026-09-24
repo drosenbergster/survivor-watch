@@ -187,6 +187,21 @@ export function deriveGameEvents({
     return { gameEvents };
 }
 
+// Keep in step with mergePropBetResults in src/data.js. Host taps win. Auto-resolve
+// fills only a blank question that has a resolver. The resolver records NO for
+// anything it does not understand, and that must not become the official answer.
+function mergePropBetResults(existing, bets, resolved) {
+    const merged = {};
+    for (const bet of bets || []) {
+        if (typeof existing?.[bet.id] === 'boolean') {
+            merged[bet.id] = existing[bet.id];
+        } else if (bet.resolveType && typeof resolved?.[bet.id] === 'boolean') {
+            merged[bet.id] = resolved[bet.id];
+        }
+    }
+    return merged;
+}
+
 /**
  * Auto-score all leagues that have an unscored episode matching episodeNum.
  * Called by the Cloud Function after successfully importing episode data.
@@ -243,14 +258,10 @@ export async function autoScoreLeagues(db, episodeNum, importData, resolvePropBe
             });
 
             const propBets = ep.propBets || [];
-            let propBetResults = ep.autoResolvedPropBets || {};
-
-            if (resolvePropBets
-                && Object.keys(propBetResults).length === 0
-                && propBets.length > 0
-                && propBets[0]?.resolveType) {
-                propBetResults = resolvePropBets(importData, propBets);
-            }
+            const resolved = resolvePropBets && propBets.some(b => b.resolveType)
+                ? resolvePropBets(importData, propBets)
+                : {};
+            const propBetResults = mergePropBetResults(ep.propBetResults, propBets, resolved);
 
             const updates = {
                 [`leagues/${leagueId}/episodes/${episodeNum}/gameEvents`]: gameEvents,

@@ -618,39 +618,7 @@ function BigMomentsStep({ remaining, bigMoments, setBigMoments }) {
     );
 }
 
-/* ── step 4: Tree Mail outcomes ─────────────────────────────── */
-
-function BetResultsStep({ propBets, propBetResults, setPropBetResults }) {
-    if (propBets.length === 0) {
-        return (
-            <div className="space-y-3">
-                <SectionLabel>Tree Mail Outcomes</SectionLabel>
-                <HelpText>No Tree Mail this episode.</HelpText>
-            </div>
-        );
-    }
-
-    return (
-        <div className="space-y-3">
-            <SectionLabel>Tree Mail Outcomes</SectionLabel>
-            <HelpText>Did this happen? Mark YES or NO.</HelpText>
-            {propBets.map(prop => {
-                const result = propBetResults[prop.id];
-                return (
-                    <div key={prop.id} className="flex items-center gap-3 px-4 py-3 rounded-lg bg-stone-800 text-sm font-sans">
-                        <span className="flex-1 text-sand-warm/80">{prop.text}</span>
-                        <div className="flex gap-1 shrink-0">
-                            <Chip active={result === true} color="green" onClick={() => setPropBetResults(prev => ({ ...prev, [prop.id]: true }))}>YES</Chip>
-                            <Chip active={result === false} color="red" onClick={() => setPropBetResults(prev => ({ ...prev, [prop.id]: false }))}>NO</Chip>
-                        </div>
-                    </div>
-                );
-            })}
-        </div>
-    );
-}
-
-/* ── step 5: review ─────────────────────────────────────────── */
+/* ── step 4: review ─────────────────────────────────────────── */
 
 function ReviewStep({ derivedEvents, eliminatedPicks, eliminationMethods, remaining }) {
     const { gameEvents } = derivedEvents;
@@ -732,9 +700,6 @@ export default function AdminScoring({ episodeNum }) {
     // Step 3: Big Moments
     const [bigMoments, setBigMoments] = useState({});
 
-    // Step 4: Tree Mail
-    const [propBetResults, setPropBetResults] = useState({});
-
     // Navigation
     const [step, setStep] = useState('summary');
     const [saving, setSaving] = useState(false);
@@ -746,7 +711,6 @@ export default function AdminScoring({ episodeNum }) {
     const [autoImportApplied, setAutoImportApplied] = useState(false);
 
     const isAdmin = league?.createdBy === user?.uid;
-    const propBets = episodeData?.propBets || [];
     const isAutoScored = episodeData?.scored && episodeData?.scoredAt;
 
     const remaining = useMemo(() => {
@@ -980,7 +944,6 @@ export default function AdminScoring({ episodeNum }) {
 
             await scoreEpisodeAction(episodeNum, {
                 gameEvents,
-                propBetResults,
                 eliminatedThisEp: eliminatedPicks,
                 eliminationMethod: primaryMethod,
             });
@@ -1021,13 +984,10 @@ export default function AdminScoring({ episodeNum }) {
 
     if (episodeData?.scored && !expanded) return null;
 
-    const hasBets = propBets.length > 0;
-
     const steps = [
         { key: 'summary', label: 'Episode', done: eliminatedPicks.length > 0 || immunityWinners.length > 0 },
         { key: 'tribal', label: 'Tribal', done: eliminatedPicks.length > 0 && (unanimousVote || minorityVoters.length > 0) },
         { key: 'moments', label: 'Moments', done: Object.keys(bigMoments).length > 0 },
-        ...(hasBets ? [{ key: 'bets', label: 'Tree Mail', done: Object.keys(propBetResults).length > 0 }] : []),
         { key: 'review', label: 'Review', done: false },
     ];
 
@@ -1115,14 +1075,6 @@ export default function AdminScoring({ episodeNum }) {
                             remaining={remaining}
                             bigMoments={bigMoments}
                             setBigMoments={setBigMoments}
-                        />
-                    )}
-
-                    {step === 'bets' && (
-                        <BetResultsStep
-                            propBets={propBets}
-                            propBetResults={propBetResults}
-                            setPropBetResults={setPropBetResults}
                         />
                     )}
 

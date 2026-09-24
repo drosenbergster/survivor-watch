@@ -11,7 +11,7 @@ const SLIDES = [
     {
         icon: '🔮',
         title: 'Before the episode: Call It',
-        body: `Answer Tree Mail, then pick your castaways. In the premiere you draft ${PREMIERE_PICKS} part way through, once you have seen the tribes.`,
+        body: `Answer Tree Mail, then pick your castaways. In the premiere the bingo card opens when you light your torch, and you draft ${PREMIERE_PICKS} part way through, once you have seen the tribes.`,
     },
     {
         icon: '🔥',

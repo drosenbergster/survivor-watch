@@ -12,6 +12,7 @@ import ProbstRecap from './ProbstRecap';
 import MergePassport from './MergePassport';
 import FinaleMode from './FinaleMode';
 import LightYourTorch from './LightYourTorch';
+import TreeMailResults from './TreeMailResults';
 import BingoCard from './BingoCard';
 import TribeFire from './TribeFire';
 import FireCircle from './FireCircle';
@@ -52,7 +53,7 @@ export default function EpisodeTab() {
     const headerSubtitle = useMemo(() => {
         if (episodePendingSync) return 'Loading episode data…';
         if (!hasEpisode) return null;
-        if (watching && draftPending) return 'Your torch is lit — draft when the buffs come out.';
+        if (watching && draftPending) return 'Your torch is lit — mark a square. Draft when the buffs come out.';
         if (watching) return 'Your torch is lit — enjoy the show.';
         if (watched && isScored) return 'Episode complete. Review your results below.';
         if (watched) return 'Waiting for the host to score this episode.';
@@ -86,7 +87,7 @@ export default function EpisodeTab() {
                             <HintBadge hintKey="picks">
                                 {picksOpen
                                     ? 'Pick castaways and answer Tree Mail. They save as you go. Tap "Light Your Torch" when you sit down to watch.'
-                                    : 'Answer Tree Mail, then tap "Light Your Torch" when you sit down to watch. Your castaway draft opens a few minutes in, once they grab their buffs.'}
+                                    : 'Answer Tree Mail, then tap "Light Your Torch" when you sit down to watch. Your bingo card opens, and the castaway draft comes a few minutes in, once they grab their buffs.'}
                             </HintBadge>
                         )}
                     </p>
@@ -118,29 +119,31 @@ export default function EpisodeTab() {
                 </>
             )}
 
-            {/* Watching: torch status, bingo card, tribal vote, locked picks reference */}
+            {/* Watching: the card stays up. The premiere draft opens over it. */}
             {hasEpisode && watching && (
                 <>
                     <LightYourTorch episodeNum={myEpisode} />
-                    {draftPending ? (
-                        <TribeDraft episodeNum={myEpisode} />
-                    ) : (
+                    {draftPending && <TribeDraft episodeNum={myEpisode} />}
+                    <div className="max-w-md mx-auto">
+                        <BingoCard
+                            seed={bingoSeed}
+                            episodeNum={myEpisode}
+                            marked={bingoMarked}
+                            onSave={handleBingoSave}
+                            disabled={false}
+                        />
+                    </div>
+                    {!draftPending && (
                         <>
-                            <div className="max-w-md mx-auto">
-                                <BingoCard
-                                    seed={bingoSeed}
-                                    episodeNum={myEpisode}
-                                    marked={bingoMarked}
-                                    onSave={handleBingoSave}
-                                    disabled={false}
-                                />
-                            </div>
                             <TribalSnapVote episodeNum={myEpisode} />
                             <EpisodeLockScreen />
                         </>
                     )}
+                    <TreeMailResults episodeNum={myEpisode} />
                 </>
             )}
+
+            {hasEpisode && watched && <TreeMailResults episodeNum={myEpisode} />}
 
             {/* Watched, not yet scored */}
             {hasEpisode && watched && !isScored && (

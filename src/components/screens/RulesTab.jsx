@@ -34,7 +34,7 @@ function Accordion({ title, icon, defaultOpen = false, children }) {
 const GAMEPLAY_STEPS = [
   { icon: '🔮', label: 'Before the episode, answer Tree Mail and pick your castaways — the app tells you how many. Star one as your Captain; they score double. Everything saves as you go.' },
   { icon: '🔥', label: 'When you sit down to watch, tap "Light Your Torch." That locks your calls and opens your bingo card and Snap Vote.' },
-  { icon: '🧣', label: `Premiere only: there is nobody to pick yet, so you draft mid-episode. Pause when they grab their buffs, take ${PREMIERE_PICKS}, and lock it — that opens your bingo card.` },
+  { icon: '🧣', label: `Premiere only: the card is already open. Pause when they grab their buffs, take ${PREMIERE_PICKS}, and lock the draft. The card is still there when you come back.` },
   { icon: '🎱', label: 'While the show is on, mark bingo squares as things pop up.' },
   { icon: '⚡', label: 'When they sit down at tribal, pause and call who is going home.' },
   { icon: '📊', label: 'Tap "Done Watching" at the end. That seats you at the Fire Circle and unlocks results and standings — never before.' },

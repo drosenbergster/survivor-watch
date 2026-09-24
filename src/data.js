@@ -195,34 +195,31 @@ export const ENGAGEMENT_SCORING = [
 // decision, and the wording has to match what resolveType actually checks.
 // UI label: "Tree Mail". Internal keys kept as propBets for Firebase compatibility.
 // Episode 1 uses PREMIERE_PROP_BETS instead: no imported data exists yet, so the
-// host marks those by hand.
+// host marks those by tapping. A tap saves on its own and is not part of scoring.
 // `excludes` names questions that must not appear in the same set, either
 // because one answer gives away the other ("an idol is played" inside "an idol
 // or an advantage is played") or because they are opposites and one of the two
 // is a free +3 ("the vote splits" against "every vote is the same name").
 export const PROP_BET_POOL = [
     // Camp — a scene, not a supply list
-    { key: 'fire', text: 'Somebody gets a real fire going', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'make_fire_camp' } },
-    { key: 'food', text: 'They eat something that is not rice', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'find_food' } },
-    { key: 'well', text: 'The real plan gets made at the well', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'water_well_talk' } },
+    { key: 'fire', text: 'Somebody makes fire at camp', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'make_fire_camp' } },
+    { key: 'food', text: 'Somebody finds food', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'find_food' } },
+    { key: 'well', text: 'Somebody talks strategy at the well', cat: 'camp', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'water_well_talk' } },
     { key: 'sent_away', text: 'Someone is sent away from camp', cat: 'camp', phase: 'any', excludes: ['journey_win', 'exile'], resolveType: 'event_any_of', resolveParams: { eventKeys: ['journey', 'exile'] } },
     { key: 'journey_win', text: 'A journey has an actual winner', cat: 'camp', phase: 'any', excludes: ['sent_away'], resolveType: 'event_any', resolveParams: { eventKey: 'journey_challenge_win' } },
     { key: 'exile', text: 'Exile is the twist tonight', cat: 'camp', phase: 'any', excludes: ['sent_away'], resolveType: 'event_any', resolveParams: { eventKey: 'exile' } },
     // Challenge
-    { key: 'reward_separate', text: 'Reward is its own challenge, apart from immunity', cat: 'challenge', phase: 'any', resolveType: 'has_reward', resolveParams: {} },
+    { key: 'reward_separate', text: 'A reward gets won', cat: 'challenge', phase: 'any', resolveType: 'has_reward', resolveParams: {} },
     { key: 'ind_immunity', text: 'Someone wins individual immunity', cat: 'challenge', phase: 'post-merge', resolveType: 'event_any', resolveParams: { eventKey: 'individual_immunity' } },
     { key: 'ind_reward', text: 'A reward goes to one person, not a tribe', cat: 'challenge', phase: 'post-merge', resolveType: 'event_any', resolveParams: { eventKey: 'individual_reward' } },
     // Power — each line is a different bet, not three ways to say "an advantage"
-    { key: 'power_surfaces', text: 'An idol, an advantage, or a clue turns up', cat: 'idol', phase: 'any', excludes: ['clue', 'no_power_found'], resolveType: 'event_any_of', resolveParams: { eventKeys: ['idol_found', 'advantage_found', 'find_clue'] } },
-    { key: 'power_played', text: 'Someone plays an idol or an advantage', cat: 'idol', phase: 'any', excludes: ['idol_works', 'advantage_used'], resolveType: 'event_any_of', resolveParams: { eventKeys: ['idol_played_success', 'advantage_used'] } },
-    { key: 'two_power', text: 'Two separate power plays in one episode', cat: 'idol', phase: 'any', excludes: ['no_power_found'], resolveType: 'event_count_any_of_gte', resolveParams: { eventKeys: ['idol_found', 'advantage_found', 'find_clue', 'idol_played_success', 'advantage_used'], threshold: 2 } },
+    { key: 'power_surfaces', text: 'An idol or an advantage turns up', cat: 'idol', phase: 'any', excludes: ['no_power_found'], resolveType: 'event_any_of', resolveParams: { eventKeys: ['idol_found', 'advantage_found'] } },
+    { key: 'power_played', text: 'Someone plays an idol or an advantage', cat: 'idol', phase: 'any', excludes: ['idol_works'], resolveType: 'event_any_of', resolveParams: { eventKeys: ['idol_played_success', 'advantage_used'] } },
+    { key: 'two_power', text: 'An idol or an advantage comes up twice, found or played', cat: 'idol', phase: 'any', excludes: ['no_power_found'], resolveType: 'event_count_any_of_gte', resolveParams: { eventKeys: ['idol_found', 'advantage_found', 'idol_played_success', 'advantage_used'], threshold: 2 } },
     { key: 'shot', text: 'Someone risks a Shot in the Dark', cat: 'idol', phase: 'any', resolveType: 'event_any', resolveParams: { eventKey: 'shot_in_dark' } },
-    { key: 'clue', text: 'A clue gets found', cat: 'idol', phase: 'any', excludes: ['power_surfaces'], resolveType: 'event_any', resolveParams: { eventKey: 'find_clue' } },
     { key: 'idol_works', text: 'An idol is played and it works', cat: 'idol', phase: 'any', excludes: ['power_played'], resolveType: 'event_any', resolveParams: { eventKey: 'idol_played_success' } },
-    { key: 'advantage_used', text: 'An advantage that is not an idol gets used', cat: 'idol', phase: 'any', excludes: ['power_played'], resolveType: 'event_any', resolveParams: { eventKey: 'advantage_used' } },
     { key: 'no_power_found', text: 'Nobody finds an idol or an advantage', cat: 'idol', phase: 'any', excludes: ['power_surfaces', 'two_power'], resolveType: 'event_none_of', resolveParams: { eventKeys: ['idol_found', 'advantage_found'] } },
     // The vote and the edit
-    { key: 'medevac', text: 'Medical pulls someone from the game', cat: 'outcome', phase: 'any', resolveType: 'elimination_method', resolveParams: { method: 'medevac' } },
     { key: 'confessionals', text: 'One person owns the edit — four or more confessionals', cat: 'outcome', phase: 'any', resolveType: 'confessional_any_gte', resolveParams: { threshold: 4 } },
     { key: 'vote_split', text: 'The vote splits. More than one name', cat: 'vote', phase: 'any', excludes: ['vote_unanimous'], resolveType: 'vote_split', resolveParams: {} },
     { key: 'vote_unanimous', text: 'Every vote is the same name', cat: 'vote', phase: 'any', excludes: ['vote_split', 'survived_votes'], resolveType: 'vote_unanimous', resolveParams: {} },
@@ -236,11 +233,11 @@ export const PREMIERE_PROP_BETS = [
     { key: 'held_out_skips_tribal', text: 'The 21st castaway misses the first Tribal Council', cat: 'premiere', excludes: ['tribe_short'] },
     { key: 'double_boot', text: 'Two people go home tonight', cat: 'premiere' },
     { key: 'early_power', text: 'An idol or a clue turns up before the first vote', cat: 'premiere' },
-    { key: 'medical_or_quit', text: 'Medical, or a quit, stops the premiere', cat: 'premiere' },
-    { key: 'jeff_twist', text: 'Jeff spells out a twist before the first challenge', cat: 'premiere' },
+    { key: 'sits_out', text: 'Somebody sits out of the first challenge', cat: 'premiere' },
+    { key: 'early_target', text: 'Somebody names a target before camp is built', cat: 'premiere' },
     { key: 'first_is_reward', text: 'The first challenge is for reward, not immunity', cat: 'premiere' },
     { key: 'tribe_short', text: 'One tribe is short a player when they vote', cat: 'premiere', excludes: ['held_out_skips_tribal'] },
-    { key: 'already_out', text: 'Somebody is already on the outs before they hit the beach', cat: 'premiere' },
+    { key: 'first_vote_unanimous', text: 'The first vote is unanimous', cat: 'premiere' },
 ];
 
 /** True when `bet` can join a set that already holds `chosen`. */
@@ -375,6 +372,24 @@ export function resolveBets(importData, bets) {
     return results;
 }
 
+/**
+ * Host taps win. Auto-resolve fills only a question nobody has answered, and
+ * only when that question has a resolver. A question with no resolver stays
+ * blank — the resolver's default is NO, which would hand points to everyone
+ * who skipped it.
+ */
+export function mergePropBetResults(existing, bets, resolved) {
+    const merged = {};
+    for (const bet of bets || []) {
+        if (typeof existing?.[bet.id] === 'boolean') {
+            merged[bet.id] = existing[bet.id];
+        } else if (bet.resolveType && typeof resolved?.[bet.id] === 'boolean') {
+            merged[bet.id] = resolved[bet.id];
+        }
+    }
+    return merged;
+}
+
 // ── Island Bingo ──
 // Mark it the moment it happens. Short, because the square is tiny and the
 // label is uppercase. Seven lanes, so a random card cannot be eight versions
@@ -475,21 +490,15 @@ export const BINGO_ITEMS = [
     'A name said out loud',
 ];
 
-// Premiere-only. Episode 1 cards reserve eight of these so the two-hour open is
-// about the boat, the buffs, and the castaway who does not start with a tribe.
-// Drawn from what CBS has confirmed: Probst rings a bell to start, supplies get
-// thrown off the boat and swum in, the note reads "Find your name, grab your
-// BUFF," the tribes are yellow and purple, and one player leaves the beach for a
-// journey. Beats that are certain to happen are left out on purpose — the ship
-// and the jump are in the public sneak peek, so they are scenery, not squares.
+// Premiere-only. Episode 1 cards reserve four of these, so the open is on the
+// card without becoming a third of it. The boat, the buffs, and the held-out
+// player are one scene. Confirmed beats are left off on purpose — supplies
+// thrown in and swum ashore, the yellow and purple buffs, and the player sent
+// on a journey will happen, same as the ship and the jump in the sneak peek.
+// What stays can miss, or at least start an argument.
 export const PREMIERE_BINGO_ITEMS = [
     'Probst rings the bell',
-    'Supplies hit the water',
-    'Somebody swims it in',
     '"Find your name"',
-    'A buff yanked on',
-    'Yellow vs purple',
-    'One player is sent away',
     'Somebody says "21"',
     'A note read out loud',
     '"I have wanted this"',
@@ -523,7 +532,7 @@ export function getBingoPool(episodeNumber, customItems = []) {
 
 // Generate a shuffled bingo card (5x5 with free center)
 // seed should be a string like "{partyId}-{episodeNum}-{playerId}"
-const PREMIERE_SQUARES_ON_CARD = 8;
+const PREMIERE_SQUARES_ON_CARD = 4;
 
 export function generateBingoCard(seed, episodeNumber, customItems = []) {
     const custom = customItems.filter(Boolean);

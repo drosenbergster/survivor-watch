@@ -31,7 +31,7 @@ export default function LightYourTorch({ episodeNum }) {
                 </div>
                 <p className="text-sand-warm/70 text-xs font-sans">
                     {draftPending
-                        ? 'Tree Mail is locked. Draft your castaways when they grab their buffs.'
+                        ? 'Tree Mail is locked. Mark a square as it happens. Draft when they grab their buffs.'
                         : 'Picks and Tree Mail are locked. Mark a square if you feel like it.'}
                 </p>
                 {!confirming ? (
@@ -74,7 +74,7 @@ export default function LightYourTorch({ episodeNum }) {
             <h3 className="font-display text-2xl text-sand-warm tracking-wider">Ready to Watch?</h3>
             <p className="text-sand-warm/60 text-sm font-sans max-w-xs mx-auto">
                 {draftPending
-                    ? 'Your Tree Mail is already saved. Lighting your torch locks it in and opens your castaway draft for when the buffs come out.'
+                    ? 'Your Tree Mail is already saved. Lighting your torch locks it in and opens your bingo card. The castaway draft comes a few minutes later, when they grab their buffs.'
                     : 'Your picks and Tree Mail are already saved. Lighting your torch locks them in, and opens your bingo card and Snap Vote.'}
             </p>
             <FijianPrimaryButton onClick={async () => {

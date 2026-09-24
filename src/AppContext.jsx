@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, useMemo, u
 import { onAuthStateChanged, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, signOut } from 'firebase/auth';
 import { ref, onValue, set, get, remove } from 'firebase/database';
 import { auth, db } from './firebase';
-import { generatePropBets, ALL_CASTAWAYS, resolveBets, SEASON_ID, WATCH_PARTY_ID, WATCH_PARTY_NAME, PICKS_START_EPISODE, getMaxPicks } from './data';
+import { generatePropBets, ALL_CASTAWAYS, resolveBets, mergePropBetResults, SEASON_ID, WATCH_PARTY_ID, WATCH_PARTY_NAME, PICKS_START_EPISODE, getMaxPicks } from './data';
 import { deriveGameEvents } from './importers/deriveGameEvents';
 
 const AppContext = createContext(null);
@@ -324,14 +324,34 @@ export function AppProvider({ children }) {
     }, [user, leagueId, league]);
 
     const submitPicks = useCallback(async (episodeNum, contestantIds) => {
-        if (!db || !user || !leagueId) throw new Error('Not connected');
-        await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}/picks/${user.uid}`), contestantIds);
+        if (!user || !leagueId) throw new Error('Not connected');
+        if (db) {
+            await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}/picks/${user.uid}`), contestantIds);
+        } else {
+            setEpisodes(prev => ({
+                ...prev,
+                [episodeNum]: {
+                    ...prev[episodeNum],
+                    picks: { ...(prev[episodeNum]?.picks || {}), [user.uid]: contestantIds },
+                },
+            }));
+        }
     }, [user, leagueId]);
 
     // `null` clears the captain, which happens when the chosen castaway is unpicked.
     const submitCaptain = useCallback(async (episodeNum, contestantId) => {
-        if (!db || !user || !leagueId) throw new Error('Not connected');
-        await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}/captains/${user.uid}`), contestantId || null);
+        if (!user || !leagueId) throw new Error('Not connected');
+        if (db) {
+            await set(ref(db, `leagues/${leagueId}/episodes/${episodeNum}/captains/${user.uid}`), contestantId || null);
+        } else {
+            setEpisodes(prev => ({
+                ...prev,
+                [episodeNum]: {
+                    ...prev[episodeNum],
+                    captains: { ...(prev[episodeNum]?.captains || {}), [user.uid]: contestantId || null },
+                },
+            }));
+        }
     }, [user, leagueId]);
 
     const submitPredictions = useCallback(async (episodeNum, predictions) => {
@@ -366,13 +386,18 @@ export function AppProvider({ children }) {
 
         const updates = {
             [`leagues/${leagueId}/episodes/${episodeNum}/gameEvents`]: gameEvents,
-            [`leagues/${leagueId}/episodes/${episodeNum}/propBetResults`]: propBetResults || {},
             [`leagues/${leagueId}/episodes/${episodeNum}/eliminatedThisEp`]: eliminatedThisEp || [],
             [`leagues/${leagueId}/episodes/${episodeNum}/eliminationMethod`]: eliminationMethod || 'voted_out',
             [`leagues/${leagueId}/episodes/${episodeNum}/scored`]: true,
             [`leagues/${leagueId}/episodes/${episodeNum}/scoredAt`]: Date.now(),
             [`leagues/${leagueId}/episodes/${episodeNum}/status`]: 'scored',
         };
+
+        // Tree Mail is saved tap by tap. Scoring writes it only when the caller
+        // already merged host taps with anything the import could resolve.
+        if (propBetResults !== undefined) {
+            updates[`leagues/${leagueId}/episodes/${episodeNum}/propBetResults`] = propBetResults;
+        }
 
         // Rebuild eliminated list from all episodes to avoid stale entries
         const rebuiltEliminated = new Set(league?.preSeasonEliminated || []);
@@ -389,6 +414,26 @@ export function AppProvider({ children }) {
             await set(ref(db, path), value);
         }
     }, [user, leagueId, league, eliminated]);
+
+    // One Tree Mail answer. Saving it does not score the episode.
+    const markPropBetResult = useCallback(async (episodeNum, betId, value) => {
+        if (!user || !leagueId) throw new Error('Not connected');
+        if (league?.createdBy !== user.uid) throw new Error('Only the host can mark Tree Mail');
+        const path = `leagues/${leagueId}/episodes/${episodeNum}/propBetResults/${betId}`;
+        const keep = typeof value === 'boolean';
+        if (db) {
+            if (keep) await set(ref(db, path), value);
+            else await remove(ref(db, path));
+        } else {
+            setEpisodes(prev => {
+                const ep = prev[episodeNum] || {};
+                const results = { ...(ep.propBetResults || {}) };
+                if (keep) results[betId] = value;
+                else delete results[betId];
+                return { ...prev, [episodeNum]: { ...ep, propBetResults: results } };
+            });
+        }
+    }, [user, leagueId, league]);
 
     // Premiere draft: picks happen after the buffs are handed out, so this is the
     // only lock they get. Tree Mail stays locked by the torch.
@@ -842,11 +887,10 @@ export function AppProvider({ children }) {
                 });
 
                 const propBets = ep.propBets || [];
-                let propBetResults = ep.autoResolvedPropBets || {};
-
-                if (Object.keys(propBetResults).length === 0 && propBets.length > 0 && propBets[0].resolveType) {
-                    propBetResults = resolveBets(importData, propBets);
-                }
+                const resolved = propBets.some(b => b.resolveType)
+                    ? resolveBets(importData, propBets)
+                    : {};
+                const propBetResults = mergePropBetResults(ep.propBetResults, propBets, resolved);
 
                 const eliminatedThisEp = eliminatedIds;
 
@@ -899,7 +943,7 @@ export function AppProvider({ children }) {
         syncStatus, onboardingComplete,
         joinWatchParty, completeOnboarding,
         createEpisode, updatePropBets, submitPicks, submitCaptain, submitPredictions,
-        submitSnapVote, scoreEpisodeAction,
+        submitSnapVote, markPropBetResult, scoreEpisodeAction,
         executeTribeSwap, moveTribeSwap, deleteTribeSwap, fixElimination, rescoreEpisode,
         executeMerge, submitMergePassport,
         startFinale, revealMergePassport, setPassportTruth, submitReunionVote, crownChampion,
